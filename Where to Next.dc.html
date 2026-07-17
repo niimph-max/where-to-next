@@ -20,11 +20,16 @@
   @keyframes wtnFade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
   .wtn-screen{animation:wtnFade .22s ease}
   @keyframes wtnPulse{0%{transform:scale(.5);opacity:.55}70%{transform:scale(1.9);opacity:0}100%{opacity:0}}
+  @media (max-width:600px){
+    body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:stretch!important}
+    .wtn-phone{width:100%!important;border-radius:0!important;padding:0!important;box-shadow:none!important}
+    .wtn-body{height:100dvh!important;border-radius:0!important}
+  }
 </style>
 <script src="image-slot.js"></script>
 </helmet>
-<div style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
-  <div style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
+<div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
+  <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
 
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
       <div style="flex:none;display:flex;align-items:center;gap:11px;padding:15px 20px 11px;border-bottom:1px solid rgba(43,36,32,.06);position:relative;z-index:6;background:#f6efe2">
@@ -111,7 +116,7 @@
       <!-- ========== TRIP DETAIL / PLANNER ========== -->
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative"><img src="{{ tripHero }}" alt="" style="width:100%;height:140px;object-fit:cover;display:block"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72))"></div><div style="position:absolute;left:20px;bottom:14px"><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
+          <div style="position:relative;height:140px"><image-slot id="{{ coverSlotId }}" shape="rect" fit="cover" src="{{ tripHero }}" placeholder="รูปปกทริป — แตะเปลี่ยน" style="position:absolute;inset:0;width:100%;height:140px"></image-slot><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
           <div style="display:flex;gap:6px;padding:14px 20px 4px">
             <button onClick="{{ goMap }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">แผนที่</button>
             <button onClick="{{ goBudget }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">งบ</button>
@@ -530,7 +535,7 @@ class Component extends DCLogic {
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
   setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); }
-  openTrip(id) { this.setState({ trip: id, day: id === 'kazakh' ? 0 : 2 }); this.go('trip'); }
+  openTrip(id) { this.setState({ trip: id, day: id === 'yamagata' ? 2 : 0 }); this.go('trip'); }
 
   get days() { return this.state.trip === 'kazakh' ? this.kzDays : (this.state.trip === 'blank' ? this.blankDays : this.jpDays); }
 
@@ -677,7 +682,7 @@ class Component extends DCLogic {
     else { nowK = 'กลับมาแล้ว!'; nowT = 'เที่ยวคาซัคสถานจบแล้ว'; nowS = 'ทำรีแคป/หนังสือเก็บความทรงจำเลยไหม'; }
     const curKey = this.state.trip + ':' + active;
     const curExtra = this.state.added[curKey] || [];
-    const baseDay = this.days[active];
+    const baseDay = this.days[active] || this.days[0];
     const curMerged = { ...baseDay, stops: [...baseDay.stops, ...curExtra] };
     const kinds = ['เที่ยวบิน','ที่พัก','เดินทาง','กิน','ที่เที่ยว','อื่นๆ'];
     const chipOn = "background:#c05f39;color:#fff;font:600 12px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
@@ -711,7 +716,7 @@ class Component extends DCLogic {
       goTrip: () => this.openTrip('yamagata'),
       goTripKz: () => this.openTrip('kazakh'),
       goBlank: () => this.openTrip('blank'),
-      tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
+      tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripInfo.live, tripPlanned: !this.tripInfo.live, tripStatus: this.tripInfo.status,
       editing: this.state.editing, toggleEdit: () => this.setState(s => ({ editing: !s.editing })), editLabel: this.state.editing ? 'เสร็จ' : 'แก้ไข',
       goBudget: () => this.go('budget'),
