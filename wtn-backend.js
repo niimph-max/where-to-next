@@ -41,11 +41,27 @@ async function boot() {
       return c.user;
     },
     emailLogin(email, pass) { return auth.signInWithEmailAndPassword(A, email, pass); },
-    google() { return auth.signInWithPopup(A, new auth.GoogleAuthProvider()); },
+    async google() {
+      try {
+        return await auth.signInWithPopup(A, new auth.GoogleAuthProvider());
+      } catch (e) {
+        const c = e && e.code;
+        if (c === "auth/popup-blocked" || c === "auth/popup-closed-by-user" ||
+            c === "auth/cancelled-popup-request" || c === "auth/operation-not-supported-in-this-environment") {
+          await auth.signInWithRedirect(A, new auth.GoogleAuthProvider());
+          return null;
+        }
+        throw e;
+      }
+    },
     facebook() { return auth.signInWithPopup(A, new auth.FacebookAuthProvider()); },
     // เบอร์โทร OTP — ต้องมี element id="recaptcha" ในหน้า (invisible ก็ได้)
     async phoneStart(phoneE164, recaptchaContainerId) {
+      try { if (this._recaptchaVerifier) { this._recaptchaVerifier.clear(); this._recaptchaVerifier = null; } } catch (e) {}
+      const el = document.getElementById(recaptchaContainerId);
+      if (el) el.innerHTML = "";
       const verifier = new auth.RecaptchaVerifier(A, recaptchaContainerId, { size: "invisible" });
+      this._recaptchaVerifier = verifier;
       this._confirm = await auth.signInWithPhoneNumber(A, phoneE164, verifier);
       return true;
     },
@@ -133,24 +149,19 @@ async function boot() {
       return (await fs.getDocs(fs.collection(DB, "trips", tripId, coll))).docs.map(d => ({ id: d.id, ...d.data() }));
     },
 
-    // ---------- FULL BACKUP (ซิงก์ทั้งแอปข้ามเครื่อง) ----------
+    // ---------- FULL BACKUP (ซิงก์ทั้งแอปข้ามเครื่อง) — เก็บใน Firestore (เลี่ยงปัญหา CORS ของ Storage) ----------
     async pushBackup(obj) {
       if (!this._uid) return;
-      const r = storage.ref(ST, `users/${this._uid}/backup.json`);
-      await storage.uploadString(r, JSON.stringify(obj), "raw", { contentType: "application/json" });
+      const blob = JSON.stringify(obj);
+      if (blob.length > 1000000) { const e = new Error("backup ใหญ่เกิน 1MB"); e.code = "backup/too-large"; throw e; }
+      await fs.setDoc(fs.doc(DB, "backups", this._uid),
+        { blob, at: obj._at || Date.now(), updatedAt: fs.serverTimestamp() });
     },
     async pullBackup() {
       if (!this._uid) return null;
-      try {
-        const r = storage.ref(ST, `users/${this._uid}/backup.json`);
-        const url = await storage.getDownloadURL(r);
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        return await res.json();
-      } catch (e) {
-        if (e && (e.code === "storage/object-not-found" || /404/.test(String(e)))) return null;
-        throw e;
-      }
+      const snap = await fs.getDoc(fs.doc(DB, "backups", this._uid));
+      if (!snap.exists()) return null;
+      try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
     },
   };
 
