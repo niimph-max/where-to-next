@@ -18,7 +18,31 @@
 <script type="module" src="wtn-backend.js"></script>
 <meta name="apple-mobile-web-app-title" content="ทริปหน้าไปไหน">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#c05f39">
+<link rel="manifest" href="manifest.webmanifest">
+<script>
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // เจอบิลด์ใหม่ → ให้ตัวใหม่ทำงานทันที รอบเปิดถัดไปได้ของล่าสุด
+        reg.addEventListener('updatefound', function () {
+          var w = reg.installing;
+          if (!w) return;
+          w.addEventListener('statechange', function () {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage && reg.waiting && reg.waiting.postMessage('skipWaiting');
+          });
+        });
+        setInterval(function () { reg.update().catch(function () {}); }, 60 * 60 * 1000);
+      }).catch(function () {});
+      var reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (reloaded) return; reloaded = true; location.reload();
+      });
+    });
+  }
+</script>
 <style>
   *{box-sizing:border-box}
   html{overflow-x:hidden;width:100%}

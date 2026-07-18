@@ -1,0 +1,17 @@
+{
+  "name": "ทริปหน้าไปไหน",
+  "short_name": "ทริปหน้า",
+  "description": "วางแผนทริป + เก็บเป็นเรื่องเล่า",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2b241f",
+  "theme_color": "#c05f39",
+  "lang": "th",
+  "icons": [
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "logo.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
