@@ -10,7 +10,7 @@
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
 <title>where to next?</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -36,9 +36,10 @@
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
+  .wtn-rte,.wtn-read{font-family:'Sarabun','Anuphan',system-ui,sans-serif}
   .wtn-rte p,.wtn-read p{margin:0 0 1.1em;font-size:16px;line-height:1.95;text-wrap:pretty}
   .wtn-read{color:#2f2a24}
-  .wtn-read p{font-size:22px;line-height:2.05;color:#2f2a24}
+  .wtn-read p{font-size:22px;line-height:2;color:#2f2a24}
   .wtn-rte h3,.wtn-read h3{font-family:'Chonburi',serif;font-weight:400;font-size:20px;line-height:1.4;color:#2b241f;margin:1.4em 0 .5em}
   .wtn-read h3{font-size:23px}
   .wtn-rte blockquote,.wtn-read blockquote{margin:1.2em 0;padding:6px 0 6px 16px;border-left:3px solid #d8a07f;color:#6f6558;font-style:italic}
@@ -1200,7 +1201,7 @@ class Component extends DCLogic {
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
     const data = {};
-    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-ai-key' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
     return data;
   }
   scheduleCloudPush() {
@@ -1240,9 +1241,30 @@ class Component extends DCLogic {
     window.dispatchEvent(new Event('photopick-change'));
     this.forceUpdate();
   }
+  localHasData() {
+    try {
+      const t = JSON.parse(localStorage.getItem('wtn-trips') || '[]');
+      if (Array.isArray(t) && t.length) return true;
+    } catch (e) {}
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i) || '';
+      if (/^wtn-(journal|checkins|story|stories|chapter|docs|packing|budget)/.test(k)) {
+        const v = localStorage.getItem(k);
+        if (v && v !== '{}' && v !== '[]' && v !== 'null') return true;
+      }
+    }
+    return false;
+  }
+  backupHasData(bk) {
+    if (!bk || !bk.data) return false;
+    const d = bk.data;
+    try { const t = JSON.parse(d['wtn-trips'] || '[]'); if (Array.isArray(t) && t.length) return true; } catch (e) {}
+    return Object.keys(d).some(k => /^wtn-(journal|checkins|story|stories|chapter|docs|packing|budget)/.test(k) && d[k] && d[k] !== '{}' && d[k] !== '[]' && d[k] !== 'null');
+  }
   async cloudPush() {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
+    if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; } // กันไม่ให้ดันข้อมูลเปล่าทับคลาวด์
     try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
     const at = Date.now();
     try {
@@ -1262,10 +1284,12 @@ class Component extends DCLogic {
     try {
       const bk = await be.pullBackup();
       const localAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
+      // กันข้อมูลหาย: ถ้าคลาวด์ว่าง/ไม่มีของจริง แต่เครื่องนี้มีข้อมูล → ดันขึ้นแทนที่จะลบ
+      if (!this.backupHasData(bk) && this.localHasData()) { this.cloudPush(); return; }
       if (bk && bk.data && (bk._at || 0) > localAt) {
         this._applyingCloud = true;
         try {
-          const keep = { 'wtn-auth': 1, 'wtn-ai-key': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1 };
+          const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1 };
           const toDel = [];
           for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if ((/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && !(k in bk.data)) toDel.push(k); }
           toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
