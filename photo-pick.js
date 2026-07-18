@@ -1,8 +1,12 @@
 /* <photo-pick id="unique-key" placeholder="แตะเพื่อเพิ่มรูป">
- * Self-contained image picker: choose from device, drag to position,
- * pinch/wheel/slider zoom, change/remove later. Persists dataURL +
- * transform in localStorage under "photopick:<id>". Fills its host
- * element; border-radius inherited. No dependencies.
+ * Image picker: choose from device, drag to position, pinch/wheel/slider
+ * zoom, change/remove later. Persists dataURL + normalized transform
+ * (nx,ny = pan as fraction of displayed image, s = zoom) in localStorage
+ * under "photopick:<id>" — so any element with the same id shows the SAME
+ * framing at any size. Extra attributes:
+ *   readonly   display-only mirror (no editing, live-syncs via event)
+ *   fallback   image URL to show when nothing stored yet
+ * Fills its host element; border-radius inherited. No dependencies.
  */
 (function () {
   if (customElements.get('photo-pick')) return;
@@ -20,14 +24,16 @@
     connectedCallback() {
       if (this._built) { this._render(); return; }
       this._built = true;
+      this._ro = this.hasAttribute('readonly');
       var sh = this.attachShadow({ mode: 'open' });
       var st = document.createElement('style');
       st.textContent =
         ':host{display:block;position:relative;overflow:hidden;border-radius:inherit;' +
         'font-family:Anuphan,sans-serif;-webkit-user-select:none;user-select:none;background:#e7dcc9}' +
-        '.vp{position:absolute;inset:0;border-radius:inherit;overflow:hidden;cursor:pointer}' +
+        '.vp{position:absolute;inset:0;border-radius:inherit;overflow:hidden;cursor:' + (this._ro ? 'inherit' : 'pointer') + '}' +
         '.vp.adj{cursor:grab;touch-action:none}.vp.adj:active{cursor:grabbing}' +
         'img{position:absolute;left:50%;top:50%;max-width:none;pointer-events:none;will-change:transform}' +
+        'img.fb{inset:0;left:0;top:0;width:100%;height:100%;object-fit:cover}' +
         '.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;' +
         'gap:5px;color:#8a7d6f;text-align:center;padding:6px}' +
         '.empty span{font:600 10.5px Anuphan,sans-serif;line-height:1.35}' +
@@ -36,34 +42,46 @@
       sh.appendChild(st);
       this._vp = el('div'); this._vp.className = 'vp';
       sh.appendChild(this._vp);
-      this._file = document.createElement('input');
-      this._file.type = 'file'; this._file.accept = 'image/*';
-      this._file.style.display = 'none';
-      sh.appendChild(this._file);
-      this._file.addEventListener('change', this._onFile.bind(this));
 
-      this._state = null;       // {img,x,y,s}
+      this._state = null;       // {img,nx,ny,s}
       this._imgEl = null;
-      this._nat = null;         // natural w/h
+      this._nat = null;
       this._adjust = false;
-      this._load();
 
       var self = this;
-      this._vp.addEventListener('click', function () {
-        if (self._adjust || self._moved) return;
-        if (!self._state) self._file.click();
-        else self._openSheet();
-      });
-      this._vp.addEventListener('pointerdown', this._pDown.bind(this));
-      this._vp.addEventListener('pointermove', this._pMove.bind(this));
-      this._vp.addEventListener('pointerup', this._pUp.bind(this));
-      this._vp.addEventListener('pointercancel', this._pUp.bind(this));
-      this._vp.addEventListener('wheel', function (e) {
-        if (!self._adjust) return;
-        e.preventDefault();
-        self._setScale(self._state.s * (e.deltaY < 0 ? 1.06 : 0.94));
-      }, { passive: false });
-      if (window.ResizeObserver) new ResizeObserver(function () { self._render(); }).observe(this);
+      this._sync = function (e) {
+        if (self._adjust) return;
+        if (!e.detail || e.detail.id !== self.id) return;
+        self._imgEl = null; self._load();
+      };
+      window.addEventListener('photopick-change', this._sync);
+
+      if (!this._ro) {
+        this._file = document.createElement('input');
+        this._file.type = 'file'; this._file.accept = 'image/*';
+        this._file.style.display = 'none';
+        sh.appendChild(this._file);
+        this._file.addEventListener('change', this._onFile.bind(this));
+        this._vp.addEventListener('click', function () {
+          if (self._adjust || self._moved) return;
+          if (!self._state) self._file.click();
+          else self._openSheet();
+        });
+        this._vp.addEventListener('pointerdown', this._pDown.bind(this));
+        this._vp.addEventListener('pointermove', this._pMove.bind(this));
+        this._vp.addEventListener('pointerup', this._pUp.bind(this));
+        this._vp.addEventListener('pointercancel', this._pUp.bind(this));
+        this._vp.addEventListener('wheel', function (e) {
+          if (!self._adjust) return;
+          e.preventDefault();
+          self._setScale(self._state.s * (e.deltaY < 0 ? 1.06 : 0.94));
+        }, { passive: false });
+      }
+      this._load();
+      if (window.ResizeObserver) new ResizeObserver(function () { self._place(); }).observe(this);
+    }
+    disconnectedCallback() {
+      if (this._sync) window.removeEventListener('photopick-change', this._sync);
     }
 
     _load() {
@@ -71,12 +89,17 @@
         var raw = localStorage.getItem(KEY(this.id || 'photo'));
         this._state = raw ? JSON.parse(raw) : null;
       } catch (e) { this._state = null; }
+      if (this._state && this._state.nx === undefined) {
+        // legacy px offsets → will normalize on first _place()
+        this._state._legacy = true;
+      }
       this._render();
     }
     _save() {
       try {
         var k = KEY(this.id || 'photo');
-        if (this._state) localStorage.setItem(k, JSON.stringify(this._state));
+        if (this._state) localStorage.setItem(k, JSON.stringify({
+          img: this._state.img, nx: this._state.nx || 0, ny: this._state.ny || 0, s: this._state.s || 1 }));
         else localStorage.removeItem(k);
         window.dispatchEvent(new CustomEvent('photopick-change', { detail: { id: this.id } }));
       } catch (e) { alert('บันทึกรูปไม่สำเร็จ (พื้นที่จัดเก็บเต็ม) ลองใช้รูปเล็กลง'); }
@@ -94,7 +117,7 @@
           var c = document.createElement('canvas');
           c.width = Math.round(w * r); c.height = Math.round(h * r);
           c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          self._state = { img: c.toDataURL('image/jpeg', 0.85), x: 0, y: 0, s: 1 };
+          self._state = { img: c.toDataURL('image/jpeg', 0.85), nx: 0, ny: 0, s: 1 };
           self._nat = null;
           self._save();
           self._render(function () { self._enterAdjust(); });
@@ -108,8 +131,10 @@
       var vp = this._vp;
       if (!this._state) {
         this._nat = null; this._imgEl = null;
+        var fb = this.getAttribute('fallback');
+        if (fb) { vp.innerHTML = '<img class="fb" src="' + fb + '" alt="">'; return; }
         vp.innerHTML = '<div class="empty"><div style="color:#a5977f">' + CAM + '</div><span>' +
-          (this.getAttribute('placeholder') || 'แตะเพื่อเพิ่มรูป') + '</span></div>';
+          (this._ro ? '' : (this.getAttribute('placeholder') || 'แตะเพื่อเพิ่มรูป')) + '</span></div>';
         return;
       }
       if (!this._imgEl || !vp.contains(this._imgEl)) {
@@ -131,26 +156,29 @@
     _dims() {
       var r = this.getBoundingClientRect(), n = this._nat;
       if (!n || !r.width || !r.height) return null;
-      var base = Math.max(r.width / n.w, r.height / n.h) * this._state.s;
+      var base = Math.max(r.width / n.w, r.height / n.h) * (this._state.s || 1);
       return { W: r.width, H: r.height, dw: n.w * base, dh: n.h * base };
     }
-    _clamp() {
-      var d = this._dims(); if (!d) return;
-      var mx = Math.max(0, (d.dw - d.W) / 2), my = Math.max(0, (d.dh - d.H) / 2);
-      this._state.x = Math.min(mx, Math.max(-mx, this._state.x));
-      this._state.y = Math.min(my, Math.max(-my, this._state.y));
+    _clamp(d) {
+      var mx = Math.max(0, (d.dw - d.W) / 2) / d.dw, my = Math.max(0, (d.dh - d.H) / 2) / d.dh;
+      this._state.nx = Math.min(mx, Math.max(-mx, this._state.nx || 0));
+      this._state.ny = Math.min(my, Math.max(-my, this._state.ny || 0));
     }
     _place() {
       var d = this._dims(); if (!d || !this._imgEl) return;
-      this._clamp();
+      if (this._state._legacy) {
+        this._state.nx = (this._state.x || 0) / d.dw;
+        this._state.ny = (this._state.y || 0) / d.dh;
+        delete this._state._legacy; delete this._state.x; delete this._state.y;
+      }
+      this._clamp(d);
       this._imgEl.style.width = d.dw + 'px';
       this._imgEl.style.height = d.dh + 'px';
-      this._imgEl.style.transform = 'translate(calc(-50% + ' + this._state.x + 'px), calc(-50% + ' + this._state.y + 'px))';
+      this._imgEl.style.transform = 'translate(calc(-50% + ' + (this._state.nx * d.dw) +
+        'px), calc(-50% + ' + (this._state.ny * d.dh) + 'px))';
     }
     _setScale(s) {
       s = Math.min(4, Math.max(1, s));
-      var d0 = this._dims();
-      if (d0) { var f = s / this._state.s; this._state.x *= f; this._state.y *= f; }
       this._state.s = s;
       if (this._slider) this._slider.value = s;
       this._place();
@@ -181,8 +209,12 @@
         var d = Math.hypot(a.x - b.x, a.y - b.y);
         this._setScale(this._pinch0.s * d / this._pinch0.d);
       } else {
-        this._state.x += dx; this._state.y += dy;
-        this._place();
+        var dm = this._dims();
+        if (dm) {
+          this._state.nx = (this._state.nx || 0) + dx / dm.dw;
+          this._state.ny = (this._state.ny || 0) + dy / dm.dh;
+          this._place();
+        }
       }
     }
     _pUp(e) {

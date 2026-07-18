@@ -34,6 +34,8 @@
   /* full-screen on every device (mobile app) */
 </style>
 <script src="photo-pick.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </helmet>
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
@@ -113,7 +115,7 @@
           </div>
           <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:12px">แผนของฉัน</div>
           <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:pointer">
-            <div style="position:relative"><img src="{{ kzCover }}" alt="" style="width:100%;height:110px;object-fit:cover;display:block"><span style="position:absolute;top:11px;left:11px;background:rgba(233,180,138,.95);color:#5b3115;font:600 10px 'Anuphan';padding:4px 10px;border-radius:20px">โปรแกรมทัวร์</span></div>
+            <div style="position:relative"><photo-pick id="wtn-cover-kazakh" readonly fallback="uploads/20211027_071410292_iOS.jpg" style="display:block;width:100%;height:110px"></photo-pick><span style="position:absolute;top:11px;left:11px;background:rgba(233,180,138,.95);color:#5b3115;font:600 10px 'Anuphan';padding:4px 10px;border-radius:20px">โปรแกรมทัวร์</span></div>
             <div style="padding:13px 15px 15px">
               <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">คาซัคสถาน · 11 วัน</div>
               <div style="font:400 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px">โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว</div>
@@ -144,7 +146,7 @@
         <div class="wtn-screen">
           <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
           <div style="display:flex;gap:6px;padding:14px 20px 4px">
-            <button onClick="{{ goMap }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">แผนที่</button>
+            <button onClick="{{ goMap }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">เช็คอิน</button>
             <button onClick="{{ goBudget }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">งบ</button>
             <button onClick="{{ goAi }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">AI จัดวัน</button>
             <button onClick="{{ goSummary }}" style="flex:1;text-align:center;background:#c05f39;color:#fff;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">สรุปทริป</button>
@@ -194,21 +196,21 @@
       <!-- ========== ASK AI ========== -->
       <sc-if value="{{ sAskAi }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 30px">
-          <div style="font:400 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">ถ่ายรูปหรือเลือกภาพ แล้วถาม AI ได้เลยระหว่างทาง</div>
-          <div style="position:relative;border-radius:16px;overflow:hidden;margin-bottom:14px">
-            <img src="uploads/20211027_071410292_iOS.jpg" alt="" style="width:100%;height:200px;object-fit:cover;display:block">
-            <div style="position:absolute;bottom:10px;left:10px;display:flex;gap:7px"><span style="background:rgba(43,36,32,.72);color:#fff;font:600 11px 'Anuphan';padding:6px 11px;border-radius:16px">ถ่ายใหม่</span><span style="background:rgba(43,36,32,.72);color:#fff;font:600 11px 'Anuphan';padding:6px 11px;border-radius:16px">เลือกรูป</span></div>
+          <div style="font:400 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">ถามอะไรก็ได้ระหว่างทาง — AI รู้แผนวันนี้ของทริปคุณ</div>
+          <div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:6px 6px 6px 14px;margin-bottom:11px">
+            <input value="{{ aiQ }}" onInput="{{ setAiQ }}" placeholder="เช่น ฝนตก สลับโปรแกรมยังไงดี" style="flex:1;min-width:0;border:none;background:transparent;font:500 13.5px 'Anuphan';color:#2b241f;outline:none;min-height:38px">
+            <button onClick="{{ sendAiQ }}" style="width:44px;height:44px;border-radius:50%;border:none;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M5 12l14-7-4 14-3-5z"></path></svg></button>
           </div>
-          <div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:12px 14px;margin-bottom:11px"><span style="flex:1;font:500 13.5px 'Anuphan';color:#2b241f">ที่นี่คือที่ไหน มีอะไรน่าสนใจ?</span><span style="width:32px;height:32px;border-radius:50%;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M5 12l14-7-4 14-3-5z"/></svg></span></div>
-          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px"><span style="background:#efe4d3;color:#5c5347;font:500 12px 'Anuphan';padding:6px 12px;border-radius:16px">ป้ายนี้เขียนว่าอะไร</span><span style="background:#efe4d3;color:#5c5347;font:500 12px 'Anuphan';padding:6px 12px;border-radius:16px">เมนูนี้กินยังไง</span><span style="background:#efe4d3;color:#5c5347;font:500 12px 'Anuphan';padding:6px 12px;border-radius:16px">ประวัติที่นี่</span></div>
-          <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:16px;padding:15px">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#c05f39"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span style="font:600 13px 'Anuphan';color:#c05f39">AI ตอบ</span></div>
-            <p style="font:400 14px/1.75 'Anuphan';color:#413931;margin:0">ดูจากภาพ น่าจะเป็นย่านเมืองเก่าบนเนินที่มีจุดชมวิวเมืองด้านล่าง — ช่วงที่สวยที่สุดคือ<b>ตอนเย็น</b>แดดอุ่นๆ รอบๆ มักมีคาเฟ่และร้านของฝากงานฝีมือ แนะนำเช็กเวลาปิดของจุดชมวิวก่อนขึ้นไป</p>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:16px">
-            <button onClick="{{ goCompose }}" style="flex:1;border:none;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer">บันทึกลงเรื่องเล่า</button>
-            <button style="border:1px solid rgba(43,36,32,.15);background:#fff;color:#2b241f;font:600 14px 'Anuphan';padding:14px 16px;border-radius:13px;cursor:pointer">เพิ่มลงแผน</button>
-          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px"><sc-for list="{{ aiSuggest }}" as="sg" hint-placeholder-count="3"><button onClick="{{ sg.on }}" style="background:#efe4d3;color:#5c5347;font:500 12px 'Anuphan';padding:8px 12px;border-radius:16px;border:none;cursor:pointer">{{ sg.label }}</button></sc-for></div>
+          <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px;font:500 13px 'Anuphan';color:#a1927c">✦ AI กำลังคิด…</div></sc-if>
+          <sc-if value="{{ aiErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border:1px solid rgba(192,86,58,.25);border-radius:14px;padding:13px 15px;font:500 12.5px/1.5 'Anuphan';color:#b3402a">{{ aiErr }}</div></sc-if>
+          <sc-if value="{{ hasAiAnswer }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:16px;padding:15px">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#c05f39"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span style="font:600 13px 'Anuphan';color:#c05f39">{{ aiLastQ }}</span></div>
+              <p style="font:400 14px/1.75 'Anuphan';color:#413931;margin:0;white-space:pre-wrap">{{ aiAnswer }}</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ notConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;font:400 12.5px/1.6 'Anuphan';color:#8a7d6f;margin-top:4px">ยังไม่ได้เชื่อม AI — วาง API key ที่แท็บ "ฉัน" ก่อน แล้วกลับมาถามได้เลย</div></sc-if>
           <div style="font:400 11px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">ข้อมูลจาก AI · โปรดตรวจสอบอีกครั้งก่อนใช้จริง</div>
         </div>
       </sc-if>
@@ -243,31 +245,47 @@
       <!-- ========== MAP ========== -->
       <sc-if value="{{ sMap }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative;height:280px;background:linear-gradient(160deg,#e8dfc9,#d8c3a0 55%,#cdb58f);overflow:hidden">
-            <svg viewBox="0 0 340 280" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%">
-              <ellipse cx="55" cy="70" rx="95" ry="52" fill="rgba(150,170,120,.28)"/>
-              <ellipse cx="285" cy="120" rx="115" ry="72" fill="rgba(150,170,120,.22)"/>
-              <ellipse cx="175" cy="245" rx="140" ry="66" fill="rgba(120,150,180,.2)"/>
-              <path d="M42 214 C92 176 118 152 150 122 S228 78 302 58" fill="none" stroke="#c05f39" stroke-width="3" stroke-dasharray="6 7" stroke-linecap="round"/>
-              <g font-family="Anuphan,sans-serif" font-weight="700" font-size="11" fill="#fff" text-anchor="middle">
-                <circle cx="42" cy="214" r="12" fill="#c05f39" stroke="#fff" stroke-width="2"/><text x="42" y="218">1</text>
-                <circle cx="112" cy="168" r="12" fill="#c05f39" stroke="#fff" stroke-width="2"/><text x="112" y="172">3</text>
-                <circle cx="150" cy="122" r="12" fill="#c05f39" stroke="#fff" stroke-width="2"/><text x="150" y="126">5</text>
-                <circle cx="228" cy="86" r="12" fill="#c05f39" stroke="#fff" stroke-width="2"/><text x="228" y="90">8</text>
-                <circle cx="302" cy="58" r="12" fill="#c05f39" stroke="#fff" stroke-width="2"/><text x="302" y="62">11</text>
-              </g>
-            </svg>
-            <span style="position:absolute;top:12px;left:14px;background:rgba(43,36,32,.82);color:#f6d9c6;font:600 10.5px 'Anuphan';padding:5px 11px;border-radius:20px">เส้นทาง 11 วัน · เริ่ม-จบที่อัลมาตี</span>
+          <div style="position:relative;height:280px;background:#e8dfc9">
+            <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
+            <span style="position:absolute;top:12px;left:14px;z-index:500;background:rgba(43,36,32,.82);color:#f6d9c6;font:600 10.5px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none">เส้นทาง 11 วัน · เริ่ม-จบที่อัลมาตี</span>
           </div>
           <div style="padding:16px 20px 30px">
-            <div style="font:400 11px 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:14px">แผนที่ตัวอย่าง · เชื่อม Mapbox ตอน deploy จริง (ปักหมุด+ระยะทางจริง)</div>
-            <sc-for list="{{ days }}" as="d" hint-placeholder-count="6">
-              <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(43,36,32,.06)">
-                <span style="width:26px;height:26px;border-radius:50%;background:#efe4d3;color:#c05f39;font:700 12px 'Anuphan';display:flex;align-items:center;justify-content:center;flex:none">{{ d.n }}</span>
-                <div style="flex:1;min-width:0"><div style="font:600 13.5px 'Anuphan';color:#2b241f">{{ d.city }}</div></div>
-                <span style="font:500 11px 'Anuphan';color:#a99e8e">{{ d.date }}</span>
-              </div>
-            </sc-for>
+            <div style="font:400 11px 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:14px">เส้นทางรวมทุกวัน · จุดส้ม = ที่ที่คุณเช็คอินจริง</div>
+            <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
+              <sc-for list="{{ ciDays }}" as="cd" hint-placeholder-count="5">
+                <button onClick="{{ cd.on }}" style="{{ cd.style }}">{{ cd.label }}</button>
+              </sc-for>
+            </div>
+            <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f;margin:16px 0 3px">เช็คอิน · {{ ciDayLabel }}</div>
+            <div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-bottom:12px">เก็บที่ที่ไปจริง กินอะไร เจอใคร — ครบทุกวันเอาไปทำรีแคป/เรื่องเล่าได้เลย</div>
+            <sc-if value="{{ ciEmpty }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:22px 20px;font:400 12.5px/1.6 'Anuphan';color:#a1927c;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;margin-bottom:10px">ยังไม่มีเช็คอินวันนี้<br>ถึงที่ไหนแล้วกดเช็คอินได้เลย</div></sc-if>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ ciList }}" as="ci" hint-placeholder-count="2">
+                <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px">
+                  <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 11px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 14px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
+                  <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:400 12.5px/1.55 'Anuphan';color:#5c5347;margin-top:7px">{{ ci.note }}</div></sc-if>
+                  <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="width:76px;height:76px;object-fit:cover;border-radius:11px;flex:none"></sc-for></div></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ ciFormClosed }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ toggleCiForm }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';border-radius:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>เช็คอินตรงนี้</button>
+              </sc-if>
+              <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                  <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 14px 'Anuphan';color:#2b241f;outline:none">
+                  <input value="{{ ciNote }}" onInput="{{ setCiNote }}" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:400 13.5px 'Anuphan';color:#2b241f;outline:none">
+                  <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
+                  <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
+                  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+                    <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
+                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 11px 'Anuphan';cursor:pointer;line-height:1">✕</button></span>
+                    </sc-for>
+                    <label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 10.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" multiple onChange="{{ ciAddPhotos }}" style="display:none"></label>
+                  </div>
+                  <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
+                </div>
+              </sc-if>
+            </div>
           </div>
         </div>
       </sc-if>
@@ -275,16 +293,51 @@
       <!-- ========== BUDGET ========== -->
       <sc-if value="{{ sBudget }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
-          <div style="background:#2b241f;border-radius:20px;padding:20px;color:#f6efe2;margin-bottom:16px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:15px"><div><div style="font:500 11px 'Anuphan';color:#c9b79b;margin-bottom:3px">วางแผนไว้</div><div style="font-family:'Chonburi',serif;font-size:22px;color:#e9b48a">฿70,300</div></div><div style="text-align:right"><div style="font:500 11px 'Anuphan';color:#c9b79b;margin-bottom:3px">จ่ายจริง</div><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">฿67,850</div></div></div>
-            <div style="display:flex;align-items:center;gap:8px;background:rgba(143,206,155,.15);border-radius:11px;padding:10px 13px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8fce9b" stroke-width="2"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span style="font:600 13px 'Anuphan';color:#8fce9b">ประหยัดกว่าแผน ฿2,450</span></div>
+          <div style="background:#2b241f;border-radius:20px;padding:20px;color:#f6efe2;margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:15px"><div><div style="font:500 11px 'Anuphan';color:#c9b79b;margin-bottom:3px">วางแผนไว้</div><div style="font-family:'Chonburi',serif;font-size:22px;color:#e9b48a">{{ budPlanTotal }}</div></div><div style="text-align:right"><div style="font:500 11px 'Anuphan';color:#c9b79b;margin-bottom:3px">จ่ายจริง</div><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ budActualTotal }}</div></div></div>
+            <div style="display:flex;align-items:center;gap:8px;background:{{ budDiffBg }};border-radius:11px;padding:10px 13px"><span style="font:600 13px 'Anuphan';color:{{ budDiffColor }}">{{ budDiffText }}</span></div>
           </div>
+          <sc-if value="{{ exFormClosed }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ toggleExForm }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';border-radius:16px;cursor:pointer;margin-bottom:16px">+ จดรายจ่าย</button>
+          </sc-if>
+          <sc-if value="{{ exFormOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <sc-for list="{{ exCats }}" as="ec" hint-placeholder-count="5"><button onClick="{{ ec.on }}" style="{{ ec.style }}">{{ ec.label }}</button></sc-for>
+              </div>
+              <input value="{{ exAmt }}" onInput="{{ setExAmt }}" inputMode="numeric" placeholder="จำนวนเงิน (บาท)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15px 'Anuphan';color:#2b241f;outline:none">
+              <input value="{{ exNote }}" onInput="{{ setExNote }}" placeholder="ค่าอะไร เช่น มื้อเที่ยง Green Bazaar (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:400 13.5px 'Anuphan';color:#2b241f;outline:none">
+              <div style="display:flex;gap:8px"><button onClick="{{ toggleExForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveExpense }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกรายจ่าย</button></div>
+            </div>
+          </sc-if>
           <div style="display:flex;flex-direction:column;gap:15px">
             <sc-for list="{{ budgetRows }}" as="b" hint-placeholder-count="5">
               <div><div style="display:flex;justify-content:space-between;font:500 13px 'Anuphan';color:#2b241f;margin-bottom:6px"><span>{{ b.label }}</span><span>{{ b.plan }} <span style="color:{{ b.color }};font-weight:600">/ {{ b.actual }}</span></span></div><div style="height:8px;border-radius:5px;background:#e4d8c4;position:relative;overflow:hidden"><span style="position:absolute;inset:0;width:{{ b.planW }};background:#c9baa4;border-radius:5px"></span><span style="position:absolute;inset:0;width:{{ b.actW }};background:#c05f39;border-radius:5px"></span></div></div>
             </sc-for>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;font:400 11px 'Anuphan';color:#a99e8e;margin-top:18px"><span style="width:10px;height:10px;border-radius:3px;background:#c9baa4"></span>วางแผน<span style="width:10px;height:10px;border-radius:3px;background:#c05f39;margin-left:8px"></span>จ่ายจริง</div>
+          <div style="display:flex;align-items:center;gap:8px;font:400 11px 'Anuphan';color:#a99e8e;margin-top:18px"><span style="width:10px;height:10px;border-radius:3px;background:#c9baa4"></span>วางแผน<span style="width:10px;height:10px;border-radius:3px;background:#c05f39;margin-left:8px"></span>จ่ายจริง<span style="flex:1"></span><button onClick="{{ togglePlanEdit }}" style="border:1px solid rgba(43,36,32,.16);background:transparent;color:#5c5347;font:600 11.5px 'Anuphan';padding:7px 13px;border-radius:16px;cursor:pointer">{{ planEditLabel }}</button></div>
+          <sc-if value="{{ planEditOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px;margin-top:12px;display:flex;flex-direction:column;gap:9px">
+              <div style="font:600 12px 'Anuphan';color:#8a7d6f">ตั้งงบแผนต่อหมวด (บาท)</div>
+              <sc-for list="{{ planRows }}" as="pr" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:10px"><span style="flex:1;font:500 13px 'Anuphan';color:#2b241f">{{ pr.label }}</span><input value="{{ pr.val }}" onInput="{{ pr.set }}" inputMode="numeric" style="width:110px;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:0 12px;font:600 13.5px 'Anuphan';color:#2b241f;outline:none;text-align:right"></div>
+              </sc-for>
+              <button onClick="{{ savePlan }}" style="width:100%;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกงบแผน</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasExpenses }}" hint-placeholder-val="{{ false }}">
+            <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin:20px 0 9px">รายจ่ายล่าสุด</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ expList }}" as="ex" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;gap:10px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:14px;padding:11px 13px">
+                  <span style="background:#efe4d3;color:#5c5347;font:600 10.5px 'Anuphan';padding:4px 9px;border-radius:11px;flex:none">{{ ex.cat }}</span>
+                  <div style="flex:1;min-width:0"><div style="font:500 13px 'Anuphan';color:#2b241f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ex.note }}</div><div style="font:400 10.5px 'Anuphan';color:#a99e8e">{{ ex.t }}</div></div>
+                  <span style="font:600 13.5px 'Anuphan';color:#2b241f;flex:none">{{ ex.amt }}</span>
+                  <button onClick="{{ ex.del }}" style="border:none;background:transparent;color:#b7a992;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px;flex:none">ลบ</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -292,17 +345,19 @@
       <sc-if value="{{ sAi }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
           <div style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 11px 'Anuphan';padding:6px 12px;border-radius:20px;margin-bottom:12px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M5 16L3 5l5.5 4L12 3l3.5 6L21 5l-2 11z"/></svg>พรีเมียม</div>
-          <div style="font:400 13px 'Anuphan';color:#8a7d6f;margin-bottom:12px">บอกงบกับสไตล์ เดี๋ยว AI ร่างทั้งวันให้</div>
-          <div style="display:flex;gap:10px;margin-bottom:10px"><div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:12px;padding:11px 13px"><div style="font:500 10.5px 'Anuphan';color:#8a7d6f">วัน</div><div style="font:600 14px 'Anuphan';color:#2b241f">วันที่ 4</div></div><div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:12px;padding:11px 13px"><div style="font:500 10.5px 'Anuphan';color:#8a7d6f">งบวันนี้</div><div style="font:600 14px 'Anuphan';color:#2b241f">฿3,000</div></div></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><span style="background:#c05f39;color:#fff;font:600 12px 'Anuphan';padding:7px 13px;border-radius:18px">สายชิล</span><span style="background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:7px 13px;border-radius:18px">คาเฟ่</span><span style="background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:7px 13px;border-radius:18px">ไม่เดินเยอะ</span></div>
-          <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:18px;padding:16px;margin-bottom:16px">
-            <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#c05f39"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span style="font:600 13px 'Anuphan';color:#c05f39">AI ร่างวันที่ 4 ให้แล้ว</span></div>
-            <div style="display:flex;flex-direction:column;gap:9px">
-              <sc-for list="{{ aiStops }}" as="a" hint-placeholder-count="3"><div style="background:#fffaf0;border-radius:12px;padding:11px 13px"><div style="font:600 13.5px 'Anuphan';color:#2b241f">{{ a.title }}</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ a.note }}</div></div></sc-for>
+          <div style="font:400 13px 'Anuphan';color:#8a7d6f;margin-bottom:12px">บอกงบกับสไตล์ เดี๋ยว AI ร่าง "{{ aiDayLabel }}" ให้ทั้งวัน</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><sc-for list="{{ aiChips }}" as="ch" hint-placeholder-count="4"><button onClick="{{ ch.on }}" style="{{ ch.style }}">{{ ch.label }}</button></sc-for></div>
+          <input value="{{ aiBudgetDay }}" onInput="{{ setAiBudgetDay }}" inputMode="numeric" placeholder="งบวันนี้ (บาท ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 14px 'Anuphan';color:#2b241f;outline:none;margin-bottom:12px">
+          <button onClick="{{ genDayPlan }}" style="width:100%;border:none;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer;margin-bottom:14px">{{ aiPlanBtnLabel }}</button>
+          <sc-if value="{{ aiPlanBusy }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px;font:500 13px 'Anuphan';color:#a1927c">✦ AI กำลังร่างวันให้อยู่…</div></sc-if>
+          <sc-if value="{{ aiPlanErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border:1px solid rgba(192,86,58,.25);border-radius:14px;padding:13px 15px;font:500 12.5px/1.5 'Anuphan';color:#b3402a">{{ aiPlanErr }}</div></sc-if>
+          <sc-if value="{{ hasAiPlan }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:18px;padding:16px">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#c05f39"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span style="font:600 13px 'Anuphan';color:#c05f39">ร่างของ AI · {{ aiDayLabel }}</span></div>
+              <div style="font:400 13.5px/1.8 'Anuphan';color:#413931;white-space:pre-wrap">{{ aiPlanText }}</div>
             </div>
-            <div style="display:flex;justify-content:space-between;margin-top:12px;font:600 13px 'Anuphan';color:#2b241f"><span>รวมประมาณ</span><span style="color:#c05f39">฿2,870 <span style="font-weight:400;color:#8fce9b;font-size:11px">อยู่ในงบ</span></span></div>
-          </div>
-          <div style="display:flex;gap:10px"><button onClick="{{ back }}" style="flex:1;border:none;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer">ใส่ลงแผน</button><button style="border:1px solid rgba(43,36,32,.15);background:#fff;color:#2b241f;font:600 14px 'Anuphan';padding:14px 16px;border-radius:13px;cursor:pointer">ร่างใหม่</button></div>
+            <div style="font:400 11px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">ข้อมูลจาก AI · ตรวจสอบเวลาเปิด-ปิดจริงอีกครั้ง</div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -314,26 +369,55 @@
             <button onClick="{{ sumRecapFn }}" style="{{ sumRecapStyle }}">รีแคป/คลิป</button>
           </div>
           <sc-if value="{{ sumBook }}" hint-placeholder-val="{{ true }}">
-            <div>
-              <div style="position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px -14px rgba(43,36,32,.5);aspect-ratio:3/4;max-width:210px;margin:0 auto 18px"><img src="uploads/542169.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.4),rgba(43,36,32,.1) 40%,rgba(43,36,32,.82))"></div><div style="position:absolute;left:0;right:0;bottom:0;padding:20px;text-align:center"><div style="font:500 9px 'Anuphan';color:#f2d9c8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">A nimjourney book</div><div style="font-family:'Chonburi',serif;font-size:22px;line-height:1.2;color:#fff">ยามากาตะ<br>หิมะกับออนเซ็น</div><div style="font:500 11px 'Anuphan';color:#efe4d5;margin-top:8px">โดย Nim · 8 วัน</div></div></div>
-              <div style="font:600 12px 'Anuphan';color:#8a7d6f;margin-bottom:8px">สารบัญ — ประกอบจากบันทึกอัตโนมัติ</div>
-              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:14px;overflow:hidden;margin-bottom:16px">
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(43,36,32,.06)"><span style="font-family:'Chonburi',serif;font-size:15px;color:#c9baa4;width:18px">1</span><span style="flex:1;font:500 13px 'Anuphan';color:#2b241f">ถึงโตเกียว</span><span style="font:400 11px 'Anuphan';color:#a99e8e">2 รูป</span></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(43,36,32,.06)"><span style="font-family:'Chonburi',serif;font-size:15px;color:#c9baa4;width:18px">3</span><span style="flex:1;font:500 13px 'Anuphan';color:#2b241f">วันที่เจอสโนว์มอนสเตอร์</span><span style="font:400 11px 'Anuphan';color:#a99e8e">4 รูป</span></div>
-                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px"><span style="font-family:'Chonburi',serif;font-size:15px;color:#c9baa4;width:18px">5</span><span style="flex:1;font:500 13px 'Anuphan';color:#2b241f">หมู่บ้านในฝันชื่อ Ginzan</span><span style="font:400 11px 'Anuphan';color:#a99e8e">4 รูป · คลิป</span></div>
+            <sc-if value="{{ hasBookContent }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px -14px rgba(43,36,32,.5);aspect-ratio:3/4;max-width:200px;margin:0 auto 18px"><photo-pick id="wtn-cover-kazakh" readonly fallback="uploads/20211027_071410292_iOS.jpg" style="position:absolute;inset:0"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.35),rgba(43,36,32,.05) 40%,rgba(43,36,32,.82));pointer-events:none"></div><div style="position:absolute;left:0;right:0;bottom:0;padding:18px;text-align:center;pointer-events:none"><div style="font:500 9px 'Anuphan';color:#f2d9c8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">A nimjourney book</div><div style="font-family:'Chonburi',serif;font-size:20px;line-height:1.2;color:#fff">คาซัคสถาน<br>11 วัน</div><div style="font:500 11px 'Anuphan';color:#efe4d5;margin-top:7px">โดย {{ profName }}</div></div></div>
+                <div style="font:600 12px 'Anuphan';color:#8a7d6f;margin-bottom:8px">สารบัญ — ประกอบจากเช็คอินจริงของคุณ</div>
+                <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:14px;overflow:hidden;margin-bottom:16px">
+                  <sc-for list="{{ bookRows }}" as="bk" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid rgba(43,36,32,.06)"><span style="font-family:'Chonburi',serif;font-size:15px;color:#c9baa4;width:18px">{{ bk.n }}</span><span style="flex:1;font:500 13px 'Anuphan';color:#2b241f">{{ bk.title }}</span><span style="font:400 11px 'Anuphan';color:#a99e8e">{{ bk.meta }}</span></div>
+                  </sc-for>
+                </div>
+                <div style="font:400 11px/1.5 'Anuphan';color:#a99e8e;text-align:center">export PDF/EPUB และวางขายในร้าน — มาในเวอร์ชันถัดไป</div>
               </div>
-              <div style="display:flex;gap:10px"><button style="flex:1;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#2b241f;font:600 14px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer">export PDF/EPUB</button><button style="flex:1;border:none;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer">วางขายในร้าน</button></div>
-            </div>
+            </sc-if>
+            <sc-if value="{{ bookEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="text-align:center;padding:44px 24px 30px">
+                <div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7M8 10h7"/></svg></div>
+                <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">หนังสือของทริปนี้ยังว่างอยู่</div>
+                <div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">สารบัญจะประกอบอัตโนมัติจากเช็คอิน รูป<br>และบันทึกรายวัน — เริ่มเก็บได้ตั้งแต่วันแรกของทริป</div>
+              </div>
+            </sc-if>
           </sc-if>
           <sc-if value="{{ sumRecap }}" hint-placeholder-val="{{ false }}">
             <div>
-              <div style="border-radius:20px;overflow:hidden;background:#26201b;margin-bottom:18px">
-                <div style="position:relative;height:170px"><img src="uploads/20240619_072028.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.42"><svg viewBox="0 0 300 170" style="position:absolute;inset:0;width:100%;height:100%"><path d="M40 130 C90 112 90 66 140 60 S220 84 250 40" fill="none" stroke="#e9b48a" stroke-width="2.5" stroke-dasharray="5 6" stroke-linecap="round"/><circle cx="40" cy="130" r="5" fill="#c05f39" stroke="#fff" stroke-width="1.5"/><circle cx="140" cy="60" r="5" fill="#c05f39" stroke="#fff" stroke-width="1.5"/><circle cx="250" cy="40" r="5" fill="#c05f39" stroke="#fff" stroke-width="1.5"/></svg></div>
-                <div style="padding:16px 18px 18px;color:#f6efe2"><div style="font-family:'Chonburi',serif;font-size:19px;margin-bottom:14px">ยามากาตะ · หน้าหนาว 2024</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center"><div><div style="font-family:'Chonburi',serif;font-size:23px;color:#e9b48a">8</div><div style="font:500 10px 'Anuphan';color:#c9b79b">วัน</div></div><div><div style="font-family:'Chonburi',serif;font-size:23px;color:#e9b48a">5</div><div style="font:500 10px 'Anuphan';color:#c9b79b">เมือง</div></div><div><div style="font-family:'Chonburi',serif;font-size:23px;color:#e9b48a">6</div><div style="font:500 10px 'Anuphan';color:#c9b79b">ออนเซ็น</div></div></div><button style="width:100%;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';padding:11px;border-radius:11px;margin-top:14px;cursor:pointer">แชร์การ์ดสรุป</button></div>
+              <sc-if value="{{ hasRecap }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:20px;overflow:hidden;background:#26201b;margin-bottom:14px">
+                  <div style="position:relative;height:210px;background:#1a1613">
+                    <sc-if value="{{ recapPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ recapPhoto }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if>
+                    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,22,19,0) 45%,rgba(26,22,19,.85))"></div>
+                    <div style="position:absolute;left:16px;right:16px;bottom:14px"><div style="font:600 11px 'Anuphan';color:#e9b48a">{{ recapCaptionDay }}</div><div style="font-family:'Chonburi',serif;font-size:18px;color:#fff">{{ recapCaption }}</div></div>
+                    <button onClick="{{ toggleRecapPlay }}" style="position:absolute;top:12px;right:12px;min-width:44px;min-height:44px;border-radius:22px;border:none;background:rgba(192,95,57,.94);color:#fff;font:600 12.5px 'Anuphan';padding:0 16px;cursor:pointer">{{ recapPlayLabel }}</button>
+                  </div>
+                  <div style="padding:14px 18px 16px;color:#f6efe2"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center"><div><div style="font-family:'Chonburi',serif;font-size:22px;color:#e9b48a">{{ recapDays }}</div><div style="font:500 10px 'Anuphan';color:#c9b79b">วันที่บันทึก</div></div><div><div style="font-family:'Chonburi',serif;font-size:22px;color:#e9b48a">{{ recapCis }}</div><div style="font:500 10px 'Anuphan';color:#c9b79b">เช็คอิน</div></div><div><div style="font-family:'Chonburi',serif;font-size:22px;color:#e9b48a">{{ recapPhotoCount }}</div><div style="font:500 10px 'Anuphan';color:#c9b79b">รูป</div></div></div></div>
+                </div>
+                <div style="font:400 11px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:18px">คลิปรีแคปเล่นจากเช็คอิน+รูปจริงตามเส้นทาง · export เป็นวิดีโอ — เวอร์ชันถัดไป</div>
+              </sc-if>
+              <sc-if value="{{ recapEmpty }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;padding:34px 24px 22px">
+                  <div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg></div>
+                  <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">รีแคปยังว่างอยู่</div>
+                  <div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">เช็คอินพร้อมรูประหว่างทริป<br>แล้วคลิปรีแคปจะประกอบให้อัตโนมัติ</div>
+                </div>
+              </sc-if>
+              <div style="font:600 12px 'Anuphan';color:#8a7d6f;margin-bottom:9px">คลิปของฉัน — รวมลิงก์ที่คุณทำเอง (YouTube/TikTok/Reels)</div>
+              <sc-for list="{{ recapLinkRows }}" as="lk" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:10px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:13px;padding:10px 13px;margin-bottom:8px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ lk.href }}" target="_blank" style="flex:1;min-width:0;font:500 12.5px 'Anuphan';color:#2b241f;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ lk.label }}</a><button onClick="{{ lk.del }}" style="border:none;background:transparent;color:#b7a992;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px;flex:none">ลบ</button></div>
+              </sc-for>
+              <div style="display:flex;gap:8px">
+                <input value="{{ recapLinkDraft }}" onInput="{{ setRecapLink }}" placeholder="วางลิงก์คลิปของคุณ" style="flex:1;min-width:0;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13px 'Anuphan';color:#2b241f;outline:none">
+                <button onClick="{{ addRecapLink }}" style="min-height:46px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';padding:0 18px;border-radius:12px;cursor:pointer;flex:none">เพิ่ม</button>
               </div>
-              <div style="font:600 12px 'Anuphan';color:#8a7d6f;margin-bottom:11px">คลิปไดอารี่ — แปะลิงก์ + แคปชันสั้น</div>
-              <div style="display:flex;gap:12px;margin-bottom:12px"><div style="position:relative;width:108px;height:70px;flex:none;border-radius:11px;overflow:hidden;background:#1a1613"><img src="uploads/542169.jpg" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.72"><span style="position:absolute;inset:0;margin:auto;width:28px;height:28px;border-radius:50%;background:rgba(220,50,40,.94);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div><div style="flex:1"><div style="font:600 11px 'Anuphan';color:#c05f39">วันที่ 3 · Zao</div><div style="font:500 13px/1.4 'Anuphan';color:#2b241f;margin-top:2px">กระเช้าขึ้นไปเจอสโนว์มอนสเตอร์เต็มเขา</div></div></div>
-              <button style="width:100%;border:1.5px dashed rgba(43,36,32,.2);background:transparent;color:#a1927c;font:600 13px 'Anuphan';padding:13px;border-radius:13px;cursor:pointer">+ แปะลิงก์คลิป (YouTube/TikTok/Reels)</button>
             </div>
           </sc-if>
         </div>
@@ -477,8 +561,40 @@
       <!-- ========== DISCOVER ========== -->
       <sc-if value="{{ sDiscover }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 30px">
-          <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;margin-bottom:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="font:400 14px 'Anuphan';color:#a99e8e">ค้นเมือง/สถานที่ เช่น ญี่ปุ่น, Ginzan…</span></div>
-          <div style="text-align:center;padding:50px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg></div><div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีทริปให้สำรวจ</div><div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">เมื่อคุณหรือคนอื่นแชร์ทริปเป็นสาธารณะ<br>จะมาโผล่ให้ค้นที่นี่</div></div>
+          <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;margin-bottom:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span style="font:400 14px 'Anuphan';color:#a99e8e">ค้นหาประเทศหรือเมือง เช่น คาซัคสถาน…</span></div>
+          <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:10px">เลือกจุดหมาย</div>
+          <div style="display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:2px 20px 4px;scrollbar-width:none">
+            <div onClick="{{ pickKz }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ kzCardRing }}"><photo-pick id="wtn-cover-kazakh" readonly fallback="uploads/20211027_071410292_iOS.jpg" style="position:absolute;inset:0"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:17px;color:#fff">คาซัคสถาน</div><div style="font:500 11px 'Anuphan';color:#e9cdb8;margin-top:2px">16 ที่แนะนำ</div></div></div>
+            <div onClick="{{ pickJp }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ jpCardRing }}"><img src="uploads/20240619_072028.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:17px;color:#fff">ญี่ปุ่น</div><div style="font:500 11px 'Anuphan';color:#e9cdb8;margin-top:2px">12 ที่แนะนำ</div></div></div>
+            <div style="flex:none;width:150px;height:170px;border-radius:20px;border:1.5px dashed rgba(43,36,32,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#a1927c"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg><span style="font:600 12px 'Anuphan';text-align:center;line-height:1.4">จุดหมายใหม่<br>กำลังทยอยเพิ่ม</span></div>
+          </div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 3px"><div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ destName }}</div><div style="font:500 12px 'Anuphan';color:#8a7d6f">{{ destCity }}</div></div>
+          <div style="font:400 12px 'Anuphan';color:#a1927c;margin-bottom:12px">โดยทีม where to next? และผู้ใช้จริงของแอป</div>
+          <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
+            <button onClick="{{ catPlace }}" style="{{ catPlaceStyle }}">สถานที่น่าสนใจ</button>
+            <button onClick="{{ catAct }}" style="{{ catActStyle }}">กิจกรรม</button>
+            <button onClick="{{ catFood }}" style="{{ catFoodStyle }}">ร้านอาหาร</button>
+            <button onClick="{{ catGo }}" style="{{ catGoStyle }}">การเดินทาง</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+            <sc-for list="{{ destItems }}" as="it" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px">
+                <div style="flex:1;min-width:0"><div style="font:600 13.5px 'Anuphan';color:#2b241f">{{ it.name }}</div><div style="font:400 12px/1.5 'Anuphan';color:#8a7d6f;margin-top:2px;text-wrap:pretty">{{ it.note }}</div><div style="display:flex;gap:6px;margin-top:6px"><sc-if value="{{ it.byTeam }}" hint-placeholder-val="{{ true }}"><span style="background:#f3e2d5;color:#a4482a;font:600 10px 'Anuphan';padding:3px 9px;border-radius:10px">ทีมคัด</span></sc-if><sc-if value="{{ it.byUser }}" hint-placeholder-val="{{ false }}"><span style="background:rgba(143,206,155,.22);color:#4e8a5c;font:600 10px 'Anuphan';padding:3px 9px;border-radius:10px">{{ it.userLabel }}</span></sc-if></div><sc-if value="{{ it.added }}" hint-placeholder-val="{{ false }}"><div style="font:600 11px 'Anuphan';color:#4e8a5c;margin-top:4px">✓ เพิ่มลง {{ addTarget }} แล้ว</div></sc-if></div>
+                <sc-if value="{{ it.notAdded }}" hint-placeholder-val="{{ true }}"><button onClick="{{ it.on }}" style="flex:none;width:44px;height:44px;border-radius:50%;border:none;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 5v14M5 12h14"></path></svg></button></sc-if>
+                <sc-if value="{{ it.added }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.on }}" style="flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(78,138,92,.4);background:rgba(143,206,155,.18);color:#4e8a5c;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4e8a5c" stroke-width="2.4"><path d="M4 12.5l5 5L20 7"></path></svg></button></sc-if>
+              </div>
+            </sc-for>
+            <button onClick="{{ toggleAddPoi }}" style="width:100%;min-height:48px;border:1.5px dashed rgba(43,36,32,.2);background:transparent;color:#a1927c;font:600 13px 'Anuphan';border-radius:16px;cursor:pointer">+ เพิ่มสถานที่ที่คุณรู้จัก</button>
+            <sc-if value="{{ addPoiOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                <input value="{{ poiName }}" onInput="{{ setPoiName }}" placeholder="ชื่อสถานที่ / ร้าน / กิจกรรม" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
+                <input value="{{ poiNote }}" onInput="{{ setPoiNote }}" placeholder="แนะนำสั้นๆ ว่าดียังไง ไปช่วงไหน" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
+                <div style="font:400 11px/1.5 'Anuphan';color:#a1927c">จะขึ้นป้าย "จากผู้ใช้จริง · @nimjourney" ในหมวด{{ catLabel }} — เนื้อหาผ่านการตรวจก่อนแสดงให้คนอื่นเห็น</div>
+                <div style="display:flex;gap:8px"><button onClick="{{ toggleAddPoi }}" style="flex:1;min-height:44px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ savePoi }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">เพิ่มสถานที่</button></div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:14px;padding:11px 14px;margin-top:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8" style="flex:none"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6"></circle></svg><span style="font:400 12px/1.5 'Anuphan';color:#7c6a58">กด + เพื่อเพิ่มเข้า "{{ addTarget }}" — จัดลงวันไหนก็ได้ทีหลังในหน้าทริป</span></div>
         </div>
       </sc-if>
 
@@ -488,7 +604,8 @@
           <div style="position:relative;height:110px"><photo-pick id="wtn-cover" placeholder="แตะเพื่อเพิ่มรูปปก" style="display:block;width:100%;height:110px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.1),rgba(43,36,32,.32));pointer-events:none"></div></div>
           <div style="padding:0 20px;margin-top:-32px;position:relative">
             <photo-pick id="wtn-avatar" placeholder="รูป" style="display:block;width:70px;height:70px;border:3px solid #f6efe2;border-radius:21px;box-shadow:0 4px 12px rgba(43,36,32,.2)"></photo-pick>
-            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:10px"><div><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:23px;color:#2b241f;margin:0">Nim</h1><div style="font:400 12.5px 'Anuphan';color:#8a7d6f">@nimjourney · เที่ยวเองทั่วโลก เล่าเรื่องจริง</div></div><div style="display:flex;align-items:center;gap:8px"><span style="border:1px solid rgba(43,36,32,.18);color:#2b241f;font:600 12.5px 'Anuphan';padding:7px 15px;border-radius:20px">แก้ไข</span><button onClick="{{ goSettings }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.18);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.7"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div></div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:10px"><div style="flex:1;min-width:0"><sc-if value="{{ profView }}" hint-placeholder-val="{{ true }}"><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:23px;color:#2b241f;margin:0">{{ profName }}</h1><div style="font:400 12.5px 'Anuphan';color:#8a7d6f">{{ profBio }}</div></sc-if><sc-if value="{{ profEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ profNameDraft }}" onInput="{{ setProfName }}" placeholder="ชื่อที่แสดง" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:600 15px 'Anuphan';color:#2b241f;outline:none"><input value="{{ profBioDraft }}" onInput="{{ setProfBio }}" placeholder="แนะนำตัวสั้นๆ" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:400 12.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"><input value="{{ profLinkDraft }}" onInput="{{ setProfLink }}" placeholder="ลิงก์ เช่น facebook.com/nimjourney (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:400 12.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"></sc-if></div><div style="display:flex;align-items:center;gap:8px;flex:none"><button onClick="{{ toggleProfEdit }}" style="border:1px solid rgba(43,36,32,.18);background:{{ profEditBg }};color:{{ profEditColor }};font:600 12.5px 'Anuphan';padding:7px 15px;border-radius:20px;cursor:pointer;min-height:34px">{{ profEditLabel }}</button><button onClick="{{ goSettings }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.18);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.7"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div></div>
+            <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 12.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">1</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">0</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">0</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">ผู้ติดตาม</span></div></div>
           </div>
           <div style="padding:14px 20px 0">
@@ -510,7 +627,7 @@
           <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabRecap }}" style="{{ pStyleRecap }}">รีแคป</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button></div></div>
           <sc-if value="{{ pTrips }}" hint-placeholder-val="{{ true }}">
             <div style="padding:16px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:13px">
-              <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ kzCover }}" alt="" style="width:100%;height:96px;object-fit:cover;display:block"><div style="padding:9px 11px 11px"><div style="font:600 12.5px 'Anuphan';color:#2b241f">คาซัคสถาน</div><div style="font:400 11px 'Anuphan';color:#8a7d6f;margin-top:1px">คาซัคสถาน · 11 วัน</div></div></div>
+              <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><photo-pick id="wtn-cover-kazakh" readonly fallback="uploads/20211027_071410292_iOS.jpg" style="display:block;width:100%;height:96px"></photo-pick><div style="padding:9px 11px 11px"><div style="font:600 12.5px 'Anuphan';color:#2b241f">คาซัคสถาน</div><div style="font:400 11px 'Anuphan';color:#8a7d6f;margin-top:1px">คาซัคสถาน · 11 วัน</div></div></div>
             </div>
           </sc-if>
           <sc-if value="{{ pStories }}" hint-placeholder-val="{{ false }}">
@@ -535,11 +652,19 @@
       <!-- ========== SETTINGS: ACCOUNT & SECURITY ========== -->
       <sc-if value="{{ sSettings }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:14px 20px 30px;display:flex;flex-direction:column;gap:16px">
-          <div style="display:flex;align-items:center;gap:13px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
-            <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ settingsAvatar }}" alt="" style="width:46px;height:46px;border-radius:14px;object-fit:cover;flex:none"></sc-if>
-            <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:46px;height:46px;border-radius:14px;background:#e9b48a;color:#5b3115;font-family:'Chonburi',serif;font-size:19px;display:flex;align-items:center;justify-content:center;flex:none">{{ acctInitial }}</span></sc-if>
-            <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ acctName }}</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:1px">ข้อมูลส่วนตัว</div></div>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b7a992" stroke-width="2"><path d="M9 5l7 7-7 7"></path></svg>
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
+            <div onClick="{{ toggleAcctEdit }}" style="display:flex;align-items:center;gap:13px;padding:13px 15px;cursor:pointer">
+              <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ settingsAvatar }}" alt="" style="width:46px;height:46px;border-radius:14px;object-fit:cover;flex:none"></sc-if>
+              <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:46px;height:46px;border-radius:14px;background:#e9b48a;color:#5b3115;font-family:'Chonburi',serif;font-size:19px;display:flex;align-items:center;justify-content:center;flex:none">{{ acctInitial }}</span></sc-if>
+              <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ acctName }}</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:1px">ชื่อที่แสดง · แตะเพื่อเปลี่ยน</div></div>
+            </div>
+            <sc-if value="{{ acctEditOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 15px 15px;display:flex;flex-direction:column;gap:9px">
+                <input value="{{ acctNameDraft }}" onInput="{{ setAcctNameDraft }}" placeholder="ชื่อที่อยากให้คนอื่นเห็น" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 14px 'Anuphan';color:#2b241f;outline:none">
+                <div style="font:400 11px/1.5 'Anuphan';color:#a1927c">ไม่จำเป็นต้องใช้ชื่อจริง — ชื่อที่ติดมาจาก Google/Facebook เปลี่ยนได้ตรงนี้ ใช้แสดงทั่วทั้งแอป</div>
+                <div style="display:flex;gap:8px"><button onClick="{{ toggleAcctEdit }}" style="flex:1;min-height:44px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveAcctName }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกชื่อ</button></div>
+              </div>
+            </sc-if>
           </div>
           <div>
             <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
@@ -652,6 +777,212 @@ class Component extends DCLogic {
     return [ { n:'1', date:'วัน 1', tag:'วันที่ 1', city:'ยังไม่มีชื่อวัน', summary:'แตะ “แก้ไข” เพื่อตั้งชื่อ แล้วเพิ่มกิจกรรมแรก', stops:[], stayName:'ยังไม่ได้เลือกที่พัก', stayMeta:'เพิ่มได้ในโหมดแก้ไข' } ];
   }
 
+  destData = {
+    kz: { name: 'คาซัคสถาน', city: 'อัลมาตีและรอบนอก', cats: {
+      place: [
+        { n: 'Charyn Canyon', d: 'Valley of Castles — แคนยอนใหญ่ของเอเชียกลาง เทรก 2–3 ชม.' },
+        { n: 'Kaindy Lake', d: 'ทะเลสาบป่าจม ต้นสนโผล่กลางน้ำสีเขียว เดินเข้า 3 กม.' },
+        { n: 'Kolsay Lakes', d: 'ทะเลสาบภูเขา 3 ชั้น จุดเริ่มเส้นเทรกยอดนิยม' },
+        { n: 'Singing Dune · Altyn Emel', d: 'เนินทรายร้องได้สูง ~150 ม. กลางอุทยาน' },
+        { n: 'Aktau Mountains', d: 'แคนยอนหลากสีขาว–ส้ม เหมือนเดินบนดาวอังคาร' },
+        { n: 'Zenkov Cathedral', d: 'โบสถ์ไม้สีลูกกวาดใน Panfilov Park ใจกลางอัลมาตี' } ],
+      act: [
+        { n: 'จี๊ปทัวร์ Altyn Emel', d: 'รถ 4WD พร้อมคนขับท้องถิ่น ค้างคืนหมู่บ้าน Basshi' },
+        { n: 'เทรก Kolsay 1 → 2', d: '7 กม.ต่อเที่ยว ระดับปานกลาง วิวทะเลสาบตลอดทาง' },
+        { n: 'ชมพระอาทิตย์ตกที่ Charyn', d: 'จุดชมวิวขอบแคนยอน ช่วง 18:30 เป็นต้นไป' },
+        { n: 'ขี่ม้าที่ Assy Plateau', d: 'ที่ราบสูง 2,500 ม. วิถีคนเลี้ยงม้าคาซัค' } ],
+      food: [
+        { n: 'Green Bazaar', d: 'ตลาดใหญ่อัลมาตี — ผลไม้แห้ง ชีส เนื้อรมควัน' },
+        { n: 'Navat', d: 'ร้านอาหารเอเชียกลาง เมนู plov และลากมันขึ้นชื่อ' },
+        { n: 'Shashlik ริมทาง', d: 'เนื้อเสียบไม้ย่างถ่าน เจอได้ตลอดเส้นทางธรรมชาติ' } ],
+      go: [
+        { n: 'AirAsia DMK → ALA', d: 'บินตรงกรุงเทพ–อัลมาตี ราว 7 ชม.' },
+        { n: 'Yandex Go', d: 'แอปเรียกรถหลักในเมือง ราคาถูกและแน่นอน' },
+        { n: 'เช่ารถพร้อมคนขับ', d: 'เส้นทางธรรมชาติส่วนใหญ่ต้องใช้ 4WD + คนขับชำนาญทาง' } ] } },
+    jp: { name: 'ญี่ปุ่น', city: 'ยามากาตะ', cats: {
+      place: [
+        { n: 'Zao — สโนว์มอนสเตอร์', d: 'ต้นสนหุ้มน้ำแข็งเต็มเขา ช่วง ม.ค.–ก.พ.' },
+        { n: 'Ginzan Onsen', d: 'หมู่บ้านออนเซ็นริมธาร ไฟแก๊สยามค่ำเหมือนในฝัน' },
+        { n: 'Yamadera', d: 'วัดบนหน้าผา บันได 1,015 ขั้น วิวหุบเขาสุดทาง' } ],
+      act: [
+        { n: 'Zao Ropeway', d: 'กระเช้าขึ้นยอดเขาชมสโนว์มอนสเตอร์แบบ 360°' },
+        { n: 'แช่ออนเซ็นกลางหิมะ', d: 'โรเท็นบุโระริมธารที่ Ginzan ช่วงเย็นคนน้อย' },
+        { n: 'เดินขึ้น Yamadera', d: '1,015 ขั้นท่ามกลางป่าสน ใช้เวลา ~1 ชม.' } ],
+      food: [
+        { n: 'โซบะยามากาตะ', d: 'จังหวัดแห่งโซบะ เส้นสดร้านเก่าแก่ทั่วเมือง' },
+        { n: 'เนื้อโยเนซาวะ', d: 'วากิวระดับท็อป 3 ของญี่ปุ่น คู่กับสุกียากี้' },
+        { n: 'ราเมนเย็น (Hiyashi)', d: 'ต้นตำรับอยู่ที่ยามากาตะ ซุปเย็นใสกินหน้าร้อน' } ],
+      go: [
+        { n: 'Shinkansen Tsubasa', d: 'โตเกียว → ยามากาตะ ~2.5 ชม. นั่งยาวไม่ต้องต่อ' },
+        { n: 'บัสท้องถิ่น + แท็กซี่', d: 'จากสถานีไป Ginzan/Zao มีบัสตามรอบ เช็กเวลาล่วงหน้า' },
+        { n: 'JR East Pass (Tohoku)', d: 'คุ้มถ้าไปหลายเมือง ใช้ขึ้นชินคันเซ็นได้' } ] } }
+  };
+  kzRoute = [
+    { d: '1', ll: [43.238, 76.889], name: 'อัลมาตี' },
+    { d: '3', ll: [43.87, 78.73], name: 'Basshi · Altyn Emel' },
+    { d: '5', ll: [42.986, 78.383], name: 'Saty · Kolsay' },
+    { d: '7', ll: [43.352, 79.083], name: 'Charyn Canyon' },
+    { d: '8', ll: [43.33, 77.73], name: 'Turgen' },
+    { d: '11', ll: [43.238, 76.889], name: 'กลับอัลมาตี' } ];
+  initMap() {
+    const el = this._mapEl;
+    if (this.state.screen !== 'map') {
+      if (this._map) { this._map.remove(); this._map = null; }
+      return;
+    }
+    if (!el) return;
+    if (!window.L) { clearTimeout(this._mapWait); this._mapWait = setTimeout(() => this.initMap(), 300); return; }
+    if (this._map && this._map.getContainer() !== el) { this._map.remove(); this._map = null; }
+    if (!this._map) {
+      const m = L.map(el, { zoomControl: false, attributionControl: true });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(m);
+      const pts = this.kzRoute.map(r => r.ll);
+      L.polyline(pts, { color: '#c05f39', weight: 3, dashArray: '6 8' }).addTo(m);
+      this.kzRoute.forEach(r => {
+        L.marker(r.ll, { icon: L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12],
+          html: '<div style="width:24px;height:24px;border-radius:50%;background:#c05f39;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);color:#fff;font:700 11px Anuphan,sans-serif;display:flex;align-items:center;justify-content:center">' + r.d + '</div>' }) })
+          .addTo(m).bindPopup(r.name);
+      });
+      m.fitBounds(L.latLngBounds(pts).pad(0.15));
+      this._map = m;
+      setTimeout(() => m.invalidateSize(), 60);
+    }
+    if (this._ciLayer) this._ciLayer.remove();
+    this._ciLayer = L.layerGroup().addTo(this._map);
+    const all = this.checkins;
+    Object.keys(all).forEach(k => {
+      if (k.indexOf(this.state.trip + ':') !== 0) return;
+      (all[k] || []).forEach(c => {
+        if (c.lat == null) return;
+        L.circleMarker([c.lat, c.lng], { radius: 7, color: '#fff', weight: 2, fillColor: '#e07a3f', fillOpacity: 1 })
+          .addTo(this._ciLayer).bindPopup((c.t || '') + ' · ' + c.name);
+      });
+    });
+  }
+  componentDidUpdate() { this.initMap(); }
+  get aiKey() {
+    try { return localStorage.getItem('wtn-ai-key') || ''; } catch (e) { return ''; }
+  }
+  get aiProvider() {
+    const k = this.aiKey;
+    if (k.startsWith('sk-ant-')) return 'claude';
+    if (k.startsWith('AIza')) return 'gemini';
+    if (k.startsWith('sk-')) return 'openai';
+    return k ? 'gemini' : '';
+  }
+  async askLLM(prompt) {
+    const key = this.aiKey, p = this.aiProvider;
+    if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
+    if (p === 'claude') {
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-api-key': key,
+          'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1200,
+          messages: [{ role: 'user', content: prompt }] }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก Claude ไม่สำเร็จ');
+      return d.content[0].text;
+    }
+    if (p === 'openai') {
+      const r = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + key },
+        body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 1200,
+          messages: [{ role: 'user', content: prompt }] }) });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก OpenAI ไม่สำเร็จ');
+      return d.choices[0].message.content;
+    }
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key), {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก Gemini ไม่สำเร็จ');
+    return d.candidates[0].content.parts.map(x => x.text || '').join('');
+  }
+  dayContext() {
+    const d = this.kzDays[this.state.day] || {};
+    const stops = (d.stops || []).map(s => s.t + ' ' + s.kind + ': ' + s.title).join('\n');
+    return 'ทริปคาซัคสถาน 11 วัน (24 ก.ค.–3 ส.ค.) ' + (d.tag || '') + ' — ' + (d.city || '') +
+      '\nแผนเดิมของวันนี้:\n' + stops + '\nที่พักคืนนี้: ' + (d.stayName || '-');
+  }
+  async genDayPlan() {
+    const styles = Object.keys(this.state.aiStyles || {}).filter(k => this.state.aiStyles[k]);
+    const bud = Number(this.state.aiBudgetDay);
+    const prompt = 'คุณคือผู้ช่วยวางแผนเที่ยวของแอป "ทริปหน้าไปไหน"\n' + this.dayContext() +
+      (styles.length ? '\nสไตล์ที่ต้องการ: ' + styles.join(', ') : '') +
+      (bud ? '\nงบวันนี้: ' + bud + ' บาท' : '') +
+      '\nช่วยร่างตารางทั้งวันเป็นภาษาไทย รูปแบบ "เวลา — กิจกรรม (ค่าใช้จ่ายประมาณเป็นบาท)" ไม่เกิน 8 บรรทัด สั้นกระชับ ปิดท้ายบรรทัดสุดท้ายด้วย "รวมประมาณ ..... บาท" ไม่ต้องมีคำอธิบายอื่น';
+    this.setState({ aiPlanBusy: true, aiPlanErr: '', aiPlanText: '' });
+    try {
+      const text = await this.askLLM(prompt);
+      this.setState({ aiPlanBusy: false, aiPlanText: text.trim() });
+    } catch (e) { this.setState({ aiPlanBusy: false, aiPlanErr: String(e.message || e) }); }
+  }
+  async askTravelAi(q) {
+    const prompt = 'คุณคือผู้ช่วยระหว่างเที่ยวของแอป "ทริปหน้าไปไหน" ผู้ใช้กำลังเที่ยวอยู่จริง\n' +
+      this.dayContext() + '\nคำถาม: ' + q + '\nตอบภาษาไทย สั้น กระชับ ใช้งานได้จริง ไม่เกิน 6 ประโยค';
+    this.setState({ aiBusy: true, aiErr: '', aiAnswer: '', aiLastQ: q });
+    try {
+      const text = await this.askLLM(prompt);
+      this.setState({ aiBusy: false, aiAnswer: text.trim() });
+    } catch (e) { this.setState({ aiBusy: false, aiErr: String(e.message || e) }); }
+  }
+  get checkins() {
+    try { return JSON.parse(localStorage.getItem('wtn-checkins')) || {}; } catch (e) { return {}; }
+  }
+  saveCheckins(o) {
+    try { localStorage.setItem('wtn-checkins', JSON.stringify(o)); }
+    catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม — ลองลบรูปในเช็คอินเก่าบางส่วน'); }
+  }
+  get ciKey() { return this.state.trip + ':' + this.state.day; }
+  addCiPhotos(ev) {
+    const files = Array.from(ev.target.files || []);
+    ev.target.value = '';
+    files.forEach(f => {
+      const rd = new FileReader();
+      rd.onload = () => {
+        const im = new Image();
+        im.onload = () => {
+          const M = 900, r = Math.min(1, M / Math.max(im.width, im.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || []), c.toDataURL('image/jpeg', 0.78)] }));
+        };
+        im.src = rd.result;
+      };
+      rd.readAsDataURL(f);
+    });
+  }
+  saveCi() {
+    const name = (this.state.ciName || '').trim();
+    if (!name) return;
+    const all = this.checkins, k = this.ciKey, list = all[k] || [];
+    const pos = this.state.ciPos || {};
+    const ei = this.state.ciEditIdx;
+    if (ei != null && list[ei]) {
+      list[ei] = { ...list[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [] };
+    } else {
+      list.push({
+        t: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+        name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [],
+        lat: pos.lat, lng: pos.lng });
+    }
+    all[k] = list;
+    this.saveCheckins(all);
+    const amt = Number(this.state.ciAmt);
+    if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name);
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null });
+  }
+  get profile() {
+    try { return JSON.parse(localStorage.getItem('wtn-profile')) || {}; } catch (e) { return {}; }
+  }
+  get userPois() {
+    try { return JSON.parse(localStorage.getItem('wtn-user-pois')) || []; } catch (e) { return []; }
+  }
   get tripInfo() {
     if (this.state.trip === 'kazakh') return { title:'คาซัคสถาน 11 วัน', hero:'uploads/20211027_071410292_iOS.jpg', m1:'24 ก.ค.–3 ส.ค.', m2:'Jeep ส่วนตัว', live:false, status:'โปรแกรมทัวร์' };
     if (this.state.trip === 'blank') return { title:'ทริปใหม่', hero:'uploads/20171210_150759619_iOS.jpg', m1:'ยังไม่มีวัน', m2:'เริ่มเพิ่มได้เลย', live:false, status:'ร่าง' };
@@ -761,14 +1092,47 @@ class Component extends DCLogic {
     ];
   }
 
+  expCats = ['ที่พัก', 'เดินทาง', 'กิจกรรม', 'อาหาร', 'ช้อป / อื่นๆ'];
+  defaultPlan = { 'ที่พัก': 34200, 'เดินทาง': 16200, 'กิจกรรม': 16000, 'อาหาร': 2900, 'ช้อป / อื่นๆ': 1000 };
+  fmtB(n) { return '฿' + Math.round(n).toLocaleString('th-TH'); }
+  get budgetPlan() {
+    try {
+      const all = JSON.parse(localStorage.getItem('wtn-budget-plan')) || {};
+      return { ...this.defaultPlan, ...(all[this.state.trip] || {}) };
+    } catch (e) { return { ...this.defaultPlan }; }
+  }
+  get expenses() {
+    try { return (JSON.parse(localStorage.getItem('wtn-expenses')) || {})[this.state.trip] || []; }
+    catch (e) { return []; }
+  }
+  saveExpenses(list) {
+    try {
+      const all = JSON.parse(localStorage.getItem('wtn-expenses')) || {};
+      all[this.state.trip] = list;
+      localStorage.setItem('wtn-expenses', JSON.stringify(all));
+    } catch (e) {}
+  }
+  addExpense(cat, amt, note) {
+    const list = this.expenses;
+    list.push({ cat, amt, note,
+      t: new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' +
+         new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) });
+    this.saveExpenses(list);
+  }
+  get actualByCat() {
+    const m = {};
+    this.expenses.forEach(e => { m[e.cat] = (m[e.cat] || 0) + (Number(e.amt) || 0); });
+    return m;
+  }
   get budgetRows() {
-    return [
-      { label:'ที่พัก', plan:'฿34,200', actual:'฿33,100', planW:'82%', actW:'79%', color:'#8fce9b' },
-      { label:'เดินทาง', plan:'฿16,200', actual:'฿15,400', planW:'46%', actW:'44%', color:'#8fce9b' },
-      { label:'กิจกรรม', plan:'฿16,000', actual:'฿16,000', planW:'45%', actW:'45%', color:'#d98a5a' },
-      { label:'อาหาร', plan:'฿2,900', actual:'฿3,350', planW:'8%', actW:'10%', color:'#c0563a' },
-      { label:'ช้อป / อื่นๆ', plan:'฿1,000', actual:'฿0', planW:'3%', actW:'0%', color:'#8fce9b' },
-    ];
+    const plan = this.budgetPlan, act = this.actualByCat;
+    const maxV = Math.max(1, ...this.expCats.map(c => Math.max(plan[c] || 0, act[c] || 0))) * 1.18;
+    return this.expCats.map(c => {
+      const p = plan[c] || 0, a = act[c] || 0;
+      return { label: c, plan: this.fmtB(p), actual: this.fmtB(a),
+        planW: Math.round(p / maxV * 100) + '%', actW: Math.round(a / maxV * 100) + '%',
+        color: a > p ? '#c0563a' : '#4e8a5c' };
+    });
   }
 
   get aiStops() {
@@ -784,6 +1148,7 @@ class Component extends DCLogic {
     window.addEventListener('photopick-change', this._pp);
     this.tabOf.settings = 'me';
     this.titles.settings = 'บัญชีและความปลอดภัย';
+    this.titles.map = 'เช็คอิน & เส้นทาง';
   }
   get acct() {
     try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; }
@@ -810,6 +1175,7 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     window.removeEventListener('photopick-change', this._pp);
+    clearInterval(this._recapTimer);
   }
   coverOf(slotId, fallback) {
     try {
@@ -873,9 +1239,87 @@ class Component extends DCLogic {
       authSwitch: () => this.setState({ auth: this.state.auth === 'signup' ? 'login' : 'signup', authErr: '' }),
       authBack: () => this.setState({ auth: 'choice', authErr: '' }),
       authSubmit: () => this.authSubmit(),
+      ...(() => {
+        const dest = this.state.dest || 'kz', cat = this.state.destCat || 'place';
+        const dd = this.destData[dest], added = this.state.destAdded || {};
+        const chip = on => on
+          ? 'flex:none;background:#c05f39;color:#fff;font:600 12px Anuphan;padding:9px 15px;border-radius:20px;border:none;cursor:pointer'
+          : 'flex:none;background:#efe4d3;color:#7c7264;font:600 12px Anuphan;padding:9px 15px;border-radius:20px;border:none;cursor:pointer';
+        const ring = on => on ? '0 0 0 2.5px #c05f39, 0 6px 16px rgba(43,36,32,.18)' : '0 3px 10px rgba(43,36,32,.1)';
+        const setCat = c => () => this.setState({ destCat: c });
+        return {
+          destName: dd.name, destCity: dd.city,
+          pickKz: () => this.setState({ dest: 'kz', destCat: 'place' }),
+          pickJp: () => this.setState({ dest: 'jp', destCat: 'place' }),
+          kzCardRing: ring(dest === 'kz'), jpCardRing: ring(dest === 'jp'),
+          catPlace: setCat('place'), catAct: setCat('act'), catFood: setCat('food'), catGo: setCat('go'),
+          catPlaceStyle: chip(cat === 'place'), catActStyle: chip(cat === 'act'),
+          catFoodStyle: chip(cat === 'food'), catGoStyle: chip(cat === 'go'),
+          addTarget: 'คาซัคสถาน 11 วัน',
+          catLabel: { place: 'สถานที่น่าสนใจ', act: 'กิจกรรม', food: 'ร้านอาหาร', go: 'การเดินทาง' }[cat],
+          destItems: dd.cats[cat].concat(this.userPois.filter(p => p.dest === dest && p.cat === cat)).map(it => {
+            const key = dest + ':' + it.n, isAdded = !!added[key];
+            return { name: it.n, note: it.d, added: isAdded, notAdded: !isAdded,
+              byTeam: !it.u, byUser: !!it.u, userLabel: 'จากผู้ใช้จริง · ' + (it.u || ''),
+              on: () => this.setState(s => ({ destAdded: { ...(s.destAdded || {}), [key]: !isAdded } })) };
+          }),
+          addPoiOpen: !!this.state.addPoiOpen,
+          toggleAddPoi: () => this.setState(s => ({ addPoiOpen: !s.addPoiOpen, poiName: '', poiNote: '' })),
+          poiName: this.state.poiName || '', poiNote: this.state.poiNote || '',
+          setPoiName: e => this.setState({ poiName: e.target.value }),
+          setPoiNote: e => this.setState({ poiNote: e.target.value }),
+          savePoi: () => {
+            const n = (this.state.poiName || '').trim();
+            if (!n) return;
+            const pois = this.userPois;
+            pois.push({ dest, cat, n, d: (this.state.poiNote || '').trim(), u: '@nimjourney' });
+            try { localStorage.setItem('wtn-user-pois', JSON.stringify(pois)); } catch (e) {}
+            this.setState({ addPoiOpen: false, poiName: '', poiNote: '' });
+          }
+        };
+      })(),
       sSettings: sc === 'settings',
       goSettings: () => this.go('settings'),
-      acctName: this.acct.name || 'Nim',
+      acctName: this.profile.name || this.acct.name || 'Nim',
+      acctEditOpen: !!this.state.acctEditOpen,
+      toggleAcctEdit: () => this.setState(s => ({ acctEditOpen: !s.acctEditOpen,
+        acctNameDraft: this.profile.name || this.acct.name || 'Nim' })),
+      acctNameDraft: this.state.acctNameDraft ?? '',
+      setAcctNameDraft: e => this.setState({ acctNameDraft: e.target.value }),
+      saveAcctName: () => {
+        const name = (this.state.acctNameDraft || '').trim();
+        if (!name) return;
+        try { localStorage.setItem('wtn-profile', JSON.stringify({ ...this.profile, name })); } catch (e) {}
+        this.setState({ acctEditOpen: false });
+      },
+      profName: this.profile.name || 'Nim',
+      profBio: this.profile.bio || '@nimjourney · เที่ยวเองทั่วโลก เล่าเรื่องจริง',
+      profView: !this.state.profEditing, profEditing: !!this.state.profEditing,
+      profEditLabel: this.state.profEditing ? 'บันทึก' : 'แก้ไข',
+      profEditBg: this.state.profEditing ? '#c05f39' : 'transparent',
+      profEditColor: this.state.profEditing ? '#fff' : '#2b241f',
+      profNameDraft: this.state.profNameDraft ?? '', profBioDraft: this.state.profBioDraft ?? '',
+      profLinkDraft: this.state.profLinkDraft ?? '',
+      profHasLink: !!this.profile.link,
+      profLink: this.profile.link || '',
+      profLinkHref: /^https?:\/\//.test(this.profile.link || '') ? this.profile.link : 'https://' + (this.profile.link || ''),
+      setProfName: e => this.setState({ profNameDraft: e.target.value }),
+      setProfBio: e => this.setState({ profBioDraft: e.target.value }),
+      setProfLink: e => this.setState({ profLinkDraft: e.target.value }),
+      toggleProfEdit: () => {
+        if (!this.state.profEditing) {
+          this.setState({ profEditing: true,
+            profNameDraft: this.profile.name || 'Nim',
+            profBioDraft: this.profile.bio || '@nimjourney · เที่ยวเองทั่วโลก เล่าเรื่องจริง',
+            profLinkDraft: this.profile.link || '' });
+        } else {
+          const name = (this.state.profNameDraft || '').trim() || 'Nim';
+          const bio = (this.state.profBioDraft || '').trim();
+          const link = (this.state.profLinkDraft || '').trim();
+          try { localStorage.setItem('wtn-profile', JSON.stringify({ name, bio, link })); } catch (e) {}
+          this.setState({ profEditing: false });
+        }
+      },
       acctInitial: (this.acct.name || 'N').slice(0, 1).toUpperCase(),
       maskedEmail: this.acct.email ? this.acct.email.slice(0, 2) + '****@' + this.acct.email.split('@')[1] : 'ยังไม่ได้ตั้งค่า',
       settingsAvatar: this.coverOf('wtn-avatar', null),
@@ -910,7 +1354,6 @@ class Component extends DCLogic {
       goStory: () => this.go('story'),
       goTrip: () => this.openTrip('yamagata'),
       goTripKz: () => this.openTrip('kazakh'),
-      kzCover: this.coverOf('wtn-cover-kazakh', 'uploads/20211027_071410292_iOS.jpg'),
       goBlank: () => this.openTrip('blank'),
       tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripInfo.live, tripPlanned: !this.tripInfo.live, tripStatus: this.tripInfo.status,
@@ -919,6 +1362,42 @@ class Component extends DCLogic {
       goMap: () => this.go('map'),
       goAskAi: () => this.go('askAi'), sAskAi: sc === 'askAi',
       days: this.days, sMap: sc === 'map',
+      mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
+      ciDays: this.kzDays.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
+        style: (i === active
+          ? 'flex:none;background:#c05f39;color:#fff;'
+          : 'flex:none;background:#efe4d3;color:#7c7264;') + 'font:600 12px Anuphan;padding:9px 14px;border-radius:20px;border:none;cursor:pointer' })),
+      ciDayLabel: (this.kzDays[active] || {}).tag || '',
+      ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
+        t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
+        photos: (c.photos || []).map(p => ({ src: p })), hasPhotos: (c.photos || []).length > 0,
+        del: () => { const all = this.checkins, k = this.ciKey; (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
+        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null }) })),
+      ciEmpty: (this.checkins[this.ciKey] || []).length === 0,
+      ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
+      toggleCiForm: () => {
+        const opening = !this.state.ciFormOpen;
+        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null });
+        if (opening && navigator.geolocation) navigator.geolocation.getCurrentPosition(
+          p => this.setState({ ciPos: { lat: p.coords.latitude, lng: p.coords.longitude } }),
+          () => {}, { timeout: 8000, maximumAge: 60000 });
+      },
+      ciName: this.state.ciName ?? '', ciNote: this.state.ciNote ?? '',
+      setCiName: e => this.setState({ ciName: e.target.value }),
+      setCiNote: e => this.setState({ ciNote: e.target.value }),
+      ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: p,
+        rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
+      ciAddPhotos: e => this.addCiPhotos(e),
+      saveCi: () => this.saveCi(),
+      ciAmt: this.state.ciAmt ?? '',
+      setCiAmt: e => this.setState({ ciAmt: e.target.value.replace(/[^\d.]/g, '') }),
+      ciHasAmt: !!Number(this.state.ciAmt),
+      ciCats: this.expCats.map(c => ({ label: c,
+        style: (c === (this.state.ciCat || 'อาหาร')
+          ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#5c5347;') +
+          'font:600 11px Anuphan;padding:6px 11px;border-radius:14px;border:none;cursor:pointer',
+        on: () => this.setState({ ciCat: c }) })),
+      ciSaveLabel: this.state.ciEditIdx != null ? 'บันทึกการแก้ไข' : 'บันทึกเช็คอิน',
       goAi: () => this.go('ai'),
       goSummary: () => this.go('summary'),
       goComments: () => this.go('comments'),
@@ -930,12 +1409,37 @@ class Component extends DCLogic {
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curMerged,
       addChips, coverChips, showAffil: !!af, affilLabel: af ? af.l : '', affilSub: af ? af.s : '',
-      aiConnected: this.state.aiConnected, notConnected: !this.state.aiConnected,
-      aiStatus: this.state.aiConnected ? 'เชื่อมบัญชีแล้ว · ใช้ AI ได้ไม่จำกัด' : 'เชื่อม API key เพื่อใช้ AI ด้วยบัญชีตัวเอง',
-      aiMasked: this.state.aiKey ? (this.state.aiKey.slice(0,3) + '••••••••') : 'sk-••••••••',
-      onAiKey: (e) => this.setState({ aiKey: e.target.value }),
-      connectAi: () => { if ((this.state.aiKey || '').trim()) this.setState({ aiConnected: true }); },
-      disconnectAi: () => this.setState({ aiConnected: false, aiKey: '' }),
+      aiConnected: !!this.aiKey, notConnected: !this.aiKey,
+      aiStatus: this.aiKey ? ('เชื่อมแล้ว (' + ({ claude: 'Claude', gemini: 'Gemini', openai: 'OpenAI' }[this.aiProvider] || 'AI') + ') · ใช้ด้วยโควตาของคุณ') : 'เชื่อม API key เพื่อใช้ AI ด้วยบัญชีตัวเอง',
+      aiMasked: this.aiKey ? (this.aiKey.slice(0, 6) + '••••••••') : 'sk-••••••••',
+      onAiKey: (e) => this.setState({ aiKeyDraft: e.target.value }),
+      connectAi: () => {
+        const k = (this.state.aiKeyDraft || '').trim();
+        if (!k) return;
+        try { localStorage.setItem('wtn-ai-key', k); } catch (e) {}
+        this.setState({ aiKeyDraft: '' });
+      },
+      disconnectAi: () => { try { localStorage.removeItem('wtn-ai-key'); } catch (e) {} this.forceUpdate(); },
+      aiChips: ['สายชิล', 'คาเฟ่', 'ไม่เดินเยอะ', 'สายถ่ายรูป', 'ประหยัด'].map(c => ({ label: c,
+        style: ((this.state.aiStyles || {})[c] ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#5c5347;') +
+          'font:600 12px Anuphan;padding:7px 13px;border-radius:18px;border:none;cursor:pointer',
+        on: () => this.setState(s => ({ aiStyles: { ...(s.aiStyles || {}), [c]: !(s.aiStyles || {})[c] } })) })),
+      aiBudgetDay: this.state.aiBudgetDay ?? '',
+      setAiBudgetDay: e => this.setState({ aiBudgetDay: e.target.value.replace(/[^\d]/g, '') }),
+      aiDayLabel: (this.kzDays[active] || {}).tag || '',
+      genDayPlan: () => { if (this.aiKey) this.genDayPlan(); else this.setTab('me'); },
+      aiPlanBtnLabel: this.aiKey ? 'ให้ AI ร่างวันนี้' : 'ไปเชื่อม API key ที่แท็บ "ฉัน"',
+      aiPlanBusy: !!this.state.aiPlanBusy, aiPlanErr: this.state.aiPlanErr || '',
+      aiPlanText: this.state.aiPlanText || '', hasAiPlan: !!this.state.aiPlanText,
+      aiNoPlanYet: !this.state.aiPlanText && !this.state.aiPlanBusy && !this.state.aiPlanErr,
+      aiQ: this.state.aiQ ?? '',
+      setAiQ: e => this.setState({ aiQ: e.target.value }),
+      sendAiQ: () => { const q = (this.state.aiQ || '').trim(); if (q) { this.setState({ aiQ: '' }); this.askTravelAi(q); } },
+      aiSuggest: ['วันนี้ควรเตรียมอะไรบ้าง', 'ของฝากแถวนี้ซื้ออะไรดี', 'ประโยคภาษาท้องถิ่นที่ควรรู้'].map(q => ({ label: q,
+        on: () => this.askTravelAi(q) })),
+      aiBusy: !!this.state.aiBusy, aiErr: this.state.aiErr || '',
+      aiAnswer: this.state.aiAnswer || '', hasAiAnswer: !!this.state.aiAnswer,
+      aiLastQ: this.state.aiLastQ || '',
       addTitle: this.state.addTitle, addTime: this.state.addTime,
       onAddTitle: (e) => this.setState({ addTitle: e.target.value }),
       onAddTime: (e) => this.setState({ addTime: e.target.value }),
@@ -946,8 +1450,115 @@ class Component extends DCLogic {
       trips: this.trips, noTrips: this.trips.length === 0, noStories: this.storyData.length === 0,
       stories: this.storyData.map(s => ({ ...s, on: () => this.go('story') })),
       budgetRows: this.budgetRows,
+      ...(() => {
+        const plan = this.budgetPlan, act = this.actualByCat;
+        const totP = this.expCats.reduce((s, c) => s + (plan[c] || 0), 0);
+        const totA = this.expCats.reduce((s, c) => s + (act[c] || 0), 0);
+        const diff = totP - totA, over = diff < 0;
+        const exCat = this.state.exCat || 'อาหาร';
+        const chip = on => on
+          ? 'background:#c05f39;color:#fff;font:600 12px Anuphan;padding:8px 13px;border-radius:18px;border:none;cursor:pointer'
+          : 'background:#efe4d3;color:#5c5347;font:600 12px Anuphan;padding:8px 13px;border-radius:18px;border:none;cursor:pointer';
+        return {
+          budPlanTotal: this.fmtB(totP), budActualTotal: this.fmtB(totA),
+          budDiffText: totA === 0 ? 'ยังไม่มีรายจ่าย — กด "+ จดรายจ่าย" ได้เลย'
+            : (over ? 'เกินแผน ' + this.fmtB(-diff) : 'ยังเหลือจากแผน ' + this.fmtB(diff)),
+          budDiffColor: totA === 0 ? '#c9b79b' : (over ? '#f0a08a' : '#8fce9b'),
+          budDiffBg: over ? 'rgba(192,86,58,.22)' : 'rgba(143,206,155,.15)',
+          exFormOpen: !!this.state.exFormOpen, exFormClosed: !this.state.exFormOpen,
+          toggleExForm: () => this.setState(s => ({ exFormOpen: !s.exFormOpen, exAmt: '', exNote: '' })),
+          exCats: this.expCats.map(c => ({ label: c, style: chip(c === exCat),
+            on: () => this.setState({ exCat: c }) })),
+          exAmt: this.state.exAmt ?? '', exNote: this.state.exNote ?? '',
+          setExAmt: e => this.setState({ exAmt: e.target.value.replace(/[^\d.]/g, '') }),
+          setExNote: e => this.setState({ exNote: e.target.value }),
+          saveExpense: () => {
+            const amt = Number(this.state.exAmt);
+            if (!amt || amt <= 0) return;
+            this.addExpense(exCat, amt, (this.state.exNote || '').trim() || exCat);
+            this.setState({ exFormOpen: false, exAmt: '', exNote: '' });
+          },
+          hasExpenses: this.expenses.length > 0,
+          expList: this.expenses.map((e, i) => ({ cat: e.cat, note: e.note, t: e.t, amt: this.fmtB(Number(e.amt) || 0),
+            del: () => { const l = this.expenses; l.splice(i, 1); this.saveExpenses(l); this.forceUpdate(); } })).reverse(),
+          planEditOpen: !!this.state.planEdit,
+          planEditLabel: this.state.planEdit ? 'ปิด' : 'ตั้งงบแผน',
+          togglePlanEdit: () => this.setState(s => ({ planEdit: !s.planEdit,
+            planDrafts: s.planEdit ? s.planDrafts : { ...this.budgetPlan } })),
+          planRows: this.expCats.map(c => ({ label: c,
+            val: String((this.state.planDrafts || this.budgetPlan)[c] ?? ''),
+            set: e => this.setState(s => ({ planDrafts: { ...(s.planDrafts || this.budgetPlan), [c]: e.target.value.replace(/[^\d]/g, '') } })) })),
+          savePlan: () => {
+            const d = this.state.planDrafts || {};
+            const clean = {};
+            this.expCats.forEach(c => { clean[c] = Number(d[c]) || 0; });
+            try {
+              const all = JSON.parse(localStorage.getItem('wtn-budget-plan') || '{}');
+              all[this.state.trip] = clean;
+              localStorage.setItem('wtn-budget-plan', JSON.stringify(all));
+            } catch (e) {}
+            this.setState({ planEdit: false });
+          }
+        };
+      })(),
       aiStops: this.aiStops,
       sumBook: this.state.sum==='book', sumRecap: this.state.sum==='recap',
+      ...(() => {
+        const rows = [], slides = [];
+        let cis = 0, photos = 0, daysWith = 0;
+        this.kzDays.forEach((d, i) => {
+          const list = this.checkins[this.state.trip + ':' + i] || [];
+          if (!list.length) return;
+          daysWith++; cis += list.length;
+          let ph = 0;
+          list.forEach(c => {
+            ph += (c.photos || []).length;
+            (c.photos || []).forEach(p => slides.push({ img: p, cap: c.name, day: d.tag }));
+            if (!(c.photos || []).length) slides.push({ img: null, cap: c.name, day: d.tag });
+          });
+          photos += ph;
+          rows.push({ n: d.n, title: d.city, meta: list.length + ' เช็คอิน' + (ph ? ' · ' + ph + ' รูป' : '') });
+        });
+        this._recapSlides = slides;
+        const idx = Math.min(this.state.recapIdx || 0, Math.max(0, slides.length - 1));
+        const cur = slides[idx] || {};
+        let links = [];
+        try { links = (JSON.parse(localStorage.getItem('wtn-recap-links')) || {})[this.state.trip] || []; } catch (e) {}
+        const saveLinks = l => { try { const all = JSON.parse(localStorage.getItem('wtn-recap-links') || '{}'); all[this.state.trip] = l; localStorage.setItem('wtn-recap-links', JSON.stringify(all)); } catch (e) {} };
+        return {
+          hasBookContent: rows.length > 0, bookEmpty: rows.length === 0, bookRows: rows,
+          hasRecap: slides.length > 0, recapEmpty: slides.length === 0,
+          recapDays: daysWith, recapCis: cis, recapPhotoCount: photos,
+          recapPhoto: cur.img || '', recapCaption: cur.cap || '', recapCaptionDay: cur.day || '',
+          recapPlayLabel: this.state.recapPlaying ? '⏸ หยุด' : '▶ เล่นรีแคป',
+          toggleRecapPlay: () => {
+            if (this.state.recapPlaying) {
+              clearInterval(this._recapTimer);
+              this.setState({ recapPlaying: false });
+            } else {
+              this.setState({ recapPlaying: true, recapIdx: 0 });
+              clearInterval(this._recapTimer);
+              this._recapTimer = setInterval(() => {
+                const n = (this._recapSlides || []).length;
+                if (!n) return;
+                this.setState(s => ({ recapIdx: ((s.recapIdx || 0) + 1) % n }));
+              }, 1700);
+            }
+          },
+          recapLinkRows: links.map((u, i) => ({
+            label: u.replace(/^https?:\/\//, ''),
+            href: /^https?:\/\//.test(u) ? u : 'https://' + u,
+            del: () => { const l = links.slice(); l.splice(i, 1); saveLinks(l); this.forceUpdate(); } })),
+          recapLinkDraft: this.state.recapLinkDraft ?? '',
+          setRecapLink: e => this.setState({ recapLinkDraft: e.target.value }),
+          addRecapLink: () => {
+            const u = (this.state.recapLinkDraft || '').trim();
+            if (!u) return;
+            saveLinks([...links, u]);
+            this.setState({ recapLinkDraft: '' });
+          }
+        };
+      })(),
       sumBookFn: () => this.setState({sum:'book'}), sumRecapFn: () => this.setState({sum:'recap'}),
       sumBookStyle: this.state.sum==='book' ? segOn : segOff,
       sumRecapStyle: this.state.sum==='recap' ? segOn : segOff,
