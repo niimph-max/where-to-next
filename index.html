@@ -2238,6 +2238,12 @@ class Component extends DCLogic {
   componentDidMount() {
     this._pp = () => this.forceUpdate();
     window.addEventListener('photopick-change', this._pp);
+    // เปลี่ยนรูปเมื่อไหร่ สั่งซิงก์ขึ้นคลาวด์ทันที (กันรูปโปรไฟล์/ปกไม่ push)
+    this._ppSync = () => { if (!this._applyingCloud) this.scheduleCloudPush(); };
+    window.addEventListener('photopick-change', this._ppSync);
+    // กลับมาเปิดแอป/สลับแท็บกลับมา → ดันข้อมูลค้างขึ้นคลาวด์
+    this._visSync = () => { if (document.visibilityState === 'visible') this.scheduleCloudPush(); };
+    document.addEventListener('visibilitychange', this._visSync);
     if (!window.__wtnLSHook) {
       window.__wtnLSHook = true;
       const oSet = localStorage.setItem.bind(localStorage), oRem = localStorage.removeItem.bind(localStorage);
@@ -2313,6 +2319,8 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     window.removeEventListener('photopick-change', this._pp);
+    if (this._ppSync) window.removeEventListener('photopick-change', this._ppSync);
+    if (this._visSync) document.removeEventListener('visibilitychange', this._visSync);
     if (this._cloudKick) window.removeEventListener('wtn-local-change', this._cloudKick);
     if (this._bready) window.removeEventListener('wtn-backend-ready', this._bready);
     if (this._offUser) { try { this._offUser(); } catch (e) {} }
@@ -2415,7 +2423,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.18e',
+      appVersion: '2026.07.18f',
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
