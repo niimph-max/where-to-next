@@ -766,7 +766,7 @@
               <input value="{{ smTitle }}" onInput="{{ setSmTitle }}" placeholder="ชื่อเรื่อง" style="width:100%;box-sizing:border-box;text-align:center;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:10px 12px;font-family:'Chonburi',serif;font-size:19px;color:#2b241f;outline:none">
             </sc-if>
           </div>
-          <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span><div style="flex:1;min-width:0"><div style="font:600 13px 'Anuphan';color:#2b241f">{{ seAuthor }}</div><sc-if value="{{ seMetaView }}" hint-placeholder-val="{{ true }}"><div style="font:400 11.5px 'Anuphan';color:#a99e8e">{{ seSubtitle }}</div></sc-if></div><button onClick="{{ toggleStoryMeta }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 12px 'Anuphan';padding:7px 14px;border-radius:20px;cursor:pointer;flex:none">{{ seMetaBtnLabel }}</button></div>
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px"><span style="width:30px;height:30px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"><sc-if value="{{ seHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ seAvatar }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></sc-if></span><div style="flex:1;min-width:0"><div style="font:600 13px 'Anuphan';color:#2b241f">{{ seAuthor }}</div><sc-if value="{{ seMetaView }}" hint-placeholder-val="{{ true }}"><div style="font:400 11.5px 'Anuphan';color:#a99e8e">{{ seSubtitle }}</div></sc-if></div><button onClick="{{ toggleStoryMeta }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 12px 'Anuphan';padding:7px 14px;border-radius:20px;cursor:pointer;flex:none">{{ seMetaBtnLabel }}</button></div>
           <sc-if value="{{ seMetaEdit }}" hint-placeholder-val="{{ false }}"><input value="{{ smSubtitle }}" onInput="{{ setSmSubtitle }}" placeholder="คำโปรย เช่น 11 วัน 10 คืน · 24 ก.ค.–3 ส.ค." style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:10px 12px;font:400 12.5px 'Anuphan';color:#2b241f;outline:none;margin-bottom:10px"></sc-if>
           <div style="display:flex;align-items:center;gap:16px;padding:13px 0;border-top:1px solid rgba(43,36,32,.09);border-bottom:1px solid rgba(43,36,32,.09);margin-bottom:14px">
             <span style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"></path></svg>{{ seLikes }}</span>
@@ -2423,7 +2423,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.18f',
+      appVersion: '2026.07.18g',
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
@@ -2913,6 +2913,7 @@ class Component extends DCLogic {
             }
           },
           seTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: this.profile.name || os.author || 'Nim',
+          seAvatar: this.coverOf('wtn-avatar', null), seHasAvatar: !!this.coverOf('wtn-avatar', null),
           smTitle: this.state.smTitle ?? '', smCategory: this.state.smCategory ?? '', smSubtitle: this.state.smSubtitle ?? '',
           setSmTitle: e => this.setState({ smTitle: e.target.value }),
           setSmCategory: e => this.setState({ smCategory: e.target.value }),
