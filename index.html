@@ -33,7 +33,7 @@
   .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important}
   /* full-screen on every device (mobile app) */
 </style>
-<script src="image-slot.js"></script>
+<script src="photo-pick.js"></script>
 </helmet>
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
@@ -63,12 +63,31 @@
               <div style="display:flex;align-items:center;gap:11px"><span style="width:30px;height:30px;border-radius:9px;background:rgba(233,180,138,.2);display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span><span style="font:400 14px 'Anuphan';color:#efe4d5">ก็อปทริปจริงไปใช้ได้ทันที</span></div>
               <div style="display:flex;align-items:center;gap:11px"><span style="width:30px;height:30px;border-radius:9px;background:rgba(233,180,138,.2);display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></span><span style="font:400 14px 'Anuphan';color:#efe4d5">บันทึกระหว่างเที่ยว เป็นเรื่องเล่าของคุณ</span></div>
             </div>
-            <button onClick="{{ goHome }}" style="width:100%;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:16px;border-radius:15px;cursor:pointer;margin-bottom:10px">เริ่มวางแผนทริปแรก</button>
-            <div style="display:flex;gap:10px">
-              <button onClick="{{ goHome }}" style="flex:1;border:1px solid rgba(246,239,226,.3);background:rgba(246,239,226,.1);color:#f6efe2;font:600 13.5px 'Anuphan';padding:13px;border-radius:13px;cursor:pointer">Facebook</button>
-              <button onClick="{{ goHome }}" style="flex:1;border:1px solid rgba(246,239,226,.3);background:rgba(246,239,226,.1);color:#f6efe2;font:600 13.5px 'Anuphan';padding:13px;border-radius:13px;cursor:pointer">Google</button>
-            </div>
-            <div onClick="{{ goHome }}" style="text-align:center;font:400 12.5px 'Anuphan';color:#c9b79b;margin-top:16px;cursor:pointer">มีบัญชีอยู่แล้ว? <span style="color:#e9b48a;font-weight:600">เข้าสู่ระบบ</span></div>
+            <sc-if value="{{ authChoice }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button onClick="{{ authGoogle }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;border:none;background:#fff;color:#2b241f;font:600 14px 'Anuphan';border-radius:14px;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"></path><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.1A12 12 0 0 0 12 24z"></path><path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.56.37-2.28v-3.1H1.29a12 12 0 0 0 0 10.76l3.98-3.1z"></path><path fill="#EA4335" d="M12 4.76c1.76 0 3.34.6 4.59 1.8l3.44-3.44A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.29 6.62l3.98 3.1C6.22 6.87 8.87 4.76 12 4.76z"></path></svg>ดำเนินการต่อด้วย Google</button>
+                <button onClick="{{ authFb }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;border:none;background:#1877F2;color:#fff;font:600 14px 'Anuphan';border-radius:14px;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M24 12a12 12 0 1 0-13.88 11.85v-8.38H7.08V12h3.04V9.36c0-3 1.79-4.67 4.53-4.67 1.31 0 2.68.24 2.68.24v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.38A12 12 0 0 0 24 12z"></path></svg>ดำเนินการต่อด้วย Facebook</button>
+                <div style="display:flex;align-items:center;gap:12px;margin:2px 0"><span style="flex:1;height:1px;background:rgba(246,239,226,.22)"></span><span style="font:500 11.5px 'Anuphan';color:#c9b79b">หรือ</span><span style="flex:1;height:1px;background:rgba(246,239,226,.22)"></span></div>
+                <button onClick="{{ showSignup }}" style="width:100%;min-height:48px;border:1px solid rgba(246,239,226,.35);background:rgba(246,239,226,.08);color:#f6efe2;font:600 14px 'Anuphan';border-radius:14px;cursor:pointer">สมัครด้วยอีเมล</button>
+              </div>
+              <div onClick="{{ showLogin }}" style="text-align:center;font:400 12.5px 'Anuphan';color:#c9b79b;margin-top:16px;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center">มีบัญชีอยู่แล้ว? <span style="color:#e9b48a;font-weight:600;margin-left:5px">เข้าสู่ระบบ</span></div>
+            </sc-if>
+            <sc-if value="{{ authForm }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="font-family:'Chonburi',serif;font-size:19px;color:#fff;margin-bottom:2px">{{ authTitle }}</div>
+                <sc-if value="{{ authSignup }}" hint-placeholder-val="{{ false }}">
+                  <input value="{{ authName }}" onInput="{{ setAuthName }}" placeholder="ชื่อที่แสดง" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 14px 'Anuphan';color:#fff;outline:none">
+                </sc-if>
+                <input value="{{ authEmail }}" onInput="{{ setAuthEmail }}" type="email" placeholder="อีเมล" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 14px 'Anuphan';color:#fff;outline:none">
+                <input value="{{ authPass }}" onInput="{{ setAuthPass }}" type="password" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 14px 'Anuphan';color:#fff;outline:none">
+                <sc-if value="{{ authErr }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px 'Anuphan';color:#f0a08a">{{ authErr }}</div></sc-if>
+                <button onClick="{{ authSubmit }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:14px;cursor:pointer">{{ authCta }}</button>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+                  <span onClick="{{ authBack }}" style="font:600 12.5px 'Anuphan';color:#c9b79b;cursor:pointer;min-height:44px;display:inline-flex;align-items:center">← กลับ</span>
+                  <span onClick="{{ authSwitch }}" style="font:400 12.5px 'Anuphan';color:#c9b79b;cursor:pointer;min-height:44px;display:inline-flex;align-items:center">{{ authSwitchQ }} <span style="color:#e9b48a;font-weight:600;margin-left:5px">{{ authSwitchCta }}</span></span>
+                </div>
+              </div>
+            </sc-if>
           </div>
         </div>
       </sc-if>
@@ -94,7 +113,7 @@
           </div>
           <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:12px">แผนของฉัน</div>
           <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:pointer">
-            <div style="position:relative"><img src="uploads/20211027_071410292_iOS.jpg" alt="" style="width:100%;height:110px;object-fit:cover;display:block"><span style="position:absolute;top:11px;left:11px;background:rgba(233,180,138,.95);color:#5b3115;font:600 10px 'Anuphan';padding:4px 10px;border-radius:20px">โปรแกรมทัวร์</span></div>
+            <div style="position:relative"><img src="{{ kzCover }}" alt="" style="width:100%;height:110px;object-fit:cover;display:block"><span style="position:absolute;top:11px;left:11px;background:rgba(233,180,138,.95);color:#5b3115;font:600 10px 'Anuphan';padding:4px 10px;border-radius:20px">โปรแกรมทัวร์</span></div>
             <div style="padding:13px 15px 15px">
               <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">คาซัคสถาน · 11 วัน</div>
               <div style="font:400 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px">โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว</div>
@@ -123,7 +142,7 @@
       <!-- ========== TRIP DETAIL / PLANNER ========== -->
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative;height:140px"><image-slot id="{{ coverSlotId }}" shape="rect" fit="cover" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></image-slot><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
+          <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
           <div style="display:flex;gap:6px;padding:14px 20px 4px">
             <button onClick="{{ goMap }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">แผนที่</button>
             <button onClick="{{ goBudget }}" style="flex:1;text-align:center;background:#efe4d3;color:#5c5347;font:600 11px 'Anuphan';padding:9px 3px;border-radius:11px;border:none;cursor:pointer">งบ</button>
@@ -466,10 +485,10 @@
       <!-- ========== PROFILE ========== -->
       <sc-if value="{{ sProfile }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative;height:110px"><image-slot id="wtn-cover" shape="rect" fit="cover" placeholder="แตะเพื่อเพิ่มรูปปก" style="display:block;width:100%;height:110px"></image-slot><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.1),rgba(43,36,32,.32));pointer-events:none"></div><span style="position:absolute;top:10px;right:12px;display:inline-flex;align-items:center;gap:5px;background:rgba(43,36,32,.62);color:#f6efe2;font:600 10.5px 'Anuphan';padding:5px 10px;border-radius:16px;pointer-events:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>เปลี่ยนรูปปก</span></div>
+          <div style="position:relative;height:110px"><photo-pick id="wtn-cover" placeholder="แตะเพื่อเพิ่มรูปปก" style="display:block;width:100%;height:110px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.1),rgba(43,36,32,.32));pointer-events:none"></div></div>
           <div style="padding:0 20px;margin-top:-32px;position:relative">
-            <image-slot id="wtn-avatar" shape="rounded" radius="18" placeholder="รูป" style="display:block;width:70px;height:70px;border:3px solid #f6efe2;border-radius:21px;box-shadow:0 4px 12px rgba(43,36,32,.2)"></image-slot>
-            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:10px"><div><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:23px;color:#2b241f;margin:0">Nim</h1><div style="font:400 12.5px 'Anuphan';color:#8a7d6f">@nimjourney · เที่ยวเองทั่วโลก เล่าเรื่องจริง</div></div><span style="border:1px solid rgba(43,36,32,.18);color:#2b241f;font:600 12.5px 'Anuphan';padding:7px 15px;border-radius:20px">แก้ไข</span></div>
+            <photo-pick id="wtn-avatar" placeholder="รูป" style="display:block;width:70px;height:70px;border:3px solid #f6efe2;border-radius:21px;box-shadow:0 4px 12px rgba(43,36,32,.2)"></photo-pick>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:10px"><div><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:23px;color:#2b241f;margin:0">Nim</h1><div style="font:400 12.5px 'Anuphan';color:#8a7d6f">@nimjourney · เที่ยวเองทั่วโลก เล่าเรื่องจริง</div></div><div style="display:flex;align-items:center;gap:8px"><span style="border:1px solid rgba(43,36,32,.18);color:#2b241f;font:600 12.5px 'Anuphan';padding:7px 15px;border-radius:20px">แก้ไข</span><button onClick="{{ goSettings }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.18);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.7"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div></div>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">1</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">0</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">0</span> <span style="font:400 12px 'Anuphan';color:#8a7d6f">ผู้ติดตาม</span></div></div>
           </div>
           <div style="padding:14px 20px 0">
@@ -491,7 +510,7 @@
           <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabRecap }}" style="{{ pStyleRecap }}">รีแคป</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button></div></div>
           <sc-if value="{{ pTrips }}" hint-placeholder-val="{{ true }}">
             <div style="padding:16px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:13px">
-              <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="uploads/20211027_071410292_iOS.jpg" alt="" style="width:100%;height:96px;object-fit:cover;display:block"><div style="padding:9px 11px 11px"><div style="font:600 12.5px 'Anuphan';color:#2b241f">คาซัคสถาน</div><div style="font:400 11px 'Anuphan';color:#8a7d6f;margin-top:1px">คาซัคสถาน · 11 วัน</div></div></div>
+              <div onClick="{{ goTripKz }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ kzCover }}" alt="" style="width:100%;height:96px;object-fit:cover;display:block"><div style="padding:9px 11px 11px"><div style="font:600 12.5px 'Anuphan';color:#2b241f">คาซัคสถาน</div><div style="font:400 11px 'Anuphan';color:#8a7d6f;margin-top:1px">คาซัคสถาน · 11 วัน</div></div></div>
             </div>
           </sc-if>
           <sc-if value="{{ pStories }}" hint-placeholder-val="{{ false }}">
@@ -510,6 +529,75 @@
               <div style="text-align:center;padding:44px 24px 30px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg></div><div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">รีแคป/คลิปไดอารี่จะมาอยู่ที่นี่</div><div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">แต่ละทริปทำคลิปสรุปได้ 1 ชิ้น<br>สร้างจากปุ่ม "สรุปทริป → รีแคป" ในหน้าทริป</div></div>
             </div>
           </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ========== SETTINGS: ACCOUNT & SECURITY ========== -->
+      <sc-if value="{{ sSettings }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:14px 20px 30px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:13px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
+            <sc-if value="{{ hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ settingsAvatar }}" alt="" style="width:46px;height:46px;border-radius:14px;object-fit:cover;flex:none"></sc-if>
+            <sc-if value="{{ noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:46px;height:46px;border-radius:14px;background:#e9b48a;color:#5b3115;font-family:'Chonburi',serif;font-size:19px;display:flex;align-items:center;justify-content:center;flex:none">{{ acctInitial }}</span></sc-if>
+            <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ acctName }}</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:1px">ข้อมูลส่วนตัว</div></div>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b7a992" stroke-width="2"><path d="M9 5l7 7-7 7"></path></svg>
+          </div>
+          <div>
+            <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 15px">
+                <span style="font:500 14px 'Anuphan';color:#2b241f">อีเมล</span>
+                <span style="display:flex;align-items:center;gap:7px;font:400 13px 'Anuphan';color:#8a7d6f;min-width:0">{{ maskedEmail }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b7a992" stroke-width="2" style="flex:none"><path d="M9 5l7 7-7 7"></path></svg></span>
+              </div>
+              <div style="height:1px;background:rgba(43,36,32,.07);margin:0 15px"></div>
+              <div onClick="{{ togglePass }}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 15px;cursor:pointer">
+                <span style="font:500 14px 'Anuphan';color:#2b241f">จัดการรหัสผ่าน</span>
+                <span style="display:flex;align-items:center;gap:7px;font:400 13px 'Anuphan';color:#8a7d6f">{{ passStatus }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b7a992" stroke-width="2" style="flex:none"><path d="M9 5l7 7-7 7"></path></svg></span>
+              </div>
+              <sc-if value="{{ passOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:4px 15px 15px;display:flex;flex-direction:column;gap:9px">
+                  <input value="{{ passA }}" onInput="{{ setPassA }}" type="password" placeholder="รหัสผ่านใหม่ (6 ตัวขึ้นไป)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
+                  <input value="{{ passB }}" onInput="{{ setPassB }}" type="password" placeholder="ยืนยันรหัสผ่านใหม่" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
+                  <sc-if value="{{ passErr }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px 'Anuphan';color:#b3402a">{{ passErr }}</div></sc-if>
+                  <button onClick="{{ savePass }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 14px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกรหัสผ่าน</button>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div>
+            <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">การผูกบัญชี</div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
+              <div onClick="{{ toggleFb }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:0 15px;cursor:pointer">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#1877F2" style="flex:none"><path d="M24 12a12 12 0 1 0-13.88 11.85v-8.38H7.08V12h3.04V9.36c0-3 1.79-4.67 4.53-4.67 1.31 0 2.68.24 2.68.24v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.38A12 12 0 0 0 24 12z"></path></svg>
+                <div style="flex:1;min-width:0"><div style="font:500 14px 'Anuphan';color:#2b241f">Facebook</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:1px">{{ fbStatus }}</div></div>
+                <span style="font:600 12px 'Anuphan';color:{{ fbActionColor }}">{{ fbAction }}</span>
+              </div>
+              <div style="height:1px;background:rgba(43,36,32,.07);margin:0 15px"></div>
+              <div onClick="{{ toggleGoogle }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:0 15px;cursor:pointer">
+                <span style="width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid rgba(43,36,32,.1);display:flex;align-items:center;justify-content:center;flex:none"><svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"></path><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.1A12 12 0 0 0 12 24z"></path><path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.56.37-2.28v-3.1H1.29a12 12 0 0 0 0 10.76l3.98-3.1z"></path><path fill="#EA4335" d="M12 4.76c1.76 0 3.34.6 4.59 1.8l3.44-3.44A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.29 6.62l3.98 3.1C6.22 6.87 8.87 4.76 12 4.76z"></path></svg></span>
+                <div style="flex:1;min-width:0"><div style="font:500 14px 'Anuphan';color:#2b241f">Google</div><div style="font:400 12px 'Anuphan';color:#8a7d6f;margin-top:1px">{{ ggStatus }}</div></div>
+                <span style="font:600 12px 'Anuphan';color:{{ ggActionColor }}">{{ ggAction }}</span>
+              </div>
+            </div>
+          </div>
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
+            <sc-if value="{{ notDelConfirm }}" hint-placeholder-val="{{ true }}">
+              <div onClick="{{ askDelete }}" style="display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 15px;cursor:pointer">
+                <span style="font:500 14px 'Anuphan';color:#b3402a">ลบบัญชี</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b7a992" stroke-width="2"><path d="M9 5l7 7-7 7"></path></svg>
+              </div>
+            </sc-if>
+            <sc-if value="{{ delConfirm }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:15px;display:flex;flex-direction:column;gap:11px">
+                <div style="font:600 14px 'Anuphan';color:#b3402a">ลบบัญชีถาวร?</div>
+                <div style="font:400 12.5px/1.6 'Anuphan';color:#8a7d6f">ข้อมูลบัญชี ทริป และเรื่องเล่าทั้งหมดจะถูกลบ และกู้คืนไม่ได้</div>
+                <div style="display:flex;gap:8px">
+                  <button onClick="{{ cancelDelete }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button>
+                  <button onClick="{{ confirmDelete }}" style="flex:1;min-height:46px;border:none;background:#b3402a;color:#fff;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">ยืนยันลบบัญชี</button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 13.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
         </div>
       </sc-if>
 
@@ -532,13 +620,27 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
 class Component extends DCLogic {
-  state = { screen: 'onboard', tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
+  state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '',
+    screen: (() => { try { return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
   tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', compose:'stories', discover:'discover', profile:'me' };
   titles = { myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['myplans','feed','discover','profile'];
 
+  signIn(provider, name, email) {
+    try { localStorage.setItem('wtn-auth', JSON.stringify({ provider, name, email, at: Date.now() })); } catch (e) {}
+    this.setState({ auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '' });
+    this.setTab('plan');
+  }
+  authSubmit() {
+    const s = this.state, signup = s.auth === 'signup';
+    const email = s.authEmail.trim(), name = s.authName.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return this.setState({ authErr: 'กรุณากรอกอีเมลให้ถูกต้อง' });
+    if (s.authPass.length < 6) return this.setState({ authErr: 'รหัสผ่านต้องมี 6 ตัวขึ้นไป' });
+    if (signup && !name) return this.setState({ authErr: 'กรุณากรอกชื่อที่แสดง' });
+    this.signIn('email', signup ? name : email.split('@')[0], email);
+  }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
   setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); }
@@ -677,6 +779,45 @@ class Component extends DCLogic {
     ];
   }
 
+  componentDidMount() {
+    this._pp = () => this.forceUpdate();
+    window.addEventListener('photopick-change', this._pp);
+    this.tabOf.settings = 'me';
+    this.titles.settings = 'บัญชีและความปลอดภัย';
+  }
+  get acct() {
+    try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; }
+  }
+  get links() {
+    try {
+      const l = JSON.parse(localStorage.getItem('wtn-links'));
+      if (l) return l;
+    } catch (e) {}
+    const p = this.acct.provider;
+    return { facebook: p === 'facebook', google: p === 'google' };
+  }
+  toggleLink(k) {
+    const l = this.links; l[k] = !l[k];
+    try { localStorage.setItem('wtn-links', JSON.stringify(l)); } catch (e) {}
+    this.forceUpdate();
+  }
+  savePass() {
+    const s = this.state;
+    if (s.passA.length < 6) return this.setState({ passErr: 'รหัสผ่านต้องมี 6 ตัวขึ้นไป' });
+    if (s.passA !== s.passB) return this.setState({ passErr: 'รหัสผ่านไม่ตรงกัน' });
+    try { localStorage.setItem('wtn-pass', '1'); } catch (e) {}
+    this.setState({ passOpen: false, passA: '', passB: '', passErr: '' });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('photopick-change', this._pp);
+  }
+  coverOf(slotId, fallback) {
+    try {
+      const r = localStorage.getItem('photopick:' + slotId);
+      if (r) { const j = JSON.parse(r); if (j && j.img) return j.img; }
+    } catch (e) {}
+    return fallback;
+  }
   renderVals() {
     const sc = this.state.screen, active = this.state.day;
     const kz = this.kzDays, kzn = kz.length;
@@ -717,11 +858,59 @@ class Component extends DCLogic {
       goDocs: () => this.go('docs'),
       goTicket: () => this.go('ticket'),
       goHome: () => this.setTab('plan'),
+      authChoice: this.state.auth === 'choice', authForm: this.state.auth !== 'choice',
+      authSignup: this.state.auth === 'signup',
+      authTitle: this.state.auth === 'signup' ? 'สมัครด้วยอีเมล' : 'เข้าสู่ระบบ',
+      authCta: this.state.auth === 'signup' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ',
+      authSwitchQ: this.state.auth === 'signup' ? 'มีบัญชีอยู่แล้ว?' : 'ยังไม่มีบัญชี?',
+      authSwitchCta: this.state.auth === 'signup' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก',
+      authName: this.state.authName, authEmail: this.state.authEmail, authPass: this.state.authPass, authErr: this.state.authErr,
+      setAuthName: e => this.setState({ authName: e.target.value, authErr: '' }),
+      setAuthEmail: e => this.setState({ authEmail: e.target.value, authErr: '' }),
+      setAuthPass: e => this.setState({ authPass: e.target.value, authErr: '' }),
+      showSignup: () => this.setState({ auth: 'signup', authErr: '' }),
+      showLogin: () => this.setState({ auth: 'login', authErr: '' }),
+      authSwitch: () => this.setState({ auth: this.state.auth === 'signup' ? 'login' : 'signup', authErr: '' }),
+      authBack: () => this.setState({ auth: 'choice', authErr: '' }),
+      authSubmit: () => this.authSubmit(),
+      sSettings: sc === 'settings',
+      goSettings: () => this.go('settings'),
+      acctName: this.acct.name || 'Nim',
+      acctInitial: (this.acct.name || 'N').slice(0, 1).toUpperCase(),
+      maskedEmail: this.acct.email ? this.acct.email.slice(0, 2) + '****@' + this.acct.email.split('@')[1] : 'ยังไม่ได้ตั้งค่า',
+      settingsAvatar: this.coverOf('wtn-avatar', null),
+      hasAvatar: !!this.coverOf('wtn-avatar', null),
+      noAvatar: !this.coverOf('wtn-avatar', null),
+      passStatus: (() => { try { return localStorage.getItem('wtn-pass') ? 'ตั้งค่าแล้ว' : (this.acct.provider === 'email' ? 'ตั้งค่าแล้ว' : 'ยังไม่ได้ตั้งค่า'); } catch (e) { return 'ยังไม่ได้ตั้งค่า'; } })(),
+      passOpen: this.state.passOpen, passA: this.state.passA || '', passB: this.state.passB || '', passErr: this.state.passErr || '',
+      togglePass: () => this.setState(s => ({ passOpen: !s.passOpen, passErr: '' })),
+      setPassA: e => this.setState({ passA: e.target.value, passErr: '' }),
+      setPassB: e => this.setState({ passB: e.target.value, passErr: '' }),
+      savePass: () => this.savePass(),
+      fbStatus: this.links.facebook ? (this.acct.name || 'Nim') : 'ยังไม่ได้ผูก',
+      ggStatus: this.links.google ? (this.acct.name || 'Nim') : 'ยังไม่ได้ผูก',
+      fbAction: this.links.facebook ? 'ยกเลิกการผูก' : 'ผูกบัญชี',
+      ggAction: this.links.google ? 'ยกเลิกการผูก' : 'ผูกบัญชี',
+      fbActionColor: this.links.facebook ? '#8a7d6f' : '#c05f39',
+      ggActionColor: this.links.google ? '#8a7d6f' : '#c05f39',
+      toggleFb: () => this.toggleLink('facebook'),
+      toggleGoogle: () => this.toggleLink('google'),
+      delConfirm: !!this.state.delConfirm, notDelConfirm: !this.state.delConfirm,
+      askDelete: () => this.setState({ delConfirm: true }),
+      cancelDelete: () => this.setState({ delConfirm: false }),
+      confirmDelete: () => {
+        try { ['wtn-auth', 'wtn-links', 'wtn-pass'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+        this.setState({ delConfirm: false, screen: 'onboard', history: [], auth: 'choice' });
+      },
+      authGoogle: () => this.signIn('google', 'Nim', 'nim@gmail.com'),
+      authFb: () => this.signIn('facebook', 'Nim', 'nim@facebook.com'),
+      logout: () => { try { localStorage.removeItem('wtn-auth'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); },
       goCreate: () => this.go('create'),
       goCompose: () => this.go('compose'),
       goStory: () => this.go('story'),
       goTrip: () => this.openTrip('yamagata'),
       goTripKz: () => this.openTrip('kazakh'),
+      kzCover: this.coverOf('wtn-cover-kazakh', 'uploads/20211027_071410292_iOS.jpg'),
       goBlank: () => this.openTrip('blank'),
       tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripInfo.live, tripPlanned: !this.tripInfo.live, tripStatus: this.tripInfo.status,
