@@ -10,7 +10,7 @@
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
 <title>where to next?</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -60,10 +60,10 @@
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
-  .wtn-rte,.wtn-read{font-family:'Sarabun','Anuphan',system-ui,sans-serif}
-  .wtn-rte p,.wtn-read p{margin:0 0 1.1em;font-size:16px;line-height:1.95;text-wrap:pretty}
+  .wtn-rte,.wtn-read{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif}
+  .wtn-rte p,.wtn-read p{margin:0 0 1.05em;font-size:16px;line-height:1.9;text-wrap:pretty}
   .wtn-read{color:#2f2a24}
-  .wtn-read p{font-size:22px;line-height:2;color:#2f2a24}
+  .wtn-read p{font-size:24px;line-height:1.95;color:#2f2a24}
   .wtn-rte h3,.wtn-read h3{font-family:'Chonburi',serif;font-weight:400;font-size:20px;line-height:1.4;color:#2b241f;margin:1.4em 0 .5em}
   .wtn-read h3{font-size:23px}
   .wtn-rte blockquote,.wtn-read blockquote{margin:1.2em 0;padding:6px 0 6px 16px;border-left:3px solid #d8a07f;color:#6f6558;font-style:italic}
@@ -1226,7 +1226,7 @@ class Component extends DCLogic {
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
     const data = {};
-    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) { const v = localStorage.getItem(k); if (v && v.indexOf('data:image') !== -1) continue; /* รูปที่ยังไม่ได้อัปขึ้น Storage — ข้ามไว้ กัน backup บวมเกิน 1MB, เก็บไว้ในเครื่องแล้วค่อยอัปรอบหน้า */ data[k] = v; } } } catch (e) {}
     return data;
   }
   scheduleCloudPush() {
@@ -1316,7 +1316,7 @@ class Component extends DCLogic {
         try {
           const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1 };
           const toDel = [];
-          for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if ((/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && !(k in bk.data)) toDel.push(k); }
+          for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; /* ห้ามลบรูปในเครื่อง แม้คลาวด์ยังไม่มี — กันรูปหาย */ if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
           toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
           Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
           try { localStorage.setItem('wtn-cloud-at', String(bk._at)); } catch (e) {}
@@ -2376,7 +2376,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.18',
+      appVersion: '2026.07.18c',
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
