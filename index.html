@@ -1192,7 +1192,7 @@ class Component extends DCLogic {
       this.setState({ cloud: 'saved' });
     } catch (e) {
       console.warn('[wtn] cloud push', e);
-      this.setState({ cloud: 'error' });
+      this.setState({ cloud: 'error', cloudErr: (e && (e.code || e.message)) || String(e) });
       clearTimeout(this._cloudRetry); this._cloudRetry = setTimeout(() => this.cloudPush(), 8000);
     }
   }
@@ -1219,7 +1219,7 @@ class Component extends DCLogic {
       } else if (!bk || !bk.data) {
         this.cloudPush();
       } else { this.setState({ cloud: 'saved' }); }
-    } catch (e) { console.warn('[wtn] cloud pull', e); this.setState({ cloud: 'error' }); }
+    } catch (e) { console.warn('[wtn] cloud pull', e); this.setState({ cloud: 'error', cloudErr: (e && (e.code || e.message)) || String(e) }); }
   }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
@@ -1424,7 +1424,7 @@ class Component extends DCLogic {
       if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก OpenAI ไม่สำเร็จ');
       return d.choices[0].message.content;
     }
-    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key), {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + encodeURIComponent(key), {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
     const d = await r.json();
@@ -2388,7 +2388,7 @@ class Component extends DCLogic {
       authFb: () => this.oauth('facebook'),
       authBusy: !!this.state.authBusy,
       cloudShow: this.state.cloud === 'saving' || this.state.cloud === 'error',
-      cloudText: this.state.cloud === 'error' ? 'ซิงก์ไม่สำเร็จ · จะลองใหม่ให้' : 'กำลังซิงก์ขึ้นคลาวด์…',
+      cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); try { localStorage.removeItem('wtn-auth'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); },
       doBackup: () => this.exportBackup(),
       doRestore: e => this.importBackup(e),
