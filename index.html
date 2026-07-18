@@ -1228,7 +1228,23 @@ class Component extends DCLogic {
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
     const data = {};
-    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) { const v = localStorage.getItem(k); if (v && v.indexOf('data:image') !== -1) continue; /* รูปที่ยังไม่ได้อัปขึ้น Storage — ข้ามไว้ กัน backup บวมเกิน 1MB, เก็บไว้ในเครื่องแล้วค่อยอัปรอบหน้า */ data[k] = v; } } } catch (e) {}
+    const IMG_MAX = 380000, TOTAL_MAX = 850000; // รูปเล็ก (<~285KB) ฝังใน backup ได้ตรงๆ, รวมไม่เกิน ~640KB กัน doc เกิน 1MB
+    let imgTotal = 0;
+    try {
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) keys.push(k); }
+      // ให้รูปโปรไฟล์ (avatar/ปก) ได้สิทธิ์ฝังก่อน
+      keys.sort((a, b) => (/avatar|wtn-cover/.test(a) ? -1 : 0) - (/avatar|wtn-cover/.test(b) ? -1 : 0));
+      keys.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v && v.indexOf('data:image') !== -1) {
+          // รูปที่ยังเป็น base64 (อัป Storage ไม่สำเร็จ) — ฝังได้ถ้าเล็กพอ ไม่งั้นข้าม
+          if (v.length <= IMG_MAX && imgTotal + v.length <= TOTAL_MAX) { data[k] = v; imgTotal += v.length; }
+          return;
+        }
+        data[k] = v;
+      });
+    } catch (e) {}
     return data;
   }
   scheduleCloudPush() {
@@ -2399,7 +2415,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.18d',
+      appVersion: '2026.07.18e',
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
