@@ -623,7 +623,7 @@
                   <sc-if value="{{ oFinished }}" hint-placeholder-val="{{ false }}"><span style="background:rgba(143,206,155,.2);color:#4e8a5c;font:600 10.5px 'Anuphan';padding:3px 10px;border-radius:20px">จบแล้ว</span></sc-if>
                 </div>
                 <h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:27px;line-height:1.3;color:#2b241f;margin:0 0 12px;text-wrap:pretty">{{ oTitle }}</h1>
-                <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span><div style="flex:1"><div style="font:600 13px 'Anuphan';color:#2b241f">{{ oAuthor }}</div><div style="font:400 11.5px 'Anuphan';color:#a99e8e">{{ oSubtitle }}</div></div><button onClick="{{ editOpenStory }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 12px 'Anuphan';padding:8px 15px;border-radius:20px;cursor:pointer">จัดการ</button></div>
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><sc-if value="{{ ownerHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ ownerAvatar }}" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ ownerNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><div style="flex:1"><div style="font:600 13px 'Anuphan';color:#2b241f">{{ oAuthor }}</div><div style="font:400 11.5px 'Anuphan';color:#a99e8e">{{ oSubtitle }}</div></div><button onClick="{{ editOpenStory }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 12px 'Anuphan';padding:8px 15px;border-radius:20px;cursor:pointer">จัดการ</button></div>
                 <div style="display:flex;align-items:center;gap:16px;padding:14px 0;margin-top:8px;border-top:1px solid rgba(43,36,32,.1);border-bottom:1px solid rgba(43,36,32,.1)">
                   <span style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ oLikes }}</span>
                   <span style="display:inline-flex;align-items:center;gap:6px;font:500 12.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>{{ oViews }}</span>
@@ -1962,7 +1962,7 @@ class Component extends DCLogic {
         await this.hoistImages();
         const s = this.normStory(this.stories.find(x => x.id === storyId)); if (!s) return;
         const c = (s.chapters || []).find(x => x.id === chapterId); if (!c) return;
-        const author = s.author || this.profile.name || 'nimjourney';
+        const author = this.profile.name || s.author || 'nimjourney';
         await be.saveStory({ id: s.id, title: s.title || 'ไม่มีชื่อ', author, ownerName: author,
           cover: s.cover || '', category: s.category || '', subtitle: s.subtitle || '', tags: s.tags || [] });
         await be.saveChapter(s.id, { id: c.id, title: c.title || 'ตอน', html: c.html || '',
@@ -2817,7 +2817,7 @@ class Component extends DCLogic {
         return {
           bookExists: true, bookNo: false,
           bookCover: bk.cover || this.tripInfo.hero || '', bookHasCover: !!(bk.cover || this.tripInfo.hero),
-          bookTitle: bk.title, bookAuthor: bk.author || this.profile.name || 'nimjourney', bookChapCount: chs.length,
+          bookTitle: bk.title, bookAuthor: this.profile.name || bk.author || 'nimjourney', bookChapCount: chs.length,
           bookSynopsis: bk.synopsis || '', bookHasSyn: !!(bk.synopsis || '').trim(),
           bookFinished: !!bk.finished,
           bookPubCount: chs.filter(c => c.published).length,
@@ -2863,7 +2863,7 @@ class Component extends DCLogic {
                 smSubtitle: os.subtitle || '', smTags: [...(os.tags || [])], tagDraft: '' });
             }
           },
-          seTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: os.author || 'Nim',
+          seTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: this.profile.name || os.author || 'Nim',
           smTitle: this.state.smTitle ?? '', smCategory: this.state.smCategory ?? '', smSubtitle: this.state.smSubtitle ?? '',
           setSmTitle: e => this.setState({ smTitle: e.target.value }),
           setSmCategory: e => this.setState({ smCategory: e.target.value }),
@@ -2919,7 +2919,7 @@ class Component extends DCLogic {
           ceChars: this.state.chChars || 0, ceWords: this.state.chWords || 0, ceSavedAt: oc ? fmtDT(oc.updatedAt) : '',
           saveChapterFn: () => this.saveChapter(),
           previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this._chEl.innerHTML, photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
-          crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: os.author || 'Nim',
+          crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: this.profile.name || os.author || 'Nim',
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
           chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => { const id = sp.getAttribute('data-yt'); const w = document.createElement('div'); w.className = 'wtn-embed-yt'; w.innerHTML = '<iframe src=\"https://www.youtube.com/embed/' + id + '\" allowfullscreen></iframe>'; sp.replaceWith(w); }); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
@@ -2938,7 +2938,8 @@ class Component extends DCLogic {
           crHasYt: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return !!m; })(),
           crClipUrl: ((oc || {}).clip) || '', crHasClipLink: (() => { const u = ((oc || {}).clip) || ''; return !!u && !/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/.test(u); })(),
           oCover: os.cover || '', oHasCover: !!os.cover, oCategory: os.category,
-          oTitle: os.title, oAuthor: os.author || 'Nim', oSubtitle: os.subtitle || '',
+          oTitle: os.title, oAuthor: this.profile.name || os.author || 'Nim', oSubtitle: os.subtitle || '',
+          ownerAvatar: this.coverOf('wtn-avatar', null), ownerHasAvatar: !!this.coverOf('wtn-avatar', null), ownerNoAvatar: !this.coverOf('wtn-avatar', null),
           oDraft: !os.published, oPublished: !!os.published, oFinished: !!os.finished,
           oSynopsis: os.synopsis || '', oHasSyn: !!(os.synopsis || '').trim(),
           oLikes: os.likes || 0, oViews: os.views || 0, oChapCount: chs.length, oNoChapters: chs.length === 0,
