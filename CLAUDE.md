@@ -4,7 +4,9 @@
 
 ## สำคัญ
 - **นี่คือ MOBILE APP เป็นหลัก** — ทุกดีไซน์คงเป็นหน้าจอมือถือเสมอ (เฟรม ~402px, แถบเมนูล่าง 4 อัน: เรื่องเล่า/สำรวจ/แผนของฉัน/ฉัน, ปุ่มขนาดนิ้วแตะ ≥44px). อย่าทำเป็น desktop/web layout.
-- ไฟล์หลัก: `Where to Next.dc.html` (แก้ที่นี่). ทุกครั้งที่แก้เสร็จ ให้ก็อปไป `index.html` ด้วย (สำหรับ deploy GitHub Pages).
+- ไฟล์หลัก: `Where to Next.dc.html` (แก้ที่นี่). ทุกครั้งที่แก้เสร็จ ให้ก็อปไป `index.html` ที่ root ด้วย (สำหรับ deploy GitHub Pages).
+- **ไฟล์ deploy = ชุด root เท่านั้น** (index.html + wtn-backend.js + photo-pick.js + support.js + firebase-config.js + sw.js + manifest.webmanifest + รูป/ไอคอน + firebase/firestore.rules). **ห้ามสร้างโฟลเดอร์ `deploy/` ซ้ำอีก** — เคยมี 2 ชุดแล้วสับสนมาก ลบทิ้งไปแล้ว. GitHub Pages เสิร์ฟจาก root.
+- เวลาแก้เสร็จ: อัปเดต `appVersion` (renderVals) + `CACHE` ใน `sw.js` ให้เป็นเวอร์ชันวันนั้น (รูปแบบ `YYYY.MM.DDx`) เพื่อให้ auto-update เด้งบิลด์ใหม่.
 - เปิดหน้าแรกที่ onboarding → เข้า "แผนของฉัน" (planning-first).
 
 ## ทิศทาง/แบรนด์

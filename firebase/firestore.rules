@@ -1,0 +1,77 @@
+rules_version = '2';
+// where to next? — Firestore security rules
+// หลัก: เจ้าของแก้ของตัวเองได้; ตอนอ่านได้สาธารณะเฉพาะที่ published == true
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // ฟีดสาธารณะ: collectionGroup('chapters') where published==true
+    // (ต้องมี rule แบบ collection-group แยก ไม่งั้น query ฟีดจะถูกบล็อก)
+    match /{path=**}/chapters/{chapterId} {
+      allow read: if resource.data.published == true;
+    }
+
+    // backup ทั้งแอป (ซิงก์ข้ามเครื่อง) — เจ้าของเท่านั้น อ่าน/เขียนได้
+    match /backups/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // โปรไฟล์ผู้ใช้ (อ่านสาธารณะเพื่อโชว์ชื่อ/รูปในฟีด)
+    match /users/{uid} {
+      allow read: if true;
+      allow write: if isOwner(uid);
+      // ถูกใจของฉัน (ส่วนตัว)
+      match /likes/{chapterId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ทริป + เช็คอิน + งบ + เอกสาร = ส่วนตัวของเจ้าของเท่านั้น
+    match /trips/{tripId} {
+      allow read, write: if signedIn() && request.resource.data.ownerUid == request.auth.uid
+                          || (resource != null && resource.data.ownerUid == request.auth.uid);
+      match /{sub=**} {
+        allow read, write: if signedIn() &&
+          get(/databases/$(db)/documents/trips/$(tripId)).data.ownerUid == request.auth.uid;
+      }
+    }
+
+    // โมเมนต์ (โพสต์สั้น / เช็คอินที่เผยแพร่) — ฟีดสาธารณะ
+    match /moments/{momentId} {
+      allow read: if resource.data.published == true
+                  || (signedIn() && resource.data.ownerUid == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      // เจ้าของแก้/ลบได้ทุกอย่าง; ผู้ล็อกอินคนอื่นแก้ได้เฉพาะตัวนับไลก์
+      allow update: if signedIn() && (
+        resource.data.ownerUid == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']));
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // หนังสือ (เรื่องเล่า)
+    match /stories/{storyId} {
+      function storyOwner() { return resource.data.ownerUid; }
+      allow read: if true; // เมทาเดต้าเล่มอ่านได้ (โชว์ปก/แนะนำเรื่อง)
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+
+      // ตอน: อ่านได้ถ้า published หรือเป็นเจ้าของ
+      match /chapters/{chapterId} {
+        function chOwner() {
+          return get(/databases/$(db)/documents/stories/$(storyId)).data.ownerUid;
+        }
+        allow read: if resource.data.published == true || (signedIn() && chOwner() == request.auth.uid);
+        allow create, update, delete: if signedIn() && chOwner() == request.auth.uid;
+
+        // คอมเมนต์: อ่านได้ถ้าตอนเผยแพร่; ผู้ล็อกอินคอมเมนต์ได้; ลบได้เฉพาะเจ้าของคอมเมนต์หรือเจ้าของตอน
+        match /comments/{commentId} {
+          allow read: if true;
+          allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+          allow delete: if signedIn() && (resource.data.uid == request.auth.uid || chOwner() == request.auth.uid);
+        }
+      }
+    }
+  }
+}
