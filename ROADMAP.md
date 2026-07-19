@@ -2,6 +2,19 @@
 
 อัปเดต: 18 ก.ค. 2026 · เจ้าของ: Nim (@nimjourney)
 
+## บันทึกงานล่าสุด (18 ก.ค. 2026 — รอบซ่อมก่อนทริป)
+- ✅ **รูป/โปรไฟล์ซิงก์ข้ามเครื่องได้แล้ว (ยืนยันใช้งานจริง):** รูป avatar/ปก เก็บใน localStorage เป็น base64 → `hoistImages()` อัปขึ้น Cloud Storage แล้วแทนด้วย URL ก่อน push. บั๊กเดิม: base64 ก้อนใหญ่ทำ backup เกิน 1MB → push ล้มเงียบ + ตอน pull โค้ดลบรูปในเครื่องที่ไม่มีบนคลาวด์ทิ้ง (รูปหาย). แก้: `gatherLocal()` ข้ามรูปที่ยังเป็น base64 (ไม่ให้ backup บวม), `cloudPull` ห้ามลบ key `photopick:` ในเครื่อง, + เพิ่มปุ่ม **"ซิงก์ตอนนี้"** ในโปรไฟล์ (`syncNow()`) เด้ง alert บอกผล/error และนับรูปที่อัปไม่สำเร็จ. เวอร์ชันปัจจุบัน = **2026.07.18d** (โชว์ที่ล่างแท็บ "ฉัน")
+- ✅ **AI key + ชื่อโปรไฟล์ซิงก์ขึ้นคลาวด์** (เดิม ai-key ถูกกันไว้ไม่ให้ backup)
+- ✅ **byline คนบันทึกดึงจาก `profile.name` สด** (เดิมค้างชื่อเก่า) + โชว์ avatar โปรไฟล์
+- ✅ **ฟอนต์เนื้อหาอ่าน:** เปลี่ยนเป็น IBM Plex Sans Thai Looped (มีหัวห่วง) ขนาด 24px, หัวข้อ 23px. ปกหนังสือเป็น landscape 16/9
+- ✅ **PWA auto-update:** เพิ่ม `sw.js` (network-first) + `manifest.webmanifest` → Add to Home Screen เปิดเป็นแอป และดึงบิลด์ล่าสุดเอง (ครั้งแรกต้องลบไอคอนเก่า→เพิ่มใหม่ 1 รอบ). ไฟล์ 2 ตัวนี้ต้องอยู่ที่ root ของ repo
+- ✅ **AI แก้โมเดล:** `gemini-2.5-flash` → `gemini-flash-latest` (alias) ที่ `askLLM()`
+- ✅ **ซิงก์ backup อยู่ Firestore** `backups/{uid}` (เลี่ยง CORS ของ Storage) — **กฎ Firestore + Storage publish แล้ว** (`firebase/firestore.rules`, `firebase/storage.rules`)
+- ✅ **สมัครด้วยเบอร์มือถือ (OTP)** + เอา Facebook ออก + Google fallback popup→redirect
+- ✅ **ทริปคาซัคสถานเลิก hardcode:** เป็นทริปจริงรายบัญชี (`loadKazakh()`/`kzSeed()`), บัญชีใหม่เริ่มว่าง
+- ⚠️ **ค้าง:** `feed: failed-precondition` = ฟีดสาธารณะต้องสร้าง composite index (ไว้ทำตอนเปิด Win B). Multi-account บนเบราว์เซอร์เดียวยังไม่แยก (ไม่กระทบบัญชีเดียว)
+- 📌 **Deploy:** push ไฟล์ที่แก้ขึ้น GitHub Pages root (ปกติแค่ `index.html`; ถ้าแก้ backend/sw/manifest ก็ push ตัวนั้นด้วย) — ไม่ต้อง push `uploads/`
+
 ## ลำดับงาน (สำคัญสุดก่อน)
 
 ### 1. แผนของฉัน — ทำให้ใช้จริงได้ก่อน ⭐ งานแรก
@@ -23,14 +36,22 @@
 - AI ช่วยจัดวัน (BYOK หรือ AI ของแอปแบบฟรีจำกัด/พรีเมียม)
 - ลิงก์จองแอฟฟิลิเอตในหน้าเพิ่มกิจกรรม (ที่พัก/เดินทาง/กิน/ที่เที่ยว)
 
-### 4. สำรวจ — ไว้หลังสุด
+### 4. Backend (เร่งก่อนทริป 24 ก.ค.) — เลือก **Firebase** (ไม่ใช้ Supabase)
+Auth: เบอร์ OTP + Google + Facebook (OAuth จริง) + อีเมล/รหัสผ่าน · sync ทุกอย่าง (ทริป/เช็คอิน/งบ/เอกสาร/เรื่องเล่า/คอมเมนต์/ถูกใจ) · รูปขึ้น Firebase Storage เก็บเป็น URL · ตอนเริ่มเป็นส่วนตัวจนกดเผยแพร่
+- ✅ วางแล้ว: `firebase/firestore.rules`, `firebase/storage.rules`, `firebase-config.js`, `wtn-backend.js`, `firebase/BACKEND-SETUP.md`
+- ✅ ต่อสาย auth จริง (อีเมล/Google/Facebook/Phone) + ซิงก์อัตโนมัติทั้งแอป (offline-first: local → คลาวด์)
+- ✅ **สเกลรูป (photo-offload):** ตอนซิงก์ รูป base64 ที่ฝังในข้อมูลจะถูกยกขึ้น Cloud Storage อัตโนมัติ (อัพครั้งเดียว/รูป กันซ้ำด้วย hash ใน `wtn-img-map`, ไม่ซิงก์ตัว map) แล้วแทนด้วยลิงก์ CDN → blob ซิงก์เล็กลงมาก + localStorage ไม่เต็ม + รองรับหลายคนอัพรูป
+- ⏭ **Win B (ยังไม่ทำ) — ฟีดข้ามบัญชี:** ตอนนี้ฟีดเรื่องเล่ายังเป็น local/ต่อบัญชี. ถ้าจะให้คนอื่นเห็นเรื่องที่เผยแพร่จริง ต้องย้าย stories/chapters/comments/likes ขึ้น Firestore (เมธอดใน `wtn-backend.js` มีครบแล้ว: `saveStory/saveChapter/publishChapter/feed/toggleLike/addComment`) — ต้องทดสอบหลายบัญชีก่อนเปิดจริง
+
+### 5. สำรวจ — ไว้หลังสุด
 Mock ใน UI แล้ว (การ์ดจุดหมาย + 4 หมวด + ปุ่มเพิ่มลงแผน + ป้ายที่มา + ผู้ใช้เพิ่มสถานที่)
 แผนข้อมูลจริง:
 - แหล่งภายนอก: เริ่มจากสาย OpenStreetMap (Geoapify — ฟรี/ถูก) หรือ Foursquare free tier; เลี่ยง Google Places (~$275/เดือน ไม่มี free tier แล้ว)
 - แปลไทย: AI แปล+เรียบเรียงครั้งเดียวต่อสถานที่ → เก็บฐานข้อมูลเราเอง (cache, ไม่แปลสด)
 - ผู้ใช้เติมเอง (UGC): ป้าย "จากผู้ใช้จริง" + ตรวจก่อนแสดง + ดึงจากทริป/เรื่องเล่าสาธารณะ
-- ต้องมี backend ก่อน (Supabase/Firebase ฟรี tier) — เก็บฐานสถานที่+คำแปล+UGC, ซ่อน API key
+- ใช้ Firebase ที่วางไว้ในข้อ 4 เก็บฐานสถานที่+คำแปล+UGC
 - ดึงข้อมูลเป็นล็อตเฉพาะเมืองที่ผู้ใช้ค้นจริง → ค่าใช้จ่ายช่วงเริ่ม ≈ 0–300 บาท/เดือน
+
 
 ## สถานะปัจจุบันของแต่ละแท็บ (mock ใน index.html)
 - **หน้าแรก**: บังคับสมัคร/เข้าระบบ (Google / Facebook / อีเมล) จำใน wtn-auth

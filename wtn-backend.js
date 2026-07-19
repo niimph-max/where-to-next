@@ -116,6 +116,41 @@ async function boot() {
       return rows;
     },
 
+    // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) — ฟีดสาธารณะข้ามบัญชี ----------
+    async publishMoment(id, data) {
+      if (!this._uid) return;
+      await fs.setDoc(fs.doc(DB, "moments", id),
+        { ...data, ownerUid: this._uid, published: true, updatedAt: fs.serverTimestamp() }, { merge: true });
+    },
+    async unpublishMoment(id) {
+      if (!this._uid) return;
+      try { await fs.updateDoc(fs.doc(DB, "moments", id), { published: false }); } catch (e) {}
+    },
+    async deleteMoment(id) {
+      if (!this._uid) return;
+      try { await fs.deleteDoc(fs.doc(DB, "moments", id)); } catch (e) {}
+    },
+    async moments(max = 60) {
+      const q = fs.query(fs.collection(DB, "moments"), fs.where("published", "==", true), fs.limit(max));
+      const rows = (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => (b.at || 0) - (a.at || 0));
+      return rows;
+    },
+    async toggleMomentLike(momentId) {
+      if (!this._uid) return null;
+      const meRef = fs.doc(DB, "users", this._uid, "likes", "m_" + momentId);
+      const mRef = fs.doc(DB, "moments", momentId);
+      let nowLiked = false;
+      await fs.runTransaction(DB, async t => {
+        const me = await t.get(meRef);
+        const m = await t.get(mRef);
+        const cur = (m.exists() && m.data().likes) || 0;
+        if (me.exists()) { t.delete(meRef); t.update(mRef, { likes: Math.max(0, cur - 1) }); nowLiked = false; }
+        else { t.set(meRef, { at: fs.serverTimestamp() }); t.update(mRef, { likes: cur + 1 }); nowLiked = true; }
+      });
+      return nowLiked;
+    },
+
     // ---------- LIKES ----------
     async toggleLike(storyId, cid) {
       const meRef = fs.doc(DB, "users", this._uid, "likes", cid);

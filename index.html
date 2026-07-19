@@ -53,6 +53,9 @@
   @keyframes wtnFade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
   .wtn-screen{animation:wtnFade .22s ease}
   @keyframes wtnPulse{0%{transform:scale(.5);opacity:.55}70%{transform:scale(1.9);opacity:0}100%{opacity:0}}
+  @keyframes wtnLive{0%{transform:scale(1);opacity:.5}70%{transform:scale(3.4);opacity:0}100%{opacity:0}}
+  @keyframes wtnSpin{to{transform:rotate(360deg)}}
+  @keyframes wtnToast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
   /* full-screen by default (any device/webview) */
   body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
@@ -61,12 +64,17 @@
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
   .wtn-rte,.wtn-read{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif}
-  .wtn-rte p,.wtn-read p{margin:0 0 1.05em;font-size:16px;line-height:1.9;text-wrap:pretty}
+  .wtn-rte p,.wtn-read p{margin:0 0 1.05em;font-size:19px;line-height:1.95;text-wrap:pretty;overflow-wrap:anywhere;word-break:break-word}
   .wtn-read{color:#2f2a24}
-  .wtn-read p{font-size:24px;line-height:1.95;color:#2f2a24}
-  .wtn-rte h3,.wtn-read h3{font-family:'Chonburi',serif;font-weight:400;font-size:20px;line-height:1.4;color:#2b241f;margin:1.4em 0 .5em}
-  .wtn-read h3{font-size:23px}
+  .wtn-read p{font-size:25px;line-height:2;color:#2f2a24}
+  .wtn-rte h3,.wtn-read h3{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-weight:700;font-size:22px;line-height:1.45;color:#2b241f;margin:1.4em 0 .5em}
+  .wtn-read h3{font-size:26px}
   .wtn-rte blockquote,.wtn-read blockquote{margin:1.2em 0;padding:6px 0 6px 16px;border-left:3px solid #d8a07f;color:#6f6558;font-style:italic}
+  .wtn-rte ol,.wtn-rte ul,.wtn-read ol,.wtn-read ul{margin:0 0 1.05em;padding-left:1.5em}
+  .wtn-rte li,.wtn-read li{font-size:19px;line-height:1.9;margin:0 0 .35em}
+  .wtn-read li{font-size:25px;line-height:1.95}
+  .wtn-rte hr,.wtn-read hr{border:none;border-top:2px solid #e0cbb4;margin:1.6em auto;width:62%}
+  .wtn-rte a,.wtn-read a{overflow-wrap:anywhere;word-break:break-word}
   .wtn-rte img,.wtn-read img{max-width:100%;border-radius:12px;display:block;margin:14px 0}
   .wtn-read h3:first-child,.wtn-rte h3:first-child{margin-top:0}
   .wtn-rte .wtn-embed,.wtn-read .wtn-embed{display:inline-flex;align-items:center;gap:8px;background:#2b241f;color:#f6efe2;font:600 12px 'Anuphan';padding:8px 14px;border-radius:12px;margin:4px 0}
@@ -229,6 +237,24 @@
           <button onClick="{{ saveTrip }}" style="width:100%;margin-top:20px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer">{{ ncSaveLabel }}</button>
           <sc-if value="{{ ncEditing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTrip }}" style="width:100%;margin-top:10px;border:none;background:transparent;color:#b23b2a;font:600 13.5px 'Anuphan';padding:10px;cursor:pointer">ลบทริปนี้</button></sc-if>
           <div style="display:flex;align-items:center;gap:12px;margin:22px 0 16px"><div style="flex:1;height:1px;background:rgba(43,36,32,.1)"></div><div style="font:500 12px 'Anuphan';color:#a99e90">หรือ</div><div style="flex:1;height:1px;background:rgba(43,36,32,.1)"></div></div>
+          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><div style="font:400 12px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์/รูป แล้ว AI แยกเป็นรายวันให้</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
+          <sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:16px;padding:15px;margin-bottom:14px">
+              <textarea value="{{ impText }}" onInput="{{ setImpText }}" placeholder="วางโปรแกรมทัวร์ที่นี่ (ก็อปจากอีเมล/ไลน์)… เช่น&#10;วันที่ 1 บินไปอัลมาตี&#10;วันที่ 2 เที่ยวเมือง…" rows="5" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:400 14px/1.6 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:vertical"></textarea>
+              <sc-if value="{{ impHasFiles }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+                  <sc-for list="{{ impFilesList }}" as="fl" hint-placeholder-count="0"><span style="position:relative;display:inline-flex;align-items:center;gap:6px;background:#f3ece0;border-radius:10px;padding:7px 10px;font:600 11px 'Anuphan';color:#5c5347"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg>{{ fl.label }}<button onClick="{{ fl.rm }}" style="border:none;background:transparent;color:#b7a992;font:700 13px 'Anuphan';cursor:pointer;line-height:1;padding:0 2px">✕</button></span></sc-for>
+                </div>
+              </sc-if>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+                <label style="display:inline-flex;align-items:center;gap:7px;border:1px dashed rgba(43,36,32,.24);border-radius:11px;padding:10px 13px;cursor:pointer;color:#8a7d6f;font:600 12px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>แนบไฟล์/รูป<input type="file" accept="image/*,application/pdf" multiple onChange="{{ addImpFiles }}" style="display:none"></label>
+                <span style="flex:1"></span>
+                <button onClick="{{ importProgramFn }}" style="border:none;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';padding:11px 20px;border-radius:13px;cursor:pointer;opacity:{{ impBtnOpacity }}">{{ impBtnLabel }}</button>
+              </div>
+              <sc-if value="{{ impHasErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 12px/1.5 'Anuphan';color:#b23b2a">{{ impErr }}</div></sc-if>
+              <div style="margin-top:10px;font:400 11px/1.5 'Anuphan';color:#a99e8e">ต้องเชื่อม API key ที่แท็บ "ฉัน" ก่อน · AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้</div>
+            </div>
+          </sc-if>
           <div onClick="{{ goTripKz }}" style="display:flex;align-items:center;gap:13px;background:#2b241f;border-radius:16px;padding:15px;cursor:pointer"><span style="width:44px;height:44px;border-radius:12px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M9 3v14M15 7v14M9 3l6 4M9 17l6 4M4 6l5-3v14l-5 3zM20 4l-5 3v14l5-3z"/></svg></span><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">โหลดโปรแกรมทัวร์ (คาซัคสถาน)</div><div style="font:400 12px 'Anuphan';color:#c9b79b">ดูตัวอย่างทริปที่โหลดจากตั๋ว + โปรแกรมทัวร์</div></div></div>
         </div>
       </sc-if>
@@ -240,7 +266,7 @@
           <div class="wtn-s" style="display:flex;gap:6px;padding:14px 20px 4px;overflow-x:auto;scrollbar-width:none">
             <button onClick="{{ goOverview }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">ภาพรวม</button>
             <button onClick="{{ goPrep }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">เตรียมตัว</button>
-            <button onClick="{{ goMap }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">เช็คอิน</button>
+            <button onClick="{{ goMap }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">โมเมนต์</button>
             <button onClick="{{ goBudget }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">งบ</button>
             <button onClick="{{ goAi }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">AI จัดวัน</button>
             <button onClick="{{ goSummary }}" style="flex:none;background:#c05f39;color:#fff;font:600 12px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">สรุปทริป</button>
@@ -398,9 +424,10 @@
           <div style="position:relative;height:280px;background:#e8dfc9">
             <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
             <span style="position:absolute;top:12px;left:14px;z-index:500;background:rgba(43,36,32,.82);color:#f6d9c6;font:600 10.5px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none">เส้นทาง 11 วัน · เริ่ม-จบที่อัลมาตี</span>
+            <button onClick="{{ recenterMe }}" aria-label="ตำแหน่งของฉัน" style="position:absolute;bottom:14px;right:14px;z-index:500;width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 3px 10px rgba(43,36,32,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e78d2" stroke-width="1.9"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round"></path></svg></button>
           </div>
           <div style="padding:16px 20px 30px">
-            <div style="font:400 11px 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:14px">เส้นทางรวมทุกวัน · จุดส้ม = ที่ที่คุณเช็คอินจริง</div>
+            <div style="font:400 11px 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:14px">จุดฟ้ากะพริบ = ตำแหน่งคุณตอนนี้ · จุดส้ม = ที่ที่เช็คอินจริง · กดปุ่มเป้าเพื่อกลับมาที่ตัวคุณ</div>
             <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
               <sc-for list="{{ ciDays }}" as="cd" hint-placeholder-count="5">
                 <button onClick="{{ cd.on }}" style="{{ cd.style }}">{{ cd.label }}</button>
@@ -415,6 +442,11 @@
                   <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 11px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 14px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 11.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
                   <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:400 12.5px/1.55 'Anuphan';color:#5c5347;margin-top:7px">{{ ci.note }}</div></sc-if>
                   <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="width:76px;height:76px;object-fit:cover;border-radius:11px;flex:none"></sc-for></div></sc-if>
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
+                    <span onClick="{{ ci.togglePub }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer"><span style="width:40px;height:23px;border-radius:13px;position:relative;flex:none;{{ ci.pubTrack }}"><span style="position:absolute;top:3px;{{ ci.pubKnob }};width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span><span style="font:600 11.5px 'Anuphan';color:{{ ci.pubColor }}">{{ ci.pubLabel }}</span></span>
+                    <span style="flex:1"></span>
+                    <button onClick="{{ ci.share }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;font:600 11.5px 'Anuphan';padding:7px 12px;border-radius:12px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg>แชร์</button>
+                  </div>
                 </div>
               </sc-for>
               <sc-if value="{{ ciFormClosed }}" hint-placeholder-val="{{ true }}">
@@ -422,6 +454,9 @@
               </sc-if>
               <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
                 <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                  <sc-if value="{{ ciGeoLocating }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 12px 'Anuphan';color:#8a7d6f"><span style="width:15px;height:15px;border:2px solid #d8ccb8;border-top-color:#c05f39;border-radius:50%;flex:none;animation:wtnSpin .8s linear infinite"></span>กำลังหาตำแหน่ง GPS…</div></sc-if>
+                  <sc-if value="{{ ciGeoOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#edf6ee;border-radius:11px;padding:9px 12px;font:600 12px 'Anuphan';color:#2f7d47"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2f7d47" stroke-width="2.2" style="flex:none"><path d="M20 6L9 17l-5-5"></path></svg>ได้ตำแหน่งแล้ว {{ ciAccText }}· จะปักหมุดบนแผนที่ให้</div></sc-if>
+                  <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 11.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 11px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
                   <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 14px 'Anuphan';color:#2b241f;outline:none">
                   <input value="{{ ciNote }}" onInput="{{ setCiNote }}" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:400 13.5px 'Anuphan';color:#2b241f;outline:none">
                   <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 13.5px 'Anuphan';color:#2b241f;outline:none">
@@ -594,19 +629,68 @@
 
       <!-- ========== FEED ========== -->
       <sc-if value="{{ sFeed }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen" style="padding:16px 20px 30px">
-          <sc-for list="{{ feedStories }}" as="st" hint-placeholder-count="3">
-            <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
-              <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ st.photo }}" alt="" style="width:100%;height:180px;object-fit:cover;display:block"></sc-if>
-              <div style="padding:14px 16px 15px">
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78)"></span><span style="font:600 12px 'Anuphan';color:#5c5347">Nim</span><span style="font:400 12px 'Anuphan';color:#a99e8e">· {{ st.series }}</span></div>
-                <div style="font-family:'Chonburi',serif;font-size:19px;line-height:1.3;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
-                <p style="font:400 13px/1.6 'Anuphan';color:#6f6558;margin:0 0 11px;text-wrap:pretty">{{ st.excerpt }}</p>
-                <div style="display:flex;align-items:center;gap:16px"><span style="display:inline-flex;align-items:center;gap:5px;font:600 12.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ st.likes }}</span><span style="display:inline-flex;align-items:center;gap:5px;font:500 12.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8"/></svg>อ่านตอนนี้</span></div>
-              </div>
+        <div class="wtn-screen">
+          <div style="display:flex;gap:7px;padding:14px 20px 10px;position:sticky;top:0;background:#f6efe2;z-index:5">
+            <button onClick="{{ segMoments }}" style="{{ segMomentsStyle }}">โมเมนต์</button>
+            <button onClick="{{ segStories }}" style="{{ segStoriesStyle }}">เรื่องเล่า</button>
+          </div>
+
+          <sc-if value="{{ segIsStories }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:6px 20px 30px">
+              <sc-for list="{{ feedStories }}" as="st" hint-placeholder-count="3">
+                <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
+                  <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ st.photo }}" alt="" style="width:100%;height:180px;object-fit:cover;display:block"></sc-if>
+                  <div style="padding:14px 16px 15px">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><sc-if value="{{ st.byHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ st.byAvatar }}" alt="" style="width:23px;height:23px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ st.byNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><span style="font:600 12px 'Anuphan';color:#5c5347">{{ st.byline }}</span><span style="font:400 12px 'Anuphan';color:#a99e8e">· {{ st.series }}</span></div>
+                    <div style="font-family:'Chonburi',serif;font-size:19px;line-height:1.3;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
+                    <p style="font:400 13px/1.6 'Anuphan';color:#6f6558;margin:0 0 11px;text-wrap:pretty">{{ st.excerpt }}</p>
+                    <div style="display:flex;align-items:center;gap:16px"><span style="display:inline-flex;align-items:center;gap:5px;font:600 12.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ st.likes }}</span><span style="display:inline-flex;align-items:center;gap:5px;font:500 12.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8"/></svg>อ่านตอนนี้</span></div>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีตอนที่เผยแพร่</div><div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">เขียนบันทึกแต่ละวัน แล้วกด "เผยแพร่" ที่ตอนนั้น<br>ตอนที่เผยแพร่จะมาโผล่ที่นี่</div></div></sc-if>
             </div>
-          </sc-for>
-          <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีตอนที่เผยแพร่</div><div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">เขียนบันทึกแต่ละวัน แล้วกด "เผยแพร่" ที่ตอนนั้น<br>ตอนที่เผยแพร่จะมาโผล่ที่นี่</div></div></sc-if>
+          </sc-if>
+
+          <sc-if value="{{ segIsMoments }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:6px 20px 30px">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:18px;padding:14px;margin-bottom:16px">
+                <div style="display:flex;gap:11px">
+                  <sc-if value="{{ meHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ meAvatar }}" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none"></sc-if>
+                  <sc-if value="{{ meNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if>
+                  <textarea value="{{ mpText }}" onInput="{{ setMpText }}" placeholder="มีโมเมนต์อะไร เล่าให้ฟังหน่อย…" rows="2" style="flex:1;min-width:0;border:none;background:transparent;resize:none;font:400 15px/1.5 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;padding-top:7px"></textarea>
+                </div>
+                <sc-if value="{{ mpHasPhotos }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-left:49px">
+                    <sc-for list="{{ mpPhotos }}" as="mp" hint-placeholder-count="0"><span style="position:relative;width:70px;height:70px;flex:none"><img src="{{ mp.src }}" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:11px;display:block"><button onClick="{{ mp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 11px 'Anuphan';cursor:pointer;line-height:1">✕</button></span></sc-for>
+                  </div>
+                </sc-if>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.08)">
+                  <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 12px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/3)<input type="file" accept="image/*" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
+                  <span style="flex:1"></span>
+                  <button onClick="{{ postMomentFn }}" style="border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';padding:9px 22px;border-radius:20px;cursor:pointer;opacity:{{ mpPostOpacity }}">โพสต์</button>
+                </div>
+              </div>
+
+              <sc-for list="{{ momentFeed }}" as="mo" hint-placeholder-count="3">
+                <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;box-shadow:0 3px 12px rgba(43,36,32,.05);padding:15px 16px;margin-bottom:14px">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <sc-if value="{{ mo.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ mo.avatar }}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none"></sc-if>
+                    <sc-if value="{{ mo.noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if>
+                    <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px"><span style="font:700 13.5px 'Anuphan';color:#2b241f">{{ mo.author }}</span><span style="font:400 12px 'Anuphan';color:#a99e8e">· {{ mo.time }}</span></div><sc-if value="{{ mo.hasPlace }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;align-items:center;gap:4px;font:600 11.5px 'Anuphan';color:#c05f39;margin-top:2px"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/></svg>{{ mo.place }}</div></sc-if></div>
+                    <sc-if value="{{ mo.mine }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mo.del }}" style="border:none;background:transparent;color:#b7a992;font:600 11px 'Anuphan';cursor:pointer;padding:6px;flex:none">ลบ</button></sc-if>
+                  </div>
+                  <sc-if value="{{ mo.hasText }}" hint-placeholder-val="{{ true }}"><p style="font:400 15px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;margin:11px 0 0;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere">{{ mo.text }}</p></sc-if>
+                  <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="height:220px;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover"></sc-for></div></sc-if>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:13px;padding-top:11px;border-top:1px solid rgba(43,36,32,.07)">
+                    <button onClick="{{ mo.like }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(43,36,32,.13);background:#fff;font:700 13px 'Anuphan';color:{{ mo.likeColor }};padding:8px 15px;border-radius:20px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ mo.likeFill }}" stroke="{{ mo.likeColor }}" stroke-width="1.8"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ mo.likes }}</button>
+                    <button onClick="{{ mo.share }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(43,36,32,.13);background:#fff;font:600 13px 'Anuphan';color:#5c5347;padding:8px 15px;border-radius:20px;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noMoments }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:44px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></div><div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีโมเมนต์</div><div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">โพสต์สั้นๆ ด้านบน หรือกด "เผยแพร่" ที่เช็คอิน<br>โมเมนต์จะมาโผล่ที่นี่</div></div></sc-if>
+            </div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -849,12 +933,15 @@
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
             <button onMouseDown="{{ rtHead }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:700 13px 'Anuphan';cursor:pointer;flex:none">H</button>
             <button onMouseDown="{{ rtQuote }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7H4v6h3l-1 4h2l1-4V7zm9 0h-3v6h3l-1 4h2l1-4V7z"></path></svg></button>
+            <button onMouseDown="{{ rtOL }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 6h10M10 12h10M10 18h10"></path><path d="M4 5.5l1-.5v3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 15.5a1 1 0 1 1 1.5.9L4 18.5h2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+            <button onMouseDown="{{ rtUL }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 6h11M9 12h11M9 18h11"></path><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"></circle></svg></button>
+            <button onMouseDown="{{ rtHR }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 12h16"></path><circle cx="12" cy="7" r=".9" fill="currentColor" stroke="none"></circle><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"></circle></svg></button>
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
             <button onMouseDown="{{ rtLeft }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 6h16M4 12h10M4 18h13"></path></svg></button>
             <button onMouseDown="{{ rtCenter }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 6h16M7 12h10M6 18h12"></path></svg></button>
             <button onMouseDown="{{ rtRight }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 6h16M10 12h10M7 18h13"></path></svg></button>
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
-            <label style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/*" onChange="{{ insertChImage }}" style="display:none"></label>
+            <label onMouseDown="{{ saveChSelFn }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/*" onChange="{{ insertChImage }}" style="display:none"></label>
             <button onMouseDown="{{ insertChClip }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 9.5v5l4-2.5z"></path></svg></button>
           </div>
           <div class="wtn-s" style="flex:1;overflow-y:auto">
@@ -905,7 +992,7 @@
               <sc-if value="{{ crHasComments }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;flex-direction:column;gap:14px">
                   <sc-for list="{{ crComments }}" as="cm" hint-placeholder-count="0">
-                    <div style="display:flex;gap:10px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span><div style="flex:1"><div style="font:600 12.5px 'Anuphan';color:#2b241f">{{ cm.name }} <span style="font:400 11px 'Anuphan';color:#a99e8e">· {{ cm.at }}</span></div><p style="font:400 13px/1.6 'Anuphan';color:#413931;margin:4px 0 0;text-wrap:pretty">{{ cm.text }}</p></div></div>
+                    <div style="display:flex;gap:10px"><sc-if value="{{ cm.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ cm.avatar }}" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ cm.noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><div style="flex:1"><div style="font:600 12.5px 'Anuphan';color:#2b241f">{{ cm.name }} <span style="font:400 11px 'Anuphan';color:#a99e8e">· {{ cm.at }}</span></div><p style="font:400 13px/1.6 'Anuphan';color:#413931;margin:4px 0 0;text-wrap:pretty">{{ cm.text }}</p></div></div>
                   </sc-for>
                 </div>
               </sc-if>
@@ -1108,7 +1195,7 @@
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
     <div style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
-      <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 10px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>เรื่องเล่า</button>
+      <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 10px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Feed</button>
       <button onClick="{{ tabDiscoverFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cDiscover }};font:500 10px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>สำรวจ</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 10px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
       <button onClick="{{ tabMeFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 10px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
@@ -1122,6 +1209,9 @@
   <div style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9000;background:rgba(43,36,32,.92);color:#f6efe2;font:600 12px 'Anuphan';padding:8px 15px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.28);display:flex;align-items:center;gap:8px;pointer-events:none">
     <span style="width:7px;height:7px;border-radius:50%;background:#e6a15c"></span>{{ cloudText }}
   </div>
+</sc-if>
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:9500;background:#2b241f;color:#f6efe2;font:600 13px 'Anuphan';padding:12px 20px;border-radius:22px;box-shadow:0 10px 26px -8px rgba(43,36,32,.6);max-width:86vw;text-align:center;animation:wtnToast .28s ease">{{ toast }}</div>
 </sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
@@ -1224,6 +1314,7 @@ class Component extends DCLogic {
     } else { this.forceUpdate(); }
     this.cloudPull();
     this.loadFeed();
+    this.loadMoments();
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
@@ -1349,7 +1440,7 @@ class Component extends DCLogic {
   }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
-  setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') this.loadFeed(); }
+  setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') { this.loadFeed(); this.loadMoments(); } }
   openTrip(id) { this.setState({ trip: id, day: id === 'yamagata' ? 2 : 0 }); this.go('trip'); }
   kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'uploads/20211027_071410292_iOS.jpg' }; }
   loadKazakh() {
@@ -1431,8 +1522,12 @@ class Component extends DCLogic {
     if (this.state.trip === 'yamagata') return this.jpDays;
     if (this.state.trip === 'blank') return this.blankDays;
     const ut = this.userTrips.find(x => x.id === this.state.trip);
-    return ut ? this.userDays(ut) : this.blankDays;
+    if (ut) { const it = this.itineraryOf(ut.id); if (it && it.length) return it; return this.userDays(ut); }
+    return this.blankDays;
   }
+  get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
+  itineraryOf(id) { return this.itineraries[id] || null; }
+  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } }
 
   get blankDays() {
     return [ { n:'1', date:'วัน 1', tag:'วันที่ 1', city:'ยังไม่มีชื่อวัน', summary:'แตะ “แก้ไข” เพื่อตั้งชื่อ แล้วเพิ่มกิจกรรมแรก', stops:[], stayName:'ยังไม่ได้เลือกที่พัก', stayMeta:'เพิ่มได้ในโหมดแก้ไข' } ];
@@ -1488,6 +1583,8 @@ class Component extends DCLogic {
   initMap() {
     const el = this._mapEl;
     if (this.state.screen !== 'map') {
+      this.stopLocate();
+      if (this._meLayer) { this._meLayer.remove(); this._meLayer = null; }
       if (this._map) { this._map.remove(); this._map = null; }
       return;
     }
@@ -1512,14 +1609,146 @@ class Component extends DCLogic {
     if (this._ciLayer) this._ciLayer.remove();
     this._ciLayer = L.layerGroup().addTo(this._map);
     const all = this.checkins;
+    let flashMk = null;
     Object.keys(all).forEach(k => {
       if (k.indexOf(this.state.trip + ':') !== 0) return;
       (all[k] || []).forEach(c => {
         if (c.lat == null) return;
-        L.circleMarker([c.lat, c.lng], { radius: 7, color: '#fff', weight: 2, fillColor: '#e07a3f', fillOpacity: 1 })
+        const mk = L.circleMarker([c.lat, c.lng], { radius: 7, color: '#fff', weight: 2, fillColor: '#e07a3f', fillOpacity: 1 })
           .addTo(this._ciLayer).bindPopup((c.t || '') + ' · ' + c.name);
+        if (this._flashLL && Math.abs(c.lat - this._flashLL.lat) < 1e-6 && Math.abs(c.lng - this._flashLL.lng) < 1e-6) flashMk = mk;
       });
     });
+    if (flashMk) { const ll = flashMk.getLatLng(); this._map.setView(ll, Math.max(this._map.getZoom(), 13), { animate: true }); setTimeout(() => flashMk.openPopup(), 350); this._flashLL = null; }
+    this.startLocate();
+    if (this._me) this.renderMe();
+  }
+  startLocate() {
+    if (!this._map || !navigator.geolocation || this._geoWatch != null) return;
+    this._geoWatch = navigator.geolocation.watchPosition(
+      p => {
+        this._me = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy };
+        this.renderMe();
+        if (!this._meCentered) { this._meCentered = true; if (this._map) this._map.setView([this._me.lat, this._me.lng], 13, { animate: true }); }
+        if (!this.state.mePos) this.setState({ mePos: { lat: this._me.lat, lng: this._me.lng } });
+      },
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 });
+  }
+  renderMe() {
+    if (!this._map || !this._me || !window.L) return;
+    const { lat, lng, acc } = this._me;
+    if (this._meLayer) this._meLayer.remove();
+    this._meLayer = L.layerGroup().addTo(this._map);
+    if (acc && acc < 3000) L.circle([lat, lng], { radius: acc, color: '#2e78d2', weight: 1, fillColor: '#2e78d2', fillOpacity: .08 }).addTo(this._meLayer);
+    const html = '<div style="position:relative;width:20px;height:20px"><span style="position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:rgba(46,120,210,.45);animation:wtnLive 2s ease-out infinite"></span><span style="position:absolute;left:50%;top:50%;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:#2e78d2;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45)"></span></div>';
+    L.marker([lat, lng], { icon: L.divIcon({ className: '', iconSize: [20, 20], iconAnchor: [10, 10], html }), zIndexOffset: 1000 })
+      .addTo(this._meLayer).bindPopup('คุณอยู่ตรงนี้');
+  }
+  stopLocate() {
+    if (this._geoWatch != null && navigator.geolocation) navigator.geolocation.clearWatch(this._geoWatch);
+    this._geoWatch = null; this._meCentered = false;
+  }
+  recenterMe() {
+    if (this._me && this._map) this._map.setView([this._me.lat, this._me.lng], 14, { animate: true });
+    else { this._meCentered = false; this.startLocate(); }
+  }
+  grabCiPos() {
+    if (!navigator.geolocation) { this.setState({ ciGeoStatus: 'fail' }); return; }
+    this.setState({ ciGeoStatus: 'locating', ciAcc: null });
+    navigator.geolocation.getCurrentPosition(
+      p => this.setState({ ciPos: { lat: p.coords.latitude, lng: p.coords.longitude }, ciAcc: Math.round(p.coords.accuracy), ciGeoStatus: 'ok' }),
+      () => this.setState({ ciGeoStatus: 'fail' }),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+  }
+  showToast(msg) {
+    clearTimeout(this._toastT);
+    this.setState({ toast: msg });
+    this._toastT = setTimeout(() => this.setState({ toast: '' }), 3200);
+  }
+  async askLLMParts(promptText, files) {
+    const key = this.aiKey, p = this.aiProvider;
+    if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
+    files = files || [];
+    const imgs = files.filter(f => /^data:image\//.test(f));
+    const pdfs = files.filter(f => /^data:application\/pdf/.test(f));
+    const b64 = du => du.split(',')[1] || '';
+    const mimeOf = du => (du.match(/^data:([^;]+)/) || [])[1] || 'image/jpeg';
+    if (p === 'claude') {
+      const content = [{ type: 'text', text: promptText }];
+      imgs.forEach(du => content.push({ type: 'image', source: { type: 'base64', media_type: mimeOf(du), data: b64(du) } }));
+      pdfs.forEach(du => content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64(du) } }));
+      const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2600, messages: [{ role: 'user', content }] }) });
+      const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก Claude ไม่สำเร็จ');
+      return d.content.map(x => x.text || '').join('');
+    }
+    if (p === 'openai') {
+      const content = [{ type: 'text', text: promptText }];
+      imgs.forEach(du => content.push({ type: 'image_url', image_url: { url: du } }));
+      const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + key },
+        body: JSON.stringify({ model: 'gpt-4o', max_tokens: 2600, messages: [{ role: 'user', content }] }) });
+      const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก OpenAI ไม่สำเร็จ');
+      return d.choices[0].message.content;
+    }
+    const parts = [{ text: promptText }];
+    imgs.forEach(du => parts.push({ inline_data: { mime_type: mimeOf(du), data: b64(du) } }));
+    pdfs.forEach(du => parts.push({ inline_data: { mime_type: 'application/pdf', data: b64(du) } }));
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + encodeURIComponent(key), {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts }] }) });
+    const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก Gemini ไม่สำเร็จ');
+    return d.candidates[0].content.parts.map(x => x.text || '').join('');
+  }
+  addImpFiles(ev) {
+    const files = Array.from(ev.target.files || []); ev.target.value = '';
+    files.slice(0, 4).forEach(f => {
+      if (/^image\//.test(f.type)) this.shrinkToUrl(f, 1500, url => this.setState(s => ({ impFiles: [...(s.impFiles || []), url].slice(0, 6) })));
+      else { const rd = new FileReader(); rd.onload = () => this.setState(s => ({ impFiles: [...(s.impFiles || []), rd.result].slice(0, 6) })); rd.readAsDataURL(f); }
+    });
+  }
+  async importProgram() {
+    const text = (this.state.impText || '').trim();
+    const files = this.state.impFiles || [];
+    if (!text && !files.length) { this.setState({ impErr: 'วางข้อความ หรือแนบไฟล์โปรแกรมก่อน' }); return; }
+    if (!this.aiKey) { this.setState({ impErr: 'ยังไม่ได้เชื่อม API key — ไปเชื่อมที่แท็บ "ฉัน" ก่อน' }); return; }
+    this.setState({ impBusy: true, impErr: '' });
+    const prompt = 'คุณคือตัวช่วยแยกโปรแกรมทัวร์เป็นแผนรายวันของแอปท่องเที่ยว\n' +
+      'อ่านโปรแกรมทัวร์ต่อไปนี้ (ข้อความ/รูป/PDF) แล้วตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอก JSON และห้ามใส่ ```\n' +
+      'โครงสร้าง: {"name":"ชื่อทริปสั้นๆ","country":"ประเทศ","city":"เมืองหลัก","days":[{"city":"หัวข้อสั้นของวัน","summary":"สรุปวันสั้นๆ","stops":[{"t":"เวลา/ช่วง","kind":"ประเภทสั้นๆ เช่น เที่ยวบิน/ที่เที่ยว/กิน/เดินทาง/ที่พัก","title":"กิจกรรม","note":"รายละเอียดสั้น"}],"stayName":"ที่พักคืนนั้น","stayMeta":"เมือง/โน้ต"}]}\n' +
+      'ใช้ภาษาไทย จำนวน days ให้ตรงกับโปรแกรมจริง ช่องที่ไม่มีข้อมูลใส่ "" ' +
+      (text ? ('\n\nข้อความโปรแกรม:\n' + text) : '');
+    try {
+      const raw = await this.askLLMParts(prompt, files);
+      const jsonStr = (raw.match(/\{[\s\S]*\}/) || [raw])[0];
+      const data = JSON.parse(jsonStr);
+      const M = this.thMonths();
+      const start = this.state.ncStart ? new Date(this.state.ncStart) : null;
+      const days = (data.days || []).map((d, i) => {
+        let date = 'วัน ' + (i + 1);
+        if (start && !isNaN(start)) { const dt = new Date(start.getTime() + i * 86400000); date = dt.getDate() + ' ' + M[dt.getMonth()]; }
+        return { n: String(i + 1), date, tag: 'วันที่ ' + (i + 1) + (date !== 'วัน ' + (i + 1) ? ' · ' + date : ''),
+          city: (d.city || '').trim() || 'วันที่ ' + (i + 1), summary: (d.summary || '').trim(),
+          stops: (d.stops || []).map(s => ({ t: (s.t || '').trim(), kind: (s.kind || '').trim(), title: (s.title || '').trim(), note: (s.note || '').trim() })),
+          stayName: (d.stayName || '').trim() || 'ยังไม่ได้เลือกที่พัก', stayMeta: (d.stayMeta || '').trim() };
+      });
+      if (!days.length) throw new Error('แยกวันไม่สำเร็จ ลองวางข้อความให้ชัดขึ้น หรือแนบรูปโปรแกรม');
+      const id = 't' + Date.now();
+      const end = start && !isNaN(start) ? new Date(start.getTime() + (days.length - 1) * 86400000) : null;
+      const rec = { id, name: (data.name || '').trim() || text.slice(0, 40) || 'ทริปนำเข้า',
+        country: (data.country || '').trim(), city: (data.city || '').trim(),
+        start: this.state.ncStart || '', end: this.state.ncEnd || (end ? end.toISOString().slice(0, 10) : ''),
+        budget: parseInt((this.state.ncBudget || '').replace(/[^0-9]/g, ''), 10) || 0 };
+      this.saveUserTrips([rec, ...this.userTrips]);
+      this.saveItinerary(id, days);
+      this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
+      this.showToast('✓ โหลดโปรแกรม ' + days.length + ' วันแล้ว');
+      this.openTrip(id);
+    } catch (e) {
+      this.setState({ impBusy: false, impErr: 'อ่านโปรแกรมไม่สำเร็จ: ' + (e.message || e) });
+    }
   }
   componentDidUpdate() { this.initMap(); }
   get aiKey() {
@@ -1564,9 +1793,10 @@ class Component extends DCLogic {
     return d.candidates[0].content.parts.map(x => x.text || '').join('');
   }
   dayContext() {
-    const d = this.kzDays[this.state.day] || {};
+    const dd = this.days, d = dd[this.state.day] || {};
     const stops = (d.stops || []).map(s => s.t + ' ' + s.kind + ': ' + s.title).join('\n');
-    return 'ทริปคาซัคสถาน 11 วัน (24 ก.ค.–3 ส.ค.) ' + (d.tag || '') + ' — ' + (d.city || '') +
+    const ti = this.tripInfo;
+    return 'ทริป ' + (ti.title || '') + ' (' + dd.length + ' วัน) ' + (d.tag || '') + ' — ' + (d.city || '') +
       '\nแผนเดิมของวันนี้:\n' + stops + '\nที่พักคืนนี้: ' + (d.stayName || '-');
   }
   async genDayPlan() {
@@ -1602,18 +1832,19 @@ class Component extends DCLogic {
   addCiPhotos(ev) {
     let files = Array.from(ev.target.files || []);
     ev.target.value = '';
-    if ((this.state.ciPhotos || []).length >= 1) return;
-    files = files.slice(0, 1);
+    const have = (this.state.ciPhotos || []).length;
+    if (have >= 3) return;
+    files = files.slice(0, 3 - have);
     files.forEach(f => {
       const rd = new FileReader();
       rd.onload = () => {
         const im = new Image();
         im.onload = () => {
-          const M = 900, r = Math.min(1, M / Math.max(im.width, im.height));
+          const M = 1200, r = Math.min(1, M / Math.max(im.width, im.height));
           const c = document.createElement('canvas');
           c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
           c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].slice(0, 0).concat(c.toDataURL('image/jpeg', 0.78)) }));
+          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].slice(0, 3).concat(c.toDataURL('image/jpeg', 0.78)).slice(0, 3) }));
         };
         im.src = rd.result;
       };
@@ -1631,18 +1862,26 @@ class Component extends DCLogic {
     } else {
       list.push({
         t: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
-        name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [],
+        at: Date.now(),
+        name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 3),
         lat: pos.lat, lng: pos.lng });
     }
     all[k] = list;
     this.saveCheckins(all);
     const amt = Number(this.state.ciAmt);
     if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name);
-    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null });
+    const located = pos.lat != null;
+    if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null });
+    this.showToast(located
+      ? '✓ เช็คอิน “' + name + '” แล้ว · ปักหมุดบนแผนที่ให้'
+      : '✓ บันทึกเช็คอิน “' + name + '” แล้ว · ครั้งนี้ไม่มีตำแหน่ง GPS');
   }
   get profile() {
     try { return JSON.parse(localStorage.getItem('wtn-profile')) || {}; } catch (e) { return {}; }
   }
+  get myAvatar() { return this.coverOf('wtn-avatar', null) || this.profile.avatar || ''; }
+  get myName() { return (this.profile.name || '').trim() || 'nimjourney'; }
   get userPois() {
     try { return JSON.parse(localStorage.getItem('wtn-user-pois')) || []; } catch (e) { return []; }
   }
@@ -1933,24 +2172,36 @@ class Component extends DCLogic {
     }; im.src = rd.result; };
     rd.readAsDataURL(file);
   }
+  saveChSel() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && this._chEl && this._chEl.contains(sel.anchorNode)) this._chSel = sel.getRangeAt(0).cloneRange();
+  }
+  restoreChSel() {
+    if (!this._chEl) return;
+    this._chEl.focus();
+    const sel = window.getSelection();
+    if (this._chSel && this._chEl.contains(this._chSel.startContainer)) { sel.removeAllRanges(); sel.addRange(this._chSel); }
+  }
   insertChImage(ev) {
     const f = (ev.target.files || [])[0]; ev.target.value = '';
     if (!f) return;
     if (this._chEl && this._chEl.querySelectorAll('img').length >= 4) { alert('แนบรูปในตอนได้ไม่เกิน 4 รูป'); return; }
-    this.shrinkToUrl(f, 1400, url => { if (this._chEl) { this._chEl.focus();
+    this.shrinkToUrl(f, 1400, url => { if (this._chEl) { this.restoreChSel();
       try { document.execCommand('insertHTML', false, '<p><img src="' + url + '"></p><p><br></p>'); } catch (e) {}
-      this.updateCounts(); } });
+      this._chSel = null; this.updateCounts(); } });
   }
   insertChClip() {
     const el = this._chEl; if (!el) return;
+    this.saveChSel();
     const url = (window.prompt('วางลิงก์คลิป (YouTube / TikTok / Reels)') || '').trim();
-    if (!url) return;
-    el.focus();
+    if (!url) { this._chSel = null; return; }
+    this.restoreChSel();
     const yt = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);
     let html;
     if (yt) html = '<p><span class="wtn-embed" contenteditable="false" data-yt="' + yt[1] + '"><span class="wtn-embed-ic">▶</span>คลิป YouTube · แตะดูในหน้าอ่าน</span></p><p><br></p>';
     else html = '<p><a href="' + this.esc(url) + '" target="_blank">▶ ดูคลิป: ' + this.esc(url.replace(/^https?:\/\//, '').slice(0, 42)) + '</a></p><p><br></p>';
     try { document.execCommand('insertHTML', false, html); } catch (e) {}
+    this._chSel = null;
     this.updateCounts();
   }
   setStoryCover(ev) {
@@ -2017,6 +2268,92 @@ class Component extends DCLogic {
       this.setState({ remoteFeed: list });
     } catch (e) { console.warn('[wtn] feed', e); }
   }
+  // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) ----------
+  get moments() { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }
+  saveMoments(a) { try { localStorage.setItem('wtn-moments', JSON.stringify(a)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } }
+  upsertLocalMoment(m) {
+    let a = this.moments.filter(x => x.id !== m.id);
+    if (m.published !== false) a.unshift(m);
+    this.saveMoments(a);
+  }
+  get mlikes() { try { return JSON.parse(localStorage.getItem('wtn-mlikes')) || {}; } catch (e) { return {}; } }
+  momentLiked(id) { return !!this.mlikes[id]; }
+  timeAgo(ts) {
+    if (!ts) return '';
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'เมื่อกี้';
+    if (s < 3600) return Math.floor(s / 60) + ' นาทีที่แล้ว';
+    if (s < 86400) return Math.floor(s / 3600) + ' ชม.ที่แล้ว';
+    if (s < 604800) return Math.floor(s / 86400) + ' วันก่อน';
+    try { return new Date(ts).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
+  }
+  postMoment() {
+    const text = (this.state.mpText || '').trim();
+    const photos = (this.state.mpPhotos || []).slice(0, 3);
+    if (!text && !photos.length) return;
+    const id = 'm' + Date.now() + Math.floor(Math.random() * 1000);
+    const m = { id, type: 'post', text, place: '', photos, at: Date.now(), published: true, likes: 0,
+      authorName: this.myName, authorAvatar: this.myAvatar };
+    this.upsertLocalMoment(m);
+    const be = window.WTNBackend;
+    if (be && be._uid) be.publishMoment(id, m).catch(() => {});
+    this.setState({ mpText: '', mpPhotos: [] });
+    this.showToast('✓ โพสต์โมเมนต์แล้ว');
+  }
+  addMpPhotos(ev) {
+    let files = Array.from(ev.target.files || []); ev.target.value = '';
+    const have = (this.state.mpPhotos || []).length;
+    if (have >= 3) return;
+    files.slice(0, 3 - have).forEach(f => this.shrinkToUrl(f, 1200, url => this.setState(s => ({ mpPhotos: [...(s.mpPhotos || [])].concat(url).slice(0, 3) }))));
+  }
+  publishCheckin(k, idx, on) {
+    const all = this.checkins, list = all[k] || [], c = list[idx];
+    if (!c) return;
+    if (on && !c.mid) c.mid = 'm' + Date.now() + Math.floor(Math.random() * 1000);
+    c.published = on;
+    all[k] = list; this.saveCheckins(all);
+    const m = { id: c.mid, type: 'checkin', text: c.note || '', place: c.name || '',
+      photos: (c.photos || []).slice(0, 3), tripId: this.state.trip, lat: c.lat, lng: c.lng,
+      at: c.at || Date.now(), published: on,
+      authorName: this.myName, authorAvatar: this.myAvatar };
+    this.upsertLocalMoment(m);
+    const be = window.WTNBackend;
+    if (be && be._uid) { if (on) be.publishMoment(c.mid, m).catch(() => {}); else be.unpublishMoment(c.mid).catch(() => {}); }
+    this.showToast(on ? '✓ ส่งเช็คอินขึ้นหน้าโมเมนต์แล้ว' : 'เอาออกจากหน้าโมเมนต์แล้ว');
+    this.forceUpdate();
+  }
+  deleteMoment(id) {
+    this.saveMoments(this.moments.filter(x => x.id !== id));
+    const all = this.checkins; let touched = false;
+    Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c.mid === id) { c.published = false; touched = true; } }));
+    if (touched) this.saveCheckins(all);
+    const be = window.WTNBackend;
+    if (be && be._uid) be.deleteMoment(id).catch(() => {});
+    this.setState({ remoteMoments: (this.state.remoteMoments || []).filter(x => x.id !== id) });
+  }
+  async toggleMomentLike(id) {
+    const likes = this.mlikes, was = !!likes[id];
+    if (was) delete likes[id]; else likes[id] = 1;
+    try { localStorage.setItem('wtn-mlikes', JSON.stringify(likes)); } catch (e) {}
+    const bump = was ? -1 : 1;
+    const a = this.moments.map(x => x.id === id ? { ...x, likes: Math.max(0, (x.likes || 0) + bump) } : x);
+    this.saveMoments(a);
+    this.setState({ remoteMoments: (this.state.remoteMoments || []).map(x => x.id === id ? { ...x, likes: Math.max(0, (x.likes || 0) + bump) } : x) });
+    const be = window.WTNBackend;
+    if (be && be._uid) be.toggleMomentLike(id).catch(() => {});
+  }
+  shareMoment(m) {
+    const who = m.author || 'nimjourney';
+    const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · ทริปหน้าไปไหน';
+    const url = (location.href.split('#')[0]) + '#moment-' + m.id;
+    try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
+    try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
+  }
+  async loadMoments() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) return;
+    try { this.setState({ remoteMoments: await be.moments(60) }); } catch (e) { console.warn('[wtn] moments', e); }
+  }
   openRemoteChapter(item) {
     const r = item.raw || {};
     const story = { id: item.storyId, title: r.storyTitle || item.series || '', author: item.author,
@@ -2062,15 +2399,15 @@ class Component extends DCLogic {
   }
   addComment(sid, cid, text) {
     text = (text || '').trim(); if (!text) return;
-    const name = this.profile.name || 'nimjourney';
+    const name = this.myName, avatar = this.myAvatar;
     const be = window.WTNBackend;
     if (be && be._uid) {
-      this.setState(s => ({ commentDraft: '', remoteComments: { ...(s.remoteComments || {}), [cid]: [ ...((s.remoteComments || {})[cid] || []), { name, text, at: Date.now() } ] } }));
+      this.setState(s => ({ commentDraft: '', remoteComments: { ...(s.remoteComments || {}), [cid]: [ ...((s.remoteComments || {})[cid] || []), { name, avatar, text, at: Date.now() } ] } }));
       be.addComment(sid, cid, name, text).then(() => this.loadComments(sid, cid)).catch(e => console.warn('[wtn] addComment', e));
       return;
     }
     const all = this.allComments;
-    all[cid] = [...(all[cid] || []), { name, text, at: Date.now() }];
+    all[cid] = [...(all[cid] || []), { name, avatar, text, at: Date.now() }];
     try { localStorage.setItem('wtn-comments', JSON.stringify(all)); } catch (e) {}
     this.setState({ commentDraft: '' });
   }
@@ -2423,7 +2760,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.18g',
+      appVersion: '2026.07.19a',
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
@@ -2573,6 +2910,19 @@ class Component extends DCLogic {
       goTripKz: () => this.loadKazakh(),
       loadKazakh: () => this.loadKazakh(),
       goBlank: () => this.openTrip('blank'),
+      toggleImport: () => this.setState(s => ({ impOpen: !s.impOpen, impErr: '' })),
+      impOpen: !!this.state.impOpen, impChevron: this.state.impOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+      impText: this.state.impText ?? '', setImpText: e => this.setState({ impText: e.target.value }),
+      impFilesList: (this.state.impFiles || []).map((f, i) => ({
+        label: /^data:application\/pdf/.test(f) ? ('PDF ' + (i + 1)) : ('รูป ' + (i + 1)),
+        rm: () => this.setState(s => ({ impFiles: (s.impFiles || []).filter((_, j) => j !== i) })) })),
+      impHasFiles: (this.state.impFiles || []).length > 0,
+      addImpFiles: e => this.addImpFiles(e),
+      importProgramFn: () => this.importProgram(),
+      impBusy: !!this.state.impBusy,
+      impBtnLabel: this.state.impBusy ? 'กำลังแยกวัน…' : 'ให้ AI แยกเป็นรายวัน',
+      impBtnOpacity: this.state.impBusy ? '.6' : '1',
+      impErr: this.state.impErr || '', impHasErr: !!this.state.impErr,
       ncName: this.state.ncName ?? '', setNcName: e => this.setState({ ncName: e.target.value }),
       ncCountry: this.state.ncCountry ?? '', setNcCountry: e => this.setState({ ncCountry: e.target.value }),
       ncCity: this.state.ncCity ?? '', setNcCity: e => this.setState({ ncCity: e.target.value }),
@@ -2600,32 +2950,43 @@ class Component extends DCLogic {
       goAskAi: () => this.go('askAi'), sAskAi: sc === 'askAi',
       days: this.days, sMap: sc === 'map',
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
-      ciDays: this.kzDays.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
+      ciDays: this.days.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
         style: (i === active
           ? 'flex:none;background:#c05f39;color:#fff;'
           : 'flex:none;background:#efe4d3;color:#7c7264;') + 'font:600 12px Anuphan;padding:9px 14px;border-radius:20px;border:none;cursor:pointer' })),
-      ciDayLabel: (this.kzDays[active] || {}).tag || '',
+      ciDayLabel: (this.days[active] || {}).tag || '',
       ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
         t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
         photos: (c.photos || []).map(p => ({ src: p })), hasPhotos: (c.photos || []).length > 0,
-        del: () => { const all = this.checkins, k = this.ciKey; (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
-        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null }) })),
+        togglePub: () => this.publishCheckin(this.ciKey, idx, !c.published),
+        pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8',
+        pubKnob: c.published ? 'right:3px' : 'left:3px',
+        pubColor: c.published ? '#c05f39' : '#8a7d6f',
+        pubLabel: c.published ? 'อยู่บนโมเมนต์' : 'เผยแพร่เป็นโมเมนต์',
+        share: () => this.shareMoment({ text: c.note || '', place: c.name || '', id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' }),
+        del: () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
+        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null }) })),
       ciEmpty: (this.checkins[this.ciKey] || []).length === 0,
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
         const opening = !this.state.ciFormOpen;
-        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null });
-        if (opening && navigator.geolocation) navigator.geolocation.getCurrentPosition(
-          p => this.setState({ ciPos: { lat: p.coords.latitude, lng: p.coords.longitude } }),
-          () => {}, { timeout: 8000, maximumAge: 60000 });
+        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null });
+        if (opening) this.grabCiPos();
       },
+      ciGeoLocating: this.state.ciGeoStatus === 'locating',
+      ciGeoOk: this.state.ciGeoStatus === 'ok',
+      ciGeoFail: this.state.ciGeoStatus === 'fail',
+      ciAccText: this.state.ciAcc ? ('ความแม่น ~' + this.state.ciAcc + ' ม. ') : '',
+      retryCiGeo: () => this.grabCiPos(),
+      recenterMe: () => this.recenterMe(),
+      toast: this.state.toast || '', hasToast: !!this.state.toast,
       ciName: this.state.ciName ?? '', ciNote: this.state.ciNote ?? '',
       setCiName: e => this.setState({ ciName: e.target.value }),
       setCiNote: e => this.setState({ ciNote: e.target.value }),
       ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: p,
         rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
       ciAddPhotos: e => this.addCiPhotos(e),
-      ciCanAddPhoto: (this.state.ciPhotos || []).length < 1,
+      ciCanAddPhoto: (this.state.ciPhotos || []).length < 3,
       saveCi: () => this.saveCi(),
       ciAmt: this.state.ciAmt ?? '',
       setCiAmt: e => this.setState({ ciAmt: e.target.value.replace(/[^\d.]/g, '') }),
@@ -2666,7 +3027,7 @@ class Component extends DCLogic {
         on: () => this.setState(s => ({ aiStyles: { ...(s.aiStyles || {}), [c]: !(s.aiStyles || {})[c] } })) })),
       aiBudgetDay: this.state.aiBudgetDay ?? '',
       setAiBudgetDay: e => this.setState({ aiBudgetDay: e.target.value.replace(/[^\d]/g, '') }),
-      aiDayLabel: (this.kzDays[active] || {}).tag || '',
+      aiDayLabel: (this.days[active] || {}).tag || '',
       genDayPlan: () => { if (this.aiKey) this.genDayPlan(); else this.setTab('me'); },
       aiPlanBtnLabel: this.aiKey ? 'ให้ AI ร่างวันนี้' : 'ไปเชื่อม API key ที่แท็บ "ฉัน"',
       aiPlanBusy: !!this.state.aiPlanBusy, aiPlanErr: this.state.aiPlanErr || '',
@@ -2711,7 +3072,7 @@ class Component extends DCLogic {
             const ex = strip(c.html).slice(0, 100);
             feed.push({ _t: c.updatedAt || st.at || 0,
               photo: img || 'uploads/20211027_071410292_iOS.jpg', hasCover: !!img,
-              series: st.title, title: c.title,
+              series: st.title, title: c.title, byline: this.myName, byAvatar: this.myAvatar, byHasAvatar: !!this.myAvatar, byNoAvatar: !this.myAvatar,
               excerpt: ex ? (ex + (ex.length >= 100 ? '…' : '')) : '',
               likes: c.likes || 0,
               on: () => this.openPublicChapter(st.id, c.id) });
@@ -2720,15 +3081,56 @@ class Component extends DCLogic {
         (this.state.remoteFeed || []).forEach(r => {
           feed.push({ _t: r._t, photo: r.photo, hasCover: r.hasCover, series: r.series,
             title: r.title, excerpt: r.excerpt, likes: r.likes, byline: r.author,
+            byAvatar: '', byHasAvatar: false, byNoAvatar: true,
             on: () => this.openRemoteChapter(r) });
         });
         feed.sort((a, b) => b._t - a._t);
         const all = this.stories.slice().sort((a, b) => b.at - a.at);
+        const myUid = (window.WTNBackend && window.WTNBackend._uid) || null;
+        const seg = this.state.feedSeg || 'moments';
+        const segBtn = on => (on
+          ? 'flex:1;background:#2b241f;color:#f6efe2;'
+          : 'flex:1;background:#efe4d3;color:#7c7264;') + 'font:600 13.5px Anuphan;padding:11px;border-radius:14px;border:none;cursor:pointer';
+        const mMap = {};
+        this.moments.forEach(m => { mMap[m.id] = { ...m, mine: true }; });
+        (this.state.remoteMoments || []).forEach(r => {
+          if (r.ownerUid && myUid && r.ownerUid === myUid) return;
+          if (!mMap[r.id]) mMap[r.id] = { ...r, mine: false };
+        });
+        const momentFeed = Object.values(mMap).sort((a, b) => (b.at || 0) - (a.at || 0)).map(m => {
+          const liked = this.momentLiked(m.id);
+          const av = m.authorAvatar || '';
+          return {
+            id: m.id, author: m.authorName || 'nimjourney', time: this.timeAgo(m.at),
+            avatar: av, hasAvatar: !!av, noAvatar: !av,
+            text: m.text || '', hasText: !!(m.text || '').trim(),
+            place: m.place || '', hasPlace: !!(m.place || '').trim(),
+            photos: (m.photos || []).map(p => ({ src: p })), hasPhotos: (m.photos || []).length > 0,
+            likes: m.likes || 0, likeColor: liked ? '#c05f39' : '#8a7d6f', likeFill: liked ? '#c05f39' : 'none',
+            mine: !!m.mine,
+            like: () => this.toggleMomentLike(m.id),
+            share: () => this.shareMoment({ ...m, author: m.authorName || 'nimjourney' }),
+            del: () => this.deleteMoment(m.id) };
+        });
+        const meAv = this.myAvatar;
+        const mpN = (this.state.mpPhotos || []).length;
+        const canPost = !!((this.state.mpText || '').trim() || mpN);
         return {
           feedStories: feed, noFeed: feed.length === 0,
           myStories: all.map(card), noStories: all.length === 0,
           storyCount: all.length,
           composeNew: () => this.openStoryEdit(null),
+          segStories: () => this.setState({ feedSeg: 'stories' }),
+          segMoments: () => { this.setState({ feedSeg: 'moments' }); this.loadMoments(); },
+          segIsStories: seg === 'stories', segIsMoments: seg === 'moments',
+          segStoriesStyle: segBtn(seg === 'stories'), segMomentsStyle: segBtn(seg === 'moments'),
+          meAvatar: meAv, meHasAvatar: !!meAv, meNoAvatar: !meAv,
+          mpText: this.state.mpText ?? '', setMpText: e => this.setState({ mpText: e.target.value }),
+          mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: p, rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
+          mpHasPhotos: mpN > 0, mpPhotoCount: mpN, mpCanAddPhoto: mpN < 3,
+          addMpPhotos: e => this.addMpPhotos(e),
+          postMomentFn: () => this.postMoment(), mpPostOpacity: canPost ? '1' : '.5',
+          momentFeed, noMoments: momentFeed.length === 0,
         };
       })(),
       budgetRows: this.budgetRows,
@@ -2788,7 +3190,7 @@ class Component extends DCLogic {
       ...(() => {
         const rows = [], slides = [];
         let cis = 0, photos = 0, daysWith = 0;
-        this.kzDays.forEach((d, i) => {
+        this.days.forEach((d, i) => {
           const list = this.checkins[this.state.trip + ':' + i] || [];
           if (!list.length) return;
           daysWith++; cis += list.length;
@@ -2954,6 +3356,8 @@ class Component extends DCLogic {
           rtUnderline: this.rt('underline'), rtStrike: this.rt('strikeThrough'),
           rtLeft: this.rt('justifyLeft'), rtCenter: this.rt('justifyCenter'), rtRight: this.rt('justifyRight'),
           rtHead: this.rt('formatBlock', '<h3>'), rtQuote: this.rt('formatBlock', '<blockquote>'),
+          rtOL: this.rt('insertOrderedList'), rtUL: this.rt('insertUnorderedList'), rtHR: this.rt('insertHorizontalRule'),
+          saveChSelFn: () => this.saveChSel(),
           insertChImage: e => this.insertChImage(e), onChInput: () => this.updateCounts(),
           insertChClip: () => this.insertChClip(),
           chCover: this.state.chCover || '', chHasCover: !!this.state.chCover, chNoCover: !this.state.chCover,
@@ -2978,7 +3382,7 @@ class Component extends DCLogic {
           crLikeColor: this.isLiked(this.state.openChapterId) ? '#c05f39' : '#8a7d6f',
           crLikeToggle: () => this.toggleLike(this.state.openStoryId, this.state.openChapterId),
           crShare: () => this.shareChapter(),
-          crComments: this.commentsFor(this.state.openChapterId).map(c => ({ name: c.name, text: c.text, at: fmtDT(c.at) })),
+          crComments: this.commentsFor(this.state.openChapterId).map(c => ({ name: c.name, text: c.text, at: fmtDT(c.at), avatar: c.avatar || '', hasAvatar: !!c.avatar, noAvatar: !c.avatar })),
           crCommentCount: this.commentsFor(this.state.openChapterId).length,
           crHasComments: this.commentsFor(this.state.openChapterId).length > 0,
           commentDraft: this.state.commentDraft ?? '', setCommentDraft: e => this.setState({ commentDraft: e.target.value }),
