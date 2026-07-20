@@ -1308,7 +1308,8 @@
             <div style="font:600 12px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">สำรอง & กู้ข้อมูล</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
               <div style="font:400 11.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
-              <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ syncNowLabel }}</button>
+              <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
+              <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
               <div style="font:400 11.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">หรือดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
               <div style="display:flex;gap:9px">
                 <button onClick="{{ doBackup }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';border-radius:12px;cursor:pointer">ดาวน์โหลดไฟล์สำรอง</button>
@@ -1544,6 +1545,37 @@ class Component extends DCLogic {
       console.warn('[wtn] cloud push', e);
       this.setState({ cloud: 'error', cloudErr: 'push: ' + ((e && (e.code || e.message)) || String(e)) });
       clearTimeout(this._cloudRetry); this._cloudRetry = setTimeout(() => this.cloudPush(), 8000);
+    }
+  }
+  async forceRestoreCloud() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) { alert('ยังไม่ได้ล็อกอิน — เข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
+    if (!confirm('ดึงข้อมูลสำรองล่าสุดจากคลาวด์มาทับข้อมูลในเครื่องนี้?')) return;
+    this.setState({ restoreBusy: true });
+    try {
+      const bk = await be.pullBackup();
+      if (!bk || !bk.data || !this.backupHasData(bk)) {
+        alert('ไม่พบข้อมูลสำรองบนคลาวด์ของบัญชีนี้');
+        this.setState({ restoreBusy: false });
+        return;
+      }
+      this._applyingCloud = true;
+      try {
+        const keep = { 'wtn-auth': 1, 'wtn-img-map': 1 };
+        const toDel = [];
+        for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
+        toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+        Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
+        try { localStorage.setItem('wtn-cloud-at', String(bk._at || Date.now())); } catch (e) {}
+      } finally { this._applyingCloud = false; }
+      window.dispatchEvent(new Event('photopick-change'));
+      this.forceUpdate();
+      this.setState({ restoreBusy: false });
+      let n = 0; try { n = (JSON.parse(bk.data['wtn-trips'] || '[]') || []).length; } catch (e) {}
+      this.showToast('✓ กู้ข้อมูลจากคลาวด์แล้ว · ' + n + ' ทริป');
+    } catch (e) {
+      this.setState({ restoreBusy: false });
+      alert('กู้ข้อมูลไม่สำเร็จ: ' + ((e && (e.code || e.message)) || String(e)));
     }
   }
   async cloudPull() {
@@ -3150,7 +3182,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.20g',
+      appVersion: '2026.07.20h',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3333,6 +3365,8 @@ class Component extends DCLogic {
       doBackup: () => this.exportBackup(),
       syncNow: () => this.syncNow(),
       syncNowLabel: this.state.syncBusy ? 'กำลังซิงก์…' : 'ซิงก์ตอนนี้',
+      forceRestore: () => this.forceRestoreCloud(),
+      forceRestoreLabel: this.state.restoreBusy ? 'กำลังกู้…' : '↻ กู้ข้อมูลจากคลาวด์',
       doRestore: e => this.importBackup(e),
       goCreate: () => this.openCreate(null),
       goCompose: () => this.openStoryEdit(null),
