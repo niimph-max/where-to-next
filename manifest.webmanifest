@@ -1,6 +1,6 @@
 {
-  "name": "NextTrip",
-  "short_name": "NextTrip",
+  "name": "Vela",
+  "short_name": "Vela",
   "description": "วางแผนทริป + เก็บเป็นเรื่องเล่า",
   "start_url": "./",
   "scope": "./",

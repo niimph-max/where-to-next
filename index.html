@@ -11,22 +11,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
-<title>NextTrip</title>
+<title>Vela</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="firebase-config.js"></script>
 <script type="module" src="wtn-backend.js"></script>
-<meta name="apple-mobile-web-app-title" content="NextTrip">
+<meta name="apple-mobile-web-app-title" content="Vela">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — NextTrip">
+<meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="NextTrip">
-<meta property="og:title" content="NextTrip — วางแผนทริป & เล่าเรื่องเดินทาง">
+<meta property="og:site_name" content="Vela">
+<meta property="og:title" content="Vela — วางแผนทริป & เล่าเรื่องเดินทาง">
 <meta property="og:description" content="วางแผนรายวัน จดงบ เที่ยว แล้วเปลี่ยนเป็นเรื่องเล่า">
 <meta property="og:image" content="og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="NextTrip — วางแผนทริป & เล่าเรื่องเดินทาง">
+<meta name="twitter:title" content="Vela — วางแผนทริป & เล่าเรื่องเดินทาง">
 <meta name="twitter:image" content="og-image.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#c05f39">
@@ -111,7 +111,7 @@
         <sc-if value="{{ deepErrShow }}" hint-placeholder-val="{{ false }}">
           <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">เปิดเรื่องนี้ไม่ได้</div>
           <div style="font:400 13px/1.6 'Anuphan';color:#8a7d6f">อาจยังไม่ได้เผยแพร่ หรือถูกลบไปแล้ว</div>
-          <button onClick="{{ deepGoHome }}" style="margin-top:6px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';padding:11px 22px;border-radius:12px;cursor:pointer">ไปหน้าแรก NextTrip</button>
+          <button onClick="{{ deepGoHome }}" style="margin-top:6px;border:none;background:#c05f39;color:#fff;font:600 13px 'Anuphan';padding:11px 22px;border-radius:12px;cursor:pointer">ไปหน้าแรก Vela</button>
         </sc-if>
         <sc-if value="{{ deepLoadingShow }}" hint-placeholder-val="{{ true }}">
           <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f">กำลังเปิดเรื่องเล่า…</div>
@@ -125,7 +125,7 @@
           <button onClick="{{ back }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.12);background:#fffaf0;color:#2b241f;font-size:19px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">‹</button>
         </sc-if>
         <span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f;flex:1">{{ title }}</span>
-        <span style="font:600 11px 'Anuphan';color:#a99e8e;letter-spacing:.5px">NextTrip</span>
+        <span style="font:600 11px 'Anuphan';color:#a99e8e;letter-spacing:.5px">Vela</span>
       </div>
     </sc-if>
 
@@ -137,7 +137,7 @@
           <div style="position:absolute;inset:0;background:linear-gradient(155deg,#c9663f,#7a4028 55%,#2b241f)"></div>
           <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.35),rgba(43,36,32,.55) 45%,rgba(43,36,32,.92))"></div>
           <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:34px 26px 30px;color:#f6efe2">
-            <div style="font:600 12px 'Anuphan';color:#e9b48a;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">NextTrip</div>
+            <div style="font:600 12px 'Anuphan';color:#e9b48a;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">Vela</div>
             <h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:34px;line-height:1.14;color:#fff;margin:0 0 16px">วางแผนทริป<br>จากเรื่องจริง<br>ของคนที่ไปมาแล้ว</h1>
             <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:26px">
               <div style="display:flex;align-items:center;gap:11px"><span style="width:30px;height:30px;border-radius:9px;background:rgba(233,180,138,.2);display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span><span style="font:400 14px 'Anuphan';color:#efe4d5">วางแผนรายวัน + งบ ในที่เดียว</span></div>
@@ -1343,7 +1343,7 @@
             </div>
           </div>
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 13.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
-          <div style="text-align:center;font:500 11px 'Anuphan';color:#b3a897;margin-top:16px">NextTrip · เวอร์ชัน {{ appVersion }}</div>
+          <div style="text-align:center;font:500 11px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
         </div>
       </sc-if>
 
@@ -2095,7 +2095,7 @@ class Component extends DCLogic {
   async genDayPlan() {
     const styles = Object.keys(this.state.aiStyles || {}).filter(k => this.state.aiStyles[k]);
     const bud = Number(this.state.aiBudgetDay);
-    const prompt = 'คุณคือผู้ช่วยวางแผนเที่ยวของแอป "NextTrip"\n' + this.dayContext() +
+    const prompt = 'คุณคือผู้ช่วยวางแผนเที่ยวของแอป "Vela"\n' + this.dayContext() +
       (styles.length ? '\nสไตล์ที่ต้องการ: ' + styles.join(', ') : '') +
       (bud ? '\nงบวันนี้: ' + bud + ' บาท' : '') +
       '\nช่วยร่างตารางทั้งวันเป็นภาษาไทย รูปแบบ "เวลา — กิจกรรม (ค่าใช้จ่ายประมาณเป็นบาท)" ไม่เกิน 8 บรรทัด สั้นกระชับ ปิดท้ายบรรทัดสุดท้ายด้วย "รวมประมาณ ..... บาท" ไม่ต้องมีคำอธิบายอื่น';
@@ -2106,7 +2106,7 @@ class Component extends DCLogic {
     } catch (e) { this.setState({ aiPlanBusy: false, aiPlanErr: String(e.message || e) }); }
   }
   async askTravelAi(q) {
-    const prompt = 'คุณคือผู้ช่วยระหว่างเที่ยวของแอป "NextTrip" ผู้ใช้กำลังเที่ยวอยู่จริง\n' +
+    const prompt = 'คุณคือผู้ช่วยระหว่างเที่ยวของแอป "Vela" ผู้ใช้กำลังเที่ยวอยู่จริง\n' +
       this.dayContext() + '\nคำถาม: ' + q + '\nตอบภาษาไทย สั้น กระชับ ใช้งานได้จริง ไม่เกิน 6 ประโยค';
     this.setState({ aiBusy: true, aiErr: '', aiAnswer: '', aiLastQ: q });
     try {
@@ -2699,7 +2699,7 @@ class Component extends DCLogic {
   }
   shareMoment(m) {
     const who = m.author || 'nimjourney';
-    const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · NextTrip';
+    const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · Vela';
     const url = (location.href.split('#')[0]) + '#moment-' + m.id;
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
@@ -2932,7 +2932,7 @@ class Component extends DCLogic {
       ? ((this.state.artPrompt || '').trim() || this.tripArticlePromptTemplate())
       : this.tripArticlePromptTemplate();
     const loc = [dig.country, dig.city].filter(Boolean);
-    const prompt = 'คุณคือนักเขียนบันทึกการเดินทางของแอพ "NextTrip"\n' +
+    const prompt = 'คุณคือนักเขียนบันทึกการเดินทางของแอพ "Vela"\n' +
       'ทริป: ' + dig.title + (loc.length ? ' (' + loc.join(' · ') + ')' : '') + '\n' +
       'โมเมนต์ทั้งทริป (เรียงตามวัน):\n' + dig.text + '\n\n' +
       'คำสั่งจากผู้ใช้:\n' + instruction + '\n\n' +
@@ -3073,7 +3073,7 @@ class Component extends DCLogic {
       lines.push('วันที่ ' + d.n + ' (' + d.date + ') · ' + (d.city || '') + (bits ? ' — ' + bits : ''));
     });
     lines.push('');
-    lines.push('วางแผนด้วย NextTrip');
+    lines.push('วางแผนด้วย Vela');
     return lines.join('\n');
   }
   async shareOverview() {
@@ -3136,7 +3136,7 @@ class Component extends DCLogic {
     const t = new Date(); const d0 = new Date(t.getFullYear(), t.getMonth(), t.getDate());
     const diff = Math.round((d0 - start) / 86400000);
     let nowK, nowT, nowS;
-    if (diff < 0) { nowK = 'เตรียมตัว! · NextTrip'; nowT = 'อีก ' + (-diff) + ' วันได้ออกเดินทาง'; nowS = 'คาซัคสถาน · เริ่ม 24 ก.ค. · เก็บกระเป๋ายัง?'; }
+    if (diff < 0) { nowK = 'เตรียมตัว! · Vela'; nowT = 'อีก ' + (-diff) + ' วันได้ออกเดินทาง'; nowS = 'คาซัคสถาน · เริ่ม 24 ก.ค. · เก็บกระเป๋ายัง?'; }
     else if (diff < kzn) { const c = kz[diff], nx = kz[diff + 1]; nowK = 'ตอนนี้คุณอยู่ที่ · ตามแผน'; nowT = c.city; nowS = 'วันที่ ' + (diff + 1) + ' จาก ' + kzn + (nx ? ' · ต่อไป → ' + nx.city : ' · วันสุดท้าย'); }
     else { nowK = 'กลับมาแล้ว!'; nowT = 'เที่ยวคาซัคสถานจบแล้ว'; nowS = 'ทำรีแคป/หนังสือเก็บความทรงจำเลยไหม'; }
     const curKey = this.state.trip + ':' + active;
@@ -3170,7 +3170,7 @@ class Component extends DCLogic {
         : (sc === 'chapterEdit' || sc === 'chapterRead') ? ((this.openChapter || {}).title || this.titles[sc])
         : sc === 'story' ? ((this.openStory || {}).title || 'เรื่องเล่า')
         : sc === 'docView' ? ((this.openDoc || {}).name || 'เอกสาร')
-        : (this.titles[sc] || 'NextTrip'),
+        : (this.titles[sc] || 'Vela'),
       canBack: this.state.history.length > 0 && !this.roots.includes(sc),
       back: () => this.back(),
       sMyplans: sc==='myplans', sCreate: sc==='create', sTrip: sc==='trip', sBudget: sc==='budget',
@@ -3232,7 +3232,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.20i',
+      appVersion: '2026.07.20j',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3286,7 +3286,7 @@ class Component extends DCLogic {
         const toggleKey = k => () => this.setState(s => ({ destAdded: { ...(s.destAdded || {}), [k]: !((s.destAdded || {})[k]) } }));
         return {
           destName: aiMode ? qcity : dd.name, destCity: aiMode ? catLabelMap[cat] : dd.city,
-          destSubtitle: aiMode ? 'แนะนำโดย AI · ปรับให้เมืองนี้โดยเฉพาะ' : 'โดยทีม NextTrip และผู้ใช้จริงของแอป',
+          destSubtitle: aiMode ? 'แนะนำโดย AI · ปรับให้เมืองนี้โดยเฉพาะ' : 'โดยทีม Vela และผู้ใช้จริงของแอป',
           exploreIdle: !aiMode, aiMode,
           expCity: this.state.expCity ?? '',
           setExpCity: e => this.setState({ expCity: e.target.value }),
