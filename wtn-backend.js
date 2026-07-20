@@ -107,6 +107,17 @@ async function boot() {
       const q = fs.query(fs.collection(DB, "stories", storyId, "chapters"), fs.orderBy("order", "asc"));
       return (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
     },
+    // ดึงตอนเดียว (สำหรับลิงก์แชร์ ?st=&ch=) — อ่านได้แม้ยังไม่ล็อกอิน ถ้า published==true
+    async getChapter(storyId, cid) {
+      try {
+        const [s, c] = await Promise.all([
+          fs.getDoc(fs.doc(DB, "stories", storyId)),
+          fs.getDoc(fs.doc(DB, "stories", storyId, "chapters", cid))
+        ]);
+        if (!c.exists()) return null;
+        return { story: s.exists() ? { id: s.id, ...s.data() } : { id: storyId }, chapter: { id: c.id, ...c.data() } };
+      } catch (e) { console.warn("[wtn] getChapter", e); return null; }
+    },
     // ฟีดสาธารณะ: ตอนที่ published (collectionGroup) — ไม่ orderBy เพื่อเลี่ยง composite index, เรียงฝั่ง client
     async feed(max = 40) {
       const q = fs.query(fs.collectionGroup(DB, "chapters"),

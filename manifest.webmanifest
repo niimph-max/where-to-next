@@ -1,6 +1,6 @@
 {
-  "name": "ทริปหน้าไปไหน",
-  "short_name": "ทริปหน้า",
+  "name": "NextTrip",
+  "short_name": "NextTrip",
   "description": "วางแผนทริป + เก็บเป็นเรื่องเล่า",
   "start_url": "./",
   "scope": "./",
