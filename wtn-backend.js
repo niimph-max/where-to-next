@@ -230,6 +230,11 @@ async function boot() {
       const r = await call({ plan });
       return (r && r.data && r.data.url) || "";
     },
+    async adminStats() {
+      const call = fns.httpsCallable(FN, "adminStats");
+      const r = await call({});
+      return (r && r.data) || null;
+    },
     async getPremium() {
       if (!this._uid) return null;
       const snap = await fs.getDoc(fs.doc(DB, "users", this._uid));

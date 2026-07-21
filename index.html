@@ -219,6 +219,23 @@
         </div>
       </sc-if>
 
+      <!-- ========== ADMIN DASHBOARD ========== -->
+      <sc-if value="{{ sAdmin }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:18px 20px 30px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Chonburi',serif;font-size:23px;color:#2b241f">แดชบอร์ด</div><button onClick="{{ refreshAdmin }}" style="border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:7px 14px;border-radius:18px;cursor:pointer">รีเฟรช</button></div>
+          <sc-if value="{{ adminBusy }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:30px;font:500 15px 'Anuphan';color:#a1927c">กำลังโหลด…</div></sc-if>
+          <sc-if value="{{ adminErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.09);border:1px solid rgba(192,86,58,.22);border-radius:14px;padding:13px 15px;font:500 14.5px/1.55 'Anuphan';color:#b3402a;margin-bottom:14px">{{ adminErr }}</div></sc-if>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">สมาชิกทั้งหมด</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminTotal }}</div></div>
+            <div style="background:#2b241f;border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#c9b79b;margin-bottom:6px">พรีเมียม</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#e9b48a">{{ adminPremium }}</div></div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">ฟรี</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminFree }}</div></div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">Subscription ใช้งานอยู่</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminSubs }}</div></div>
+          </div>
+          <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:18px;margin-top:12px;color:#fff"><div style="font:500 13.5px 'Anuphan';color:#f2ddcd;margin-bottom:6px">รายได้เดือนนี้</div><div style="font-family:'Chonburi',serif;font-size:34px;color:#fff">{{ adminRevenue }}</div></div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:16px">ตัวเลขเรียลไทม์จาก Firebase + Stripe · เฉพาะแอดมินเห็นหน้านี้</div>
+        </div>
+      </sc-if>
+
       <!-- ========== MY PLANS (home) ========== -->
       <sc-if value="{{ sMyplans }}" hint-placeholder-val="{{ true }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
@@ -1253,6 +1270,7 @@
             <photo-pick id="wtn-avatar" placeholder="รูป" style="display:block;width:70px;height:70px;border:3px solid #f6efe2;border-radius:21px;box-shadow:0 4px 12px rgba(43,36,32,.2)"></photo-pick>
             <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:10px"><div style="flex:1;min-width:0"><sc-if value="{{ profView }}" hint-placeholder-val="{{ true }}"><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:25px;color:#2b241f;margin:0">{{ profName }}</h1><div style="font:500 14.5px 'Anuphan';color:#8a7d6f">{{ profBio }}</div></sc-if><sc-if value="{{ profEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ profNameDraft }}" onInput="{{ setProfName }}" placeholder="ชื่อที่แสดง" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:600 17px 'Anuphan';color:#2b241f;outline:none"><input value="{{ profBioDraft }}" onInput="{{ setProfBio }}" placeholder="แนะนำตัวสั้นๆ" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"><input value="{{ profLinkDraft }}" onInput="{{ setProfLink }}" placeholder="ลิงก์ เช่น facebook.com/nimjourney (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"></sc-if></div><div style="display:flex;align-items:center;gap:8px;flex:none"><button onClick="{{ toggleProfEdit }}" style="border:1px solid rgba(43,36,32,.18);background:{{ profEditBg }};color:{{ profEditColor }};font:600 14.5px 'Anuphan';padding:7px 15px;border-radius:20px;cursor:pointer;min-height:34px">{{ profEditLabel }}</button><button onClick="{{ goSettings }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.18);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.7"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div></div>
             <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 14.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
+            <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><button onClick="{{ goAdmin }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.2);background:#fff;color:#2b241f;font:600 13px 'Anuphan';padding:7px 13px;border-radius:20px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="14" width="3" height="3"/></svg>แดชบอร์ดแอดมิน</button></div></sc-if>
             <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:700 12.5px 'Anuphan';padding:5px 12px;border-radius:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg>พรีเมียม</span></div></sc-if>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">1</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ storyCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">0</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ผู้ติดตาม</span></div></div>
           </div>
@@ -1435,7 +1453,7 @@ class Component extends DCLogic {
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
   tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan' };
-  titles = { premium:'Vela พรีเมียม', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  titles = { premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -3262,6 +3280,17 @@ class Component extends DCLogic {
       if (on) { this.cloudPush && this.cloudPush(); this.subscribeCloud && this.subscribeCloud(); }
     } catch (e) {}
   }
+  get isAdmin() {
+    const u = (window.WTNBackend && window.WTNBackend._uid) || (this.acct && this.acct.uid);
+    return u === 'ABu9cHcecbPpFBJgwrbR6rf8sa83' || u === 'E9wuPSIdQQOuPwvnSoW6Y427PrA3';
+  }
+  async loadAdminStats() {
+    const be = window.WTNBackend;
+    if (!be || !be.adminStats || !be._uid) { this.setState({ adminErr: 'ยังไม่พร้อม (ยังไม่ได้ deploy หรือยังไม่ล็อกอิน)' }); return; }
+    this.setState({ adminBusy: true, adminErr: '' });
+    try { const s = await be.adminStats(); this.setState({ adminStats: s, adminBusy: false }); }
+    catch (e) { this.setState({ adminBusy: false, adminErr: (e && (e.message || e.code)) || 'โหลดไม่สำเร็จ' }); }
+  }
   get links() {
     try {
       const l = JSON.parse(localStorage.getItem('wtn-links'));
@@ -3351,6 +3380,13 @@ class Component extends DCLogic {
       back: () => this.back(),
       isGuest: this.isGuest, guestSignup: () => this.gotoSignup(),
       isPremium: this.isPremium, notPremium: !this.isPremium, goPremium: () => this.go('premium'),
+      isAdmin: this.isAdmin, goAdmin: () => { this.go('admin'); this.loadAdminStats(); }, refreshAdmin: () => this.loadAdminStats(),
+      adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
+      adminTotal: (this.state.adminStats && this.state.adminStats.total != null) ? this.state.adminStats.total : '—',
+      adminPremium: (this.state.adminStats && this.state.adminStats.premium != null) ? this.state.adminStats.premium : '—',
+      adminFree: (this.state.adminStats && this.state.adminStats.free != null) ? this.state.adminStats.free : '—',
+      adminSubs: (this.state.adminStats && this.state.adminStats.activeSubs != null) ? this.state.adminStats.activeSubs : '—',
+      adminRevenue: (this.state.adminStats && this.state.adminStats.revenue != null) ? ('฿' + Number(this.state.adminStats.revenue).toLocaleString()) : '—',
       pickPlanYear: () => this.setState({ premiumPlan: 'year' }), pickPlanMonth: () => this.setState({ premiumPlan: 'month' }),
       yearSel: (this.state.premiumPlan || 'year') === 'year', monthSel: (this.state.premiumPlan || 'year') === 'month',
       planYearStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'year') === 'year' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
@@ -3361,7 +3397,7 @@ class Component extends DCLogic {
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
       sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
-      sOnboard: sc==='onboard', sPremium: sc==='premium', chrome: sc!=='onboard', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
+      sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', chrome: sc!=='onboard', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
       sOverview: sc==='overview', sPrep: sc==='prep',
       ...(() => {
         const _pk = this.packing;
@@ -3426,7 +3462,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.20z',
+      appVersion: '2026.07.21a',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
