@@ -1253,6 +1253,7 @@
             <photo-pick id="wtn-avatar" placeholder="รูป" style="display:block;width:70px;height:70px;border:3px solid #f6efe2;border-radius:21px;box-shadow:0 4px 12px rgba(43,36,32,.2)"></photo-pick>
             <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:10px"><div style="flex:1;min-width:0"><sc-if value="{{ profView }}" hint-placeholder-val="{{ true }}"><h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:25px;color:#2b241f;margin:0">{{ profName }}</h1><div style="font:500 14.5px 'Anuphan';color:#8a7d6f">{{ profBio }}</div></sc-if><sc-if value="{{ profEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ profNameDraft }}" onInput="{{ setProfName }}" placeholder="ชื่อที่แสดง" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:600 17px 'Anuphan';color:#2b241f;outline:none"><input value="{{ profBioDraft }}" onInput="{{ setProfBio }}" placeholder="แนะนำตัวสั้นๆ" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"><input value="{{ profLinkDraft }}" onInput="{{ setProfLink }}" placeholder="ลิงก์ เช่น facebook.com/nimjourney (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;border-radius:11px;padding:0 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none;margin-top:6px"></sc-if></div><div style="display:flex;align-items:center;gap:8px;flex:none"><button onClick="{{ toggleProfEdit }}" style="border:1px solid rgba(43,36,32,.18);background:{{ profEditBg }};color:{{ profEditColor }};font:600 14.5px 'Anuphan';padding:7px 15px;border-radius:20px;cursor:pointer;min-height:34px">{{ profEditLabel }}</button><button onClick="{{ goSettings }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.18);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.7"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div></div>
             <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 14.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
+            <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:700 12.5px 'Anuphan';padding:5px 12px;border-radius:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg>พรีเมียม</span></div></sc-if>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">1</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ storyCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">0</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ผู้ติดตาม</span></div></div>
           </div>
           <div style="padding:16px 20px 0">
@@ -1280,24 +1281,6 @@
               <span style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg></span>
               <div style="flex:1;min-width:0"><div style="font:700 16px 'Anuphan';color:#fff">อัปเกรดเป็นพรีเมียม</div><div style="font:500 13px 'Anuphan';color:#f2ddcd;margin-top:1px">ซิงก์ข้ามเครื่อง + ผู้ช่วย AI · เริ่ม ฿59/ด</div></div>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg>
-            </div>
-          </div>
-          </sc-if>
-          <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}">
-          <div style="padding:14px 20px 0">
-            <div style="background:#2b241f;border-radius:16px;padding:14px 15px;color:#f6efe2">
-              <div style="display:flex;align-items:center;gap:11px">
-                <span style="width:38px;height:38px;border-radius:11px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="#e9b48a"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg></span>
-                <div style="flex:1;min-width:0"><div style="font:600 15.5px 'Anuphan';color:#f6efe2">ผู้ช่วย AI ของฉัน</div><div style="font:500 13.5px 'Anuphan';color:#c9b79b">{{ aiStatus }}</div></div>
-                <sc-if value="{{ aiConnected }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;background:rgba(143,206,155,.18);color:#8fce9b;font:600 12.5px 'Anuphan';padding:5px 9px;border-radius:14px;flex:none">เชื่อมแล้ว</span></sc-if>
-              </div>
-              <sc-if value="{{ notConnected }}" hint-placeholder-val="{{ true }}">
-                <div style="display:flex;gap:8px;margin-top:12px"><input onInput="{{ onAiKey }}" placeholder="วาง API key (OpenAI / Claude / Gemini)" style="flex:1;min-width:0;border:1px solid rgba(246,239,226,.2);background:rgba(246,239,226,.06);border-radius:11px;padding:11px 12px;font:500 14.5px 'Anuphan';color:#f6efe2;outline:none"><button onClick="{{ connectAi }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:11px 16px;border-radius:11px;flex:none;cursor:pointer">เชื่อม</button></div>
-                <div style="font:500 12.5px/1.5 'Anuphan';color:#a1927c;margin-top:8px">ใช้ AI ด้วยโควตาบัญชีตัวเอง ไม่กินโควตาแอป · เก็บ key แบบเข้ารหัส</div>
-              </sc-if>
-              <sc-if value="{{ aiConnected }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;align-items:center;gap:8px;margin-top:12px"><span style="flex:1;font:500 14.5px ui-monospace,monospace;color:#c9b79b">{{ aiMasked }}</span><button onClick="{{ disconnectAi }}" style="border:1px solid rgba(246,239,226,.25);background:transparent;color:#f6efe2;font:600 14px 'Anuphan';padding:8px 13px;border-radius:11px;cursor:pointer">ยกเลิก</button></div>
-              </sc-if>
             </div>
           </div>
           </sc-if>
@@ -1543,6 +1526,7 @@ class Component extends DCLogic {
       this.setState({ auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authBusy: false });
       this.setTab('plan');
     } else { this.forceUpdate(); }
+    this.syncPremium();
     this.cloudPull();
     this.subscribeCloud();
     this.loadFeed();
@@ -2073,6 +2057,12 @@ class Component extends DCLogic {
     this._toastT = setTimeout(() => this.setState({ toast: '' }), 3200);
   }
   async askLLMParts(promptText, files) {
+    files = files || [];
+    const be = window.WTNBackend;
+    if (this.isPremium && !this.aiKey && be && be.aiComplete) {
+      if (files.length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
+      return await be.aiComplete(promptText);
+    }
     const key = this.aiKey, p = this.aiProvider;
     if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
     files = files || [];
@@ -3159,6 +3149,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    try { const q = new URLSearchParams(location.search); if (q.get('paid')) { this.showToast('ขอบคุณ! กำลังยืนยันการชำระเงิน…'); let n = 0; const t = setInterval(() => { this.syncPremium(); if (++n >= 8) clearInterval(t); }, 2500); history.replaceState(null, '', location.pathname); } } catch (e) {}
     this._pp = () => this.forceUpdate();
     window.addEventListener('photopick-change', this._pp);
     // เปลี่ยนรูปเมื่อไหร่ สั่งซิงก์ขึ้นคลาวด์ทันที (กันรูปโปรไฟล์/ปกไม่ push)
@@ -3239,6 +3230,37 @@ class Component extends DCLogic {
     this.cloudPush && this.cloudPush();
     this.subscribeCloud && this.subscribeCloud();
     this.back();
+  }
+  async startCheckout(plan) {
+    const be = window.WTNBackend;
+    if (be && be.startCheckout && be._uid) {
+      try {
+        this.showToast('กำลังเปิดหน้าชำระเงิน…');
+        const url = await be.startCheckout(plan);
+        if (url) { window.location.href = url; return; }
+        throw new Error('ไม่ได้ url');
+      } catch (e) {
+        const msg = (e && (e.message || e.code)) || '';
+        // ยังไม่ได้ตั้ง Price ID / backend จ่ายเงิน → โหมดทดลอง
+        if (/Price ID|failed-precondition|not-found|internal/i.test(msg)) { this.subscribePremium(plan); return; }
+        this.showToast('เปิดหน้าจ่ายไม่ได้: ' + msg);
+      }
+      return;
+    }
+    this.subscribePremium(plan); // ยังไม่มี backend จ่ายเงิน → ทดลอง
+  }
+  async syncPremium() {
+    const be = window.WTNBackend;
+    if (!be || !be.getPremium || !be._uid) return;
+    try {
+      const p = await be.getPremium();
+      if (!p) return;
+      const expired = p.until && p.until < Date.now();
+      const on = p.premium && !expired;
+      try { localStorage.setItem('wtn-premium', on ? '1' : '0'); } catch (e) {}
+      this.forceUpdate();
+      if (on) { this.cloudPush && this.cloudPush(); this.subscribeCloud && this.subscribeCloud(); }
+    } catch (e) {}
   }
   get links() {
     try {
@@ -3334,7 +3356,7 @@ class Component extends DCLogic {
       planYearStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'year') === 'year' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
       planMonthStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'year') === 'month' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
       planPriceLabel: (this.state.premiumPlan || 'year') === 'year' ? '฿599/ปี' : '฿59/เดือน',
-      subscribeNow: () => this.subscribePremium(this.state.premiumPlan || 'year'),
+      subscribeNow: () => this.startCheckout(this.state.premiumPlan || 'year'),
       sMyplans: sc==='myplans', sCreate: sc==='create', sTrip: sc==='trip', sBudget: sc==='budget',
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
       sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile',
@@ -3404,7 +3426,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.20v',
+      appVersion: '2026.07.20z',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3749,7 +3771,7 @@ class Component extends DCLogic {
           beenSearch: this.state.beenSearch || '', setBeenSearch: e => this.setState({ beenSearch: e.target.value }),
           beenOptions: opts };
       })(),
-      aiStatus: this.aiKey ? ('เชื่อมแล้ว (' + ({ claude: 'Claude', gemini: 'Gemini', openai: 'OpenAI' }[this.aiProvider] || 'AI') + ') · ใช้ด้วยโควตาของคุณ') : 'เชื่อม API key เพื่อใช้ AI ด้วยบัญชีตัวเอง',
+      aiStatus: this.aiKey ? ('ใช้คีย์ของคุณ (' + ({ claude: 'Claude', gemini: 'Gemini', openai: 'OpenAI' }[this.aiProvider] || 'AI') + ') · ไม่กินโควตาแอป') : 'พร้อมใช้ AI ของ Vela แล้ว — ไม่ต้องใส่คีย์',
       aiMasked: this.aiKey ? (this.aiKey.slice(0, 6) + '••••••••') : 'sk-••••••••',
       onAiKey: (e) => this.setState({ aiKeyDraft: e.target.value }),
       connectAi: () => {

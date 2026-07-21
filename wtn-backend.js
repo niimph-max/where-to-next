@@ -224,6 +224,19 @@ async function boot() {
       const r = await call({ prompt });
       return (r && r.data && r.data.text) || "";
     },
+    // ---------- จ่ายเงิน (Stripe) ----------
+    async startCheckout(plan) {
+      const call = fns.httpsCallable(FN, "createCheckout");
+      const r = await call({ plan });
+      return (r && r.data && r.data.url) || "";
+    },
+    async getPremium() {
+      if (!this._uid) return null;
+      const snap = await fs.getDoc(fs.doc(DB, "users", this._uid));
+      if (!snap.exists()) return { premium: false, until: null };
+      const d = snap.data();
+      return { premium: d.premium === true, until: d.premiumUntil && d.premiumUntil.toMillis ? d.premiumUntil.toMillis() : null };
+    },
   };
 
   window.WTNBackend = api;
