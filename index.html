@@ -236,6 +236,23 @@
         </div>
       </sc-if>
 
+      <!-- ========== RESTORE (เวอร์ชันสำรอง) ========== -->
+      <sc-if value="{{ sRestore }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:18px 20px 30px">
+          <div style="display:flex;align-items:center;gap:9px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:14px;padding:12px 14px;margin-bottom:16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-9 9z"/><path d="M12 7v5l3 2"/></svg><span style="font:500 13.5px/1.55 'Anuphan';color:#7c6a58">ระบบเก็บสำรอง 7 ชุดล่าสุดอัตโนมัติทุกครั้งที่ซิงก์ · ถ้าข้อมูลเพี้ยนหรือหาย เลือกชุดก่อนหน้าเพื่อกู้กลับได้</span></div>
+          <sc-if value="{{ versionsBusy }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:30px;font:500 15px 'Anuphan';color:#a1927c">กำลังโหลด…</div></sc-if>
+          <sc-if value="{{ noVersions }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px">ยังไม่มีเวอร์ชันสำรอง — จะถูกสร้างอัตโนมัติเมื่อมีการซิงก์ครั้งถัดไป</div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ versionsList }}" as="v" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:14px;padding:13px 14px">
+                <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ v.when }}</div><div style="font:500 13px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ v.summary }}</div></div>
+                <button onClick="{{ v.restore }}" style="flex:none;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14px 'Anuphan';padding:9px 15px;border-radius:20px;cursor:pointer">กู้คืน</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- ========== MY PLANS (home) ========== -->
       <sc-if value="{{ sMyplans }}" hint-placeholder-val="{{ true }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
@@ -1406,6 +1423,7 @@
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
               <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
               <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
+              <button onClick="{{ goRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">🕑 เวอร์ชันสำรองย้อนหลัง (กู้กลับได้)</button>
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">หรือดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
               <div style="display:flex;gap:9px">
                 <button onClick="{{ doBackup }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดาวน์โหลดไฟล์สำรอง</button>
@@ -1453,7 +1471,7 @@ class Component extends DCLogic {
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
   tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan' };
-  titles = { premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  titles = { premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -1738,6 +1756,38 @@ class Component extends DCLogic {
       else if (!bk || !bk.data) { this.cloudPush(); }
       else { this.setState({ cloud: 'saved' }); }
     } catch (e) { console.warn('[wtn] cloud pull', e); this.setState({ cloud: 'error', cloudErr: 'pull: ' + ((e && (e.code || e.message)) || String(e)) }); }
+  }
+  loadVersions() {
+    const be = window.WTNBackend;
+    if (!be || !be.listBackupVersions) { this.setState({ versionsList: [], versionsBusy: false }); return; }
+    this.setState({ versionsBusy: true });
+    be.listBackupVersions().then(v => this.setState({ versionsList: v, versionsBusy: false })).catch(() => this.setState({ versionsBusy: false }));
+  }
+  async restoreVersion(id) {
+    const be = window.WTNBackend;
+    if (!be || !be.getBackupVersion) return;
+    if (!confirm('กู้คืนข้อมูลเป็นเวอร์ชันนี้? ข้อมูลปัจจุบันจะถูกแทนที่ (เวอร์ชันปัจจุบันยังถูกเก็บสำรองไว้ กดกลับมาได้)')) return;
+    this.setState({ restoreBusy: true });
+    try {
+      const bk = await be.getBackupVersion(id);
+      if (!bk || !bk.data) { alert('เปิดเวอร์ชันนี้ไม่ได้'); this.setState({ restoreBusy: false }); return; }
+      this._applyingCloud = true;
+      try {
+        const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+        const toDel = [];
+        for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
+        toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+        Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
+      } finally { this._applyingCloud = false; }
+      this._synced = true; this._lastSyncSig = null;
+      try { localStorage.setItem('wtn-cloud-at', '0'); } catch (e) {}
+      window.dispatchEvent(new Event('photopick-change'));
+      this.loadFeed && this.loadFeed(); this.loadMoments && this.loadMoments();
+      await this.cloudPush();
+      this.setState({ restoreBusy: false });
+      this.showToast('✓ กู้คืนข้อมูลแล้ว');
+      this.forceUpdate();
+    } catch (e) { this.setState({ restoreBusy: false }); alert('กู้คืนไม่สำเร็จ: ' + (e.message || e)); }
   }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
@@ -3414,7 +3464,7 @@ class Component extends DCLogic {
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
       sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
-      sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', chrome: sc!=='onboard', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
+      sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
       sOverview: sc==='overview', sPrep: sc==='prep',
       ...(() => {
         const _pk = this.packing;
@@ -3479,7 +3529,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21d',
+      appVersion: '2026.07.21e',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3680,6 +3730,9 @@ class Component extends DCLogic {
       syncNowLabel: this.state.syncBusy ? 'กำลังซิงก์…' : 'ซิงก์ตอนนี้',
       forceRestore: () => this.forceRestoreCloud(),
       forceRestoreLabel: this.state.restoreBusy ? 'กำลังกู้…' : '↻ กู้ข้อมูลจากคลาวด์',
+      goRestore: () => { this.go('restore'); this.loadVersions(); }, refreshVersions: () => this.loadVersions(),
+      versionsBusy: !!this.state.versionsBusy, noVersions: !this.state.versionsBusy && (this.state.versionsList || []).length === 0,
+      versionsList: (this.state.versionsList || []).map(v => ({ id: v.id, when: new Date(v.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), summary: (v.trips || 0) + ' ทริป · ' + (v.moments || 0) + ' โมเมนต์', restore: () => this.restoreVersion(v.id) })),
       doRestore: e => this.importBackup(e),
       goCreate: () => this.openCreate(null),
       goCompose: () => this.openStoryEdit(null),

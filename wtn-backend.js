@@ -202,8 +202,33 @@ async function boot() {
       if (!this._uid) return;
       const blob = JSON.stringify(obj);
       if (blob.length > 1000000) { const e = new Error("backup ใหญ่เกิน 1MB"); e.code = "backup/too-large"; throw e; }
+      const at = obj._at || Date.now();
       await fs.setDoc(fs.doc(DB, "backups", this._uid),
-        { blob, at: obj._at || Date.now(), updatedAt: fs.serverTimestamp() });
+        { blob, at, updatedAt: fs.serverTimestamp() });
+      // เก็บเวอร์ชันย้อนหลัง (กันเขียนทับพลาด) — เก็บ 7 ชุดล่าสุด
+      try {
+        await fs.setDoc(fs.doc(DB, "backups", this._uid, "versions", String(at)), { blob, at });
+        const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
+        let i = 0;
+        for (const d of q.docs) { i++; if (i > 7) { try { await fs.deleteDoc(d.ref); } catch (e) {} } }
+      } catch (e) { console.warn("[wtn] version snap", e); }
+    },
+    async listBackupVersions() {
+      if (!this._uid) return [];
+      try {
+        const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
+        return q.docs.map(d => {
+          let trips = 0, moments = 0;
+          try { const o = JSON.parse(d.data().blob); const dd = o.data || {}; trips = (JSON.parse(dd["wtn-trips"] || "[]") || []).length; moments = (JSON.parse(dd["wtn-moments"] || "[]") || []).length; } catch (e) {}
+          return { id: d.id, at: d.data().at || Number(d.id), trips, moments };
+        });
+      } catch (e) { console.warn("[wtn] list versions", e); return []; }
+    },
+    async getBackupVersion(id) {
+      if (!this._uid) return null;
+      const snap = await fs.getDoc(fs.doc(DB, "backups", this._uid, "versions", String(id)));
+      if (!snap.exists()) return null;
+      try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
     },
     async pullBackup() {
       if (!this._uid) return null;
