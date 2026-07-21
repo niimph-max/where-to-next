@@ -18,17 +18,19 @@ async function boot() {
   const cfg = window.WTN_FIREBASE_CONFIG || {};
   if (!cfg.apiKey || cfg.apiKey === "PASTE_API_KEY") { console.warn("[wtn] ยังไม่ได้ตั้ง firebase-config.js"); return; }
 
-  const [{ initializeApp }, auth, fs, storage] = await Promise.all([
+  const [{ initializeApp }, auth, fs, storage, fns] = await Promise.all([
     import(`${B}/firebase-app.js`),
     import(`${B}/firebase-auth.js`),
     import(`${B}/firebase-firestore.js`),
     import(`${B}/firebase-storage.js`),
+    import(`${B}/firebase-functions.js`),
   ]);
 
   const app = initializeApp(cfg);
   const A = auth.getAuth(app);
   const DB = fs.getFirestore(app);
   const ST = storage.getStorage(app);
+  const FN = fns.getFunctions(app, "asia-southeast1");
 
   const api = {
     _uid: null,
@@ -215,6 +217,12 @@ async function boot() {
       return fs.onSnapshot(fs.doc(DB, "backups", this._uid),
         snap => { if (!snap.exists()) return; try { cb(JSON.parse(snap.data().blob)); } catch (e) {} },
         err => console.warn("[wtn] backup sub", err));
+    },
+    // ---------- AI กลาง (ผ่าน Cloud Function ที่ถือคีย์ Gemini) ----------
+    async aiComplete(prompt) {
+      const call = fns.httpsCallable(FN, "aiComplete");
+      const r = await call({ prompt });
+      return (r && r.data && r.data.text) || "";
     },
   };
 

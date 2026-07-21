@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  .gd-chip{display:flex;align-items:center;gap:5px;background:#fff;border-radius:20px;padding:4px 11px 4px 5px;box-shadow:0 3px 10px rgba(0,0,0,.28);font:600 13px 'Anuphan';color:#1c3040;white-space:nowrap;cursor:pointer;transform:translate(-50%,-50%);transition:opacity .2s}
+  .gd-chip .fl{width:20px;height:20px;border-radius:50%;object-fit:cover;flex:none}
+  .gd-chip.seen{background:#c05f39;color:#fff}
+  @keyframes gspin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div style="width:100%;height:100%;min-height:760px;background:#0a1016;font-family:'Anuphan',sans-serif;display:flex;flex-direction:column;position:relative;overflow:hidden">
+
+  <div style="position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+    <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c3040" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></div>
+    <div style="display:flex;gap:3px;background:rgba(10,16,22,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:13px;padding:4px">
+      <button onClick="{{ setGlobe }}" style="{{ tabGlobeStyle }}">🌏 ลูกโลก 3D</button>
+      <button onClick="{{ setFlat }}" style="{{ tabFlatStyle }}">🗺️ แผนที่เบา</button>
+    </div>
+    <div style="width:40px"></div>
+  </div>
+
+  <div style="position:absolute;top:70px;left:50%;transform:translateX(-50%);z-index:20;background:rgba(10,16,22,.55);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:7px 16px;font:700 14px 'Anuphan';color:#fff;display:flex;align-items:center;gap:7px">
+    <span style="color:#e8a583">✦</span> เคยไปแล้ว {{ seenCount }} ประเทศ
+  </div>
+
+  <!-- 3D GLOBE -->
+  <sc-if value="{{ isGlobe }}" hint-placeholder-val="{{ true }}">
+    <div ref="{{ globeRef }}" style="position:absolute;inset:0;z-index:1"></div>
+    <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#8ba0b0;font:600 15px 'Anuphan'">
+        <div style="width:34px;height:34px;border:3px solid rgba(255,255,255,.15);border-top-color:#e8a583;border-radius:50%;animation:gspin 1s linear infinite"></div>
+        กำลังโหลดลูกโลก…
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <!-- FLAT MAP -->
+  <sc-if value="{{ isFlat }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;z-index:1;overflow:auto;display:flex;align-items:center">
+      <div style="position:relative;width:100%;aspect-ratio:2/1;background-size:cover;background-position:center;{{ flatBgStyle }}">
+        <sc-for list="{{ pins }}" as="p" hint-placeholder-count="14">
+          <button onClick="{{ p.tap }}" title="{{ p.name }}" style="{{ p.style }}"><span style="font-size:14px">{{ p.flag }}</span></button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:210px;left:16px;right:16px;z-index:5;text-align:center;color:#6d818f;font:500 12.5px 'Anuphan'">แตะหมุดเพื่อเลือก · แผนที่แบนโหลดเร็ว ไม่กินแรงเครื่อง</div>
+  </sc-if>
+
+  <!-- BOTTOM SHEET -->
+  <div style="position:absolute;left:0;right:0;bottom:0;z-index:15;background:linear-gradient(180deg,rgba(10,16,22,0),#0d151c 22%);padding:60px 20px 26px">
+    <div style="width:38px;height:5px;border-radius:3px;background:rgba(255,255,255,.35);margin:0 auto 20px"></div>
+    <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:4px">
+      <span style="font-size:26px">{{ selFlag }}</span>
+      <span style="font:400 34px 'Chonburi',serif;color:#fff;line-height:1">{{ selName }}</span>
+    </div>
+    <div style="text-align:center;font:600 13px 'Anuphan';color:#8ba0b0;letter-spacing:.5px;margin-bottom:20px">{{ selCoord }}</div>
+    <button onClick="{{ toggleSeen }}" style="{{ seenBtnStyle }}">{{ seenBtnLabel }}</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:402,&quot;height&quot;:800}}">
+class Component extends DCLogic {
+  state = { mode: 'globe', sel: 0, loading: true, seen: {}, tick: 0 };
+
+  COUNTRIES = [
+    { name: 'คาซัคสถาน', flag: '🇰🇿', lat: 48.0, lng: 66.9, tag: 'ทริปกำลังจะถึง' },
+    { name: 'ไทย', flag: '🇹🇭', lat: 15.0, lng: 101.0 },
+    { name: 'ญี่ปุ่น', flag: '🇯🇵', lat: 36.2, lng: 138.3 },
+    { name: 'เกาหลีใต้', flag: '🇰🇷', lat: 36.5, lng: 127.8 },
+    { name: 'จีน', flag: '🇨🇳', lat: 35.9, lng: 104.2 },
+    { name: 'อินเดีย', flag: '🇮🇳', lat: 22.6, lng: 79.0 },
+    { name: 'ตุรกี', flag: '🇹🇷', lat: 39.0, lng: 35.2 },
+    { name: 'อียิปต์', flag: '🇪🇬', lat: 26.8, lng: 30.8 },
+    { name: 'ฝรั่งเศส', flag: '🇫🇷', lat: 46.6, lng: 2.2 },
+    { name: 'อิตาลี', flag: '🇮🇹', lat: 42.5, lng: 12.6 },
+    { name: 'สหรัฐฯ', flag: '🇺🇸', lat: 39.8, lng: -100.4 },
+    { name: 'บราซิล', flag: '🇧🇷', lat: -10.3, lng: -53.2 },
+    { name: 'เคนยา', flag: '🇰🇪', lat: -0.02, lng: 37.9 },
+    { name: 'ออสเตรเลีย', flag: '🇦🇺', lat: -25.3, lng: 133.8 },
+  ];
+
+  componentDidMount() {
+    try { this.setState({ seen: JSON.parse(localStorage.getItem('gd-seen') || '{}') }); } catch (e) {}
+    this._waitGlobe();
+  }
+  componentWillUnmount() { if (this._g && this._g._destructor) try { this._g._destructor(); } catch (e) {} }
+
+  _waitGlobe(n) {
+    n = n || 0;
+    if (this.state.mode !== 'globe') return;
+    if (!this._globeEl) { if (n < 60) setTimeout(() => this._waitGlobe(n + 1), 60); return; }
+    if (typeof Globe === 'undefined') { if (n < 120) setTimeout(() => this._waitGlobe(n + 1), 80); return; }
+    this._initGlobe();
+  }
+
+  _initGlobe() {
+    if (this._g || !this._globeEl) return;
+    const el = this._globeEl;
+    const g = Globe()(el)
+      .backgroundColor('#0a1016')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+      .atmosphereColor('#8bd0ff').atmosphereAltitude(0.18)
+      .htmlElementsData(this.COUNTRIES)
+      .htmlLat(d => d.lat).htmlLng(d => d.lng).htmlAltitude(0.01)
+      .htmlElement(d => {
+        const div = document.createElement('div');
+        div.className = 'gd-chip' + (this.state.seen[d.name] ? ' seen' : '');
+        div.innerHTML = '<span style="font-size:15px">' + d.flag + '</span>' + d.name;
+        div.onclick = () => this._select(d);
+        return div;
+      });
+    g.width(el.clientWidth).height(el.clientHeight);
+    const c = g.controls();
+    c.autoRotate = true; c.autoRotateSpeed = 0.55; c.enableZoom = true; c.minDistance = 180; c.maxDistance = 520;
+    g.pointOfView({ lat: 20, lng: 70, altitude: 2.3 }, 0);
+    this._g = g;
+    this._ro = new ResizeObserver(() => { if (this._g) this._g.width(el.clientWidth).height(el.clientHeight); });
+    this._ro.observe(el);
+    setTimeout(() => this.setState({ loading: false }), 400);
+  }
+
+  _refreshChips() { if (this._g) this._g.htmlElementsData([...this.COUNTRIES]); }
+
+  _select(d) {
+    const i = this.COUNTRIES.indexOf(d);
+    this.setState({ sel: i });
+    if (this._g) { const c = this._g.controls(); c.autoRotate = false; this._g.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.9 }, 900); }
+  }
+
+  _fmtCoord(d) {
+    const la = Math.abs(d.lat).toFixed(1) + '° ' + (d.lat >= 0 ? 'N' : 'S');
+    const lo = Math.abs(d.lng).toFixed(1) + '° ' + (d.lng >= 0 ? 'E' : 'W');
+    return la + '  ·  ' + lo;
+  }
+
+  renderVals() {
+    const seen = this.state.seen;
+    const sel = this.COUNTRIES[this.state.sel] || this.COUNTRIES[0];
+    const isSeen = !!seen[sel.name];
+    const tab = (on) => 'border:none;cursor:pointer;font:600 13px \'Anuphan\';padding:7px 12px;border-radius:10px;transition:.15s;' + (on ? 'background:#fff;color:#1c3040' : 'background:transparent;color:#c6d3dc');
+    const W = 1000, H = 500;
+    const pins = this.COUNTRIES.map(d => {
+      const x = (d.lng + 180) / 360 * 100, y = (90 - d.lat) / 180 * 100;
+      const on = !!seen[d.name];
+      return { name: d.name, flag: d.flag, tap: () => this.setState({ sel: this.COUNTRIES.indexOf(d) }),
+        style: 'position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.4);background:' + (on ? '#c05f39' : 'rgba(28,48,64,.92)') };
+    });
+    return {
+      isGlobe: this.state.mode === 'globe', isFlat: this.state.mode === 'flat',
+      loading: this.state.loading,
+      setGlobe: () => { this.setState({ mode: 'globe', loading: !this._g }); setTimeout(() => this._waitGlobe(), 30); },
+      setFlat: () => this.setState({ mode: 'flat' }),
+      tabGlobeStyle: tab(this.state.mode === 'globe'), tabFlatStyle: tab(this.state.mode === 'flat'),
+      globeRef: (el) => { this._globeEl = el; },
+      flatBgStyle: "background-image:url('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')",
+      pins,
+      seenCount: Object.keys(seen).filter(k => seen[k]).length,
+      selFlag: sel.flag, selName: sel.name, selCoord: this._fmtCoord(sel),
+      seenBtnLabel: isSeen ? '✓ เคยไปแล้ว — แตะเพื่อเอาออก' : '+ ปักว่าเคยไป ' + sel.name,
+      seenBtnStyle: 'display:block;width:100%;max-width:340px;margin:0 auto;min-height:52px;border-radius:15px;border:none;cursor:pointer;font:700 16px \'Anuphan\';' + (isSeen ? 'background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.3)' : 'background:#c05f39;color:#fff;box-shadow:0 8px 22px rgba(192,95,57,.4)'),
+      toggleSeen: () => {
+        const s = { ...this.state.seen };
+        if (s[sel.name]) delete s[sel.name]; else s[sel.name] = true;
+        try { localStorage.setItem('gd-seen', JSON.stringify(s)); } catch (e) {}
+        this.setState({ seen: s });
+        setTimeout(() => this._refreshChips(), 20);
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
