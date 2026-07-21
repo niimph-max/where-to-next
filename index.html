@@ -1544,11 +1544,10 @@ class Component extends DCLogic {
       this.setState({ auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authBusy: false });
       this.setTab('plan');
     } else { this.forceUpdate(); }
-    this.syncPremium();
-    this.cloudPull();
-    this.subscribeCloud();
     this.loadFeed();
     this.loadMoments();
+    // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
+    Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); });
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
@@ -3275,9 +3274,10 @@ class Component extends DCLogic {
       if (!p) return;
       const expired = p.until && p.until < Date.now();
       const on = p.premium && !expired;
+      const was = localStorage.getItem('wtn-premium') === '1';
       try { localStorage.setItem('wtn-premium', on ? '1' : '0'); } catch (e) {}
       this.forceUpdate();
-      if (on) { this.cloudPush && this.cloudPush(); this.subscribeCloud && this.subscribeCloud(); }
+      if (on && !was) { this.cloudPull && this.cloudPull(); this.subscribeCloud && this.subscribeCloud(); }
     } catch (e) {}
   }
   get isAdmin() {
@@ -3462,7 +3462,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21a',
+      appVersion: '2026.07.21b',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
