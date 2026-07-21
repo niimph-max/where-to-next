@@ -206,6 +206,8 @@ async function boot() {
       await fs.setDoc(fs.doc(DB, "backups", this._uid),
         { blob, at, updatedAt: fs.serverTimestamp() });
       // เก็บเวอร์ชันย้อนหลัง (กันเขียนทับพลาด) — เก็บ 7 ชุดล่าสุด
+      if (this._lastVerAt && at - this._lastVerAt < 600000) return; // เวอร์ชันย้อนหลังไม่ถี่กว่า 10 นาที
+      this._lastVerAt = at;
       try {
         await fs.setDoc(fs.doc(DB, "backups", this._uid, "versions", String(at)), { blob, at });
         const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
