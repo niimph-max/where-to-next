@@ -1465,8 +1465,8 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
 class Component extends DCLogic {
   state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '',
-    screen: (() => { try { const p = new URLSearchParams(location.search); if (p.get('st') && p.get('ch')) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(),
-    deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch')); } catch (e) { return false; } })(),
+    screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
+    deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
@@ -3404,10 +3404,14 @@ class Component extends DCLogic {
       if (p.get('st') && p.get('ch')) {
         const sid = p.get('st'), cid = p.get('ch');
         try { history.replaceState(null, '', location.pathname); } catch (e) {} // ล้างลิงก์ออกจาก URL ทันที — รีเฟรช/เปิดใหม่เข้าแอปปกติเสมอ
-        const go = () => this.resolveDeepLink(sid, cid);
-        go();
-        if (!window.WTNBackend) window.addEventListener('wtn-backend-ready', go, { once: true });
-        setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, 9000);
+        if (localStorage.getItem('wtn-deep-last') === sid + ':' + cid) { this._deepDone = true; } // ลิงก์นี้เคยเปิดแล้ว (บุ๊กมาร์ก/ทางลัดค้าง) — ไม่เด้งหน้าอ่านซ้ำ
+        else {
+          try { localStorage.setItem('wtn-deep-last', sid + ':' + cid); } catch (e) {}
+          const go = () => this.resolveDeepLink(sid, cid);
+          go();
+          if (!window.WTNBackend) window.addEventListener('wtn-backend-ready', go, { once: true });
+          setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, 9000);
+        }
       }
     } catch (e) {}
     this.tabOf.settings = 'me';
@@ -3677,7 +3681,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21m',
+      appVersion: '2026.07.21n',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
