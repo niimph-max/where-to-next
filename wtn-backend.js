@@ -209,6 +209,13 @@ async function boot() {
       if (!snap.exists()) return null;
       try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
     },
+    // ฟังการเปลี่ยนแปลงแบบเรียลไทม์ — อีกเครื่องแก้ปุ๊บ เครื่องนี้รู้ปั๊บ (ไม่ต้องรอรีโหลด)
+    subscribeBackup(cb) {
+      if (!this._uid) return () => {};
+      return fs.onSnapshot(fs.doc(DB, "backups", this._uid),
+        snap => { if (!snap.exists()) return; try { cb(JSON.parse(snap.data().blob)); } catch (e) {} },
+        err => console.warn("[wtn] backup sub", err));
+    },
   };
 
   window.WTNBackend = api;

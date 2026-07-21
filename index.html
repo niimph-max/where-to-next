@@ -390,22 +390,32 @@
         <div class="wtn-screen" style="padding:16px 20px 30px">
           <div style="font:500 14.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">เช็กลิสต์ของที่ต้องเตรียม + โน้ตก่อนออกเดินทาง</div>
           <sc-if value="{{ packHasItems }}" hint-placeholder-val="{{ false }}"><div style="font:600 14px 'Anuphan';color:#c05f39;margin-bottom:12px">เตรียมแล้ว {{ packDone }}/{{ packTotal }}</div></sc-if>
-          <div style="display:flex;gap:9px;margin-bottom:12px">
-            <input value="{{ packDraft }}" onInput="{{ setPackDraft }}" onKeyDown="{{ packKey }}" placeholder="เพิ่มของ เช่น พาสปอร์ต" style="flex:1;min-width:0;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
-            <button onClick="{{ addPack }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:0 18px;border-radius:12px;cursor:pointer;flex:none">เพิ่ม</button>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px">
+            <select value="{{ packAddCat }}" onChange="{{ setPackAddCat }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:12px 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"><sc-for list="{{ packCatOptions }}" as="op" hint-placeholder-count="7"><option value="{{ op.value }}">{{ op.label }}</option></sc-for></select>
+            <div style="display:flex;gap:9px">
+              <input value="{{ packDraft }}" onInput="{{ setPackDraft }}" onKeyDown="{{ packKey }}" placeholder="เพิ่มของ เช่น พาสปอร์ต" style="flex:1;min-width:0;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
+              <button onClick="{{ addPack }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:0 18px;border-radius:12px;cursor:pointer;flex:none">เพิ่ม</button>
+            </div>
           </div>
-          <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px"><sc-for list="{{ packSuggest }}" as="sg" hint-placeholder-count="5"><button onClick="{{ sg.on }}" style="background:#efe4d3;color:#5c5347;font:500 14px 'Anuphan';padding:7px 12px;border-radius:16px;border:none;cursor:pointer">+ {{ sg.label }}</button></sc-for></div>
-          <sc-if value="{{ packEmpty }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:20px;font:500 14.5px/1.6 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px;margin-bottom:18px">ยังไม่มีรายการ — เพิ่มของชิ้นแรก หรือแตะปุ่มแนะนำด้านบน</div></sc-if>
-          <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px">
-            <sc-for list="{{ packItems }}" as="it" hint-placeholder-count="0">
-              <div style="display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:13px;padding:11px 14px">
-                <button onClick="{{ it.toggle }}" style="{{ it.boxStyle }}"><sc-if value="{{ it.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></sc-if></button>
-                <span style="flex:1;min-width:0;font:500 16px 'Anuphan';{{ it.textStyle }}">{{ it.text }}</span>
-                <div style="display:flex;flex-direction:column;gap:0;flex:none">
-                  <button onClick="{{ it.up }}" style="{{ it.upStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="2.2"><path d="M18 15l-6-6-6 6"/></svg></button>
-                  <button onClick="{{ it.down }}" style="{{ it.downStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></button>
+          <sc-if value="{{ packCanSeed }}" hint-placeholder-val="{{ false }}"><button onClick="{{ seedPack }}" style="width:100%;min-height:46px;margin-bottom:16px;border:1.5px dashed rgba(192,95,57,.55);background:#fff6ee;color:#c05f39;font:600 15.5px 'Anuphan';border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>โหลดเช็กลิสต์มาตรฐาน ({{ packSeedCount }} รายการ)</button></sc-if>
+          <sc-if value="{{ packEmpty }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:20px;font:500 14.5px/1.6 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px;margin-bottom:18px">ยังไม่มีรายการ — แตะ “โหลดเช็กลิสต์มาตรฐาน” ด้านบน หรือพิมพ์เพิ่มเอง</div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:20px;margin-bottom:22px">
+            <sc-for list="{{ packGroups }}" as="g" hint-placeholder-count="0">
+              <div>
+                <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px"><span style="font:700 15.5px 'Anuphan';color:#c05f39">{{ g.name }}</span><span style="font:600 13px 'Anuphan';color:#a1927c">{{ g.done }}/{{ g.count }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="0">
+                    <div style="display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:13px;padding:11px 14px">
+                      <button onClick="{{ it.toggle }}" style="{{ it.boxStyle }}"><sc-if value="{{ it.done }}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></sc-if></button>
+                      <span style="flex:1;min-width:0;font:500 16px 'Anuphan';{{ it.textStyle }}">{{ it.text }}</span>
+                      <div style="display:flex;flex-direction:column;gap:0;flex:none">
+                        <button onClick="{{ it.up }}" style="{{ it.upStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="2.2"><path d="M18 15l-6-6-6 6"/></svg></button>
+                        <button onClick="{{ it.down }}" style="{{ it.downStyle }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></button>
+                      </div>
+                      <button onClick="{{ it.del }}" style="border:none;background:transparent;cursor:pointer;flex:none;padding:4px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b5563a" stroke-width="1.8"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg></button>
+                    </div>
+                  </sc-for>
                 </div>
-                <button onClick="{{ it.del }}" style="border:none;background:transparent;cursor:pointer;flex:none;padding:4px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b5563a" stroke-width="1.8"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg></button>
               </div>
             </sc-for>
           </div>
@@ -801,6 +811,7 @@
                     <div style="flex:1;min-width:0">
                       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font:700 15px 'Anuphan';color:#2b241f">{{ mo.dateStr }}</span><span style="font:500 14px 'Anuphan';color:#a99e8e">· {{ mo.timeStr }}</span><sc-if value="{{ mo.hasCat }}" hint-placeholder-val="{{ true }}"><span style="{{ mo.catStyle }}"><span style="{{ mo.catDotEl }}"></span>{{ mo.catName }}</span></sc-if></div>
                       <sc-if value="{{ mo.hasPlace }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;align-items:center;gap:4px;font:600 13.5px 'Anuphan';color:#c05f39;margin-top:3px"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/></svg>{{ mo.place }}</div></sc-if>
+                      <sc-if value="{{ mo.hasCoord }}" hint-placeholder-val="{{ false }}"><a href="{{ mo.mapUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font:600 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px;text-decoration:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>{{ mo.coordStr }}</a></sc-if>
                     </div>
                     <sc-if value="{{ mo.mine }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px;flex:none"><button onClick="{{ mo.edit }}" style="border:none;background:transparent;color:#8a7d6f;font:600 13px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ mo.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></span></sc-if>
                   </div>
@@ -1474,6 +1485,7 @@ class Component extends DCLogic {
       this.setTab('plan');
     } else { this.forceUpdate(); }
     this.cloudPull();
+    this.subscribeCloud();
     this.loadFeed();
     this.loadMoments();
   }
@@ -1603,31 +1615,47 @@ class Component extends DCLogic {
       alert('กู้ข้อมูลไม่สำเร็จ: ' + ((e && (e.code || e.message)) || String(e)));
     }
   }
+  applyCloudBackup(bk) {
+    if (!bk || !bk.data) return false;
+    const localAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
+    if ((bk._at || 0) <= localAt) return false; // เก่ากว่า/เป็นของเราเอง — ข้าม
+    if (!this.backupHasData(bk) && this.localHasData()) { this.cloudPush(); return false; }
+    this._applyingCloud = true;
+    try {
+      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1 };
+      const toDel = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; /* ห้ามลบรูปในเครื่อง แม้คลาวด์ยังไม่มี — กันรูปหาย */ if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
+      toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+      Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
+      try { localStorage.setItem('wtn-cloud-at', String(bk._at)); } catch (e) {}
+    } finally { this._applyingCloud = false; }
+    window.dispatchEvent(new Event('photopick-change'));
+    this.loadFeed && this.loadFeed();
+    this.loadMoments && this.loadMoments();
+    this.forceUpdate();
+    this.setState({ cloud: 'saved' });
+    return true;
+  }
+  subscribeCloud() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || !be.subscribeBackup) return;
+    if (this._cloudUnsub) { try { this._cloudUnsub(); } catch (e) {} }
+    this._cloudUnsub = be.subscribeBackup(bk => {
+      if (!bk || this._applyingCloud) return;
+      if ((bk._at || 0) <= Number(localStorage.getItem('wtn-cloud-at') || 0)) return; // เสียงสะท้อนจาก push ของเครื่องนี้เอง
+      if (this.applyCloudBackup(bk)) this.showToast && this.showToast('↻ ซิงก์จากอีกเครื่องแล้ว');
+    });
+  }
   async cloudPull() {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     this.setState({ cloud: 'saving' });
     try {
       const bk = await be.pullBackup();
-      const localAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
-      // กันข้อมูลหาย: ถ้าคลาวด์ว่าง/ไม่มีของจริง แต่เครื่องนี้มีข้อมูล → ดันขึ้นแทนที่จะลบ
       if (!this.backupHasData(bk) && this.localHasData()) { this.cloudPush(); return; }
-      if (bk && bk.data && (bk._at || 0) > localAt) {
-        this._applyingCloud = true;
-        try {
-          const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1 };
-          const toDel = [];
-          for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; /* ห้ามลบรูปในเครื่อง แม้คลาวด์ยังไม่มี — กันรูปหาย */ if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
-          toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-          Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
-          try { localStorage.setItem('wtn-cloud-at', String(bk._at)); } catch (e) {}
-        } finally { this._applyingCloud = false; }
-        window.dispatchEvent(new Event('photopick-change'));
-        this.forceUpdate();
-        this.setState({ cloud: 'saved' });
-      } else if (!bk || !bk.data) {
-        this.cloudPush();
-      } else { this.setState({ cloud: 'saved' }); }
+      if (bk && bk.data && (bk._at || 0) > Number(localStorage.getItem('wtn-cloud-at') || 0)) { this.applyCloudBackup(bk); }
+      else if (!bk || !bk.data) { this.cloudPush(); }
+      else { this.setState({ cloud: 'saved' }); }
     } catch (e) { console.warn('[wtn] cloud pull', e); this.setState({ cloud: 'error', cloudErr: 'pull: ' + ((e && (e.code || e.message)) || String(e)) }); }
   }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
@@ -1676,15 +1704,37 @@ class Component extends DCLogic {
   }
   get userTrips() { try { return JSON.parse(localStorage.getItem('wtn-trips')) || []; } catch (e) { return []; } }
   saveUserTrips(list) { try { localStorage.setItem('wtn-trips', JSON.stringify(list)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this.forceUpdate(); }
-  get packing() { try { const all = JSON.parse(localStorage.getItem('wtn-packing')) || {}; const p = all[this.state.trip] || {}; return { items: p.items || [], note: p.note || '' }; } catch (e) { return { items: [], note: '' }; } }
+  get packing() { try { const all = JSON.parse(localStorage.getItem('wtn-packing')) || {}; const p = all[this.state.trip] || {}; const items = (p.items || []).map(i => ({ ...i, cat: i.cat || 'other' })); return { items, note: p.note || '' }; } catch (e) { return { items: [], note: '' }; } }
   savePacking(p) { try { const all = JSON.parse(localStorage.getItem('wtn-packing')) || {}; all[this.state.trip] = p; localStorage.setItem('wtn-packing', JSON.stringify(all)); } catch (e) {} this.forceUpdate(); }
-  addPackItem(text) { const t = (text || '').trim(); if (!t) return; const p = this.packing; p.items = [...p.items, { id: 'p' + Date.now(), text: t, done: false }]; this.savePacking(p); }
+  addPackItem(text, cat) { const t = (text || '').trim(); if (!t) return; const p = this.packing; p.items = [...p.items, { id: 'p' + Date.now(), text: t, done: false, cat: cat || 'other' }]; this.savePacking(p); }
+  packCategories() {
+    return [
+      { id: 'docs', name: 'เอกสารสำคัญ & การเงิน', items: ['พาสปอร์ต / บัตรประชาชน / ใบขับขี่','ใบขับขี่สากล','ตั๋วเดินทาง (เครื่องบิน / รถไฟ / รถบัส)','เอกสารจองที่พัก / ทัวร์ / ประกันเดินทาง','เงินสด (บาท / สกุลท้องถิ่น)','บัตรเครดิต / เดบิต','สำเนาเอกสารสำคัญ (เซฟในโทรศัพท์/Cloud)'] },
+      { id: 'clothing', name: 'เสื้อผ้า & เครื่องแต่งกาย', items: ['เสื้อชั้นใน / กางเกงใน / ถุงเท้า','ชุดนอน / ชุดใส่สบาย','ชุดใส่เที่ยว (ตามจำนวนวัน)','เสื้อกันหนาว / แจ็คเก็ต / เสื้อกันฝน','รองเท้า (เดินสบาย, รองเท้าแตะ)','หมวก / แว่นกันแดด / ผ้าพันคอ'] },
+      { id: 'toiletries', name: 'ของใช้ส่วนตัว & ห้องน้ำ', items: ['แปรงสีฟัน / ยาสีฟัน / ไหมขัดฟัน','สบู่ / แชมพู / ครีมนวด / โฟมล้างหน้า','ครีมบำรุงผิว / ครีมกันแดด','หวี / ยางรัดผม','ผลิตภัณฑ์โกนหนวด / ผ้าอนามัย','น้ำหอม / โรลออน / เครื่องสำอาง'] },
+      { id: 'electronics', name: 'อุปกรณ์ IT & อิเล็กทรอนิกส์', items: ['สมาร์ทโฟน + สายชาร์จ','พาวเวอร์แบงก์ (ถือขึ้นเครื่องเท่านั้น)','หัวปลั๊กแปลงไฟ (Universal Adapter)','หูฟัง / หูฟังตัดเสียง','กล้องถ่ายรูป + เมมโมรี่การ์ด','โน้ตบุ๊ก / แท็บเล็ต + สายชาร์จ'] },
+      { id: 'medicine', name: 'ยาสามัญ & สุขอนามัย', items: ['ยาประจำตัว (พร้อมฉลากอังกฤษ)','ยาลดไข้ / แก้ปวด / แก้แพ้ / แก้ท้องเสีย / แก้เมารถ','พลาสเตอร์ยา / เบตาดีน / สำลี','สเปรย์กันยุง / ยาแก้แมลงกัดต่อย','เจลแอลกอฮอล์ / ทิชชู่เปียก / หน้ากากอนามัย'] },
+      { id: 'misc', name: 'ของใช้จุกจิก & สิ่งอำนวยความสะดวก', items: ['หมอนรองคอ / ผ้าปิดตา / ที่อุดหู','ร่มพับ','ถุงซักผ้า / ถุงใส่เสื้อผ้าใช้แล้ว','แม่กุญแจล็อกกระเป๋า (TSA Lock)','ขวดน้ำพกพา / กระเป๋าผ้าพับได้'] },
+    ];
+  }
+  seedStandardPacking() {
+    const p = this.packing;
+    const have = new Set(p.items.map(i => (i.text || '').trim()));
+    const add = []; let n = 0;
+    this.packCategories().forEach(c => c.items.forEach(t => { if (!have.has(t)) { n++; add.push({ id: 'p' + Date.now() + '-' + n, text: t, done: false, cat: c.id }); } }));
+    if (!add.length) { this.showToast('มีรายการมาตรฐานครบแล้ว'); return; }
+    p.items = [...p.items, ...add]; this.savePacking(p);
+    this.showToast('✓ เพิ่ม ' + add.length + ' รายการมาตรฐาน');
+  }
   togglePackItem(id) { const p = this.packing; p.items = p.items.map(i => i.id === id ? { ...i, done: !i.done } : i); this.savePacking(p); }
   delPackItem(id) { const p = this.packing; p.items = p.items.filter(i => i.id !== id); this.savePacking(p); }
   movePackItem(id, dir) {
-    const p = this.packing; const i = p.items.findIndex(x => x.id === id); const j = i + dir;
-    if (i < 0 || j < 0 || j >= p.items.length) return;
-    const items = p.items.slice(); const t = items[i]; items[i] = items[j]; items[j] = t;
+    const p = this.packing; const items = p.items.slice();
+    const i = items.findIndex(x => x.id === id); if (i < 0) return;
+    const cat = items[i].cat || 'other'; let j = i + dir;
+    while (j >= 0 && j < items.length && (items[j].cat || 'other') !== cat) j += dir;
+    if (j < 0 || j >= items.length) return;
+    const t = items[i]; items[i] = items[j]; items[j] = t;
     p.items = items; this.savePacking(p);
   }
   copyPackingTo(targetId) {
@@ -2637,17 +2687,31 @@ class Component extends DCLogic {
     if (s < 604800) return Math.floor(s / 86400) + ' วันก่อน';
     try { return new Date(ts).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
   }
-  postMoment() {
+  getMomentPos() {
+    return new Promise(resolve => {
+      if (!navigator.geolocation) { resolve(null); return; }
+      let done = false; const fin = v => { if (!done) { done = true; resolve(v); } };
+      try {
+        navigator.geolocation.getCurrentPosition(
+          p => fin({ lat: +p.coords.latitude.toFixed(5), lng: +p.coords.longitude.toFixed(5) }),
+          () => fin(null),
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
+      } catch (e) { fin(null); }
+      setTimeout(() => fin(null), 8500);
+    });
+  }
+  async postMoment() {
     const text = (this.state.mpText || '').trim();
     const photos = (this.state.mpPhotos || []).slice(0, 3);
     if (!text && !photos.length) return;
+    const pos = await this.getMomentPos();
     const id = 'm' + Date.now() + Math.floor(Math.random() * 1000);
     const m = { id, type: 'post', text, place: '', photos, at: Date.now(), published: true, likes: 0,
-      cat: this.state.mpCat || 0,
+      cat: this.state.mpCat || 0, pos,
       authorName: this.myName, authorAvatar: this.myAvatar };
     this.upsertLocalMoment(m);
     this.setState({ mpText: '', mpPhotos: [], mpCat: 0 });
-    this.showToast('✓ บันทึกแล้ว');
+    this.showToast(pos ? '✓ บันทึกแล้ว · ปักพิกัดที่นี่' : '✓ บันทึกแล้ว');
   }
   addMpPhotos(ev) {
     let files = Array.from(ev.target.files || []); ev.target.value = '';
@@ -3028,7 +3092,7 @@ class Component extends DCLogic {
     this._ppSync = () => { if (!this._applyingCloud) this.scheduleCloudPush(); };
     window.addEventListener('photopick-change', this._ppSync);
     // กลับมาเปิดแอป/สลับแท็บกลับมา → ดันข้อมูลค้างขึ้นคลาวด์
-    this._visSync = () => { if (document.visibilityState === 'visible') this.scheduleCloudPush(); };
+    this._visSync = () => { if (document.visibilityState === 'visible') this.cloudPull(); };
     document.addEventListener('visibilitychange', this._visSync);
     if (!window.__wtnLSHook) {
       window.__wtnLSHook = true;
@@ -3191,14 +3255,25 @@ class Component extends DCLogic {
             on: () => { this.setState({ day: i }); this.go('trip'); } };
         });
         let totalCi = 0; this.days.forEach((d, i) => { totalCi += (this.checkins[this.state.trip + ':' + i] || []).length; });
+        const _catDefs = this.packCategories();
+        const _catOrder = [..._catDefs.map(c => c.id), 'other'];
+        const _catNames = { other: 'อื่นๆ' }; _catDefs.forEach(c => { _catNames[c.id] = c.name; });
+        const _mkPackItem = (it, gi, glen) => ({ id: it.id, text: it.text, done: it.done,
+          boxStyle: 'width:24px;height:24px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border:' + (it.done ? 'none' : '2px solid rgba(43,36,32,.25)') + ';background:' + (it.done ? '#c05f39' : 'transparent'),
+          textStyle: it.done ? 'color:#a99e8e;text-decoration:line-through' : 'color:#2b241f',
+          upStyle: 'border:none;background:transparent;padding:3px;flex:none;cursor:' + (gi === 0 ? 'default' : 'pointer') + ';opacity:' + (gi === 0 ? '.25' : '1'),
+          downStyle: 'border:none;background:transparent;padding:3px;flex:none;cursor:' + (gi === glen - 1 ? 'default' : 'pointer') + ';opacity:' + (gi === glen - 1 ? '.25' : '1'),
+          up: () => this.movePackItem(it.id, -1), down: () => this.movePackItem(it.id, 1),
+          toggle: () => this.togglePackItem(it.id), del: () => this.delPackItem(it.id) });
+        const _haveTxt = new Set(_pk.items.map(i => (i.text || '').trim()));
+        const _seedCount = [].concat(..._catDefs.map(c => c.items)).filter(t => !_haveTxt.has(t)).length;
         return {
-          packItems: _pk.items.map((it, idx) => ({ id: it.id, text: it.text, done: it.done,
-            boxStyle: 'width:24px;height:24px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border:' + (it.done ? 'none' : '2px solid rgba(43,36,32,.25)') + ';background:' + (it.done ? '#c05f39' : 'transparent'),
-            textStyle: it.done ? 'color:#a99e8e;text-decoration:line-through' : 'color:#2b241f',
-            upStyle: 'border:none;background:transparent;padding:3px;flex:none;cursor:' + (idx === 0 ? 'default' : 'pointer') + ';opacity:' + (idx === 0 ? '.25' : '1'),
-            downStyle: 'border:none;background:transparent;padding:3px;flex:none;cursor:' + (idx === _pk.items.length - 1 ? 'default' : 'pointer') + ';opacity:' + (idx === _pk.items.length - 1 ? '.25' : '1'),
-            up: () => this.movePackItem(it.id, -1), down: () => this.movePackItem(it.id, 1),
-            toggle: () => this.togglePackItem(it.id), del: () => this.delPackItem(it.id) })),
+          packGroups: _catOrder.map(cid => { const its = _pk.items.filter(i => (i.cat || 'other') === cid); return { id: cid, name: _catNames[cid], count: its.length, done: its.filter(i => i.done).length, items: its.map((it, gi) => _mkPackItem(it, gi, its.length)) }; }).filter(g => g.count > 0),
+          packSeedCount: _seedCount, packCanSeed: _seedCount > 0,
+          seedPack: () => this.seedStandardPacking(),
+          packCatOptions: _catOrder.map(cid => ({ value: cid, label: _catNames[cid] })),
+          packAddCat: this.state.packAddCat || 'other',
+          setPackAddCat: e => this.setState({ packAddCat: e.target.value }),
           packCopyOpen: !!this.state.packCopyOpen,
           togglePackCopy: () => this.setState(s => ({ packCopyOpen: !s.packCopyOpen })),
           packCopyTargets: this.userTrips.filter(t => t.id !== this.state.trip).map(t => ({ name: t.name || 'ทริป', on: () => this.copyPackingTo(t.id) })),
@@ -3207,9 +3282,8 @@ class Component extends DCLogic {
           packTotal: _pk.items.length, packDone: _pk.items.filter(i => i.done).length,
           prepNote: _pk.note, setPrepNote: e => this.setPrepNote(e.target.value),
           packDraft: this.state.packDraft ?? '', setPackDraft: e => this.setState({ packDraft: e.target.value }),
-          addPack: () => { this.addPackItem(this.state.packDraft); this.setState({ packDraft: '' }); },
-          packKey: e => { if (e.key === 'Enter') { e.preventDefault(); this.addPackItem(this.state.packDraft); this.setState({ packDraft: '' }); } },
-          packSuggest: ['พาสปอร์ต','ยาประจำตัว','อะแดปเตอร์','ครีมกันแดด','เสื้อกันหนาว','ประกันเดินทาง'].filter(x => !_pk.items.some(i => i.text === x)).map(t => ({ label: t, on: () => this.addPackItem(t) })),
+          addPack: () => { this.addPackItem(this.state.packDraft, this.state.packAddCat || 'other'); this.setState({ packDraft: '' }); },
+          packKey: e => { if (e.key === 'Enter') { e.preventDefault(); this.addPackItem(this.state.packDraft, this.state.packAddCat || 'other'); this.setState({ packDraft: '' }); } },
           overviewDays: ov,
           ovTitle: info.title, ovM1: info.m1, ovM2: info.m2, ovCoverId: 'wtn-cover-' + this.state.trip,
           ovDayCount: this.days.length, ovStopCount: this.days.reduce((a, d, i) => a + (d.stops || []).length + ((this.state.added || {})[this.state.trip + ':' + i] || []).length, 0),
@@ -3232,7 +3306,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.20k',
+      appVersion: '2026.07.20n',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3646,12 +3720,14 @@ class Component extends DCLogic {
           const _dt = new Date(m.at || Date.now());
           const dateStr = isNaN(_dt) ? '' : _dt.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short' });
           const timeStr = isNaN(_dt) ? '' : _dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+          const _pos = m.pos && typeof m.pos.lat === 'number' ? m.pos : null;
           return {
             id: m.id, author: m.authorName || 'nimjourney', time: this.timeAgo(m.at),
             dateStr, timeStr,
             avatar: av, hasAvatar: !!av, noAvatar: !av,
             text: m.text || '', hasText: !!(m.text || '').trim(),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
+            hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
             photos: (m.photos || []).map(p => ({ src: p })), hasPhotos: (m.photos || []).length > 0,
             catIdx: ci, catName: cats[ci] || '', hasCat: true,
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),
