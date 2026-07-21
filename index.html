@@ -1634,7 +1634,7 @@ class Component extends DCLogic {
     } catch (e) {}
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i) || '';
-      if (/^wtn-(journal|checkins|story|stories|chapter|docs|packing|budget)/.test(k)) {
+      if (/^wtn-(journal|checkins|story|stories|chapter|docs|packing|budget|moments|itinerary|expenses)/.test(k)) {
         const v = localStorage.getItem(k);
         if (v && v !== '{}' && v !== '[]' && v !== 'null') return true;
       }
@@ -1670,7 +1670,7 @@ class Component extends DCLogic {
   }
   _isObjArr(v) { return Array.isArray(v) && v.length > 0 && v.every(x => x && typeof x === 'object' && !Array.isArray(x)); }
   _isArrMap(v) { return v && typeof v === 'object' && !Array.isArray(v) && Object.values(v).length > 0 && Object.values(v).every(a => Array.isArray(a)); }
-  _mergeArr(base, local, remote) {
+  _mergeArr(base, local, remote, desc) {
     base = base || []; local = local || []; remote = remote || [];
     const idf = this._idField(local) || this._idField(remote) || this._idField(base);
     if (!idf) return local.length ? local : remote; // ไม่มี id — งดรวมรายชิ้น (กันข้อมูลถูกล้าง)
@@ -1685,11 +1685,12 @@ class Component extends DCLogic {
       else if (l && !r) { if (!inB) { keep[id] = 1; content[id] = l; } }                        // เครื่องนี้เพิ่ม (คลาวด์ยังไม่เห็น) เก็บ · ถ้าเคยอยู่ base = อีกเครื่องลบ → ทิ้ง
       else if (!l && r) { if (!inB) { keep[id] = 1; content[id] = r; } }                        // อีกเครื่องเพิ่ม เก็บ · ถ้าเคยอยู่ base = เราลบเอง → ทิ้ง
     });
-    const out = [], seen = {};
-    local.forEach(x => { const k = x && x[idf]; if (k != null && keep[k] && !seen[k]) { seen[k] = 1; out.push(content[k]); } });
-    remote.forEach(x => { const k = x && x[idf]; if (k != null && keep[k] && !seen[k]) { seen[k] = 1; out.push(content[k]); } });
+    const out = Object.keys(keep).map(id => content[id]);
+    const ct = x => { if (typeof x.at === 'number') return x.at; const d = String(x[idf] == null ? '' : x[idf]).replace(/\D/g, ''); return d ? parseInt(d.slice(0, 15), 10) : 0; };
+    out.sort((a, b) => { const d = ct(a) - ct(b); if (d) return desc ? -d : d; const sa = String(a[idf]), sb = String(b[idf]); return sa < sb ? -1 : sa > sb ? 1 : 0; }); // ลำดับตายตัวทุกเครื่อง — เนื้อหาเท่ากันต้องได้ก้อนเดียวกันเป๊ะ (กันลูปซิงก์เด้งไปมา)
     const extras = [], seenS = {};
     local.concat(remote).forEach(x => { if (x && typeof x === 'object' && x[idf] == null) { const s = JSON.stringify(x); if (!seenS[s]) { seenS[s] = 1; extras.push(x); } } }); // รายการเก่าไม่มี id — เก็บไว้เสมอ
+    extras.sort((a, b) => { const sa = JSON.stringify(a), sb = JSON.stringify(b); return sa < sb ? -1 : sa > sb ? 1 : 0; });
     return extras.length ? extras.concat(out) : out;
   }
   _mergeArrMap(base, local, remote) {
@@ -1702,8 +1703,10 @@ class Component extends DCLogic {
     const ARR = { 'wtn-moments': 1, 'wtn-stories': 1, 'wtn-trips': 1 };                      // array ตรงๆ มี id ต่อชิ้น
     const MAP = { 'wtn-checkins': 1, 'wtn-expenses': 1, 'wtn-docs': 1 };                     // object ต่อทริป → array มี id/mid
     if (ARR[k] || MAP[k]) {
+      if (ls === undefined) return rs;
+      if (rs === undefined) return ls;   // คีย์หายทั้งคีย์ = อีกฝั่งยังไม่ได้ส่ง ไม่ใช่ลบ
       const l = this._parseJSON(ls), r = this._parseJSON(rs), b = this._parseJSON(bs);
-      if (ARR[k] && (Array.isArray(l) || Array.isArray(r))) return JSON.stringify(this._mergeArr(b, l, r));
+      if (ARR[k] && (Array.isArray(l) || Array.isArray(r))) return JSON.stringify(this._mergeArr(b, l, r, k !== 'wtn-trips'));
       if (MAP[k] && ((l && typeof l === 'object' && !Array.isArray(l)) || (r && typeof r === 'object' && !Array.isArray(r)))) return JSON.stringify(this._mergeArrMap(b || {}, l || {}, r || {}));
     }
     if (ls === rs) return ls;
@@ -1713,9 +1716,30 @@ class Component extends DCLogic {
     if (rs === bs) return ls;
     return ls >= rs ? ls : rs;         // ขัดแย้งทั้งคู่ — เลือกแบบเดียวกันทุกเครื่อง (กันลูปเด้งไปมา)
   }
+  _gatherRaw() {
+    const data = {};
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
+    return data;
+  }
+  _filterForPush(map, remoteData) {
+    const IMG_MAX = 380000, TOTAL_MAX = 850000;
+    let imgTotal = 0; const out = {}; const remote = remoteData || {};
+    const keys = Object.keys(map).sort((a, b) => (/avatar|wtn-cover/.test(a) ? -1 : 0) - (/avatar|wtn-cover/.test(b) ? -1 : 0));
+    keys.forEach(k => {
+      const v = map[k];
+      if (v && v.indexOf('data:image') !== -1) {
+        if (v.length <= IMG_MAX && imgTotal + v.length <= TOTAL_MAX) { out[k] = v; imgTotal += v.length; }
+        else if (remote[k] !== undefined) out[k] = remote[k]; // รูปใหญ่ยังอัปไม่ได้ — คงค่าเดิมบนคลาวด์ไว้ (ไม่ลบ ไม่ทับ)
+        return;
+      }
+      out[k] = v;
+    });
+    return out;
+  }
   _mergeData(remoteData) {
+    try { if (!localStorage.getItem('wtn-base-v2')) { localStorage.removeItem('wtn-sync-base'); localStorage.setItem('wtn-base-v2', '1'); } } catch (e) {} // ล้าง baseline เก่าที่นับรูปค้างผิด
     const base = this._parseJSON(localStorage.getItem('wtn-sync-base')) || {};
-    const local = this.gatherLocal();
+    const local = this._gatherRaw();
     const remote = remoteData || {};
     const out = {};
     new Set([...Object.keys(base), ...Object.keys(local), ...Object.keys(remote)]).forEach(k => {
@@ -1755,17 +1779,17 @@ class Component extends DCLogic {
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
       let remote = null; try { remote = await be.pullBackup(); } catch (e) {}
-      const merged = this._mergeData(remote && remote.data);          // รวมกับของล่าสุดบนคลาวด์ก่อนเสมอ (ไม่ทับทั้งก้อน)
-      const mSig = this._sigOf(merged);
-      const rSig = remote && remote.data ? this._sigOf(remote.data) : null;
+      const rData = (remote && remote.data) || null;
+      const merged = this._mergeData(rData);                           // รวมกับของล่าสุดบนคลาวด์ก่อนเสมอ (ไม่ทับทั้งก้อน)
       this._writeLocal(merged);
-      try { localStorage.setItem('wtn-sync-base', JSON.stringify(merged)); } catch (e) {}
-      this._lastSyncSig = mSig;
+      const payload = this._filterForPush(merged, rData);              // ตัดรูปใหญ่เฉพาะตอนส่ง (ในเครื่องยังอยู่ครบ)
+      try { localStorage.setItem('wtn-sync-base', JSON.stringify(payload)); } catch (e) {}
+      this._lastSyncSig = this._sigOf(merged);
       this.loadFeed && this.loadFeed(); this.loadMoments && this.loadMoments();
       window.dispatchEvent(new Event('photopick-change'));
-      if (mSig !== rSig) {                                             // มีอะไรใหม่ที่คลาวด์ยังไม่มี → ดันขึ้น
+      if (!rData || this._sigOf(payload) !== this._sigOf(rData)) {     // คลาวด์ยังไม่ตรง → ดันขึ้น
         const at = Date.now();
-        await be.pushBackup({ _app: 'where-to-next', _at: at, data: merged });
+        await be.pushBackup({ _app: 'where-to-next', _at: at, data: payload });
         try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
       }
       this.setState({ cloud: 'saved' }); this.forceUpdate();
@@ -1814,10 +1838,10 @@ class Component extends DCLogic {
   applyCloudBackup(bk) {
     if (!bk || !bk.data) return false;
     const merged = this._mergeData(bk.data);                 // รวมของอีกเครื่องเข้ากับของเรา (ไม่ทับ)
-    const mSig = this._sigOf(merged), rSig = this._sigOf(bk.data);
+    const mSig = this._sigOf(merged);
     const changed = mSig !== this._lastSyncSig;
     this._writeLocal(merged);
-    try { localStorage.setItem('wtn-sync-base', JSON.stringify(merged)); } catch (e) {}
+    try { localStorage.setItem('wtn-sync-base', JSON.stringify(bk.data)); } catch (e) {}
     try { localStorage.setItem('wtn-cloud-at', String(bk._at || Date.now())); } catch (e) {}
     this._lastSyncSig = mSig;
     window.dispatchEvent(new Event('photopick-change'));
@@ -1825,7 +1849,7 @@ class Component extends DCLogic {
     this.loadMoments && this.loadMoments();
     this.forceUpdate();
     this.setState({ cloud: 'saved' });
-    if (mSig !== rSig) { this.scheduleCloudPush && this.scheduleCloudPush(); } // เรามีของที่คลาวด์ยังไม่มี → ดันกลับ
+    if (this._sigOf(this._filterForPush(merged, bk.data)) !== this._sigOf(bk.data)) { this.scheduleCloudPush && this.scheduleCloudPush(); } // เรามีของที่คลาวด์ยังไม่มี → ดันกลับ
     return changed;
   }
   subscribeCloud() {
@@ -3157,10 +3181,8 @@ class Component extends DCLogic {
     this._syncing = true; this.setState({ syncBusy: true });
     try {
       await this.hoistImages();
-      const at = Date.now();
-      await be.pushBackup({ _app: 'where-to-next', _at: at, data: this.gatherLocal() });
-      try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
-      this.setState({ cloud: 'saved' });
+      this._synced = true;
+      await this.cloudPush();
       // ตรวจว่ามีรูปที่ยังอัปไม่ขึ้นไหม
       let pending = 0;
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('photopick:') === 0 && (localStorage.getItem(k) || '').indexOf('data:image') !== -1) pending++; }
@@ -3631,7 +3653,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21g',
+      appVersion: '2026.07.21i',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
