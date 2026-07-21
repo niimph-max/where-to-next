@@ -3077,6 +3077,7 @@ class Component extends DCLogic {
     const local = this.stories.find(s => s.id === sid);
     if (local && (local.chapters || []).some(c => c.id === cid)) {
       this._deepDone = true;
+      try { history.replaceState(null, '', location.pathname); } catch (e) {} // ล้างพารามิเตอร์ลิงก์แชร์ — รีเฟรชครั้งหน้าเข้าแอปปกติ
       this.setState({ deepLoading: false, deepErr: false });
       this.openChapterRead(cid, false);
       return;
@@ -3096,10 +3097,13 @@ class Component extends DCLogic {
           likes: r.chapter.likes || 0, published: true, updatedAt: r.chapter.updatedAt };
         story.chapters = [chapter];
         this._chReadId = null;
+        try { history.replaceState(null, '', location.pathname); } catch (e) {} // ล้างพารามิเตอร์ลิงก์แชร์ — รีเฟรชครั้งหน้าเข้าแอปปกติ
         this.setState({ remoteOpen: { story, chapter }, openStoryId: sid, openChapterId: cid, chReadPreview: false, deepLoading: false, deepErr: false });
         this.go('chapterRead');
         this.loadComments(sid, cid);
       } else {
+        this._deepDone = true;
+        try { history.replaceState(null, '', location.pathname); } catch (e) {} // หาเรื่องไม่เจอ — ล้างลิงก์ทิ้ง กันค้างหน้านี้ทุกครั้งที่เปิด
         this.setState({ deepLoading: false, deepErr: true });
       }
     } catch (e) {
@@ -3671,7 +3675,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21k',
+      appVersion: '2026.07.21l',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3864,7 +3868,7 @@ class Component extends DCLogic {
       authGoogle: () => this.oauth('google'),
       authFb: () => this.oauth('facebook'),
       authBusy: !!this.state.authBusy,
-      cloudShow: this.state.cloud === 'saving' || this.state.cloud === 'error',
+      cloudShow: this.state.cloud === 'error', // ซิงก์ปกติทำเงียบๆ เบื้องหลัง — โชว์เฉพาะตอนมีปัญหาจริง
       cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); try { localStorage.removeItem('wtn-auth'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); },
       doBackup: () => this.exportBackup(),
