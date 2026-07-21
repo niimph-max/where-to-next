@@ -1638,6 +1638,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     if (!this.isPremium) return;
+    if (!this._synced) { return; } // ยังไม่ได้รับข้อมูลล่าสุดจากคลาวด์ — ห้ามดันทับ (กันเครื่องที่เพิ่งเปิดเขียนทับของดี)
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; } // กันไม่ให้ดันข้อมูลเปล่าทับคลาวด์
     try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
     const data = this.gatherLocal();
@@ -1716,7 +1717,9 @@ class Component extends DCLogic {
     if (!this.isPremium) return;
     if (this._cloudUnsub) { try { this._cloudUnsub(); } catch (e) {} }
     this._cloudUnsub = be.subscribeBackup(bk => {
-      if (!bk || this._applyingCloud) return;
+      if (!bk) return;
+      this._synced = true; // ได้รับสถานะคลาวด์ล่าสุดแล้ว — อนุญาตให้ push ได้
+      if (this._applyingCloud) return;
       if ((bk._at || 0) <= Number(localStorage.getItem('wtn-cloud-at') || 0)) return; // เสียงสะท้อนจาก push ของเครื่องนี้เอง
       if (this.applyCloudBackup(bk)) this.showToast && this.showToast('↻ ซิงก์จากอีกเครื่องแล้ว');
     });
@@ -1725,9 +1728,11 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     if (!this.isPremium) { this.setState({ cloud: 'idle' }); return; }
+    this._pulling = true;
     this.setState({ cloud: 'saving' });
     try {
       const bk = await be.pullBackup();
+      this._synced = true; // เห็นสถานะคลาวด์ล่าสุดแล้ว — จากนี้ push ได้ (กันเครื่องเปล่าทับของดี)
       if (!this.backupHasData(bk) && this.localHasData()) { this.cloudPush(); return; }
       if (bk && bk.data && (bk._at || 0) > Number(localStorage.getItem('wtn-cloud-at') || 0)) { this.applyCloudBackup(bk); }
       else if (!bk || !bk.data) { this.cloudPush(); }
@@ -3474,7 +3479,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21c',
+      appVersion: '2026.07.21d',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
