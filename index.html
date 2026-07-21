@@ -1629,15 +1629,24 @@ class Component extends DCLogic {
     try { const t = JSON.parse(d['wtn-trips'] || '[]'); if (Array.isArray(t) && t.length) return true; } catch (e) {}
     return Object.keys(d).some(k => /^wtn-(journal|checkins|story|stories|chapter|docs|packing|budget)/.test(k) && d[k] && d[k] !== '{}' && d[k] !== '[]' && d[k] !== 'null');
   }
+  _sigOf(data) {
+    if (!data) return '';
+    const ks = Object.keys(data).filter(k => /^wtn-/.test(k) || k.indexOf('photopick:') === 0).sort();
+    return ks.map(k => k + ':' + (data[k] || '')).join('\u0001');
+  }
   async cloudPush() {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     if (!this.isPremium) return;
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; } // กันไม่ให้ดันข้อมูลเปล่าทับคลาวด์
     try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
+    const data = this.gatherLocal();
+    const sig = this._sigOf(data);
+    if (sig === this._lastSyncSig) { this.setState({ cloud: 'saved' }); return; } // ข้อมูลไม่เปลี่ยน — ไม่ดันซ้ำ (กันลูปซิงก์)
     const at = Date.now();
     try {
-      await be.pushBackup({ _app: 'where-to-next', _at: at, data: this.gatherLocal() });
+      await be.pushBackup({ _app: 'where-to-next', _at: at, data });
+      this._lastSyncSig = sig;
       try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
       this.setState({ cloud: 'saved' });
     } catch (e) {
@@ -1681,6 +1690,8 @@ class Component extends DCLogic {
     if (!bk || !bk.data) return false;
     const localAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
     if ((bk._at || 0) <= localAt) return false; // เก่ากว่า/เป็นของเราเอง — ข้าม
+    const sig = this._sigOf(bk.data);
+    if (sig === this._lastSyncSig) { try { localStorage.setItem('wtn-cloud-at', String(bk._at)); } catch (e) {} return false; } // ข้อมูลเหมือนเดิม — ไม่ apply/ไม่เด้ง (กันลูป)
     if (!this.backupHasData(bk) && this.localHasData()) { this.cloudPush(); return false; }
     this._applyingCloud = true;
     try {
@@ -1696,6 +1707,7 @@ class Component extends DCLogic {
     this.loadMoments && this.loadMoments();
     this.forceUpdate();
     this.setState({ cloud: 'saved' });
+    this._lastSyncSig = sig;
     return true;
   }
   subscribeCloud() {
@@ -3462,7 +3474,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21b',
+      appVersion: '2026.07.21c',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
