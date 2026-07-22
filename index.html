@@ -1201,6 +1201,20 @@
       <!-- ========== DISCOVER ========== -->
       <sc-if value="{{ sDiscover }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 30px">
+          <div style="position:relative;margin:-16px -20px 18px;overflow:hidden;background:#dfd0b6">
+            <div style="position:relative;width:100%;aspect-ratio:1.32/1;overflow:hidden">
+              <div style="position:absolute;left:-28%;top:-2%;width:150%;aspect-ratio:2/1;background-image:url('https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg');background-size:cover;background-position:center;filter:sepia(.5) saturate(1.16) hue-rotate(-8deg) brightness(1.05) contrast(.92)">
+                <sc-for list="{{ exFeatured }}" as="p" hint-placeholder-count="6">
+                  <button onClick="{{ p.on }}" style="{{ p.style }}"><span style="font-size:14px;line-height:1">{{ p.flag }}</span><span>{{ p.label }}</span></button>
+                </sc-for>
+              </div>
+              <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.32) 0%,rgba(43,36,32,0) 22%,rgba(43,36,32,0) 55%,rgba(223,208,182,.55) 88%,#f6efe2 100%)"></div>
+              <div style="position:absolute;left:20px;right:20px;top:16px;pointer-events:none">
+                <div style="font-family:'Chonburi',serif;font-size:25px;color:#fff;text-shadow:0 2px 14px rgba(43,36,32,.6);line-height:1.1">สำรวจโลก</div>
+                <div style="font:600 13.5px 'Anuphan';color:#f4e6d4;margin-top:3px;text-shadow:0 1px 8px rgba(43,36,32,.7)">แตะประเทศบนแผนที่เพื่อเริ่มวางแผน</div>
+              </div>
+            </div>
+          </div>
           <div style="display:flex;gap:9px;margin-bottom:16px">
             <div style="flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:0 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="1.9" style="flex:none"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input value="{{ expCity }}" onInput="{{ setExpCity }}" onKeyDown="{{ expKey }}" placeholder="ค้นเมือง เช่น อัลมาตี, โตเกียว…" style="flex:1;min-width:0;border:none;background:transparent;font:500 16px 'Anuphan';color:#2b241f;outline:none;min-height:48px"></div>
             <button onClick="{{ runExploreBtn }}" style="flex:none;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:0 16px;border-radius:14px;cursor:pointer;display:flex;align-items:center;gap:5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.6 4.6L18 8l-4.4 1.4L12 14l-1.6-4.6L6 8l4.4-1.4z"/></svg>ค้น AI</button>
@@ -1251,6 +1265,112 @@
           </div>
           <sc-if value="{{ aiResultsShown }}" hint-placeholder-val="{{ false }}"><div style="font:500 13px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">ข้อมูลบางส่วนสร้างโดย AI โปรดตรวจสอบอีกครั้งก่อนเดินทาง</div></sc-if>
           <div style="display:flex;align-items:center;gap:9px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:14px;padding:11px 14px;margin-top:14px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8" style="flex:none"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6"></circle></svg><span style="font:500 14px/1.5 'Anuphan';color:#7c6a58">กด + แล้วเลือกทริปกับวันที่จะเพิ่มกิจกรรมนี้ลงไป</span></div>
+        </div>
+      </sc-if>
+
+      <!-- ========== COUNTRY (explore) ========== -->
+      <sc-if value="{{ sCountry }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="position:relative;min-height:100%;background:#f6efe2">
+          <div style="position:relative;height:340px;overflow:hidden">
+            <photo-pick id="wtn-ex-kz-hero" fallback="{{ exHero }}" placeholder="แตะเพื่อใส่รูปประเทศ" style="position:absolute;inset:0"></photo-pick>
+            <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.34) 0%,rgba(43,36,32,0) 30%,rgba(43,36,32,.16) 55%,rgba(43,36,32,.74) 100%)"></div>
+            <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
+              <button onClick="{{ back }}" style="pointer-events:auto;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.94);color:#2b241f;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(43,36,32,.2)">‹</button>
+              <div style="flex:1"></div>
+              <div style="pointer-events:auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(43,36,32,.2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+            </div>
+            <div style="position:absolute;left:20px;right:20px;bottom:18px">
+              <div style="font-family:'Chonburi',serif;font-size:38px;line-height:1.04;color:#fff;text-shadow:0 2px 18px rgba(43,36,32,.6)">{{ exName }}</div>
+              <div style="font:700 14px 'Anuphan';letter-spacing:.6px;text-transform:uppercase;color:#f4e6d4;margin-top:5px;text-shadow:0 1px 10px rgba(43,36,32,.7);text-wrap:pretty">{{ exTagline }}</div>
+            </div>
+          </div>
+          <div style="padding:16px 20px 34px">
+            <button onClick="{{ exCreateTrip }}" style="width:100%;min-height:52px;border:none;background:#fff;color:#2b241f;font:700 17px 'Anuphan';border-radius:16px;cursor:pointer;box-shadow:0 5px 18px rgba(43,36,32,.12);display:flex;align-items:center;justify-content:center;gap:9px"><span style="font-size:20px;line-height:0;color:#c05f39">＋</span>สร้างทริปใหม่</button>
+            <div style="font:500 16px/1.72 'Anuphan';color:#5c5347;margin-top:20px;text-wrap:pretty">{{ exBlurb }}</div>
+            <div style="font-family:'Chonburi',serif;font-size:23px;color:#2b241f;margin:26px 0 14px">เมืองน่าเที่ยว</div>
+            <div style="display:flex;flex-direction:column;gap:15px">
+              <sc-for list="{{ exCities }}" as="c" hint-placeholder-count="4">
+                <div onClick="{{ c.open }}" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+                  <div style="position:relative;flex:none;width:78px;height:78px;border-radius:20px;overflow:hidden;box-shadow:0 4px 14px rgba(43,36,32,.16)"><photo-pick id="{{ c.thumbId }}" readonly fallback="{{ c.hero }}" style="position:absolute;inset:0"></photo-pick></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:700 17.5px 'Anuphan';color:#2b241f">{{ c.name }}</div>
+                    <div style="font:500 14.5px/1.45 'Anuphan';color:#8a7d6f;margin-top:3px;text-wrap:pretty">{{ c.one }}</div>
+                  </div>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2.2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:14px;padding:11px 14px;margin-top:22px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8" style="flex:none"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15l-4.8 2.5.9-5.4L4.2 8.3l5.4-.8z"/></svg><span style="font:500 13.5px/1.5 'Anuphan';color:#7c6a58">ข้อมูลบางส่วนสร้างโดย AI โปรดตรวจสอบอีกครั้งก่อนเดินทาง</span></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ========== CITY (explore) ========== -->
+      <sc-if value="{{ sCity }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="position:relative;min-height:100%;background:#f6efe2">
+          <div style="position:relative;height:330px;overflow:hidden">
+            <photo-pick id="{{ cityHeroId }}" fallback="{{ cityHero }}" placeholder="แตะเพื่อใส่รูปเมือง" style="position:absolute;inset:0"></photo-pick>
+            <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.36) 0%,rgba(43,36,32,0) 30%,rgba(43,36,32,.18) 55%,rgba(43,36,32,.76) 100%)"></div>
+            <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
+              <button onClick="{{ back }}" style="pointer-events:auto;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.94);color:#2b241f;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(43,36,32,.2)">‹</button>
+              <div style="pointer-events:auto;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border-radius:20px;padding:7px 14px 7px 12px;box-shadow:0 2px 10px rgba(43,36,32,.2)"><span style="font-size:15px">🇰🇿</span><span style="font:700 14px 'Anuphan';color:#2b241f">{{ exCountryPill }}</span></div>
+              <div style="flex:1"></div>
+              <div style="pointer-events:auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(43,36,32,.2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+            </div>
+            <div style="position:absolute;left:20px;right:20px;bottom:18px">
+              <div style="font-family:'Chonburi',serif;font-size:36px;line-height:1.05;color:#fff;text-shadow:0 2px 18px rgba(43,36,32,.6)">{{ cityName }}</div>
+              <div style="font:700 14px 'Anuphan';letter-spacing:.5px;text-transform:uppercase;color:#f4e6d4;margin-top:5px;text-shadow:0 1px 10px rgba(43,36,32,.7);text-wrap:pretty">{{ cityTagline }}</div>
+            </div>
+          </div>
+          <div style="padding:16px 0 34px">
+            <div style="padding:0 20px">
+              <button onClick="{{ exAddToPlan }}" style="width:100%;min-height:52px;border:none;background:#c05f39;color:#fff;font:700 17px 'Anuphan';border-radius:16px;cursor:pointer;box-shadow:0 5px 18px rgba(192,95,57,.28);display:flex;align-items:center;justify-content:center;gap:9px"><span style="font-size:20px;line-height:0">＋</span>เพิ่มลงแผน</button>
+            </div>
+            <div style="display:flex;gap:13px;overflow-x:auto;margin-top:20px;padding:0 20px 6px;scrollbar-width:none">
+              <sc-for list="{{ cityHighlights }}" as="h" hint-placeholder-count="3">
+                <div style="position:relative;flex:none;width:200px;height:250px;border-radius:24px;overflow:hidden;box-shadow:0 6px 20px rgba(43,36,32,.18)">
+                  <photo-pick id="{{ h.hid }}" readonly fallback="{{ h.photo }}" style="position:absolute;inset:0"></photo-pick>
+                  <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.4) 0%,rgba(43,36,32,0) 35%,rgba(43,36,32,.45) 100%)"></div>
+                  <div style="position:absolute;left:12px;right:12px;bottom:13px;font-family:'Chonburi',serif;font-size:18px;color:#fff;line-height:1.15;text-shadow:0 1px 10px rgba(43,36,32,.6)">{{ h.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding:0 20px">
+              <div style="font:500 16px/1.72 'Anuphan';color:#5c5347;margin-top:20px;text-wrap:pretty">{{ cityBlurb }}</div>
+              <div style="display:flex;gap:12px;margin-top:22px">
+                <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 16px">
+                  <div style="font:600 13px 'Anuphan';color:#a1927c;letter-spacing:.3px">ความนิยม</div>
+                  <div style="font:700 18px 'Anuphan';color:#2b241f;margin-top:4px;text-wrap:pretty">{{ cityPop }}</div>
+                </div>
+                <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 16px">
+                  <div style="font:600 13px 'Anuphan';color:#a1927c;letter-spacing:.3px">เฉลี่ย ก.ค.</div>
+                  <div style="font:700 18px 'Anuphan';color:#2b241f;margin-top:4px">{{ cityTemp }}</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin:22px 20px 0;background:#33473d;border-radius:24px;padding:22px 20px 8px;color:#f4ecdd">
+              <div style="font-family:'Chonburi',serif;font-size:22px;color:#fff">อยู่กี่วันดี?</div>
+              <div style="display:flex;gap:10px;margin-top:14px">
+                <button onClick="{{ setStayShort }}" style="{{ stayShortStyle }}">{{ stayShortLabel }}</button>
+                <button onClick="{{ setStayLong }}" style="{{ stayLongStyle }}">{{ stayLongLabel }}</button>
+              </div>
+              <div style="font:500 16px/1.7 'Anuphan';color:#e4dccb;margin-top:15px;text-wrap:pretty">{{ stayText }}</div>
+              <div style="margin-top:18px">
+                <sc-for list="{{ cityQa }}" as="q" hint-placeholder-count="4">
+                  <div style="border-top:1px solid rgba(244,236,221,.16)">
+                    <div onClick="{{ q.toggle }}" style="display:flex;align-items:center;gap:12px;padding:15px 2px;cursor:pointer">
+                      <div style="flex:1;font:700 17px 'Anuphan';color:#fff;text-wrap:pretty">{{ q.q }}</div>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c7b79b" stroke-width="2.4" style="flex:none;transition:transform .18s;transform:{{ q.chevRot }}"><path d="M9 6l6 6-6 6"/></svg>
+                    </div>
+                    <sc-if value="{{ q.open }}" hint-placeholder-val="{{ false }}">
+                      <div style="font:500 15.5px/1.7 'Anuphan';color:#dcd3c1;padding:0 2px 15px;text-wrap:pretty">{{ q.a }}</div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="padding:0 20px"><div style="font:500 13px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:18px">ข้อมูลบางส่วนสร้างโดย AI · รูปภาพแตะเพื่อเปลี่ยนเป็นภาพจริงของคุณได้</div></div>
+          </div>
         </div>
       </sc-if>
 
@@ -1470,7 +1590,7 @@ class Component extends DCLogic {
     tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan' };
+  tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
   titles = { premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['myplans','feed','discover','profile'];
 
@@ -3573,7 +3693,105 @@ class Component extends DCLogic {
   toggleBeen(name) { const o = { ...this.beenObj }; if (o[name]) delete o[name]; else o[name] = 1; this.saveBeen(o); }
   get mapStyle() { return this.state.mapStyle || (function(){ try { return localStorage.getItem('wtn-map-style'); } catch(e){ return null; } })() || 'warm'; }
   setMapStyle(s) { try { localStorage.setItem('wtn-map-style', s); } catch (e) {} this.setState({ mapStyle: s }); }
-  WORLD = [["ไทย","🇹🇭",15,101],["ญี่ปุ่น","🇯🇵",36.2,138.3],["เกาหลีใต้","🇰🇷",36.5,127.8],["จีน","🇨🇳",35.9,104.2],["ฮ่องกง","🇭🇰",22.3,114.2],["ไต้หวัน","🇹🇼",23.7,121],["เวียดนาม","🇻🇳",16,108],["ลาว","🇱🇦",19.9,102.5],["กัมพูชา","🇰🇭",12.5,105],["เมียนมา","🇲🇲",21.9,95.9],["มาเลเซีย","🇲🇾",4.2,101.9],["สิงคโปร์","🇸🇬",1.35,103.8],["อินโดนีเซีย","🇮🇩",-2,117],["ฟิลิปปินส์","🇵🇭",12.8,121.7],["อินเดีย","🇮🇳",22.6,79],["เนปาล","🇳🇵",28.4,84.1],["ภูฏาน","🇧🇹",27.5,90.4],["ศรีลังกา","🇱🇰",7.9,80.7],["มัลดีฟส์","🇲🇻",3.2,73],["คาซัคสถาน","🇰🇿",48,66.9],["อุซเบกิสถาน","🇺🇿",41.4,64.6],["คีร์กีซสถาน","🇰🇬",41.2,74.8],["จอร์เจีย","🇬🇪",42.3,43.4],["ตุรกี","🇹🇷",39,35.2],["สหรัฐอาหรับเอมิเรตส์","🇦🇪",23.4,53.8],["กาตาร์","🇶🇦",25.3,51.2],["ซาอุดีอาระเบีย","🇸🇦",23.9,45.1],["จอร์แดน","🇯🇴",30.6,36.2],["อิสราเอล","🇮🇱",31,34.9],["โอมาน","🇴🇲",21,57],["อิหร่าน","🇮🇷",32.4,53.7],["อังกฤษ","🇬🇧",54,-2.4],["ฝรั่งเศส","🇫🇷",46.6,2.2],["อิตาลี","🇮🇹",42.5,12.6],["สเปน","🇪🇸",40,-3.7],["โปรตุเกส","🇵🇹",39.5,-8],["เยอรมนี","🇩🇪",51.2,10.4],["สวิตเซอร์แลนด์","🇨🇭",46.8,8.2],["ออสเตรีย","🇦🇹",47.5,14.5],["เนเธอร์แลนด์","🇳🇱",52.1,5.3],["เบลเยียม","🇧🇪",50.5,4.5],["กรีซ","🇬🇷",39.1,21.8],["เช็ก","🇨🇿",49.8,15.5],["ฮังการี","🇭🇺",47.2,19.5],["โปแลนด์","🇵🇱",51.9,19.1],["โครเอเชีย","🇭🇷",45.1,15.2],["นอร์เวย์","🇳🇴",60.5,8.5],["สวีเดน","🇸🇪",60.1,18.6],["เดนมาร์ก","🇩🇰",56,10],["ฟินแลนด์","🇫🇮",64,26],["ไอซ์แลนด์","🇮🇸",64.9,-19],["ไอร์แลนด์","🇮🇪",53.4,-8],["รัสเซีย","🇷🇺",61.5,105],["อียิปต์","🇪🇬",26.8,30.8],["โมร็อกโก","🇲🇦",31.8,-7.1],["แอฟริกาใต้","🇿🇦",-30.6,22.9],["เคนยา","🇰🇪",-0.02,37.9],["แทนซาเนีย","🇹🇿",-6.4,34.9],["สหรัฐฯ","🇺🇸",39.8,-100.4],["แคนาดา","🇨🇦",56.1,-106.3],["เม็กซิโก","🇲🇽",23.6,-102.5],["บราซิล","🇧🇷",-10.3,-53.2],["อาร์เจนตินา","🇦🇷",-38.4,-63.6],["เปรู","🇵🇪",-9.2,-75],["ชิลี","🇨🇱",-35.7,-71.5],["คิวบา","🇨🇺",21.5,-77.8],["ออสเตรเลีย","🇦🇺",-25.3,133.8],["นิวซีแลนด์","🇳🇿",-40.9,174.9],["ฟิจิ","🇫🇯",-17.7,178]];
+  exploreData() {
+    if (this._exData) return this._exData;
+    const kz = {
+      id: 'kz', name: 'คาซัคสถาน', tagline: 'ประเทศไร้ทางออกทะเลที่ใหญ่ที่สุดในโลก',
+      hero: 'uploads/20171210_150759619_iOS.jpg',
+      blurb: 'อัสตานาและอัลมาตี เมืองหลวงปัจจุบันและอดีต ผสานตึกระฟ้าทันสมัยเข้ากับสถาปัตยกรรมยุคโซเวียต พ้นจากเมืองออกไปคือทุ่งหญ้าสเตปป์กว้างไกลสุดลูกหูลูกตา ทะเลทราย และเทือกเขาสูงโอบล้อม',
+      cities: [
+        { id: 'almaty', name: 'อัลมาตี', one: 'เมืองภูเขาที่โซเวียตพบเอเชียกลาง',
+          hero: 'uploads/20240619_072028.jpg',
+          blurb: 'มีเทือกเขาเทียนซานปกคลุมหิมะเป็นฉากหลัง อดีตเมืองหลวงที่ผสานสถาปัตยกรรมโซเวียตกับถนนร่มไม้ ตลาดคึกคัก และคาเฟ่เก๋ๆ เป็นประตูสู่ธรรมชาติของคาซัคสถาน',
+          popularity: 'เที่ยวกันพอสมควร', temp: '26°C',
+          stay: { short: '2–3 วัน', long: '4–5 วัน',
+            textShort: 'เดิน Panfilov Park และมหาวิหารเซนคอฟ แวะตลาด Green Bazaar แล้วนั่งกระเช้าขึ้น Kok-Tobe ชมวิวเมือง ปิดท้ายด้วยอาหารคาซัคที่ร้านท้องถิ่น',
+            textLong: 'เพิ่มวันขึ้น Big Almaty Lake ชมทะเลสาบสีเทอร์ควอยซ์กลางภูเขา และเที่ยว Charyn Canyon แบบไปเช้าเย็นกลับ ถ้ามาหน้าหนาวต่อสกีที่ Shymbulak ได้อีก' },
+          highlights: [ { label: 'เทือกเขาเทียนซาน', photo: 'uploads/20240619_072028.jpg' }, { label: 'มหาวิหารเซนคอฟ', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'Green Bazaar', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ผ่อนคลายแบบเมืองภูเขา ถนนกว้างร่มไม้ คาเฟ่เยอะ คนเป็นมิตร จังหวะชีวิตช้ากว่ากรุงเทพชัดเจน' }, { q: 'พักย่านไหนดี', a: 'ย่านใจกลางใกล้ถนน Dostyk หรือ Panfilov เดินสะดวก ใกล้ร้านอาหารและตลาด เดินทางต่อง่าย' }, { q: 'ทริคเด็ดจากคนใน', a: 'ขึ้น Kok-Tobe ช่วงเย็นชมพระอาทิตย์ตกเหนือเมือง แล้วต่อมื้อค่ำวิวภูเขา คุ้มกว่าไปกลางวันมาก' }, { q: 'ช่วงไหนควรไป', a: 'มิ.ย.–ก.ย. อากาศอุ่นเหมาะเดินเขา ส่วน ธ.ค.–มี.ค. มาเล่นสกีที่ Shymbulak ได้' } ] },
+        { id: 'astana', name: 'อัสตานา', one: 'เมืองหลวงแห่งอนาคตกลางทุ่งสเตปป์',
+          hero: 'uploads/20211027_071410292_iOS.jpg',
+          blurb: 'เมืองหลวงใหม่ที่ผุดขึ้นกลางทุ่งหญ้า เต็มไปด้วยสถาปัตยกรรมล้ำสมัยจากสถาปนิกระดับโลก หนาวจัดในฤดูหนาวแต่โอ่อ่าตระการตาทุกฤดู',
+          popularity: 'เที่ยวกันบ้าง', temp: '24°C',
+          stay: { short: '1–2 วัน', long: '2–3 วัน',
+            textShort: 'ชมหอคอย Bayterek สัญลักษณ์ของเมือง เดินชมกลุ่มอาคารล้ำสมัยรอบ Nurzhol Boulevard แล้วแวะห้าง Khan Shatyr เต็นท์ยักษ์ใสที่ใหญ่ที่สุดในโลก',
+            textLong: 'เพิ่มการเยี่ยม Hazrat Sultan Mosque มัสยิดที่ใหญ่ที่สุดในเอเชียกลาง และพิพิธภัณฑ์แห่งชาติ เก็บภาพเมืองยามค่ำที่ไฟประดับสวยเป็นพิเศษ' },
+          highlights: [ { label: 'หอคอย Bayterek', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'Khan Shatyr', photo: 'uploads/20240619_072028.jpg' }, { label: 'มัสยิด Hazrat Sultan', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ทันสมัย โล่งกว้าง อาคารใหญ่โต เหมาะกับสายถ่ายภาพสถาปัตยกรรม แต่ระยะเดินไกลควรใช้แท็กซี่' }, { q: 'พักย่านไหนดี', a: 'ฝั่งซ้ายของแม่น้ำ (Left Bank) ใกล้ Bayterek และย่านราชการใหม่ เดินชมอาคารเด่นๆ ได้' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปช่วงเย็นแล้วรอไฟเมืองเปิด อาคารกระจกสะท้อนแสงสวยกว่ากลางวันมาก' }, { q: 'ช่วงไหนควรไป', a: 'พ.ค.–ก.ย. อากาศกำลังดี เลี่ยงฤดูหนาวที่ลงได้ถึง -30°C' } ] },
+        { id: 'charyn', name: 'แคนยอนชารึน', one: 'แกรนด์แคนยอนแห่งเอเชียกลาง',
+          hero: 'uploads/20171210_150759619_iOS.jpg',
+          blurb: 'หุบผาหินทรายสีส้มแดงที่ธารน้ำกัดเซาะมานับล้านปี จุดเด่นคือ Valley of Castles ที่หินตั้งตระหง่านเหมือนปราสาท เที่ยวได้แบบไปเช้าเย็นกลับจากอัลมาตี',
+          popularity: 'ยอดนิยม', temp: '30°C',
+          stay: { short: 'ไปเช้าเย็นกลับ', long: '1 คืน',
+            textShort: 'ขับ 3 ชม. จากอัลมาตี เดินลง Valley of Castles ราว 1–2 ชม. เก็บภาพหุบผาแล้วกลับเข้าเมืองภายในวันเดียว',
+            textLong: 'ค้างที่ eco-camp ริมแม่น้ำหนึ่งคืน เพื่อชมแสงเช้า-เย็นที่หินเปลี่ยนสี และเดินสำรวจได้ไกลขึ้นโดยไม่รีบ' },
+          highlights: [ { label: 'Valley of Castles', photo: 'uploads/20171210_150759619_iOS.jpg' }, { label: 'แม่น้ำชารึน', photo: 'uploads/20240619_072028.jpg' }, { label: 'จุดชมวิวขอบผา', photo: 'uploads/20211027_071410292_iOS.jpg' } ],
+          qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'เงียบสงบ กว้างใหญ่ กลางวันร้อนและแดดแรง ควรเตรียมน้ำ หมวก และรองเท้าเดินสบาย' }, { q: 'ไปยังไงดี', a: 'ง่ายสุดคือจอยทัวร์วันเดย์จากอัลมาตี หรือเช่ารถขับเอง ถนนช่วงท้ายเป็นทางลูกรังบางส่วน' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปถึงก่อนเที่ยงเพื่อเลี่ยงแดดแรงตอนเดินลงหุบ และได้เงาหินที่ให้ภาพมีมิติ' }, { q: 'ช่วงไหนควรไป', a: 'เม.ย.–มิ.ย. และ ก.ย.–ต.ค. อากาศกำลังดี เลี่ยงกลางฤดูร้อนที่ร้อนจัด' } ] },
+        { id: 'kolsai', name: 'ทะเลสาบคอลไซ', one: 'ทะเลสาบสามชั้นกลางป่าสน',
+          hero: 'uploads/Gemini_Generated_Image_lts58ilts58ilts5.png',
+          blurb: 'สามทะเลสาบน้ำใสไล่ระดับกลางเทือกเขาเทียนซาน ล้อมด้วยป่าสนเขียวขจี ได้ชื่อว่า "ไข่มุกแห่งเทียนซาน" เหมาะกับสายเดินป่าและตั้งแคมป์',
+          popularity: 'เที่ยวกันบ้าง', temp: '20°C',
+          stay: { short: '1 คืน', long: '2 คืน',
+            textShort: 'เดินรอบทะเลสาบชั้นแรกที่เข้าถึงง่ายสุด พักโฮมสเตย์หมู่บ้าน Saty หนึ่งคืน แล้วแวะทะเลสาบ Kaindy ต้นสนจมน้ำในวันถัดไป',
+            textLong: 'เทรกจากทะเลสาบชั้น 1 ขึ้นชั้น 2 (ราว 4–5 ชม.) ค้างเต็นท์ริมน้ำ สำหรับสายเดินป่าจริงจังที่อยากได้วิวเงียบสงบ' },
+          highlights: [ { label: 'ทะเลสาบชั้นแรก', photo: 'uploads/Gemini_Generated_Image_lts58ilts58ilts5.png' }, { label: 'ทะเลสาบ Kaindy', photo: 'uploads/20240619_072028.jpg' }, { label: 'หมู่บ้าน Saty', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ธรรมชาติบริสุทธิ์ เงียบสงบ สัญญาณโทรศัพท์น้อย เหมาะกับการพักผ่อนแบบตัดขาดจากเมือง' }, { q: 'พักที่ไหนดี', a: 'โฮมสเตย์ในหมู่บ้าน Saty เจ้าของอบอุ่น อาหารโฮมเมด เป็นฐานไปทั้งคอลไซและ Kaindy' }, { q: 'ทริคเด็ดจากคนใน', a: 'พกเสื้อกันหนาวแม้หน้าร้อน กลางคืนบนภูเขาอุณหภูมิลงต่ำ และดาวสวยมาก' }, { q: 'ช่วงไหนควรไป', a: 'มิ.ย.–ก.ย. ทางเดินเปิดและน้ำใส หน้าหนาวถนนขึ้นเขาอาจปิดจากหิมะ' } ] },
+        { id: 'turkistan', name: 'เตอร์กิสถาน', one: 'เมืองศักดิ์สิทธิ์ริมเส้นทางสายไหม',
+          hero: 'uploads/20211027_071410292_iOS.jpg',
+          blurb: 'เมืองประวัติศาสตร์ทางใต้ ที่ตั้งของสุสาน Khoja Ahmed Yasawi มรดกโลก UNESCO โดมสีฟ้าครามและงานกระเบื้องเปอร์เซียอันวิจิตร ศูนย์กลางจิตวิญญาณของชาวเติร์ก',
+          popularity: 'กำลังมาแรง', temp: '32°C',
+          stay: { short: '1 วัน', long: '2 วัน',
+            textShort: 'ชมสุสาน Khoja Ahmed Yasawi ใจกลางเมือง เดินชมงานกระเบื้องและพิพิธภัณฑ์รอบๆ ครบได้ในหนึ่งวัน',
+            textLong: 'เพิ่มวันไปเมืองโบราณ Otrar และ Sauran ป้อมดินริมเส้นทางสายไหม สำหรับสายประวัติศาสตร์ที่อยากเจาะลึก' },
+          highlights: [ { label: 'สุสาน Yasawi', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'งานกระเบื้องเปอร์เซีย', photo: 'uploads/20171210_150759619_iOS.jpg' }, { label: 'เมืองเก่า Otrar', photo: 'uploads/20240619_072028.jpg' } ],
+          qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'สงบขรึมแบบเมืองศาสนา ผู้คนมาแสวงบุญ ควรแต่งกายสุภาพเมื่อเข้าเขตสุสาน' }, { q: 'ไปยังไงดี', a: 'นั่งรถไฟความเร็วสูงหรือเครื่องบินจากอัลมาตี/อัสตานา มีสนามบินในเมืองแล้ว สะดวกขึ้นมาก' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปช่วงบ่ายแก่ๆ แสงทองตกกระทบโดมสีฟ้าให้ภาพสวยที่สุด และคนน้อยลง' }, { q: 'ช่วงไหนควรไป', a: 'เม.ย.–พ.ค. และ ก.ย.–ต.ค. เลี่ยงหน้าร้อนทางใต้ที่ร้อนจัดเกิน 35°C' } ] } ]
+    };
+    this._exData = { kz };
+    return this._exData;
+  }
+  openCountry(id) { this.setState({ exCountry: id }); this.go('country'); }
+  openCity(id) { this.setState({ exCity: id, exQaOpen: {}, exStay: 'short' }); this.go('city'); }
+  _exploreVals() {
+    const data = this.exploreData();
+    const country = data[this.state.exCountry] || data.kz;
+    const chipOn = "flex:none;border:none;cursor:pointer;font:700 15px 'Anuphan';padding:9px 18px;border-radius:14px;background:#f2e4d3;color:#2b241f";
+    const chipOff = "flex:none;cursor:pointer;font:700 15px 'Anuphan';padding:9px 18px;border-radius:14px;background:transparent;color:#cdb79f;border:1.5px solid rgba(242,228,211,.35)";
+    const out = {
+      exName: country.name, exTagline: country.tagline, exHero: country.hero, exBlurb: country.blurb,
+      exCreateTrip: () => this.go('create'),
+      exCities: country.cities.map(c => ({ name: c.name, one: c.one, hero: c.hero, thumbId: 'wtn-exh-' + c.id, open: () => this.openCity(c.id) })) };
+    const city = country.cities.find(c => c.id === this.state.exCity) || country.cities[0];
+    const stay = this.state.exStay || 'short';
+    const qaOpen = this.state.exQaOpen || {};
+    out.exCountryPill = country.name;
+    out.cityHeroId = 'wtn-exh-' + city.id; out.cityHero = city.hero;
+    out.cityName = city.name; out.cityTagline = city.one; out.cityBlurb = city.blurb;
+    out.cityPop = city.popularity; out.cityTemp = city.temp;
+    out.cityHighlights = city.highlights.map((h, i) => ({ label: h.label, photo: h.photo, hid: 'wtn-exhl-' + city.id + '-' + i }));
+    out.stayShortLabel = city.stay.short; out.stayLongLabel = city.stay.long;
+    out.stayShortStyle = stay === 'short' ? chipOn : chipOff; out.stayLongStyle = stay === 'long' ? chipOn : chipOff;
+    out.setStayShort = () => this.setState({ exStay: 'short' }); out.setStayLong = () => this.setState({ exStay: 'long' });
+    out.stayText = stay === 'long' ? city.stay.textLong : city.stay.textShort;
+    out.cityQa = city.qa.map((q, i) => ({ q: q.q, a: q.a, open: !!qaOpen[i], notOpen: !qaOpen[i], chevRot: qaOpen[i] ? 'rotate(90deg)' : 'rotate(0deg)',
+      toggle: () => this.setState(s => ({ exQaOpen: { ...(s.exQaOpen || {}), [i]: !(s.exQaOpen || {})[i] } })) }));
+    out.exAddToPlan = () => this.go('create');
+    // \u2014\u2014 Explore landing: \u0e41\u0e1c\u0e19\u0e17\u0e35\u0e48\u0e42\u0e25\u0e01\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e1b\u0e23\u0e30\u0e40\u0e17\u0e28 (flat, \u0e44\u0e21\u0e48\u0e2b\u0e19\u0e31\u0e01\u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07) \u2014\u2014
+    const feat = [
+      { name: 'คาซัคสถาน', flag: '🇰🇿', lat: 48, lng: 67, active: true, on: () => this.openCountry('kz') },
+      { name: 'คีร์กีซสถาน', flag: '🇰🇬', lat: 41.2, lng: 74.8 },
+      { name: 'ตุรกี', flag: '🇹🇷', lat: 39, lng: 35 },
+      { name: 'เนปาล', flag: '🇳🇵', lat: 28.4, lng: 84.1 } ];
+    out.exFeatured = feat.map(f => {
+      const x = (f.lng + 180) / 360 * 100, y = (90 - f.lat) / 180 * 100;
+      const base = 'position:absolute;left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:5px;padding:5px 11px 5px 7px;border-radius:16px;border:none;cursor:pointer;font:700 12.5px \'Anuphan\';white-space:nowrap;box-shadow:0 3px 12px rgba(43,36,32,.32);z-index:2;';
+      const skin = f.active ? 'background:#c05f39;color:#fff;outline:2.5px solid rgba(255,255,255,.9);' : 'background:rgba(255,255,255,.95);color:#2b241f;';
+      return { label: f.name, flag: f.flag, style: base + skin,
+        on: f.active ? f.on : () => this.showToast('เร็วๆ นี้ — กำลังทยอยเพิ่มจุดหมาย ✦') };
+    });
+    return out;
+  }
+
+  WORLD = [["ไทย","🇹🇭",15,101],["ญี่ปุ่น","🇯🇵",36.2,138.3],["เกาหลีใต้","🇰🇷",36.5,127.8],["จีน","🇨🇳",35.9,104.2],["ฮ่องกง","🇭🇰",22.3,114.2],["ไต้หวัน","🇹🇼",23.7,121],["เวียดนาม","🇻🇳",16,108],["ลาว","🇱🇦",19.9,102.5],["กัมพูชา","🇰🇭",12.5,105],["เมียนมา","🇲🇲",21.9,95.9],["มาเลเซีย","🇲🇾",4.2,101.9],["สิงคโปร์","🇸🇬",1.35,103.8],["อินโดนีเซีย","🇮🇩",-2,117],["ฟิลิปปินส์","🇵🇭",12.8,121.7],["อินเดีย","🇮🇳",22.6,79],["เนปาล","🇳🇵",28.4,84.1],["ภูฏาน","🇧🇹",27.5,90.4],["ศรีลังกา","🇱🇰",7.9,80.7],["มัลดีฟส์","🇲🇻",3.2,73],["คาซัคสถาน","🇰🇿",48,66.9],["อุซเบกิสถาน","🇺🇿",41.4,64.6],["คีร์กีซสถาน","🇰🇬",41.2,74.8],["จอร์เจีย","🇬🇪",42.3,43.4],["ตุรกี","🇹🇷",39,35.2],["สหรัฐอาหรับเอมิเรตส์","🇦🇪",23.4,53.8],["กาตาร์","🇶🇦",25.3,51.2],["ซาอุดีอาระเบีย","🇸🇦",23.9,45.1],["จอร์แดน","🇯🇴",30.6,36.2],["อิสราเอล","🇮🇱",31,34.9],["โอมาน","🇴🇲",21,57],["อิหร่าน","🇮🇷",32.4,53.7],["อังกฤษ","🇬🇧",54,-2.4],["ฝรั่งเศส","🇫🇷",46.6,2.2],["อิตาลี","🇮🇹",42.5,12.6],["สเปน","🇪🇸",40,-3.7],["โปรตุเกส","🇵🇹",39.5,-8],["เยอรมนี","🇩🇪",51.2,10.4],["สวิตเซอร์แลนด์","🇨🇭",46.8,8.2],["ออสเตรีย","🇦🇹",47.5,14.5],["เนเธอร์แลนด์","🇳🇱",52.1,5.3],["เบลเยียม","🇧🇪",50.5,4.5],["กรีซ","🇬🇷",39.1,21.8],["เช็ก","🇨🇿",49.8,15.5],["ฮังการี","🇭🇺",47.2,19.5],["โปแลนด์","🇵🇱",51.9,19.1],["โครเอเชีย","🇭🇷",45.1,15.2],["นอร์เวย์","🇳🇴",60.5,8.5],["สวีเดน","🇸🇪",60.1,18.6],["เดนมาร์ก","🇩🇰",56,10],["ฟินแลนด์","🇫🇮",64,26],["ไอซ์แลนด์","🇮🇸",64.9,-19],["ไอร์แลนด์","🇮🇪",53.4,-8],["รัสเซีย","🇷🇺",61.5,105],["อียิปต์","🇪🇬",26.8,30.8],["โมร็อกโก","🇲🇦",31.8,-7.1],["แอฟริกาใต้","🇿🇦",-30.6,22.9],["เคนยา","🇰🇪",-0.02,37.9],["แทนซาเนีย","🇹🇿",-6.4,34.9],["สหรัฐฯ","🇺🇸",39.8,-100.4],["แคนาดา","🇨🇦",56.1,-106.3],["เม็กซิโก","🇲🇽",23.6,-102.5],["บราซิล","🇧🇷",-10.3,-53.2],["อาร์เจนตินา","🇦🇷",-38.4,-63.6],["เปรู","🇵🇪",-9.2,-75],["ชิลี","🇨🇱",-35.7,-71.5],["คิวบา","🇨🇺",21.5,-77.8],["ออสเตรเลีย","🇦🇺",-25.3,133.8],["นิวซีแลนด์","🇳🇿",-40.9,174.9],["ฟิจิ","🇫🇯",-17.7,178],["เอธิโอเปีย","🇪🇹",9.1,40.5],["มาดากัสการ์","🇲🇬",-18.8,46.9],["ตูนิเซีย","🇹🇳",33.9,9.5],["แอลจีเรีย","🇩🇿",28,1.7],["นามิเบีย","🇳🇦",-22.6,18.5],["บอตสวานา","🇧🇼",-22.3,24.7],["ซิมบับเว","🇿🇼",-19,29.2],["แซมเบีย","🇿🇲",-13.1,27.8],["โมซัมบิก","🇲🇿",-18.7,35.5],["ยูกันดา","🇺🇬",1.4,32.3],["รวันดา","🇷🇼",-1.9,29.9],["เซเนกัล","🇸🇳",14.5,-14.5],["กานา","🇬🇭",7.9,-1],["ไนจีเรีย","🇳🇬",9.1,8.7],["มอริเชียส","🇲🇺",-20.3,57.6],["เซเชลส์","🇸🇨",-4.7,55.5],["เลบานอน","🇱🇧",33.9,35.9],["คูเวต","🇰🇼",29.3,47.5],["บาห์เรน","🇧🇭",26,50.5],["ทาจิกิสถาน","🇹🇯",38.9,71.3],["เติร์กเมนิสถาน","🇹🇲",38.9,59.6],["อาเซอร์ไบจาน","🇦🇿",40.1,47.6],["อาร์เมเนีย","🇦🇲",40.1,45],["มองโกเลีย","🇲🇳",46.9,103.8],["บังกลาเทศ","🇧🇩",23.7,90.4],["ปากีสถาน","🇵🇰",30.4,69.3],["บรูไน","🇧🇳",4.5,114.7],["ยูเครน","🇺🇦",48.4,31.2],["โรมาเนีย","🇷🇴",45.9,24.9],["บัลแกเรีย","🇧🇬",42.7,25.5],["เซอร์เบีย","🇷🇸",44,21],["สโลวีเนีย","🇸🇮",46.1,14.8],["สโลวาเกีย","🇸🇰",48.7,19.7],["เอสโตเนีย","🇪🇪",58.6,25],["ลัตเวีย","🇱🇻",56.9,24.6],["ลิทัวเนีย","🇱🇹",55.2,23.9],["มอลตา","🇲🇹",35.9,14.4],["ไซปรัส","🇨🇾",35.1,33.4],["แอลเบเนีย","🇦🇱",41.2,20.2],["ลักเซมเบิร์ก","🇱🇺",49.8,6.1],["โคลอมเบีย","🇨🇴",4.6,-74.3],["เอกวาดอร์","🇪🇨",-1.8,-78.2],["โบลิเวีย","🇧🇴",-16.3,-63.6],["อุรุกวัย","🇺🇾",-32.5,-55.8],["คอสตาริกา","🇨🇷",9.7,-83.8],["ปานามา","🇵🇦",8.5,-80.8],["กัวเตมาลา","🇬🇹",15.8,-90.2],["ปาปัวนิวกินี","🇵🇬",-6.3,143.9],["เฟรนช์โปลินีเซีย","🇵🇫",-17.7,-149.4],["ซามัว","🇼🇸",-13.8,-172.1],["วานูอาตู","🇻🇺",-15.4,166.9]];
   renderVals() {
     const sc = this.state.screen, active = this.state.day;
     const kz = this.kzDays, kzn = kz.length;
@@ -3635,9 +3853,9 @@ class Component extends DCLogic {
       subscribeNow: () => this.startCheckout(this.state.premiumPlan || 'year'),
       sMyplans: sc==='myplans', sCreate: sc==='create', sTrip: sc==='trip', sBudget: sc==='budget',
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
-      sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile',
+      sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
-      sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
+      sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard' && sc!=='country' && sc!=='city', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
       sOverview: sc==='overview', sPrep: sc==='prep',
       ...(() => {
         const _pk = this.packing;
@@ -3702,7 +3920,8 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.22a',
+      appVersion: '2026.07.22c',
+      ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
@@ -3771,7 +3990,7 @@ class Component extends DCLogic {
             ? 'ยังไม่ได้เชื่อม API key — ไปเชื่อมที่แท็บ "ฉัน" ก่อน ถึงจะให้ AI ค้นให้ได้'
             : 'โหลดไม่สำเร็จ ลองใหม่อีกครั้ง',
           retryExplore: () => this.runExplore(qcity, cat),
-          pickKz: () => this.setState({ dest: 'kz', destCat: 'place' }),
+          pickKz: () => this.openCountry('kz'),
           pickJp: () => this.setState({ dest: 'jp', destCat: 'place' }),
           kzCardRing: ring(dest === 'kz'), jpCardRing: ring(dest === 'jp'),
           catPlace: setCat('place'), catAct: setCat('act'), catFood: setCat('food'), catGo: setCat('go'),
