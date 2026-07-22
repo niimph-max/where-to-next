@@ -1685,7 +1685,7 @@ class Component extends DCLogic {
     this.loadFeed();
     this.loadMoments();
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
-    Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); });
+    Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); });
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
@@ -1713,8 +1713,21 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid || this._applyingCloud) return;
     if (!this.isPremium) return;
+    this._pendingPush = true;
+    try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {} // มาร์กไว้ถาวร — เน็ตช้า/โดนพักกลางคัน ก็รีทรายรอบหน้าได้
     clearTimeout(this._cloudT);
-    this._cloudT = setTimeout(() => this.cloudPush(), 10000);
+    this._cloudT = setTimeout(() => this.cloudPush(), 3500);
+  }
+  // ดันข้อมูลค้างขึ้นทันที (ก่อนแอปถูกพักตอนสลับออก/ล็อกจอ) — ไม่ต้องรอ debounce
+  flushCloudPush() {
+    if (!this._pendingPush) return;
+    this._pendingPush = false;
+    clearTimeout(this._cloudT);
+    this.cloudPush();
+  }
+  // มีของค้างยังไม่ขึ้นคลาวด์ (จากรอบก่อนที่เน็ตหลุด/โดนพัก) → ดันซ้ำ
+  retryPendingPush() {
+    try { if (localStorage.getItem('wtn-sync-pending') && this.localHasData()) this.scheduleCloudPush(); } catch (e) {}
   }
   // ยกรูป base64 ที่ฝังในข้อมูลขึ้น Cloud Storage แล้วแทนด้วยลิงก์ (อัพครั้งเดียว/รูป, กันซ้ำด้วย map)
   async hoistImages() {
@@ -1909,7 +1922,7 @@ class Component extends DCLogic {
     if (!this._synced) { return; } // ยังไม่ได้รับข้อมูลล่าสุดจากคลาวด์ — ห้ามดัน (กันเครื่องเปล่าทับ)
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; }
     if (this._pushing) { this._pushAgain = true; return; }
-    this._pushing = true;
+    this._pushing = true; this._pendingPush = false;
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
@@ -1927,7 +1940,7 @@ class Component extends DCLogic {
         await be.pushBackup({ _app: 'where-to-next', _at: at, data: payload });
         try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
       }
-      this._errN = 0; this.setState({ cloud: 'saved' }); this.forceUpdate();
+      this._errN = 0; try { localStorage.removeItem('wtn-sync-pending'); } catch (e) {} this.setState({ cloud: 'saved' }); this.forceUpdate();
     } catch (e) {
       console.warn('[wtn] cloud push', e);
       this.setState({ cloud: 'error', cloudErr: 'push: ' + ((e && (e.code || e.message)) || String(e)) });
@@ -3526,12 +3539,16 @@ class Component extends DCLogic {
     this._ppSync = () => { if (!this._applyingCloud) this.scheduleCloudPush(); };
     window.addEventListener('photopick-change', this._ppSync);
     // กลับมาเปิดแอป/สลับแท็บกลับมา → ดันข้อมูลค้างขึ้นคลาวด์
-    this._visSync = () => { if (document.visibilityState === 'visible') this.cloudPull(); };
+    this._visSync = () => { if (document.visibilityState === 'visible') { this.cloudPull(); this.retryPendingPush(); } else this.flushCloudPush(); };
     document.addEventListener('visibilitychange', this._visSync);
+    // iOS พักแท็บทันทีที่สลับออก/ล็อกจอ → ต้องดันข้อมูลค้างก่อนโดนพัก
+    this._pageHide = () => this.flushCloudPush();
+    window.addEventListener('pagehide', this._pageHide);
+    window.addEventListener('blur', this._pageHide);
     if (!window.__wtnLSHook) {
       window.__wtnLSHook = true;
       const oSet = localStorage.setItem.bind(localStorage), oRem = localStorage.removeItem.bind(localStorage);
-      const SYS = { 'wtn-cloud-at': 1, 'wtn-auth': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-base-v2': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 }; // คีย์ภายใน — ห้ามนัดซิงก์ (กันลูปนัดตัวเอง)
+      const SYS = { 'wtn-cloud-at': 1, 'wtn-auth': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-base-v2': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-sync-pending': 1 }; // คีย์ภายใน — ห้ามนัดซิงก์ (กันลูปนัดตัวเอง)
       const kick = k => { if (k && (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && !SYS[k]) window.dispatchEvent(new Event('wtn-local-change')); };
       localStorage.setItem = (k, v) => { oSet(k, v); kick(k); };
       localStorage.removeItem = k => { oRem(k); kick(k); };
@@ -3920,7 +3937,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.22c',
+      appVersion: '2026.07.22e',
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,

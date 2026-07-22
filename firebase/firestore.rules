@@ -16,15 +16,28 @@ service cloud.firestore {
     // backup ทั้งแอป (ซิงก์ข้ามเครื่อง) — เจ้าของเท่านั้น อ่าน/เขียนได้
     match /backups/{uid} {
       allow read, write: if isOwner(uid);
+      // เวอร์ชันสำรองย้อนหลัง (กันเขียนทับพลาด)
+      match /versions/{vid} {
+        allow read, write: if isOwner(uid);
+      }
     }
 
     // โปรไฟล์ผู้ใช้ (อ่านสาธารณะเพื่อโชว์ชื่อ/รูปในฟีด)
     match /users/{uid} {
       allow read: if true;
-      allow write: if isOwner(uid);
+      // เจ้าของแก้โปรไฟล์ได้ แต่ห้ามตั้ง premium/premiumUntil เอง (เซิร์ฟเวอร์/ระบบจ่ายเงินเท่านั้น)
+      allow create: if isOwner(uid)
+        && !request.resource.data.keys().hasAny(['premium','premiumUntil']);
+      allow update: if isOwner(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['premium','premiumUntil']);
       // ถูกใจของฉัน (ส่วนตัว)
       match /likes/{chapterId} {
         allow read, write: if isOwner(uid);
+      }
+      // โควตาการใช้ AI — อ่านได้ (โชว์เหลือเท่าไหร่) เขียนได้เฉพาะเซิร์ฟเวอร์ (Admin SDK)
+      match /usage/{ym} {
+        allow read: if isOwner(uid);
+        allow write: if false;
       }
     }
 
