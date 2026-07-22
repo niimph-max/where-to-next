@@ -205,21 +205,34 @@ async function boot() {
       const at = obj._at || Date.now();
       await fs.setDoc(fs.doc(DB, "backups", this._uid),
         { blob, at, updatedAt: fs.serverTimestamp() });
-      // เก็บเวอร์ชันย้อนหลัง (กันเขียนทับพลาด) — เก็บ 7 ชุดล่าสุด
-      if (this._lastVerAt && at - this._lastVerAt < 600000) return; // เวอร์ชันย้อนหลังไม่ถี่กว่า 10 นาที
-      this._lastVerAt = at;
-      try {
-        await fs.setDoc(fs.doc(DB, "backups", this._uid, "versions", String(at)), { blob, at });
-        const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
-        let i = 0;
-        for (const d of q.docs) { i++; if (i > 7) { try { await fs.deleteDoc(d.ref); } catch (e) {} } }
-      } catch (e) { console.warn("[wtn] version snap", e); }
+      this._seenAt = Math.max(this._seenAt || 0, at); // กัน listener เครื่องนี้โหลด echo ของตัวเอง
+      const metaRef = fs.doc(DB, "backups", this._uid, "versions", "meta");
+      // เก็บเวอร์ชันย้อนหลัง (กันเขียนทับพลาด) — 7 ชุดล่าสุด, ไม่ถี่กว่า 10 นาที
+      let verList = null;
+      if (!this._lastVerAt || at - this._lastVerAt >= 600000) {
+        this._lastVerAt = at;
+        try {
+          await fs.setDoc(fs.doc(DB, "backups", this._uid, "versions", String(at)), { blob, at });
+          // ตัดเวอร์ชันเก่าด้วยรายชื่อ id ใน meta — ไม่ดาวน์โหลด blob ทั้ง 7 ชุดอีกแล้ว
+          let list = this._verList;
+          if (!list) { try { const m = await fs.getDoc(metaRef); list = (m.exists() && m.data().verList) || null; } catch (e) {} }
+          if (!list) { // ครั้งแรกหลังอัปเดต: อ่านรายชื่อเดิมหนึ่งครั้ง
+            const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
+            list = q.docs.filter(d => d.id !== "meta").map(d => d.data().at || Number(d.id));
+          }
+          list = list.filter(x => x && x !== at); list.push(at); list.sort((a, b) => b - a);
+          for (const old of list.slice(7)) { try { await fs.deleteDoc(fs.doc(DB, "backups", this._uid, "versions", String(old))); } catch (e) {} }
+          this._verList = verList = list.slice(0, 7);
+        } catch (e) { console.warn("[wtn] version snap", e); }
+      }
+      // meta จิ๋ว (~ไม่กี่ร้อยไบต์) ให้เครื่องอื่นฟังแทน blob เต็ม — ประหยัด bandwidth มหาศาล
+      try { await fs.setDoc(metaRef, verList ? { at, verList } : { at }, { merge: true }); } catch (e) {}
     },
     async listBackupVersions() {
       if (!this._uid) return [];
       try {
         const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
-        return q.docs.map(d => {
+        return q.docs.filter(d => d.id !== "meta").map(d => {
           let trips = 0, moments = 0;
           try { const o = JSON.parse(d.data().blob); const dd = o.data || {}; trips = (JSON.parse(dd["wtn-trips"] || "[]") || []).length; moments = (JSON.parse(dd["wtn-moments"] || "[]") || []).length; } catch (e) {}
           return { id: d.id, at: d.data().at || Number(d.id), trips, moments };
@@ -236,13 +249,21 @@ async function boot() {
       if (!this._uid) return null;
       const snap = await fs.getDoc(fs.doc(DB, "backups", this._uid));
       if (!snap.exists()) return null;
+      this._seenAt = Math.max(this._seenAt || 0, snap.data().at || 0);
       try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
     },
-    // ฟังการเปลี่ยนแปลงแบบเรียลไทม์ — อีกเครื่องแก้ปุ๊บ เครื่องนี้รู้ปั๊บ (ไม่ต้องรอรีโหลด)
+    // ฟังการเปลี่ยนแปลงแบบเรียลไทม์ — ฟังเฉพาะ meta จิ๋ว แล้วค่อยโหลด blob เต็มเมื่อมีของใหม่จริงเท่านั้น
     subscribeBackup(cb) {
       if (!this._uid) return () => {};
-      return fs.onSnapshot(fs.doc(DB, "backups", this._uid),
-        snap => { if (!snap.exists()) return; try { cb(JSON.parse(snap.data().blob)); } catch (e) {} },
+      const metaRef = fs.doc(DB, "backups", this._uid, "versions", "meta");
+      return fs.onSnapshot(metaRef,
+        async snap => {
+          if (!snap.exists()) return;
+          const at = snap.data().at || 0;
+          if (!at || at <= (this._seenAt || 0)) return; // echo ของเราเอง/ของเก่า — ไม่โหลด
+          this._seenAt = at;
+          try { const bk = await this.pullBackup(); if (bk) cb(bk); } catch (e) { console.warn("[wtn] backup sub pull", e); }
+        },
         err => console.warn("[wtn] backup sub", err));
     },
     // ---------- AI กลาง (ผ่าน Cloud Function ที่ถือคีย์ Gemini) ----------

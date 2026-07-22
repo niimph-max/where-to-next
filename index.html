@@ -1594,7 +1594,7 @@ class Component extends DCLogic {
     if (!be || !be._uid || this._applyingCloud) return;
     if (!this.isPremium) return;
     clearTimeout(this._cloudT);
-    this._cloudT = setTimeout(() => this.cloudPush(), 4000);
+    this._cloudT = setTimeout(() => this.cloudPush(), 10000);
   }
   // ยกรูป base64 ที่ฝังในข้อมูลขึ้น Cloud Storage แล้วแทนด้วยลิงก์ (อัพครั้งเดียว/รูป, กันซ้ำด้วย map)
   async hoistImages() {
@@ -1807,11 +1807,12 @@ class Component extends DCLogic {
         await be.pushBackup({ _app: 'where-to-next', _at: at, data: payload });
         try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
       }
-      this.setState({ cloud: 'saved' }); this.forceUpdate();
+      this._errN = 0; this.setState({ cloud: 'saved' }); this.forceUpdate();
     } catch (e) {
       console.warn('[wtn] cloud push', e);
       this.setState({ cloud: 'error', cloudErr: 'push: ' + ((e && (e.code || e.message)) || String(e)) });
-      clearTimeout(this._cloudRetry); this._cloudRetry = setTimeout(() => this.cloudPush(), 20000);
+      this._errN = (this._errN || 0) + 1; clearTimeout(this._cloudRetry);
+      if (this._errN <= 5) this._cloudRetry = setTimeout(() => this.cloudPush(), 60000); // retry สูงสุด 5 ครั้ง ห่าง 1 นาที — ไม่วนเผาเงินทั้งคืน
     } finally {
       this._pushing = false;
       if (this._pendingBk) { const b = this._pendingBk; this._pendingBk = null; setTimeout(() => this.applyCloudBackup(b), 200); }
@@ -1865,7 +1866,12 @@ class Component extends DCLogic {
     this.loadMoments && this.loadMoments();
     this.forceUpdate();
     this.setState({ cloud: 'saved' });
-    if (this._sigOf(this._filterForPush(merged, bk.data)) !== this._sigOf(bk.data)) { this.scheduleCloudPush && this.scheduleCloudPush(); } // เรามีของที่คลาวด์ยังไม่มี → ดันกลับ
+    if (this._sigOf(this._filterForPush(merged, bk.data)) !== this._sigOf(bk.data)) { // เรามีของที่คลาวด์ยังไม่มี → ดันกลับ (มี loop guard กันปิงปองเผาเงิน)
+      const now = Date.now();
+      this._echoPushes = (this._echoPushes || []).filter(t => now - t < 120000);
+      if (this._echoPushes.length < 3) { this._echoPushes.push(now); this.scheduleCloudPush && this.scheduleCloudPush(); }
+      else { console.warn('[wtn] sync loop guard — พักดันกลับอัตโนมัติ'); }
+    }
     return changed;
   }
   subscribeCloud() {
@@ -3696,7 +3702,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.21o',
+      appVersion: '2026.07.22a',
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
