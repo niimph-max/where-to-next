@@ -1543,11 +1543,13 @@
           <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">สำรอง & กู้ข้อมูล</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
-              <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
-              <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
-              <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
-              <button onClick="{{ goRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">🕑 เวอร์ชันสำรองย้อนหลัง (กู้กลับได้)</button>
-              <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">หรือดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
+              <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}">
+                <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
+                <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
+                <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
+                <button onClick="{{ goRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">🕑 เวอร์ชันสำรองย้อนหลัง (กู้กลับได้)</button>
+              </sc-if>
+              <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
               <div style="display:flex;gap:9px">
                 <button onClick="{{ doBackup }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดาวน์โหลดไฟล์สำรอง</button>
                 <label style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">นำเข้าไฟล์สำรอง<input type="file" accept="application/json,.json" onChange="{{ doRestore }}" style="display:none"></label>
@@ -1555,10 +1557,6 @@
             </div>
           </div>
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
-          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{ wipeAccount }}" style="width:100%;min-height:46px;border:1px solid rgba(178,60,42,.35);background:transparent;color:#b23c2a;font:600 14px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:10px">{{ wipeAccountLabel }}</button>
-            <div style="font:500 12px/1.5 'Anuphan';color:#b3a897;text-align:center;margin-top:7px">ล้างข้อมูลของบัญชีนี้ทั้งในเครื่องและบนคลาวด์ แล้วเริ่มใหม่ (เครื่องมือแอดมิน)</div>
-          </sc-if>
           <div style="text-align:center;font:500 13px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
         </div>
       </sc-if>
@@ -2689,6 +2687,17 @@ class Component extends DCLogic {
       : (located
         ? '✓ เช็คอิน “' + name + '” แล้ว · ปักหมุด + ขึ้นหน้าโมเมนต์'
         : '✓ เช็คอิน “' + name + '” แล้ว · ขึ้นหน้าโมเมนต์'));
+  }
+  // ล้างข้อมูลแอปในเครื่องออกทั้งหมด (ใช้ตอนสลับบัญชี/ออกจากระบบ กันข้อมูลข้ามบัญชี)
+  clearLocalAppData() {
+    this._applyingCloud = true;
+    try {
+      const del = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) del.push(k); }
+      del.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    } catch (e) {} finally { this._applyingCloud = false; }
+    this._synced = false; this._lastSyncSig = null; this._pendingPush = false; this._verList = null;
+    try { window.dispatchEvent(new Event('photopick-change')); } catch (e) {}
   }
   // ล้างข้อมูลบัญชีนี้ทั้งเครื่อง+คลาวด์ แล้วเริ่มใหม่ (เคลียร์บัญชีที่ถูกข้อมูลอื่นปนจากบั๊กเดิม)
   async wipeAccount() {
@@ -3971,7 +3980,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.23h',
+      appVersion: '2026.07.23k',
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
@@ -4169,8 +4178,6 @@ class Component extends DCLogic {
       cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); this.clearLocalAppData(); try { localStorage.removeItem('wtn-auth'); localStorage.removeItem('wtn-cloud-uid'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); this.forceUpdate(); },
       doBackup: () => this.exportBackup(),
-      wipeAccount: () => this.wipeAccount(),
-      wipeAccountLabel: this.state.wipeBusy ? 'กำลังล้าง…' : 'ล้างบัญชีนี้แล้วเริ่มใหม่',
       syncNow: () => this.syncNow(),
       syncNowLabel: this.state.syncBusy ? 'กำลังซิงก์…' : 'ซิงก์ตอนนี้',
       forceRestore: () => this.forceRestoreCloud(),
