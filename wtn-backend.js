@@ -35,7 +35,25 @@ async function boot() {
   const api = {
     _uid: null,
     // ---------- AUTH ----------
-    onUser(cb) { return auth.onAuthStateChanged(A, u => { this._uid = u ? u.uid : null; cb(u); }); },
+    onUser(cb) { return auth.onAuthStateChanged(A, u => { this._uid = u ? u.uid : null; if (u) this.ensureUserDoc(u); cb(u); }); },
+    // สร้าง users/{uid} ให้ทุกคนตอนล็อกอิน (ไม่ใช่แค่สมัครด้วยอีเมล) เพื่อให้แดชบอร์ดนับผู้ใช้ฟรีครบ
+    async ensureUserDoc(u) {
+      if (!u || !this._uid) return;
+      try {
+        const ref = fs.doc(DB, "users", this._uid);
+        const snap = await fs.getDoc(ref);
+        if (!snap.exists()) {
+          const pid = (u.providerData && u.providerData[0] && u.providerData[0].providerId) || "password";
+          await fs.setDoc(ref, {
+            name: u.displayName || (u.email ? u.email.split("@")[0] : ""),
+            email: u.email || "",
+            provider: pid,
+            createdAt: fs.serverTimestamp(),
+            updatedAt: fs.serverTimestamp(),
+          }, { merge: true });
+        }
+      } catch (e) { console.warn("[wtn] ensureUserDoc", e && e.message); }
+    },
     async emailSignup(email, pass, name) {
       const c = await auth.createUserWithEmailAndPassword(A, email, pass);
       if (name) await auth.updateProfile(c.user, { displayName: name });
