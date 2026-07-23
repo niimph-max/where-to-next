@@ -57,22 +57,29 @@ async function boot() {
       }
     },
     facebook() { return auth.signInWithPopup(A, new auth.FacebookAuthProvider()); },
-    // เบอร์โทร OTP — ต้องมี element id="recaptcha" ในหน้า (invisible ก็ได้)
-    async phoneStart(phoneE164, recaptchaContainerId) {
+    // เบอร์โทร OTP — สร้างกล่อง reCAPTCHA ของตัวเองแปะกับ body (นอก React tree กัน re-render ลบทิ้ง)
+    async phoneStart(phoneE164, _ignoredId) {
       try { if (this._recaptchaVerifier) { this._recaptchaVerifier.clear(); this._recaptchaVerifier = null; } } catch (e) {}
-      const host = document.getElementById(recaptchaContainerId);
-      if (!host) throw { code: "auth/internal-error", message: "ไม่พบกล่อง reCAPTCHA" };
-      host.innerHTML = "";                          // ล้าง widget เก่าออกให้เกลี้ยง
-      const fresh = document.createElement("div");   // สร้าง element ใหม่ทุกครั้ง กัน "already rendered"
-      host.appendChild(fresh);
-      const verifier = new auth.RecaptchaVerifier(A, fresh, { size: "invisible" });
+      try { if (this._recaptchaHost && this._recaptchaHost.parentNode) this._recaptchaHost.parentNode.removeChild(this._recaptchaHost); } catch (e) {}
+      const host = document.createElement("div");     // กล่องใหม่ทุกครั้ง แปะกับ body เอง
+      host.style.position = "fixed";
+      host.style.bottom = "0";
+      host.style.left = "0";
+      host.style.opacity = "0";
+      host.style.pointerEvents = "none";
+      host.style.zIndex = "-1";
+      document.body.appendChild(host);
+      this._recaptchaHost = host;
+      const verifier = new auth.RecaptchaVerifier(A, host, { size: "invisible" });
       this._recaptchaVerifier = verifier;
       try {
+        await verifier.render();                        // ให้ widget เกิดจริงก่อนใช้
         this._confirm = await auth.signInWithPhoneNumber(A, phoneE164, verifier);
       } catch (e) {
         try { verifier.clear(); } catch (_) {}
+        try { if (host.parentNode) host.parentNode.removeChild(host); } catch (_) {}
         this._recaptchaVerifier = null;
-        host.innerHTML = "";
+        this._recaptchaHost = null;
         throw e;
       }
       return true;
