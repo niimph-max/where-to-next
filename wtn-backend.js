@@ -60,11 +60,21 @@ async function boot() {
     // เบอร์โทร OTP — ต้องมี element id="recaptcha" ในหน้า (invisible ก็ได้)
     async phoneStart(phoneE164, recaptchaContainerId) {
       try { if (this._recaptchaVerifier) { this._recaptchaVerifier.clear(); this._recaptchaVerifier = null; } } catch (e) {}
-      const el = document.getElementById(recaptchaContainerId);
-      if (el) el.innerHTML = "";
-      const verifier = new auth.RecaptchaVerifier(A, recaptchaContainerId, { size: "invisible" });
+      const host = document.getElementById(recaptchaContainerId);
+      if (!host) throw { code: "auth/internal-error", message: "ไม่พบกล่อง reCAPTCHA" };
+      host.innerHTML = "";                          // ล้าง widget เก่าออกให้เกลี้ยง
+      const fresh = document.createElement("div");   // สร้าง element ใหม่ทุกครั้ง กัน "already rendered"
+      host.appendChild(fresh);
+      const verifier = new auth.RecaptchaVerifier(A, fresh, { size: "invisible" });
       this._recaptchaVerifier = verifier;
-      this._confirm = await auth.signInWithPhoneNumber(A, phoneE164, verifier);
+      try {
+        this._confirm = await auth.signInWithPhoneNumber(A, phoneE164, verifier);
+      } catch (e) {
+        try { verifier.clear(); } catch (_) {}
+        this._recaptchaVerifier = null;
+        host.innerHTML = "";
+        throw e;
+      }
       return true;
     },
     async phoneVerify(code) { const c = await this._confirm.confirm(code); return c.user; },
