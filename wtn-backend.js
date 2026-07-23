@@ -214,6 +214,16 @@ async function boot() {
       return (await fs.getDocs(fs.collection(DB, "trips", tripId, coll))).docs.map(d => ({ id: d.id, ...d.data() }));
     },
 
+    // ล้าง backup คลาวด์ของบัญชีนี้ทิ้ง (เอกสารหลัก + เวอร์ชันย้อนหลังทั้งหมด) — ใช้ตอนบัญชีปนเปื้อนข้อมูล
+    async wipeBackup() {
+      if (!this._uid) return;
+      try {
+        const vers = await fs.getDocs(fs.collection(DB, "backups", this._uid, "versions"));
+        for (const d of vers.docs) { try { await fs.deleteDoc(d.ref); } catch (e) {} }
+      } catch (e) {}
+      try { await fs.deleteDoc(fs.doc(DB, "backups", this._uid)); } catch (e) {}
+      this._seenAt = 0; this._lastVerAt = 0; this._verList = null;
+    },
     // ---------- FULL BACKUP (ซิงก์ทั้งแอปข้ามเครื่อง) — เก็บใน Firestore (เลี่ยงปัญหา CORS ของ Storage) ----------
     async pushBackup(obj) {
       if (!this._uid) return;
