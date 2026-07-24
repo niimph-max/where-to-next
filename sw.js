@@ -1,5 +1,5 @@
 // where to next? — service worker (network-first เพื่อ auto-update)
-const CACHE = 'wtn-cache-2026.07.23l';
+const CACHE = 'wtn-cache-2026.07.24f';
 
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));

@@ -345,7 +345,7 @@
       <!-- ========== TRIP DETAIL / PLANNER ========== -->
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>กำลังเที่ยว · วันที่ 3</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
+          <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>{{ tripLiveLabel }}</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
           <div class="wtn-s" style="display:flex;gap:6px;padding:14px 20px 4px;overflow-x:auto;scrollbar-width:none">
             <button onClick="{{ goOverview }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">ภาพรวม</button>
             <button onClick="{{ goPrep }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">เตรียมตัว</button>
@@ -626,6 +626,11 @@
                 <span style="font:500 13px 'Anuphan';color:#a99e8e">1 บาท = ? {{ fxCurDraftLabel }}</span>
                 <input value="{{ fxRateDraft }}" onInput="{{ setFxRate }}" inputMode="decimal" placeholder="เช่น 15.5" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none">
               </div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:1px;background:rgba(43,36,32,.1)"></span><span style="font:600 12px 'Anuphan';color:#a99e8e">หรือ</span><span style="flex:1;height:1px;background:rgba(43,36,32,.1)"></span></div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <span style="font:500 13px 'Anuphan';color:#a99e8e">1 {{ fxCurDraftLabel }} = ? บาท</span>
+                <input value="{{ fxRateInvDraft }}" onInput="{{ setFxRateInv }}" inputMode="decimal" placeholder="เช่น 0.065" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none">
+              </div>
               <div style="display:flex;gap:8px"><button onClick="{{ toggleFxEdit }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveFxRate }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกอัตรา</button></div>
             </div>
           </sc-if>
@@ -638,10 +643,15 @@
                 <sc-for list="{{ exCats }}" as="ec" hint-placeholder-count="5"><button onClick="{{ ec.on }}" style="{{ ec.style }}">{{ ec.label }}</button></sc-for>
               </div>
               <sc-if value="{{ fxHasRate }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;gap:6px"><button onClick="{{ setCurThb }}" style="{{ curThbStyle }}">บาท (฿)</button><button onClick="{{ setCurFx }}" style="{{ curFxStyle }}">{{ fxCurShort }}</button></div>
+                <div style="display:flex;gap:9px;align-items:flex-end">
+                  <label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:600 12.5px 'Anuphan';color:#8a7d6f;padding-left:2px">บาท (฿)</span><input value="{{ exAmt }}" onInput="{{ setExAmt }}" inputMode="decimal" placeholder="0" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none"></label>
+                  <span style="font:600 16px 'Anuphan';color:#c05f39;padding-bottom:11px">⇄</span>
+                  <label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font:600 12.5px 'Anuphan';color:#8a7d6f;padding-left:2px">{{ fxCurShort }}</span><input value="{{ exAmtFx }}" onInput="{{ setExAmtFx }}" inputMode="decimal" placeholder="0" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none"></label>
+                </div>
               </sc-if>
-              <input value="{{ exAmt }}" onInput="{{ setExAmt }}" inputMode="decimal" placeholder="{{ exAmtPlaceholder }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none">
-              <sc-if value="{{ exShowConv }}" hint-placeholder-val="{{ false }}"><div style="font:600 14.5px 'Anuphan';color:#c05f39;padding:0 2px">{{ exConvText }}</div></sc-if>
+              <sc-if value="{{ fxNoRate }}" hint-placeholder-val="{{ true }}">
+                <input value="{{ exAmt }}" onInput="{{ setExAmt }}" inputMode="decimal" placeholder="จำนวนเงิน (บาท)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 17px 'Anuphan';color:#2b241f;outline:none">
+              </sc-if>
               <input value="{{ exNote }}" onInput="{{ setExNote }}" placeholder="ค่าอะไร เช่น มื้อเที่ยง Green Bazaar (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
               <div style="display:flex;gap:8px"><button onClick="{{ toggleExForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveExpense }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกรายจ่าย</button></div>
             </div>
@@ -2180,11 +2190,12 @@ class Component extends DCLogic {
   thMonths() { return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']; }
   fmtRange(a, b) {
     const M = this.thMonths();
-    const f = s => { if (!s) return null; const p = String(s).split('-'); if (p.length < 3) return null; return { d: +p[2], m: +p[1] - 1 }; };
+    const f = s => { if (!s) return null; const p = String(s).split('-'); if (p.length < 3) return null; return { d: +p[2], m: +p[1] - 1, y: +p[0] }; };
     const A = f(a), B = f(b);
-    if (A && B) return A.d + ' ' + M[A.m] + ' – ' + B.d + ' ' + M[B.m];
-    if (A) return A.d + ' ' + M[A.m];
-    if (B) return B.d + ' ' + M[B.m];
+    const yr = o => o ? String((o.y + 543) % 100).padStart(2, '0') : '';
+    if (A && B) return A.d + ' ' + M[A.m] + ' ' + yr(A) + ' – ' + B.d + ' ' + M[B.m] + ' ' + yr(B);
+    if (A) return A.d + ' ' + M[A.m] + ' ' + yr(A);
+    if (B) return B.d + ' ' + M[B.m] + ' ' + yr(B);
     return null;
   }
   dayCount(a, b) { if (!a || !b) return 0; const A = new Date(a), B = new Date(b); if (isNaN(A) || isNaN(B)) return 0; const d = Math.round((B - A) / 86400000) + 1; return d > 0 ? Math.min(d, 90) : 0; }
@@ -3980,7 +3991,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.23l',
+      appVersion: '2026.07.24f',
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
@@ -4218,7 +4229,15 @@ class Component extends DCLogic {
       ncHasRange: this.dayCount(this.state.ncStart, this.state.ncEnd) > 0,
       ncDayNote: (() => { const d = this.dayCount(this.state.ncStart, this.state.ncEnd); const r = this.fmtRange(this.state.ncStart, this.state.ncEnd); return d > 0 ? ('ทริปนี้ ' + d + ' วัน' + (r ? ' · ' + r : '')) : ''; })(),
       saveTrip: () => this.saveTrip(), deleteTrip: () => this.deleteTrip(),
-      myTrips: this.userTrips.map(t => ({ id: t.id, name: t.name || 'ทริปใหม่', coverId: 'wtn-cover-' + t.id,
+      myTrips: this.userTrips.slice().sort((a, b) => {
+        const ph = t => { const p = this.tripPhaseInfo(t); return p.past ? 2 : (p.live ? 0 : 1); };
+        const ra = ph(a), rb = ph(b);
+        if (ra !== rb) return ra - rb; // กำลังเที่ยว → จะไป → ผ่านมา
+        const ta = a.start ? new Date(a.start).getTime() : Infinity;
+        const tb = b.start ? new Date(b.start).getTime() : Infinity;
+        const va = isNaN(ta) ? Infinity : ta, vb = isNaN(tb) ? Infinity : tb;
+        return ra === 2 ? vb - va : va - vb; // ผ่านมา: ล่าสุดก่อน · ที่เหลือ: ใกล้→ไกล
+      }).map(t => ({ id: t.id, name: t.name || 'ทริปใหม่', coverId: 'wtn-cover-' + t.id,
         cover: t.cover || 'uploads/20171210_150759619_iOS.jpg', badge: this.tripPhaseInfo(t).status || t.badge || '', hasBadge: !!(this.tripPhaseInfo(t).status || t.badge),
         meta: t.metaOverride || ([t.country, this.fmtRange(t.start, t.end), (t.budget ? '~฿' + Number(t.budget).toLocaleString() : '')].filter(Boolean).join(' · ') || 'ยังไม่ระบุรายละเอียด'),
         open: () => this.openTrip(t.id),
@@ -4227,6 +4246,16 @@ class Component extends DCLogic {
       hasMyTrips: this.userTrips.length > 0, noMyTrips: this.userTrips.length === 0,
       tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripPhaseInfo().live, tripPlanned: !this.tripPhaseInfo().live, tripStatus: this.tripPhaseInfo().status,
+      tripLiveLabel: (() => {
+        const rec = this.curTripRec();
+        const st = rec && rec.start ? new Date(rec.start) : null;
+        if (!st || isNaN(st)) return 'กำลังเที่ยว';
+        const today = new Date(); today.setHours(0, 0, 0, 0); st.setHours(0, 0, 0, 0);
+        const total = this.dayCount(rec.start, rec.end) || 0;
+        let n = Math.floor((today - st) / 86400000) + 1;
+        if (total > 0) n = Math.min(Math.max(n, 1), total);
+        return 'กำลังเที่ยว · วันที่ ' + n;
+      })(),
       editing: this.state.editing, toggleEdit: () => this.setState(s => ({ editing: !s.editing })), editLabel: this.state.editing ? 'เสร็จ' : 'แก้ไข',
       goBudget: () => this.go('budget'),
       goMap: () => this.go('map'),
@@ -4525,9 +4554,8 @@ class Component extends DCLogic {
         const exCat = this.state.exCat || 'อาหาร';
         const fx = this.fxCfg;
         const fxHasRate = !!(fx.cur && Number(fx.rate) > 0);
-        const useFx = fxHasRate && (this.state.exCurMode || 'thb') === 'fx';
-        const rawAmt = Number(this.state.exAmt) || 0;
-        const bahtAmt = useFx && Number(fx.rate) > 0 ? rawAmt / Number(fx.rate) : rawAmt;
+        const rate = Number(fx.rate) || 0;
+        const trimNum = x => { const r = Math.round(x * 100) / 100; return String(r); };
         const chip = on => on
           ? 'background:#c05f39;color:#fff;font:600 14px Anuphan;padding:8px 13px;border-radius:18px;border:none;cursor:pointer'
           : 'background:#efe4d3;color:#5c5347;font:600 14px Anuphan;padding:8px 13px;border-radius:18px;border:none;cursor:pointer';
@@ -4543,37 +4571,51 @@ class Component extends DCLogic {
           fxEditLabel: fxHasRate ? 'แก้' : 'ตั้งค่า',
           fxEditOpen: !!this.state.fxEditOpen,
           toggleFxEdit: () => this.setState(s => ({ fxEditOpen: !s.fxEditOpen,
-            fxCurDraft: fx.cur || '', fxRateDraft: fx.rate ? String(fx.rate) : '' })),
+            fxCurDraft: fx.cur || '', fxRateDraft: fx.rate ? String(fx.rate) : '',
+            fxRateInvDraft: fx.rate ? String(+(1 / Number(fx.rate)).toPrecision(6)) : '' })),
           fxCurDraft: this.state.fxCurDraft ?? (fx.cur || ''),
           fxRateDraft: this.state.fxRateDraft ?? (fx.rate ? String(fx.rate) : ''),
+          fxRateInvDraft: this.state.fxRateInvDraft ?? (fx.rate ? String(+(1 / Number(fx.rate)).toPrecision(6)) : ''),
           fxCurDraftLabel: ((this.state.fxCurDraft ?? fx.cur) || 'สกุลเงิน'),
           setFxCur: e => this.setState({ fxCurDraft: e.target.value }),
-          setFxRate: e => this.setState({ fxRateDraft: e.target.value.replace(/[^\d.]/g, '') }),
+          setFxRate: e => {
+            const v = e.target.value.replace(/[^\d.]/g, ''); const n = Number(v);
+            this.setState({ fxRateDraft: v, fxRateInvDraft: (v && n > 0) ? String(+(1 / n).toPrecision(6)) : '' });
+          },
+          setFxRateInv: e => {
+            const v = e.target.value.replace(/[^\d.]/g, ''); const n = Number(v);
+            this.setState({ fxRateInvDraft: v, fxRateDraft: (v && n > 0) ? String(+(1 / n).toPrecision(6)) : '' });
+          },
           saveFxRate: () => {
             this.saveFx({ cur: (this.state.fxCurDraft || '').trim(), rate: Number(this.state.fxRateDraft) || 0 });
             this.setState({ fxEditOpen: false });
           },
           fxCurShort: fx.cur || 'ต่างประเทศ',
-          curThbStyle: chip(!useFx), curFxStyle: chip(useFx),
-          setCurThb: () => this.setState({ exCurMode: 'thb' }),
-          setCurFx: () => this.setState({ exCurMode: 'fx' }),
-          exAmtPlaceholder: useFx ? ('จำนวนเงิน (' + fx.cur + ')') : 'จำนวนเงิน (บาท)',
-          exShowConv: useFx && rawAmt > 0,
-          exConvText: '≈ ' + this.fmtB(bahtAmt),
-          toggleExForm: () => this.setState(s => ({ exFormOpen: !s.exFormOpen, exAmt: '', exNote: '' })),
+          fxNoRate: !fxHasRate,
+          toggleExForm: () => this.setState(s => ({ exFormOpen: !s.exFormOpen, exAmt: '', exAmtFx: '', exNote: '' })),
           exCats: this.expCats.map(c => ({ label: c, style: chip(c === exCat),
             on: () => this.setState({ exCat: c }) })),
-          exAmt: this.state.exAmt ?? '', exNote: this.state.exNote ?? '',
-          setExAmt: e => this.setState({ exAmt: e.target.value.replace(/[^\d.]/g, '') }),
+          exAmt: this.state.exAmt ?? '', exAmtFx: this.state.exAmtFx ?? '', exNote: this.state.exNote ?? '',
+          setExAmt: e => {
+            const v = e.target.value.replace(/[^\d.]/g, '');
+            const st = { exAmt: v };
+            if (rate > 0) { const b = Number(v); st.exAmtFx = (v === '' || !(b > 0)) ? '' : trimNum(b * rate); }
+            this.setState(st);
+          },
+          setExAmtFx: e => {
+            const v = e.target.value.replace(/[^\d.]/g, '');
+            const st = { exAmtFx: v };
+            if (rate > 0) { const f = Number(v); st.exAmt = (v === '' || !(f > 0)) ? '' : trimNum(f / rate); }
+            this.setState(st);
+          },
           setExNote: e => this.setState({ exNote: e.target.value }),
           saveExpense: () => {
-            const raw = Number(this.state.exAmt);
-            if (!raw || raw <= 0) return;
-            const baht = useFx ? raw / Number(fx.rate) : raw;
+            const baht = Number(this.state.exAmt);
+            if (!baht || baht <= 0) return;
             let note = (this.state.exNote || '').trim() || exCat;
-            if (useFx) note += ' · ' + this.fmtNum(raw) + ' ' + fx.cur;
+            if (rate > 0 && this.state.exAmtFx) note += ' · ' + this.fmtNum(Number(this.state.exAmtFx)) + ' ' + fx.cur;
             this.addExpense(exCat, Math.round(baht), note);
-            this.setState({ exFormOpen: false, exAmt: '', exNote: '' });
+            this.setState({ exFormOpen: false, exAmt: '', exAmtFx: '', exNote: '' });
           },
           hasExpenses: this.expenses.length > 0,
           expList: this.expenses.map((e, i) => ({ cat: e.cat, note: e.note, t: e.t, amt: this.fmtB(Number(e.amt) || 0),
