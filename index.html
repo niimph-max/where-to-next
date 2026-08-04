@@ -1127,6 +1127,8 @@
                 <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.07)">
                   <span onClick="{{ c.togglePub }}" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer"><span style="font:600 13.5px 'Anuphan';color:#5c5347">เผยแพร่</span><span style="width:42px;height:24px;border-radius:14px;position:relative;flex:none;{{ c.pubTrack }}"><span style="position:absolute;top:3px;{{ c.pubKnob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span></span>
                   <span style="flex:1"></span>
+                  <sc-if value="{{ c.canUp }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.up }}" title="เลื่อนขึ้น" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 19V6M6 12l6-6 6 6"/></svg></button></sc-if>
+                  <sc-if value="{{ c.canDown }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.down }}" title="เลื่อนลง" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button></sc-if>
                   <button onClick="{{ c.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:4px 6px">ลบ</button>
                 </div>
               </div>
@@ -3769,6 +3771,15 @@ class Component extends DCLogic {
     this.setState({ aiChOpen: false, aiChText: '' });
     this.showToast(mode === 'replace' ? '✓ ใส่เนื้อหาที่ AI เรียบเรียงแล้ว' : '✓ ต่อท้ายเนื้อหาแล้ว');
   }
+  moveChapter(cid, dir) {
+    const s = this.openStory; if (!s) return;
+    const chs = [...(s.chapters || [])];
+    const i = chs.findIndex(c => c.id === cid);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= chs.length) return;
+    const t = chs[i]; chs[i] = chs[j]; chs[j] = t;
+    this.patchStory(s.id, { chapters: chs });
+  }
   chaptersFromCheckins() {
     const s = this.openStory; if (!s) return;
     let chapters = [...(s.chapters || [])];
@@ -4318,7 +4329,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.08.04i',
+      appVersion: '2026.08.04j',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5155,6 +5166,8 @@ class Component extends DCLogic {
             published: !!c.published, pubLabel: c.published ? 'เผยแพร่' : 'ร่าง',
             pubStyle: seg + (c.published ? 'background:rgba(143,206,155,.2);color:#4e8a5c' : 'background:#efe4d3;color:#7c7264'),
             pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8', pubKnob: c.published ? 'right:3px' : 'left:3px',
+            canUp: i > 0, canDown: i < chs.length - 1,
+            up: () => this.moveChapter(c.id, -1), down: () => this.moveChapter(c.id, 1),
             on: () => this.openChapterEdit(c.id),
             toggleFree: () => chPatch(c.id, { free: !c.free }),
             togglePub: () => this.setChapterPublished(os.id, c.id, !c.published),

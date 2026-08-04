@@ -1,6 +1,6 @@
 // where to next? — service worker
 // เป้าหมาย: ใช้งานได้เต็มรูปแบบตอนไม่มีเน็ต + ไม่ค้างตอนสัญญาณอ่อน (มีเน็ตแต่ช้ามาก)
-const CACHE = 'wtn-cache-2026.08.04i';
+const CACHE = 'wtn-cache-2026.08.04j';
 const NET_TIMEOUT = 2500; // สัญญาณอ่อน: รอเน็ตเท่านี้ ไม่มาก็ใช้ของในแคชทันที
 
 const SHELL = [
