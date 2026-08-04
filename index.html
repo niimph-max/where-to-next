@@ -105,6 +105,12 @@
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
 
+    <sc-if value="{{ offlineShow }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;align-items:center;gap:8px;background:#2b241f;color:#efe0c6;font:600 12.5px 'Anuphan';padding:8px 15px;z-index:45">
+        <span style="width:7px;height:7px;border-radius:50%;background:#e0a04a;flex:none"></span>ออฟไลน์ — บันทึกลงเครื่องได้ปกติ จะซิงก์ให้เมื่อเน็ตกลับมา
+      </div>
+    </sc-if>
+
     <sc-if value="{{ sDeepLoading }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:34px;text-align:center">
         <img src="logo.png" alt="" style="width:64px;height:64px;border-radius:18px">
@@ -585,13 +591,18 @@
                   <sc-if value="{{ ciGeoLocating }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#8a7d6f"><span style="width:15px;height:15px;border:2px solid #d8ccb8;border-top-color:#c05f39;border-radius:50%;flex:none;animation:wtnSpin .8s linear infinite"></span>กำลังหาตำแหน่ง GPS…</div></sc-if>
                   <sc-if value="{{ ciGeoOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#edf6ee;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#2f7d47"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2f7d47" stroke-width="2.2" style="flex:none"><path d="M20 6L9 17l-5-5"></path></svg>ได้ตำแหน่งแล้ว {{ ciAccText }}· จะปักหมุดบนแผนที่ให้</div></sc-if>
                   <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 13.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 13px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="font:600 13.5px 'Anuphan';color:#8a7d6f">วันและเวลาที่เกิดขึ้นจริง</div>
+                    <input type="datetime-local" value="{{ ciWhenVal }}" onInput="{{ setCiWhen }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15.5px 'Anuphan';color:#2b241f;outline:none">
+                    <sc-if value="{{ ciHasPhotoMeta }}" hint-placeholder-val="{{ false }}"><div style="font:600 12.5px 'Anuphan';color:#6f8f6a">ดึงจากข้อมูลในรูป · {{ ciFromPhoto }}</div></sc-if>
+                  </div>
                   <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 16px 'Anuphan';color:#2b241f;outline:none">
-                  <input value="{{ ciNote }}" onInput="{{ setCiNote }}" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
+                  <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
                   <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
                   <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
                   <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
                     <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
-                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button></span>
+                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
                     <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" onChange="{{ ciAddPhotos }}" style="display:none"></label></sc-if>
                   </div>
@@ -846,11 +857,11 @@
                 <div style="display:flex;gap:11px">
                   <sc-if value="{{ meHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ meAvatar }}" alt="" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none"></sc-if>
                   <sc-if value="{{ meNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if>
-                  <textarea value="{{ mpText }}" onInput="{{ setMpText }}" placeholder="วันนี้เป็นยังไงบ้าง เขียนบันทึกไว้…" rows="2" style="flex:1;min-width:0;border:none;background:transparent;resize:none;font:500 17px/1.5 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;padding-top:7px"></textarea>
+                  <textarea value="{{ mpText }}" onInput="{{ setMpText }}" placeholder="วันนี้เป็นยังไงบ้าง เขียนบันทึกไว้ — ยาวแค่ไหนก็ได้…" rows="6" style="flex:1;min-width:0;min-height:132px;border:none;background:transparent;resize:vertical;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;padding-top:7px"></textarea>
                 </div>
                 <sc-if value="{{ mpHasPhotos }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-left:49px">
-                    <sc-for list="{{ mpPhotos }}" as="mp" hint-placeholder-count="0"><span style="position:relative;width:70px;height:70px;flex:none"><img src="{{ mp.src }}" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:11px;display:block"><button onClick="{{ mp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button></span></sc-for>
+                    <sc-for list="{{ mpPhotos }}" as="mp" hint-placeholder-count="0"><span style="position:relative;width:70px;height:70px;flex:none"><img src="{{ mp.src }}" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:11px;display:block"><button onClick="{{ mp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ mp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ mp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span></sc-for>
                   </div>
                 </sc-if>
                 <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-left:49px">
@@ -864,7 +875,25 @@
                     <div style="display:flex;gap:8px;margin-top:11px"><button onClick="{{ closeCatEdit }}" style="flex:1;border:1px solid rgba(43,36,32,.15);background:#fff;color:#5c5347;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCats }}" style="flex:1;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">บันทึกหมวด</button></div>
                   </div>
                 </sc-if>
-                <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.08)">
+                <sc-if value="{{ mpFromPhoto }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:11px;padding:9px 12px;background:#efe6d4;border-radius:12px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>
+                    <span style="flex:1;min-width:0;font:600 13.5px/1.45 'Anuphan';color:#5c5347">จากข้อมูลในรูป · {{ mpPhotoNote }}</span>
+                    <button onClick="{{ clearPhotoMeta }}" style="border:none;background:transparent;color:#8a7d6f;font:600 13px 'Anuphan';cursor:pointer;padding:4px;flex:none">ไม่ใช้</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ mpWhenOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:11px;padding:13px 14px;background:#f7f0e3;border:1px solid rgba(43,36,32,.1);border-radius:14px">
+                    <div style="font:700 14.5px 'Anuphan';color:#2b241f;margin-bottom:9px">โมเมนต์นี้เกิดขึ้นเมื่อไหร่</div>
+                    <input type="datetime-local" value="{{ mpWhenVal }}" onInput="{{ setMpWhen }}" style="width:100%;box-sizing:border-box;min-height:44px;border:1px solid rgba(43,36,32,.15);background:#fff;border-radius:11px;padding:10px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
+                    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px">
+                      <sc-for list="{{ mpWhenQuick }}" as="wq" hint-placeholder-count="4"><button onClick="{{ wq.on }}" style="border:1px solid rgba(43,36,32,.15);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:7px 13px;border-radius:18px;cursor:pointer">{{ wq.name }}</button></sc-for>
+                    </div>
+                    <div style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;margin-top:9px">เน็ตหลุด/จดย้อนหลังก็ตั้งเวลาจริงได้ — เวลานี้จะไปโชว์บนการ์ดและใช้เรียงลำดับ</div>
+                  </div>
+                </sc-if>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.08);flex-wrap:wrap">
+                  <button onClick="{{ toggleMpWhen }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:{{ mpWhenColor }};font:600 14px 'Anuphan';cursor:pointer;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>{{ mpWhenLabel }}</button>
                   <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 14px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/3)<input type="file" accept="image/*" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
                   <span style="flex:1"></span>
                   <button onClick="{{ postMomentFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px 22px;border-radius:20px;cursor:pointer;opacity:{{ mpPostOpacity }}">บันทึก</button>
@@ -890,8 +919,9 @@
                     <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="height:220px;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover"></sc-for></div></sc-if>
                   </sc-if>
                   <sc-if value="{{ mo.editingThis }}" hint-placeholder-val="{{ false }}">
-                    <textarea value="{{ meText }}" onInput="{{ setMeText }}" placeholder="แก้ไขบันทึก…" rows="3" style="width:100%;box-sizing:border-box;margin-top:11px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 12px;font:500 17px/1.6 'IBM Plex Sans Thai Looped',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
+                    <textarea value="{{ meText }}" onInput="{{ setMeText }}" placeholder="แก้ไขบันทึก…" rows="7" style="width:100%;box-sizing:border-box;margin-top:11px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 12px;font:500 17px/1.6 'IBM Plex Sans Thai Looped',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
                     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px"><sc-for list="{{ meCatChips }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}"><span style="{{ cc.dot }}"></span>{{ cc.name }}</button></sc-for></div>
+                    <div style="margin-top:11px"><div style="font:600 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">เวลาที่เกิดขึ้นจริง</div><input type="datetime-local" value="{{ meWhenVal }}" onInput="{{ setMeWhen }}" style="width:100%;box-sizing:border-box;min-height:44px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:10px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
                     <div style="display:flex;gap:8px;margin-top:11px"><button onClick="{{ cancelMomentEdit }}" style="flex:1;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveMomentEdit }}" style="flex:1.4;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">บันทึก</button></div>
                   </sc-if>
                 </div>
@@ -1145,6 +1175,25 @@
             <label onMouseDown="{{ saveChSelFn }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/*" onChange="{{ insertChImage }}" style="display:none"></label>
             <button onMouseDown="{{ insertChClip }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 9.5v5l4-2.5z"></path></svg></button>
           </div>
+          <div style="flex:none;display:flex;align-items:center;gap:9px;padding:9px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+            <button onClick="{{ runAiCh }}" style="display:inline-flex;align-items:center;gap:7px;min-height:40px;border:1px solid rgba(192,95,57,.35);background:#fbeee6;color:#c05f39;font:700 14.5px 'Anuphan';padding:0 14px;border-radius:11px;cursor:pointer;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M18 15l.9 2.4L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.6L18 15z"/></svg>{{ aiChLabel }}</button>
+            <span style="font:500 12.5px/1.4 'Anuphan';color:#a99e8e;min-width:0">{{ aiChSource }}</span>
+          </div>
+          <sc-if value="{{ aiChOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:none;max-height:46%;overflow-y:auto;padding:13px 16px;background:#f7f0e3;border-bottom:1px solid rgba(43,36,32,.1)">
+              <sc-if value="{{ aiChBusy }}" hint-placeholder-val="{{ false }}"><div style="font:600 14.5px 'Anuphan';color:#8a7d6f">กำลังเรียบเรียงจากโมเมนต์ของวันนี้…</div></sc-if>
+              <sc-if value="{{ aiChHasErr }}" hint-placeholder-val="{{ false }}"><div style="font:600 14px/1.6 'Anuphan';color:#b4553a">{{ aiChErr }}</div></sc-if>
+              <sc-if value="{{ aiChHasText }}" hint-placeholder-val="{{ false }}">
+                <div style="font:500 16px/1.75 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;white-space:pre-wrap;text-wrap:pretty">{{ aiChText }}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                  <button onClick="{{ aiChReplace }}" style="flex:1;min-width:120px;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ใส่แทนเนื้อหา</button>
+                  <button onClick="{{ aiChAppend }}" style="flex:1;min-width:110px;min-height:44px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ต่อท้าย</button>
+                  <button onClick="{{ runAiCh }}" style="min-height:44px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;padding:0 14px">เขียนใหม่</button>
+                </div>
+              </sc-if>
+              <div style="text-align:center;margin-top:9px"><button onClick="{{ closeAiCh }}" style="border:none;background:transparent;color:#a99e8e;font:600 13.5px 'Anuphan';cursor:pointer;padding:4px 10px">ปิด</button></div>
+            </div>
+          </sc-if>
           <div class="wtn-s" style="flex:1;overflow-y:auto">
             <div ref="{{ chEditorRef }}" contenteditable="true" onInput="{{ onChInput }}" class="wtn-rte" data-ph="เริ่มเขียนเรื่องราวของวันนี้…  แทรกรูป/คลิปตรงไหนก็ได้จากไอคอนบนแถบเครื่องมือ" style="min-height:calc(100% - 40px);padding:18px 22px 70px;color:#2f2a24;outline:none"></div>
           </div>
@@ -1601,6 +1650,7 @@ class Component extends DCLogic {
   state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '',
     screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
+    online: (typeof navigator === 'undefined' || navigator.onLine !== false),
     tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
@@ -1943,6 +1993,12 @@ class Component extends DCLogic {
     if (!be || !be._uid) return;
     if (!this.isPremium) return;
     if (!this._synced) { return; } // ยังไม่ได้รับข้อมูลล่าสุดจากคลาวด์ — ห้ามดัน (กันเครื่องเปล่าทับ)
+    if (navigator.onLine === false) {                                   // ออฟไลน์ — เก็บค้างไว้ ไม่ต้องยิงให้ค้าง
+      this._pendingPush = true;
+      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      this.setState({ cloud: 'idle' });
+      return;
+    }
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; }
     if (this._pushing) { this._pushAgain = true; return; }
     this._pushing = true; this._pendingPush = false;
@@ -2048,6 +2104,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     if (!this.isPremium) { this.setState({ cloud: 'idle' }); return; }
+    if (navigator.onLine === false) { this.setState({ cloud: 'idle' }); return; }
     this._pulling = true;
     this.setState({ cloud: 'saving' });
     try {
@@ -2216,15 +2273,7 @@ class Component extends DCLogic {
   }
 
   get days() {
-    const tid = this.state.trip;
-    const it = this.itineraryOf(tid);
-    if (it && it.length) return it;
-    if (tid === 'kazakh') return this.kzDays;
-    if (tid === 'yamagata') return this.jpDays;
-    if (tid === 'blank') return this.blankDays;
-    const ut = this.userTrips.find(x => x.id === tid);
-    if (ut) return this.userDays(ut);
-    return this.blankDays;
+    return this.baseDaysFor(this.state.trip);
   }
   get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
   itineraryOf(id) { return this.itineraries[id] || null; }
@@ -2634,6 +2683,17 @@ class Component extends DCLogic {
     catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม — ลองลบรูปในเช็คอินเก่าบางส่วน'); }
   }
   get ciKey() { return this.state.trip + ':' + this.state.day; }
+  // เวลาของ "วันที่ N" ที่กำลังเปิด — วันนี้ = เวลาจริงตอนนี้, วันอื่น = เที่ยงวันนั้น (จดย้อนหลังแล้วเวลาไม่เพี้ยน)
+  dayTs(di) {
+    const t = this.curTripRec();
+    if (!t || !t.start) return Date.now();
+    const st = new Date(t.start + 'T00:00:00');
+    if (isNaN(st)) return Date.now();
+    const d = new Date(st.getTime() + (di || 0) * 86400000), now = new Date();
+    if (d.toDateString() === now.toDateString()) return now.getTime();
+    d.setHours(12, 0, 0, 0);
+    return d.getTime();
+  }
   curTripRec() { const id = this.state.trip; return this.userTrips.find(x => x.id === id) || (id === 'kazakh' ? this.kzSeed() : {}); }
   ciMoment(c, on) {
     const t = this.curTripRec();
@@ -2649,6 +2709,7 @@ class Component extends DCLogic {
     const have = (this.state.ciPhotos || []).length;
     if (have >= 3) return;
     files = files.slice(0, 3 - have);
+    if (files[0]) this.applyCiPhotoMeta(files[0]);
     files.forEach(f => {
       const rd = new FileReader();
       rd.onload = () => {
@@ -2658,12 +2719,64 @@ class Component extends DCLogic {
           const c = document.createElement('canvas');
           c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
           c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].slice(0, 3).concat(c.toDataURL('image/jpeg', 0.78)).slice(0, 3) }));
+          const url = c.toDataURL('image/jpeg', 0.78);
+          this.notePhotoExif(f, url);
+          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].slice(0, 3).concat(url).slice(0, 3) }));
         };
         im.src = rd.result;
       };
       rd.readAsDataURL(f);
     });
+  }
+  // จำ EXIF ของแต่ละรูปที่แนบ — กดที่รูปเพื่อใช้เวลาจากรูปนั้นกับบันทึก
+  async notePhotoExif(file, url) {
+    if (!this._pMeta) this._pMeta = {};
+    let ex = null;
+    try { ex = await this.exifOf(file); } catch (e) {}
+    if (!ex || (!ex.at && ex.lat == null)) return;
+    this._pMeta[url] = ex;
+    this.forceUpdate();
+  }
+  photoMeta(url) { return (this._pMeta || {})[url] || null; }
+  photoMetaLabel(ex) {
+    if (!ex) return '';
+    const parts = [];
+    if (ex.at) parts.push(new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
+    if (ex.lat != null) parts.push('มีพิกัด');
+    return parts.join(' · ');
+  }
+  useCiPhotoDate(url) {
+    const ex = this.photoMeta(url);
+    if (!ex) { this.showToast('รูปนี้ไม่มีวัน-เวลาติดมากับไฟล์ (หากส่งมาทางแชท/HEIC มักจะถูกตัดทิ้ง)'); return; }
+    const patch = {};
+    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+    if (ex.lat != null) { patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) }; patch.ciGeoStatus = 'ok'; }
+    this.setState(patch);
+    this.showToast('✓ ใช้เวลาจากรูปนี้: ' + this.photoMetaLabel(ex));
+  }
+  useMpPhotoDate(url) {
+    const ex = this.photoMeta(url);
+    if (!ex) { this.showToast('รูปนี้ไม่มีวัน-เวลาติดมากับไฟล์ (หากส่งมาทางแชท/HEIC มักจะถูกตัดทิ้ง)'); return; }
+    const patch = { mpFromPhoto: true };
+    if (ex.at) patch.mpAt = ex.at;
+    if (ex.lat != null) patch.mpPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) };
+    patch.mpPhotoNote = this.photoMetaLabel(ex);
+    this.setState(patch);
+    this.showToast('✓ ใช้เวลาจากรูปนี้: ' + this.photoMetaLabel(ex));
+    if (ex.lat != null && navigator.onLine !== false) this.placeName(ex.lat, ex.lng).then(n => { if (n) this.setState({ mpPlace: n }); });
+  }
+  // ดึงวัน-เวลา/พิกัดจากรูปที่แนบเข้าเช็คอิน (จดย้อนหลังหลังกลับมา)
+  async applyCiPhotoMeta(file) {
+    let ex = null;
+    try { ex = await this.exifOf(file); } catch (e) {}
+    if (!ex) return;
+    const patch = {};
+    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+    if (ex.lat != null && !(this.state.ciPos && this.state.ciPos.lat != null)) {
+      patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) };
+      patch.ciGeoStatus = 'ok';
+    }
+    if (Object.keys(patch).length) this.setState(patch);
   }
   saveCi() {
     const name = (this.state.ciName || '').trim();
@@ -2671,12 +2784,14 @@ class Component extends DCLogic {
     const all = this.checkins, k = this.ciKey, list = all[k] || [];
     const pos = this.state.ciPos || {};
     const ei = this.state.ciEditIdx;
+    const cts = this.state.ciAt || this.dayTs(this.state.day);
+    const tLabel = new Date(cts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
     if (ei != null && list[ei]) {
-      list[ei] = { ...list[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [], _m: Date.now() };
+      list[ei] = { ...list[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
     } else {
       list.push({
-        t: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
-        at: Date.now(),
+        t: tLabel,
+        at: cts,
         name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 3),
         lat: pos.lat, lng: pos.lng,
         mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() });
@@ -2689,10 +2804,10 @@ class Component extends DCLogic {
       this.upsertLocalMoment(m);
     }
     const amt = Number(this.state.ciAmt);
-    if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name);
+    if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name, cts);
     const located = pos.lat != null;
     if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
-    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null });
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '' });
     this.showToast(ei != null
       ? '✓ บันทึกการแก้ไขแล้ว'
       : (located
@@ -3195,24 +3310,155 @@ class Component extends DCLogic {
       setTimeout(() => fin(null), 8500);
     });
   }
+  // ---- เวลาที่เกิดขึ้นจริง (จดย้อนหลัง/ออฟไลน์ได้) ----
+  tsToInput(ts) {
+    const d = new Date(ts || Date.now()); if (isNaN(d)) return '';
+    const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  inputToTs(s) { if (!s) return null; const d = new Date(s); return isNaN(d) ? null : d.getTime(); }
+  whenLabel(ts) {
+    if (!ts || Math.abs(Date.now() - ts) < 120000) return 'ตอนนี้';
+    const d = new Date(ts);
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const sameDay = d >= today && d < new Date(today.getTime() + 86400000);
+    const t = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    return sameDay ? t : (d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' + t);
+  }
   async postMoment() {
     const text = (this.state.mpText || '').trim();
     const photos = (this.state.mpPhotos || []).slice(0, 3);
     if (!text && !photos.length) return;
-    const pos = await this.getMomentPos();
+    const at = this.state.mpAt || Date.now();
+    const backdated = Math.abs(Date.now() - at) > 900000;   // จดย้อนหลัง → ไม่ปักพิกัดตอนนี้ (คนละที่แล้ว)
+    const pos = this.state.mpPos || (backdated ? null : await this.getMomentPos());   // พิกัดจาก EXIF มาก่อน
     const id = 'm' + Date.now() + Math.floor(Math.random() * 1000);
-    const m = { id, type: 'post', text, place: '', photos, at: Date.now(), published: true, likes: 0,
+    const m = { id, type: 'post', text, place: this.state.mpPlace || '', photos, at, published: true, likes: 0,
       cat: this.state.mpCat || 0, pos,
       authorName: this.myName, authorAvatar: this.myAvatar };
     this.upsertLocalMoment(m);
-    this.setState({ mpText: '', mpPhotos: [], mpCat: 0 });
-    this.showToast(pos ? '✓ บันทึกแล้ว · ปักพิกัดที่นี่' : '✓ บันทึกแล้ว');
+    this.setState({ mpText: '', mpPhotos: [], mpCat: 0, mpAt: null, mpWhenOpen: false, mpPos: null, mpPlace: '', mpFromPhoto: false, mpPhotoNote: '' });
+    this.showToast(backdated ? ('✓ บันทึกไว้ที่ ' + this.whenLabel(at)) : (pos ? '✓ บันทึกแล้ว · ปักพิกัดที่นี่' : '✓ บันทึกแล้ว'));
   }
   addMpPhotos(ev) {
     let files = Array.from(ev.target.files || []); ev.target.value = '';
     const have = (this.state.mpPhotos || []).length;
     if (have >= 3) return;
-    files.slice(0, 3 - have).forEach(f => this.shrinkToUrl(f, 1200, url => this.setState(s => ({ mpPhotos: [...(s.mpPhotos || [])].concat(url).slice(0, 3) }))));
+    const use = files.slice(0, 3 - have);
+    use.forEach(f => this.shrinkToUrl(f, 1200, url => { this.notePhotoExif(f, url); this.setState(s => ({ mpPhotos: [...(s.mpPhotos || [])].concat(url).slice(0, 3) })); }));
+    if (use[0]) this.applyPhotoMeta(use[0]);
+  }
+  // ---------- EXIF: ดึงเวลาที่ถ่าย + พิกัดจากตัวรูป ----------
+  async applyPhotoMeta(file) {
+    let ex = null;
+    try { ex = await this.exifOf(file); } catch (e) {}
+    if (!ex || (!ex.at && ex.lat == null)) return;
+    const patch = { mpFromPhoto: true };
+    if (ex.at) patch.mpAt = ex.at;
+    if (ex.lat != null) patch.mpPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) };
+    patch.mpPhotoNote = [ex.at ? this.whenLabel(ex.at) : '', ex.lat != null ? 'พิกัดจากรูป' : ''].filter(Boolean).join(' · ');
+    this.setState(patch);
+    this.showToast('✓ ดึงข้อมูลจากรูป: ' + patch.mpPhotoNote);
+    if (ex.lat != null && navigator.onLine !== false) {
+      const name = await this.placeName(ex.lat, ex.lng);
+      if (name) this.setState(s => ({ mpPlace: name, mpPhotoNote: (s.mpAt ? this.whenLabel(s.mpAt) + ' · ' : '') + name }));
+    }
+  }
+  clearPhotoMeta() { this.setState({ mpFromPhoto: false, mpPhotoNote: '', mpPos: null, mpPlace: '', mpAt: null }); }
+  async placeName(lat, lng) {
+    try {
+      const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=th&lat=' + lat + '&lon=' + lng);
+      const j = await r.json();
+      const a = j.address || {};
+      return [a.suburb || a.village || a.town || a.city || a.county, a.country].filter(Boolean).join(' · ') || (j.name || '');
+    } catch (e) { return ''; }
+  }
+  exifOf(file) {
+    return new Promise(resolve => {
+      if (!file || !/^image\//i.test(file.type || '') && !/\.(jpe?g)$/i.test(file.name || '')) { resolve(null); return; }
+      const rd = new FileReader();
+      rd.onerror = () => resolve(null);
+      rd.onload = () => { try { resolve(this._parseExif(rd.result)); } catch (e) { resolve(null); } };
+      rd.readAsArrayBuffer(file.slice(0, 262144));
+    });
+  }
+  _parseExif(buf) {
+    const v = new DataView(buf);
+    if (v.byteLength < 8 || v.getUint16(0) !== 0xFFD8) return null;
+    let off = 2, app1 = -1;
+    while (off + 4 <= v.byteLength) {
+      if (v.getUint8(off) !== 0xFF) { off++; continue; }
+      const marker = v.getUint8(off + 1);
+      if (marker === 0xD8 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) { off += 2; continue; }
+      if (marker === 0xDA) break;
+      const size = v.getUint16(off + 2);
+      if (marker === 0xE1 && off + 10 < v.byteLength && v.getUint32(off + 4) === 0x45786966) { app1 = off + 10; break; }
+      off += 2 + size;
+    }
+    if (app1 < 0) return null;
+    const T = app1, le = v.getUint16(T) === 0x4949;
+    const u16 = o => v.getUint16(o, le), u32 = o => v.getUint32(o, le);
+    if (u16(T + 2) !== 0x002A) return null;
+    const each = (dir, cb) => {
+      if (dir + 2 > v.byteLength) return;
+      const n = u16(dir);
+      for (let i = 0; i < n; i++) {
+        const e = dir + 2 + i * 12;
+        if (e + 12 > v.byteLength) return;
+        cb(u16(e), u16(e + 2), u32(e + 4), e + 8);
+      }
+    };
+    const ascii = (cnt, ptr) => {
+      const base = cnt > 4 ? T + u32(ptr) : ptr;
+      let s = '';
+      for (let i = 0; i < cnt && base + i < v.byteLength; i++) { const c = v.getUint8(base + i); if (!c) break; s += String.fromCharCode(c); }
+      return s;
+    };
+    const rats = (cnt, ptr) => {
+      const base = T + u32(ptr), out = [];
+      for (let i = 0; i < cnt; i++) {
+        const o = base + i * 8;
+        if (o + 8 > v.byteLength) break;
+        const d = u32(o + 4);
+        out.push(d ? u32(o) / d : 0);
+      }
+      return out;
+    };
+    let exifIfd = 0, gpsIfd = 0, dt = '', dtOff = '';
+    each(T + u32(T + 4), (tag, type, cnt, ptr) => {
+      if (tag === 0x8769) exifIfd = T + u32(ptr);
+      else if (tag === 0x8825) gpsIfd = T + u32(ptr);
+      else if (tag === 0x0132) dt = ascii(cnt, ptr);
+    });
+    if (exifIfd) each(exifIfd, (tag, type, cnt, ptr) => {
+      if (tag === 0x9003 || (tag === 0x9004 && !dt)) dt = ascii(cnt, ptr) || dt;
+      else if (tag === 0x9011 || tag === 0x9010) dtOff = ascii(cnt, ptr) || dtOff;
+    });
+    let lat = null, lng = null;
+    if (gpsIfd) {
+      let la = null, lo = null, laR = 'N', loR = 'E';
+      each(gpsIfd, (tag, type, cnt, ptr) => {
+        if (tag === 0x0001) laR = ascii(cnt, ptr) || laR;
+        else if (tag === 0x0002) la = rats(cnt, ptr);
+        else if (tag === 0x0003) loR = ascii(cnt, ptr) || loR;
+        else if (tag === 0x0004) lo = rats(cnt, ptr);
+      });
+      const dms = a => (a && a.length >= 3) ? a[0] + a[1] / 60 + a[2] / 3600 : null;
+      const dLa = dms(la), dLo = dms(lo);
+      if (dLa != null && dLo != null && (dLa || dLo)) {
+        lat = /S/i.test(laR) ? -dLa : dLa;
+        lng = /W/i.test(loR) ? -dLo : dLo;
+      }
+    }
+    let at = null;
+    const m = /^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/.exec(dt || '');
+    if (m) {
+      const iso = m[1] + '-' + m[2] + '-' + m[3] + 'T' + m[4] + ':' + m[5] + ':' + m[6];
+      const tz = /^[+-]\d{2}:\d{2}$/.test(dtOff) ? dtOff : '';   // มี offset จากกล้อง → ใช้เลย, ไม่มี→อ่านเป็นเวลาท้องถิ่นเครื่อง
+      const d = new Date(iso + tz);
+      if (!isNaN(d)) at = d.getTime();
+    }
+    return (at || lat != null) ? { at, lat, lng } : null;
   }
   publishCheckin(k, idx, on) {
     const all = this.checkins, list = all[k] || [], c = list[idx];
@@ -3232,17 +3478,23 @@ class Component extends DCLogic {
     if (touched) this.saveCheckins(all);
     this.setState({ remoteMoments: (this.state.remoteMoments || []).filter(x => x.id !== id) });
   }
-  editMoment(m) { this.setState({ momentEdit: m.id, meText: m.text || '', meCat: (m.cat != null ? m.cat : 0) }); }
+  editMoment(m) { this.setState({ momentEdit: m.id, meText: m.text || '', meCat: (m.cat != null ? m.cat : 0), meAt: m.at || Date.now() }); }
   cancelMomentEdit() { this.setState({ momentEdit: null }); }
   saveMomentEdit() {
     const id = this.state.momentEdit; if (!id) return;
     const text = (this.state.meText || '').trim(), cat = this.state.meCat || 0;
-    const a = this.moments.map(x => x.id === id ? { ...x, text, cat, _m: Date.now() } : x);
+    const at = this.state.meAt || null;
+    const a = this.moments.map(x => x.id === id ? { ...x, text, cat, at: at || x.at, _m: Date.now() } : x);
     this.saveMoments(a);
     const all = this.checkins; let touched = false;
-    Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c.mid === id) { c.note = text; touched = true; } }));
+    Object.keys(all).forEach(k => (all[k] || []).forEach(c => {
+      if (c.mid === id) {
+        c.note = text; touched = true;
+        if (at) { c.at = at; c.t = new Date(at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }); }
+      }
+    }));
     if (touched) this.saveCheckins(all);
-    this.setState({ momentEdit: null });
+    this.setState({ momentEdit: null, meAt: null });
     this.showToast('✓ แก้ไขโมเมนต์แล้ว');
   }
   async toggleMomentLike(id) {
@@ -3265,7 +3517,7 @@ class Component extends DCLogic {
   }
   async loadMoments() {
     const be = window.WTNBackend;
-    if (!be || !be._uid) return;
+    if (!be || !be._uid || navigator.onLine === false) return;
     try { this.setState({ remoteMoments: await be.moments(60) }); } catch (e) { console.warn('[wtn] moments', e); }
   }
   openRemoteChapter(item) {
@@ -3448,14 +3700,81 @@ class Component extends DCLogic {
   checkinDayCount() {
     const s = this.openStory; if (!s) return 0;
     let n = 0;
-    this.days.forEach((d, i) => { if ((this.checkins[s.tripId + ':' + i] || []).length) n++; });
+    this.baseDaysFor(s.tripId || this.state.trip).forEach((d, i) => { if ((this.checkins[(s.tripId || this.state.trip) + ':' + i] || []).length) n++; });
     return n;
+  }
+  tripRecById(id) { return this.userTrips.find(x => x.id === id) || (id === 'kazakh' ? this.kzSeed() : {}); }
+  chapterDayIndex() {
+    const oc = this.openChapter; if (!oc) return null;
+    const g = /^day(\d+)$/.exec(oc.gen || '');
+    if (g) return Number(g[1]);
+    const m = /วันที่\s*(\d+)/.exec(oc.title || '');
+    if (m) return Number(m[1]) - 1;
+    return null;
+  }
+  // วัสดุจริงของวันนั้น: เช็คอิน + โมเมนต์ที่เวลาตกวันนั้น
+  dayMaterial(i) {
+    const s = this.openStory || {};
+    const tid = s.tripId || this.state.trip;
+    const t = this.tripRecById(tid);
+    const d = this.baseDaysFor(tid)[i] || {};   // วันของทริปที่เรื่องเล่านี้อ้างอิง — ไม่ใช่ทริปที่เลือกอยู่ในแท็บแผน
+    let dateLabel = '', dk = null;
+    if (t.start) {
+      const st = new Date(t.start + 'T00:00:00');
+      if (!isNaN(st)) {
+        const dd = new Date(st.getTime() + i * 86400000);
+        dateLabel = dd.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        dk = this.dkey(dd.getTime());
+      }
+    }
+    const items = [];
+    (this.checkins[tid + ':' + i] || []).forEach(c => {
+      items.push({ at: c.at || 0, t: c.t || '', name: c.name || '', note: c.note || '', mid: c.mid });
+    });
+    const seen = {}; items.forEach(x => { if (x.mid) seen[x.mid] = 1; });
+    if (dk) this.moments.forEach(m => {
+      if (seen[m.id]) return;
+      if (this.dkey(m.at) !== dk) return;
+      items.push({ at: m.at || 0, t: new Date(m.at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+        name: m.place || '', note: m.text || '' });
+    });
+    items.sort((a, b) => (a.at || 0) - (b.at || 0));
+    const lines = items.map(x => '- ' + (x.t ? x.t + ' ' : '') + [x.name, x.note].filter(Boolean).join(' — ')).filter(l => l.length > 3);
+    return { count: lines.length, text: lines.join('\n'), dateLabel,
+      dayLabel: 'วันที่ ' + (d.n || (i + 1)) + (d.city && d.city.indexOf('ยังไม่') !== 0 ? ' · ' + d.city : ''),
+      trip: t.name || '', place: [t.country, t.city].filter(Boolean).join(' · ') };
+  }
+  async aiArrangeDay() {
+    if (!this.isPremium) { this.go('premium'); return; }
+    const i = this.chapterDayIndex();
+    if (i == null) { this.setState({ aiChOpen: true, aiChErr: 'ตอนนี้ยังไม่รู้ว่าเป็นวันที่เท่าไหร่ — ตั้งชื่อตอนเป็น “วันที่ 3 · …” ก่อน', aiChText: '' }); return; }
+    const mat = this.dayMaterial(i);
+    if (!mat.count) { this.setState({ aiChOpen: true, aiChErr: 'วันนี้ยังไม่มีโมเมนต์/เช็คอินเลย — จดไว้ก่อนแล้วค่อยให้ AI เรียบเรียง', aiChText: '' }); return; }
+    const prompt = 'คุณคือนักเขียนบันทึกการเดินทางของแอพ "Vela" ช่วยเรียบเรียงเรื่องเล่าของวันนี้จากโมเมนต์ที่จดไว้\n' +
+      'ทริป: ' + (mat.trip || '-') + (mat.place ? ' (' + mat.place + ')' : '') + '\n' +
+      mat.dayLabel + (mat.dateLabel ? ' · ' + mat.dateLabel : '') + '\n' +
+      'โมเมนต์ของวันนี้ (เรียงตามเวลา):\n' + mat.text + '\n\n' +
+      'เขียนเป็นเรื่องเล่าภาษาไทย มุมมองบุรุษที่หนึ่ง โทนอบอุ่น เป็นกันเอง เหมือนเล่าให้เพื่อนฟัง\n' +
+      'ข้อกำหนด: 3-5 ย่อหน้า เรียงตามลำดับเวลาจริง · ห้ามแต่งข้อมูลที่ไม่มีอยู่ในโมเมนต์ · ห้ามหัวข้อ/bullet · ห้ามเกริ่นนำว่ากำลังทำอะไร ขึ้นต้นด้วยเนื้อเรื่องเลย';
+    this.setState({ aiChOpen: true, aiChBusy: true, aiChErr: '', aiChText: '' });
+    try { const text = await this.askLLM(prompt); this.setState({ aiChBusy: false, aiChText: (text || '').trim() }); }
+    catch (e) { this.setState({ aiChBusy: false, aiChErr: String(e.message || e) }); }
+  }
+  applyAiCh(mode) {
+    const text = (this.state.aiChText || '').trim();
+    if (!text || !this._chEl) return;
+    const html = '<p>' + this.esc(text).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    this._chEl.innerHTML = mode === 'replace' ? html : ((this._chEl.innerHTML || '') + html);
+    this.updateCounts();
+    this.setState({ aiChOpen: false, aiChText: '' });
+    this.showToast(mode === 'replace' ? '✓ ใส่เนื้อหาที่ AI เรียบเรียงแล้ว' : '✓ ต่อท้ายเนื้อหาแล้ว');
   }
   chaptersFromCheckins() {
     const s = this.openStory; if (!s) return;
     let chapters = [...(s.chapters || [])];
-    this.days.forEach((d, i) => {
-      const list = this.checkins[s.tripId + ':' + i] || [];
+    const tid = s.tripId || this.state.trip;
+    this.baseDaysFor(tid).forEach((d, i) => {
+      const list = this.checkins[tid + ':' + i] || [];
       if (!list.length) return;
       let html = ''; let imgs = 0;
       list.forEach(c => {
@@ -3554,11 +3873,12 @@ class Component extends DCLogic {
       localStorage.setItem('wtn-expenses', JSON.stringify(all));
     } catch (e) {}
   }
-  addExpense(cat, amt, note) {
+  addExpense(cat, amt, note, ts) {
     const list = this.expenses;
-    list.push({ id: 'e' + Date.now() + Math.floor(Math.random() * 1000), cat, amt, note,
-      t: new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' +
-         new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) });
+    const d = new Date(ts || Date.now());
+    list.push({ id: 'e' + Date.now() + Math.floor(Math.random() * 1000), cat, amt, note, at: d.getTime(),
+      t: d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' +
+         d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) });
     this.saveExpenses(list);
   }
   get actualByCat() {
@@ -3593,7 +3913,14 @@ class Component extends DCLogic {
     this._ppSync = () => { if (!this._applyingCloud) this.scheduleCloudPush(); };
     window.addEventListener('photopick-change', this._ppSync);
     // กลับมาเปิดแอป/สลับแท็บกลับมา → ดันข้อมูลค้างขึ้นคลาวด์
-    this._visSync = () => { if (document.visibilityState === 'visible') { this.cloudPull(); this.retryPendingPush(); } else this.flushCloudPush(); };
+    this._onOff = () => {
+      const on = navigator.onLine !== false;
+      this.setState({ online: on });
+      if (on) { this.cloudPull(); this.retryPendingPush(); this.loadMoments(); }
+    };
+    window.addEventListener('online', this._onOff);
+    window.addEventListener('offline', this._onOff);
+    this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); } else this.flushCloudPush(); };
     document.addEventListener('visibilitychange', this._visSync);
     // iOS พักแท็บทันทีที่สลับออก/ล็อกจอ → ต้องดันข้อมูลค้างก่อนโดนพัก
     this._pageHide = () => this.flushCloudPush();
@@ -3622,7 +3949,7 @@ class Component extends DCLogic {
           const go = () => this.resolveDeepLink(sid, cid);
           go();
           if (!window.WTNBackend) window.addEventListener('wtn-backend-ready', go, { once: true });
-          setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, 9000);
+          setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 9000);
         }
       }
     } catch (e) {}
@@ -3991,7 +4318,8 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.07.24f',
+      appVersion: '2026.08.04i',
+      offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
@@ -4277,12 +4605,12 @@ class Component extends DCLogic {
         pubLabel: c.published ? 'อยู่บนโมเมนต์' : 'เผยแพร่เป็นโมเมนต์',
         share: () => this.shareMoment({ text: c.note || '', place: c.name || '', id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' }),
         del: () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
-        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null }) })),
+        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       ciEmpty: (this.checkins[this.ciKey] || []).length === 0,
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
         const opening = !this.state.ciFormOpen;
-        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null });
+        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.dayTs(this.state.day) : null, ciFromPhoto: '' });
         if (opening) this.grabCiPos();
       },
       ciGeoLocating: this.state.ciGeoStatus === 'locating',
@@ -4294,8 +4622,13 @@ class Component extends DCLogic {
       toast: this.state.toast || '', hasToast: !!this.state.toast,
       ciName: this.state.ciName ?? '', ciNote: this.state.ciNote ?? '',
       setCiName: e => this.setState({ ciName: e.target.value }),
+      ciWhenVal: this.tsToInput(this.state.ciAt || this.dayTs(this.state.day)),
+      setCiWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ ciAt: t, ciFromPhoto: '' }); },
+      ciFromPhoto: this.state.ciFromPhoto || '', ciHasPhotoMeta: !!this.state.ciFromPhoto,
       setCiNote: e => this.setState({ ciNote: e.target.value }),
       ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: p,
+        hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
+        useDate: () => this.useCiPhotoDate(p),
         rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
       ciAddPhotos: e => this.addCiPhotos(e),
       ciCanAddPhoto: (this.state.ciPhotos || []).length < 3,
@@ -4525,7 +4858,10 @@ class Component extends DCLogic {
           segStoriesStyle: segBtn(seg === 'stories'), segMomentsStyle: segBtn(seg === 'moments'),
           meAvatar: meAv, meHasAvatar: !!meAv, meNoAvatar: !meAv,
           mpText: this.state.mpText ?? '', setMpText: e => this.setState({ mpText: e.target.value }),
-          mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: p, rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
+          mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: p,
+            hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
+            useDate: () => this.useMpPhotoDate(p),
+            rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
           mpHasPhotos: mpN > 0, mpPhotoCount: mpN, mpCanAddPhoto: mpN < 3,
           addMpPhotos: e => this.addMpPhotos(e),
           postMomentFn: () => this.postMoment(), mpPostOpacity: canPost ? '1' : '.5',
@@ -4535,6 +4871,22 @@ class Component extends DCLogic {
           calCells, calDow, calLabel, prevMonth: () => shiftMonth(-1), nextMonth: () => shiftMonth(1),
           calDaySel: !!calDay, calDayLabel, clearCalDay: () => this.setState({ calDay: null }),
           catChips, catFilters,
+          mpFromPhoto: !!this.state.mpFromPhoto, mpPhotoNote: this.state.mpPhotoNote || '',
+          clearPhotoMeta: () => this.clearPhotoMeta(),
+          mpWhenOpen: !!this.state.mpWhenOpen,
+          toggleMpWhen: () => this.setState(s => ({ mpWhenOpen: !s.mpWhenOpen, mpAt: s.mpAt || Date.now() })),
+          mpWhenVal: this.tsToInput(this.state.mpAt || Date.now()),
+          setMpWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ mpAt: t }); },
+          mpWhenLabel: this.whenLabel(this.state.mpAt),
+          mpWhenColor: this.state.mpAt && Math.abs(Date.now() - this.state.mpAt) > 120000 ? '#c05f39' : '#8a7d6f',
+          mpWhenQuick: [
+            { name: 'ตอนนี้', on: () => this.setState({ mpAt: Date.now() }) },
+            { name: '1 ชม.ก่อน', on: () => this.setState({ mpAt: Date.now() - 3600000 }) },
+            { name: '3 ชม.ก่อน', on: () => this.setState({ mpAt: Date.now() - 3 * 3600000 }) },
+            { name: 'เมื่อวาน', on: () => this.setState({ mpAt: Date.now() - 86400000 }) }
+          ],
+          meWhenVal: this.tsToInput(this.state.meAt || Date.now()),
+          setMeWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ meAt: t }); },
           meText: this.state.meText ?? '', setMeText: e => this.setState({ meText: e.target.value }),
           meCatChips: cats.map((c, i) => ({ name: c, on: () => this.setState({ meCat: i }), style: chipBase + (i === (this.state.meCat || 0) ? ';background:' + this.catColor(i) + ';color:#fff;border-color:' + this.catColor(i) : ';background:#fff;color:#6f6558;border-color:rgba(43,36,32,.15)'), dot: 'width:7px;height:7px;border-radius:50%;flex:none;background:' + (i === (this.state.meCat || 0) ? '#fff' : this.catColor(i)) })),
           saveMomentEdit: () => this.saveMomentEdit(), cancelMomentEdit: () => this.cancelMomentEdit(),
@@ -4812,6 +5164,15 @@ class Component extends DCLogic {
           seHasCheckins: this.checkinDayCount() > 0,
           genFromCheckins: () => this.chaptersFromCheckins(),
           deleteStory: () => { const l = this.stories.filter(x => x.id !== os.id); this.saveStories(l); this.setState({ openStoryId: null }); this.setTab('stories'); },
+          aiChOpen: !!this.state.aiChOpen, aiChBusy: !!this.state.aiChBusy,
+          aiChText: this.state.aiChText || '', aiChHasText: !!(this.state.aiChText || '').trim(),
+          aiChErr: this.state.aiChErr || '', aiChHasErr: !!this.state.aiChErr,
+          aiChLabel: this.state.aiChBusy ? 'กำลังเรียบเรียง…' : 'AI เรียบเรียงจากโมเมนต์วันนี้',
+          aiChSource: (() => { const i = this.chapterDayIndex(); if (i == null) return ''; const m = this.dayMaterial(i); return m.count ? (m.dayLabel + ' · ' + m.count + ' โมเมนต์') : ''; })(),
+          runAiCh: () => this.aiArrangeDay(),
+          aiChReplace: () => this.applyAiCh('replace'),
+          aiChAppend: () => this.applyAiCh('append'),
+          closeAiCh: () => this.setState({ aiChOpen: false, aiChErr: '' }),
           ceTitle: this.state.chTitleDraft ?? '', setCeTitle: e => this.setState({ chTitleDraft: e.target.value }),
           chEditorRef: el => { this._chEl = el; if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || ''; el._loadedId = this.state.openChapterId; setTimeout(() => this.updateCounts(), 0); } },
           rtUndo: this.rt('undo'), rtRedo: this.rt('redo'), rtBold: this.rt('bold'), rtItalic: this.rt('italic'),
