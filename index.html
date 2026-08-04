@@ -90,6 +90,12 @@
   .wtn-rte .wtn-embed,.wtn-read .wtn-embed{color:#f6efe2!important;background:#2b241f!important}
   .wtn-rte .wtn-embed-ic,.wtn-read .wtn-embed-ic{color:#e9b48a!important}
   .wtn-rte img,.wtn-read img{max-width:100%;border-radius:12px;display:block;margin:14px 0}
+  .wtn-rte figure,.wtn-read figure{margin:14px 0 1.2em}
+  .wtn-rte figure img,.wtn-read figure img{margin:0}
+  .wtn-rte figcaption,.wtn-read figcaption{font:500 15px/1.6 'Anuphan',sans-serif!important;color:#8a7d6f!important;padding:8px 4px 0;text-align:center;text-wrap:pretty}
+  .wtn-read figcaption{font-size:17px!important}
+  .wtn-rte figcaption:empty:before{content:'เพิ่มคำบรรยายรูป (ไม่ใส่ก็ได้)';color:#c9bfae}
+  .wtn-read figcaption:empty{display:none}
   .wtn-read h3:first-child,.wtn-rte h3:first-child{margin-top:0}
   .wtn-rte .wtn-embed,.wtn-read .wtn-embed{display:inline-flex;align-items:center;gap:8px;background:#2b241f;color:#f6efe2;font:600 12px 'Anuphan';padding:8px 14px;border-radius:12px;margin:4px 0}
   .wtn-embed-ic{color:#e9b48a}
@@ -1203,7 +1209,7 @@
             </div>
           </sc-if>
           <div class="wtn-s" style="flex:1;overflow-y:auto">
-            <div ref="{{ chEditorRef }}" contenteditable="true" onInput="{{ onChInput }}" onPaste="{{ onChPaste }}" class="wtn-rte" data-ph="เริ่มเขียนเรื่องราวของวันนี้…  แทรกรูป/คลิปตรงไหนก็ได้จากไอคอนบนแถบเครื่องมือ" style="min-height:calc(100% - 40px);padding:18px 22px 70px;color:#2f2a24;outline:none"></div>
+            <div ref="{{ chEditorRef }}" contenteditable="true" onInput="{{ onChInput }}" onPaste="{{ onChPaste }}" onClick="{{ onChClick }}" class="wtn-rte" data-ph="เริ่มเขียนเรื่องราวของวันนี้…  แทรกรูป/คลิปตรงไหนก็ได้จากไอคอนบนแถบเครื่องมือ" style="min-height:calc(100% - 40px);padding:18px 22px 70px;color:#2f2a24;outline:none"></div>
           </div>
           <div style="flex:none;display:flex;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid rgba(43,36,32,.1);background:#f6efe2">
             <div style="flex:1;min-width:0"><div style="font:500 13px 'Anuphan';color:#8a7d6f">{{ ceChars }} ตัวอักษร · {{ ceWords }} คำ</div><div style="font:500 12px 'Anuphan';color:#b3a897">{{ ceSavedAt }}</div></div>
@@ -3241,7 +3247,7 @@ class Component extends DCLogic {
   }
   saveChapter() {
     const s = this.openStory; if (!s) return;
-    const html = this._chEl ? this._chEl.innerHTML : '';
+    const html = this.chHtml();
     const text = this._chEl ? (this._chEl.innerText || '') : '';
     const chapters = (s.chapters || []).map(c => c.id === this.state.openChapterId
       ? { ...c, title: (this.state.chTitleDraft || '').trim() || c.title, html, updatedAt: Date.now(),
@@ -3266,7 +3272,7 @@ class Component extends DCLogic {
     const wrap = document.createElement('div');
     wrap.innerHTML = String(raw || '');
     wrap.querySelectorAll('script,style,meta,link,title,head,noscript,iframe,object').forEach(n => n.remove());
-    const keep = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, A: 1, IMG: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1, H3: 1, HR: 1 };
+    const keep = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, A: 1, IMG: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1, H3: 1, HR: 1, FIGURE: 1, FIGCAPTION: 1 };
     const walk = el => {
       Array.from(el.children).forEach(walk);
       const t = el.tagName;
@@ -3287,6 +3293,7 @@ class Component extends DCLogic {
       if (t === 'A') el.setAttribute('target', '_blank');
     };
     Array.from(wrap.children).forEach(walk);
+    wrap.querySelectorAll('figcaption').forEach(c => { if (!c.textContent.trim()) c.innerHTML = ''; });
     wrap.querySelectorAll('p').forEach(p => { if (!p.textContent.trim() && !p.querySelector('img,br')) p.remove(); });
     return wrap.innerHTML;
   }
@@ -3302,6 +3309,35 @@ class Component extends DCLogic {
     }
     if (!out) return;
     try { document.execCommand('insertHTML', false, out); } catch (er) {}
+    this.updateCounts();
+  }
+  chHtml() {
+    if (!this._chEl) return '';
+    const w = document.createElement('div');
+    w.innerHTML = this._chEl.innerHTML;
+    w.querySelectorAll('figcaption').forEach(c => { if (!c.textContent.trim()) c.innerHTML = ''; });
+    w.querySelectorAll('figure').forEach(fg => { if (!fg.querySelector('img')) fg.replaceWith(...Array.from(fg.childNodes)); });
+    return w.innerHTML;
+  }
+  onChClick(e) {
+    const img = e.target && e.target.tagName === 'IMG' ? e.target : null;
+    if (!img || !this._chEl) return;
+    let fig = img.closest('figure');
+    if (!fig) {
+      fig = document.createElement('figure');
+      const cap = document.createElement('figcaption');
+      cap.setAttribute('data-cap', '1');
+      const host = img.parentElement;
+      fig.appendChild(img); fig.appendChild(cap);
+      if (host && host.tagName === 'P' && !host.textContent.trim()) host.replaceWith(fig);
+      else this._chEl.insertBefore(fig, null);
+    }
+    const cap = fig.querySelector('figcaption');
+    if (cap) {
+      const r = document.createRange(); r.selectNodeContents(cap); r.collapse(false);
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      this._chEl.focus();
+    }
     this.updateCounts();
   }
   cleanChFormat() {
@@ -3335,9 +3371,30 @@ class Component extends DCLogic {
     const f = (ev.target.files || [])[0]; ev.target.value = '';
     if (!f) return;
     if (this._chEl && this._chEl.querySelectorAll('img').length >= 4) { alert('แนบรูปในตอนได้ไม่เกิน 4 รูป'); return; }
-    this.shrinkToUrl(f, 1400, url => { if (this._chEl) { this.restoreChSel();
-      try { document.execCommand('insertHTML', false, '<p><img src="' + url + '"></p><p><br></p>'); } catch (e) {}
-      this._chSel = null; this.updateCounts(); } });
+    this.shrinkToUrl(f, 1400, url => {
+      if (!this._chEl) return;
+      const sc = this._chEl.parentElement;
+      const keepTop = sc ? sc.scrollTop : 0;
+      this.restoreChSel();
+      const fig = '<figure data-newfig="1"><img src="' + url + '"><figcaption data-cap="1"></figcaption></figure><p><br></p>';
+      try { document.execCommand('insertHTML', false, fig); } catch (e) {}
+      this._chSel = null;
+      const el = this._chEl.querySelector('[data-newfig]');
+      if (el) {
+        el.removeAttribute('data-newfig');
+        const cap = el.querySelector('figcaption');
+        if (cap) {
+          const r = document.createRange(); r.selectNodeContents(cap); r.collapse(true);
+          const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        }
+        if (sc) {
+          sc.scrollTop = keepTop;
+          const need = el.offsetTop + el.offsetHeight - sc.clientHeight + 40;
+          if (need > sc.scrollTop) sc.scrollTop = need;
+        }
+      }
+      this.updateCounts();
+    });
   }
   insertChClip() {
     const el = this._chEl; if (!el) return;
@@ -4480,7 +4537,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.08.04b',
+      appVersion: '2026.08.04c',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5347,6 +5404,7 @@ class Component extends DCLogic {
           saveChSelFn: () => this.saveChSel(),
           insertChImage: e => this.insertChImage(e), onChInput: () => this.updateCounts(),
           onChPaste: e => this.onChPaste(e), cleanChFormat: () => this.cleanChFormat(),
+          onChClick: e => this.onChClick(e),
           insertChClip: () => this.insertChClip(),
           chCover: this.state.chCover || '', chHasCover: !!this.state.chCover, chNoCover: !this.state.chCover,
           chCoverLabel: this.state.chCover ? 'เปลี่ยนปกตอน' : 'เลือกปกตอน',
@@ -5360,7 +5418,7 @@ class Component extends DCLogic {
           chClip: this.state.chClip ?? '', setChClip: e => this.setState({ chClip: e.target.value }),
           ceChars: this.state.chChars || 0, ceWords: this.state.chWords || 0, ceSavedAt: oc ? fmtDT(oc.updatedAt) : '',
           saveChapterFn: () => this.saveChapter(),
-          previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this._chEl.innerHTML, photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
+          previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this.chHtml(), photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
           crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: this.profile.name || os.author || 'Nim',
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
           chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => { const id = sp.getAttribute('data-yt'); const w = document.createElement('div'); w.className = 'wtn-embed-yt'; w.innerHTML = '<iframe src=\"https://www.youtube.com/embed/' + id + '\" allowfullscreen></iframe>'; sp.replaceWith(w); }); } },
