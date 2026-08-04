@@ -14,11 +14,12 @@
 <title>Vela</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <script src="firebase-config.js"></script>
 <script type="module" src="wtn-backend.js"></script>
 <meta name="apple-mobile-web-app-title" content="Vela">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vela">
@@ -29,7 +30,8 @@
 <meta name="twitter:title" content="Vela — วางแผนทริป & เล่าเรื่องเดินทาง">
 <meta name="twitter:image" content="og-image.png">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#c05f39">
+<meta name="theme-color" content="#f6efe2">
+<meta name="color-scheme" content="light">
 <link rel="manifest" href="manifest.webmanifest">
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
@@ -45,16 +47,40 @@
         });
         setInterval(function () { reg.update().catch(function () {}); }, 60 * 60 * 1000);
       }).catch(function () {});
-      var reloaded = false;
+      // มีบิลด์ใหม่ → ไม่รีโหลดทับงานที่กำลังพิมพ์ ให้ผู้ใช้กดเอง
+      var shown = false;
       navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (reloaded) return; reloaded = true; location.reload();
+        if (shown) return; shown = true;
+        var b = document.createElement('div');
+        b.setAttribute('style', 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:9999;display:flex;align-items:center;gap:10px;background:#2b241f;color:#f6efe2;font:600 14.5px Anuphan,system-ui,sans-serif;padding:11px 12px 11px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(43,36,32,.35);max-width:calc(100vw - 32px)');
+        b.innerHTML = '<span>มีเวอร์ชันใหม่พร้อมใช้</span>';
+        var go = document.createElement('button');
+        go.textContent = 'อัปเดต';
+        go.setAttribute('style', 'border:none;background:#c05f39;color:#fff;font:700 14.5px Anuphan,system-ui,sans-serif;padding:9px 15px;border-radius:11px;cursor:pointer;min-height:38px');
+        go.onclick = function () { location.reload(); };
+        var no = document.createElement('button');
+        no.textContent = 'ทีหลัง';
+        no.setAttribute('style', 'border:none;background:transparent;color:#b3a897;font:600 14px Anuphan,system-ui,sans-serif;padding:9px 6px;cursor:pointer;min-height:38px');
+        no.onclick = function () { b.remove(); };
+        b.appendChild(go); b.appendChild(no);
+        document.body.appendChild(b);
       });
     });
   }
 </script>
 <style>
   *{box-sizing:border-box}
-  html{overflow-x:hidden;width:100%}
+  html{overflow-x:hidden;width:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  /* ความรู้สึกแบบแอป */
+  html,body{overscroll-behavior:none}
+  body{-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+  .wtn-s{overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+  input,textarea,[contenteditable="true"],.wtn-read,.wtn-rte{-webkit-user-select:text;user-select:text}
+  button,a,label,[role="button"]{-webkit-touch-callout:none}
+  img{-webkit-touch-callout:none}
+  /* ปุ่มมีจังหวะตอบสนองตอนแตะ */
+  button:active{transform:scale(.97)}
+  button{transition:transform .09s ease}
   body{margin:0;background:#d9cdb9;font-family:'Anuphan',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;overflow-x:hidden;max-width:100%}
   a{color:#c05f39}
   .wtn-s::-webkit-scrollbar{width:0;height:0}
@@ -69,6 +95,10 @@
   body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
   .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important}
+  .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+  @media (display-mode:standalone),(display-mode:minimal-ui){
+    .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
+  }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
@@ -1263,13 +1293,13 @@
             </sc-if>
           </div>
           <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
-            <div style="position:sticky;bottom:0;display:flex;align-items:center;gap:12px;padding:13px 18px;background:rgba(43,36,32,.97);backdrop-filter:blur(8px)">
+            <div class="wtn-sticky-bottom" style="position:sticky;bottom:0;display:flex;align-items:center;gap:12px;padding:13px 18px;background:rgba(43,36,32,.97);backdrop-filter:blur(8px)">
               <div style="flex:1;min-width:0"><div style="font:700 15px 'Anuphan';color:#f6efe2">อ่านฟรีด้วย Vela</div><div style="font:500 13px 'Anuphan';color:#d8c6a8;margin-top:1px">สมัครเพื่อวางแผนทริป &amp; เขียนเรื่องเล่าของคุณเอง</div></div>
               <button onClick="{{ guestSignup }}" style="flex:none;border:none;background:#c05f39;color:#fff;font:700 15px 'Anuphan';padding:12px 19px;border-radius:12px;cursor:pointer">เริ่มใช้ฟรี</button>
             </div>
           </sc-if>
           <sc-if value="{{ crPreview }}" hint-placeholder-val="{{ false }}">
-            <div style="position:sticky;bottom:0;display:flex;align-items:center;gap:10px;justify-content:center;padding:12px 18px;background:rgba(246,239,226,.96);border-top:1px solid rgba(43,36,32,.1)"><span style="font:500 14px 'Anuphan';color:#a1927c">คุณกำลังอยู่ในโหมด ดูตัวอย่าง</span><button onClick="{{ crEditFromRead }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14px 'Anuphan';padding:8px 14px;border-radius:16px;cursor:pointer">แก้ไขตอนนี้</button></div>
+            <div class="wtn-sticky-bottom" style="position:sticky;bottom:0;display:flex;align-items:center;gap:10px;justify-content:center;padding:12px 18px;background:rgba(246,239,226,.96);border-top:1px solid rgba(43,36,32,.1)"><span style="font:500 14px 'Anuphan';color:#a1927c">คุณกำลังอยู่ในโหมด ดูตัวอย่าง</span><button onClick="{{ crEditFromRead }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14px 'Anuphan';padding:8px 14px;border-radius:16px;cursor:pointer">แก้ไขตอนนี้</button></div>
           </sc-if>
         </div>
       </sc-if>
@@ -1640,7 +1670,7 @@
       <button onClick="{{ goAskAi }}" style="position:absolute;right:18px;bottom:84px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
-    <div style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
+    <div class="wtn-tabbar" style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
       <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Feed</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
       <button onClick="{{ tabMeFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
@@ -1649,6 +1679,33 @@
 
   </div>
 </div>
+
+<sc-if value="{{ a2hsShow }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:9500;padding:0 12px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none">
+    <div style="pointer-events:auto;width:100%;max-width:402px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:20px;box-shadow:0 18px 44px -10px rgba(43,36,32,.45);padding:16px 16px 14px">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <img src="icon-192.png" alt="" style="width:46px;height:46px;border-radius:12px;flex:none;display:block">
+        <div style="flex:1;min-width:0">
+          <div style="font:700 16px 'Anuphan';color:#2b241f">ติดตั้ง Vela ไว้ในเครื่อง</div>
+          <div style="font:500 13.5px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">เปิดเต็มจอ ไม่มีแถบเบราว์เซอร์ · ใช้ได้ตอนไม่มีเน็ต</div>
+        </div>
+        <button onClick="{{ a2hsDismiss }}" aria-label="ปิด" style="flex:none;width:32px;height:32px;border:none;background:transparent;color:#b3a897;font:600 20px 'Anuphan';border-radius:8px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <sc-if value="{{ a2hsIos }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:13px;padding-top:13px;border-top:1px solid rgba(43,36,32,.09)">
+          <div style="display:flex;align-items:center;gap:9px;font:500 14.5px 'Anuphan';color:#5c5347"><span style="flex:none;width:22px;height:22px;border-radius:50%;background:#f0e4d0;color:#8a7d6f;font:700 12px 'Anuphan';display:flex;align-items:center;justify-content:center">1</span>แตะปุ่มแชร์ <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2" style="flex:none"><path d="M12 16V4"></path><path d="M8 8l4-4 4 4"></path><path d="M4 14v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"></path></svg> ด้านล่างจอ</div>
+          <div style="display:flex;align-items:center;gap:9px;font:500 14.5px 'Anuphan';color:#5c5347"><span style="flex:none;width:22px;height:22px;border-radius:50%;background:#f0e4d0;color:#8a7d6f;font:700 12px 'Anuphan';display:flex;align-items:center;justify-content:center">2</span>เลือก "เพิ่มไปยังหน้าจอโฮม"</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ a2hsCanPrompt }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:9px;margin-top:13px">
+          <button onClick="{{ a2hsInstall }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:700 15.5px 'Anuphan';border-radius:13px;cursor:pointer">ติดตั้งเลย</button>
+          <button onClick="{{ a2hsLater }}" style="flex:none;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#8a7d6f;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer;padding:0 16px">ทีหลัง</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
 
 <sc-if value="{{ cloudShow }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9000;background:rgba(43,36,32,.92);color:#f6efe2;font:600 14px 'Anuphan';padding:8px 15px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.28);display:flex;align-items:center;gap:8px;pointer-events:none">
@@ -4124,7 +4181,39 @@ class Component extends DCLogic {
     ];
   }
 
+  initA2HS() {
+    const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    if (standalone) return;
+    let dis = 0;
+    try { dis = +(localStorage.getItem('wtn-a2hs-off') || 0); } catch (e) {}
+    if (dis && Date.now() - dis < 14 * 864e5) return; // ปิดแล้ว ไม่ถามซ้ำ 2 สัปดาห์
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault(); this._bip = e;
+      this.setState({ a2hsCan: true });
+      setTimeout(() => { if (!this.state.a2hsOff) this.setState({ a2hsShow: true }); }, 12000);
+    });
+    const ua = navigator.userAgent || '';
+    const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const safari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    if (ios && safari) {
+      this._a2hsIos = true;
+      setTimeout(() => { if (!this.state.a2hsOff) this.setState({ a2hsShow: true, a2hsIos: true }); }, 15000);
+    }
+  }
+  a2hsInstall() {
+    const p = this._bip;
+    this.setState({ a2hsShow: false });
+    if (!p) return;
+    this._bip = null;
+    try { p.prompt(); p.userChoice && p.userChoice.then(r => { if (r && r.outcome === 'accepted') this.showToast && this.showToast('ติดตั้งแล้ว เปิดจากหน้าจอโฮมได้เลย'); }); } catch (e) {}
+  }
+  a2hsClose(forever) {
+    if (forever) { try { localStorage.setItem('wtn-a2hs-off', String(Date.now())); } catch (e) {} }
+    this.setState({ a2hsShow: false, a2hsOff: true });
+  }
   componentDidMount() {
+    this.initA2HS();
+    try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); } catch (e) {}
     try { const q = new URLSearchParams(location.search); if (q.get('paid')) { this.showToast('ขอบคุณ! กำลังยืนยันการชำระเงิน…'); let n = 0; const t = setInterval(() => { this.syncPremium(); if (++n >= 8) clearInterval(t); }, 2500); history.replaceState(null, '', location.pathname); } } catch (e) {}
     this._pp = () => this.forceUpdate();
     window.addEventListener('photopick-change', this._pp);
@@ -4537,7 +4626,13 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.08.04c',
+      a2hsShow: !!this.state.a2hsShow,
+      a2hsIos: !!this.state.a2hsIos,
+      a2hsCanPrompt: !!this.state.a2hsCan,
+      a2hsInstall: () => this.a2hsInstall(),
+      a2hsLater: () => this.a2hsClose(false),
+      a2hsDismiss: () => this.a2hsClose(true),
+      appVersion: '2026.08.04d',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
