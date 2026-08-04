@@ -1804,6 +1804,79 @@ class Component extends DCLogic {
   retryPendingPush() {
     try { if (localStorage.getItem('wtn-sync-pending') && this.localHasData()) this.scheduleCloudPush(); } catch (e) {}
   }
+  // ---------- PHOTO STORE: เก็บรูปใน IndexedDB (localStorage เต็มเร็วมาก ~5MB) ----------
+  _idb() {
+    if (this._idbP) return this._idbP;
+    this._idbP = new Promise((res, rej) => {
+      try {
+        const r = indexedDB.open('wtn-photos', 1);
+        r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('p')) db.createObjectStore('p'); };
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error || new Error('idb'));
+      } catch (e) { rej(e); }
+    });
+    return this._idbP;
+  }
+  async idbPut(id, data) {
+    const db = await this._idb();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('p', 'readwrite');
+      tx.objectStore('p').put(data, id);
+      tx.oncomplete = () => res(true);
+      tx.onerror = () => rej(tx.error || new Error('put'));
+    });
+  }
+  async idbGet(id) {
+    try {
+      const db = await this._idb();
+      return await new Promise(res => {
+        const tx = db.transaction('p', 'readonly');
+        const q = tx.objectStore('p').get(id);
+        q.onsuccess = () => res(q.result || null);
+        q.onerror = () => res(null);
+      });
+    } catch (e) { return null; }
+  }
+  async idbDel(id) {
+    try { const db = await this._idb(); const tx = db.transaction('p', 'readwrite'); tx.objectStore('p').delete(id); } catch (e) {}
+  }
+  async stashPhoto(dataUrl) {
+    const id = 'p' + Date.now() + Math.floor(Math.random() * 100000);
+    try { await this.idbPut(id, dataUrl); } catch (e) { return dataUrl; }   // ใช้ IDB ไม่ได้ → คง data url ไว้
+    const ref = 'idb:' + id;
+    (this._idbCache || (this._idbCache = {}))[ref] = dataUrl;
+    return ref;
+  }
+  // คืน src ที่ใช้กับ <img> จากค่าที่เก็บไว้ (data url / ลิงก์คลาวด์ / ref ของ IDB)
+  px(p) {
+    if (typeof p !== 'string' || p.indexOf('idb:') !== 0) return p || '';
+    const c = this._idbCache || (this._idbCache = {});
+    if (c[p]) return c[p];
+    if (c[p] === undefined) {
+      c[p] = '';
+      this.idbGet(p.slice(4)).then(v => { if (v) { c[p] = v; this.forceUpdate(); } });
+    }
+    return 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
+  }
+  // ย้ายรูป base64 ที่ฝังอยู่ในก้อนข้อมูลไป IDB แล้วแทนด้วย ref (ใช้ตอนเครื่องเต็ม)
+  async offloadPhotos(obj) {
+    if (Array.isArray(obj)) { const out = []; for (const v of obj) out.push(await this.offloadPhotos(v)); return out; }
+    if (obj && typeof obj === 'object') { const out = {}; for (const k of Object.keys(obj)) out[k] = await this.offloadPhotos(obj[k]); return out; }
+    if (typeof obj === 'string' && obj.indexOf('data:image') === 0) return await this.stashPhoto(obj);
+    return obj;
+  }
+  async rescueSave(key, obj, label) {
+    const moved = await this.offloadPhotos(obj);
+    try {
+      localStorage.setItem(key, JSON.stringify(moved));
+      this.showToast('✓ บันทึกแล้ว · ย้ายรูปไปที่เก็บสำรองในเครื่อง');
+      this.forceUpdate();
+      return true;
+    } catch (e) {
+      alert('พื้นที่เก็บเต็มจริงๆ ' + (label || '') + '\nลองลบรูปเก่าสักหน่อย หรือกดซิงก์ขึ้นคลาวด์ตอนมีเน็ต');
+      return false;
+    }
+  }
   // ยกรูป base64 ที่ฝังในข้อมูลขึ้น Cloud Storage แล้วแทนด้วยลิงก์ (อัพครั้งเดียว/รูป, กันซ้ำด้วย map)
   async hoistImages() {
     const be = window.WTNBackend;
@@ -1814,8 +1887,18 @@ class Component extends DCLogic {
     const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
     const keys = [];
     for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && k !== 'wtn-img-map') keys.push(k); }
-    const raw = {}; const found = new Set();
-    keys.forEach(k => { const v = localStorage.getItem(k) || ''; raw[k] = v; const m = v.match(re); if (m) m.forEach(d => found.add(d)); });
+    const raw = {}; const found = new Set(); const refs = new Set();
+    keys.forEach(k => {
+      const v = localStorage.getItem(k) || ''; raw[k] = v;
+      const m = v.match(re); if (m) m.forEach(d => found.add(d));
+      const mr = v.match(/idb:p\d+/g); if (mr) mr.forEach(r => refs.add(r));
+    });
+    // ref ที่ชี้ไป IDB → ดึงตัวรูปมาเตรียมอัพด้วย
+    const dataOfRef = {};
+    for (const r of refs) {
+      const d = await this.idbGet(r.slice(4));
+      if (d && d.indexOf('data:image') === 0) { dataOfRef[r] = d; found.add(d); }
+    }
     if (!found.size) return;
     const urlFor = {};
     for (const d of found) {
@@ -1826,7 +1909,9 @@ class Component extends DCLogic {
     this._applyingCloud = true;
     try {
       keys.forEach(k => {
-        let nv = raw[k]; found.forEach(d => { if (urlFor[d]) nv = nv.split(d).join(urlFor[d]); });
+        let nv = raw[k];
+        Object.keys(dataOfRef).forEach(r => { const u = urlFor[dataOfRef[r]]; if (u) nv = nv.split(r).join(u); });   // ref → ลิงก์คลาวด์
+        found.forEach(d => { if (urlFor[d]) nv = nv.split(d).join(urlFor[d]); });
         if (nv !== raw[k]) { try { localStorage.setItem(k, nv); } catch (e) {} }
       });
       try { localStorage.setItem('wtn-img-map', JSON.stringify(map)); } catch (e) {}
@@ -2682,7 +2767,7 @@ class Component extends DCLogic {
   saveCheckins(o) {
     try { const prev = this.checkins || {}; Object.keys(o || {}).forEach(k => { o[k] = this._stampChanged(prev[k], o[k], 'mid'); }); } catch (e) {}
     try { localStorage.setItem('wtn-checkins', JSON.stringify(o)); }
-    catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม — ลองลบรูปในเช็คอินเก่าบางส่วน'); }
+    catch (e) { this.rescueSave('wtn-checkins', o, '(เช็คอิน)'); }
   }
   get ciKey() { return this.state.trip + ':' + this.state.day; }
   // เวลาของ "วันที่ N" ที่กำลังเปิด — วันนี้ = เวลาจริงตอนนี้, วันอื่น = เที่ยงวันนั้น (จดย้อนหลังแล้วเวลาไม่เพี้ยน)
@@ -2717,13 +2802,16 @@ class Component extends DCLogic {
       rd.onload = () => {
         const im = new Image();
         im.onload = () => {
-          const M = 1200, r = Math.min(1, M / Math.max(im.width, im.height));
+          const M = 1100, r = Math.min(1, M / Math.max(im.width, im.height));
           const c = document.createElement('canvas');
           c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
           c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-          const url = c.toDataURL('image/jpeg', 0.78);
+          const url = c.toDataURL('image/jpeg', 0.7);
           this.notePhotoExif(f, url);
-          this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].slice(0, 3).concat(url).slice(0, 3) }));
+          this.stashPhoto(url).then(ref => {
+            this.notePhotoExif(f, ref);
+            this.setState(s2 => ({ ciPhotos: [...(s2.ciPhotos || [])].slice(0, 3).concat(ref).slice(0, 3) }));
+          });
         };
         im.src = rd.result;
       };
@@ -3277,7 +3365,7 @@ class Component extends DCLogic {
   }
   // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) ----------
   get moments() { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }
-  saveMoments(a) { a = this._stampChanged(this.moments, a, 'id'); try { localStorage.setItem('wtn-moments', JSON.stringify(a)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } }
+  saveMoments(a) { a = this._stampChanged(this.moments, a, 'id'); try { localStorage.setItem('wtn-moments', JSON.stringify(a)); } catch (e) { this.rescueSave('wtn-moments', a, '(โมเมนต์)'); } }
   upsertLocalMoment(m) {
     m._m = Date.now();
     let a = this.moments.filter(x => x.id !== m.id);
@@ -3347,7 +3435,7 @@ class Component extends DCLogic {
     const have = (this.state.mpPhotos || []).length;
     if (have >= 3) return;
     const use = files.slice(0, 3 - have);
-    use.forEach(f => this.shrinkToUrl(f, 1200, url => { this.notePhotoExif(f, url); this.setState(s => ({ mpPhotos: [...(s.mpPhotos || [])].concat(url).slice(0, 3) })); }));
+    use.forEach(f => this.shrinkToUrl(f, 1100, url => { this.stashPhoto(url).then(ref => { this.notePhotoExif(f, ref); this.setState(s2 => ({ mpPhotos: [...(s2.mpPhotos || [])].concat(ref).slice(0, 3) })); }); }));
     if (use[0]) this.applyPhotoMeta(use[0]);
   }
   // ---------- EXIF: ดึงเวลาที่ถ่าย + พิกัดจากตัวรูป ----------
@@ -3780,10 +3868,15 @@ class Component extends DCLogic {
     const t = chs[i]; chs[i] = chs[j]; chs[j] = t;
     this.patchStory(s.id, { chapters: chs });
   }
-  chaptersFromCheckins() {
+  async resolvePhoto(p) {
+    if (typeof p === 'string' && p.indexOf('idb:') === 0) return await this.idbGet(p.slice(4));
+    return p;
+  }
+  async chaptersFromCheckins() {
     const s = this.openStory; if (!s) return;
     let chapters = [...(s.chapters || [])];
     const tid = s.tripId || this.state.trip;
+    const jobs = [];
     this.baseDaysFor(tid).forEach((d, i) => {
       const list = this.checkins[tid + ':' + i] || [];
       if (!list.length) return;
@@ -3791,7 +3884,7 @@ class Component extends DCLogic {
       list.forEach(c => {
         html += '<h3>' + (c.t ? this.esc(c.t) + ' · ' : '') + this.esc(c.name) + '</h3>';
         if (c.note) html += '<p>' + this.esc(c.note).replace(/\n/g, '<br>') + '</p>';
-        (c.photos || []).forEach(p => { if (imgs < 5) { html += '<p><img src="' + p + '"></p>'; imgs++; } });
+        (c.photos || []).forEach(p => { if (imgs < 5) { const tag = '__P' + i + '_' + imgs + '__'; html += '<p><img src="' + tag + '"></p>'; jobs.push({ tag, p }); imgs++; } });
       });
       const title = 'วันที่ ' + d.n + (d.city ? ' · ' + d.city : '');
       const words = (html.replace(/<[^>]*>/g, ' ').trim().match(/\S+/g) || []).length;
@@ -3800,6 +3893,10 @@ class Component extends DCLogic {
       if (idx >= 0) chapters[idx] = { ...chapters[idx], title, html, updatedAt: Date.now(), words };
       else chapters.push({ id: 'ch' + gen + Date.now(), gen, title, html, createdAt: Date.now(), updatedAt: Date.now(), free: true, published: false, words });
     });
+    for (const j of jobs) {
+      const real = await this.resolvePhoto(j.p);
+      chapters = chapters.map(c => (c.html && c.html.indexOf(j.tag) !== -1) ? { ...c, html: c.html.split(j.tag).join(real || '') } : c);
+    }
     this.patchStory(s.id, { chapters });
   }
   tripMomentsDigest() {
@@ -4329,7 +4426,7 @@ class Component extends DCLogic {
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
       goHome: () => this.setTab('plan'),
-      appVersion: '2026.08.04j',
+      appVersion: '2026.08.05a',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -4608,7 +4705,7 @@ class Component extends DCLogic {
       ciDayLabel: (this.days[active] || {}).tag || '',
       ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
         t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
-        photos: (c.photos || []).map(p => ({ src: p })), hasPhotos: (c.photos || []).length > 0,
+        photos: (c.photos || []).map(p => ({ src: this.px(p) })), hasPhotos: (c.photos || []).length > 0,
         togglePub: () => this.publishCheckin(this.ciKey, idx, !c.published),
         pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8',
         pubKnob: c.published ? 'right:3px' : 'left:3px',
@@ -4637,7 +4734,7 @@ class Component extends DCLogic {
       setCiWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ ciAt: t, ciFromPhoto: '' }); },
       ciFromPhoto: this.state.ciFromPhoto || '', ciHasPhotoMeta: !!this.state.ciFromPhoto,
       setCiNote: e => this.setState({ ciNote: e.target.value }),
-      ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: p,
+      ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: this.px(p),
         hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
         useDate: () => this.useCiPhotoDate(p),
         rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
@@ -4805,7 +4902,7 @@ class Component extends DCLogic {
             text: m.text || '', hasText: !!(m.text || '').trim(),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
             hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
-            photos: (m.photos || []).map(p => ({ src: p })), hasPhotos: (m.photos || []).length > 0,
+            photos: (m.photos || []).map(p => ({ src: this.px(p) })), hasPhotos: (m.photos || []).length > 0,
             catIdx: ci, catName: cats[ci] || '', hasCat: true,
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),
             _dk: this.dkey(m.at),
@@ -4869,7 +4966,7 @@ class Component extends DCLogic {
           segStoriesStyle: segBtn(seg === 'stories'), segMomentsStyle: segBtn(seg === 'moments'),
           meAvatar: meAv, meHasAvatar: !!meAv, meNoAvatar: !meAv,
           mpText: this.state.mpText ?? '', setMpText: e => this.setState({ mpText: e.target.value }),
-          mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: p,
+          mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: this.px(p),
             hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
             useDate: () => this.useMpPhotoDate(p),
             rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
