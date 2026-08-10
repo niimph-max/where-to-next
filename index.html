@@ -385,7 +385,6 @@
               <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">ต้องเชื่อม API key ที่แท็บ "ฉัน" ก่อน · AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้</div>
             </div>
           </sc-if>
-          <div onClick="{{ goTripKz }}" style="display:flex;align-items:center;gap:13px;background:#2b241f;border-radius:16px;padding:15px;cursor:pointer"><span style="width:44px;height:44px;border-radius:12px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M9 3v14M15 7v14M9 3l6 4M9 17l6 4M4 6l5-3v14l-5 3zM20 4l-5 3v14l5-3z"/></svg></span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#f6efe2">โหลดโปรแกรมทัวร์ (คาซัคสถาน)</div><div style="font:500 14px 'Anuphan';color:#c9b79b">ดูตัวอย่างทริปที่โหลดจากตั๋ว + โปรแกรมทัวร์</div></div></div>
         </div>
       </sc-if>
 
@@ -4771,7 +4770,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10g',
+      appVersion: '2026.08.10i',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,

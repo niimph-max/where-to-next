@@ -16,9 +16,17 @@ async function boot() {
   if (!cfg.url || cfg.url === "PASTE_SUPABASE_URL") { console.warn("[wtn] ยังไม่ได้ตั้ง supabase-config.js"); return; }
 
   const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.45.4");
+  // lock แบบ no-op: navigator.locks ของ supabase-js ค้างถาวรเมื่อเปิดหลายแท็บ/ใน iframe
+  // (อาการ: query ทุกตัวไม่ยอม resolve — ซิงก์เงียบหายทั้งระบบ)
+  const noLock = async (_name, _timeout, fn) => await fn();
   const SB = createClient(cfg.url, cfg.anonKey, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" }
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce", lock: noLock }
   });
+
+  // กันค้าง: ทุกคำสั่งที่รอผลต้องจบใน 20 วิ ไม่งั้นโยน error ให้ UI เห็น
+  const T = (p, ms = 20000, what = "supabase") => Promise.race([
+    p, new Promise((_, rej) => setTimeout(() => rej(new Error(what + " timeout")), ms))
+  ]);
 
   // แปลง error ของ Supabase ให้เป็นโค้ดแบบเดิม (ข้อความในแอปยังใช้ชุดเดิมได้)
   const mapErr = e => {
@@ -69,7 +77,7 @@ async function boot() {
     async ensureUserDoc(u) {
       if (!u || !this._uid) return;
       try {
-        const { data } = await SB.from("profiles").select("id").eq("id", this._uid).maybeSingle();
+        const { data } = await T(SB.from("profiles").select("id").eq("id", this._uid).maybeSingle(), 15000, "ensureUserDoc");
         if (!data) {
           await SB.from("profiles").insert({
             id: this._uid,
@@ -111,7 +119,7 @@ async function boot() {
     },
     async getPremium() {
       if (!this._uid) return null;
-      const { data } = await SB.from("profiles").select("premium,premium_until").eq("id", this._uid).maybeSingle();
+      const { data } = await T(SB.from("profiles").select("premium,premium_until").eq("id", this._uid).maybeSingle(), 15000, "getPremium");
       if (!data) return { premium: false, until: null };
       return { premium: data.premium === true, until: data.premium_until ? new Date(data.premium_until).getTime() : null };
     },
@@ -251,7 +259,7 @@ async function boot() {
       const blob = JSON.stringify(obj);
       if (blob.length > 4000000) { const e = new Error("backup ใหญ่เกิน 4MB"); e.code = "backup/too-large"; throw e; }
       const at = obj._at || Date.now();
-      ok(await SB.from("backups").upsert({ user_id: this._uid, blob, at, updated_at: new Date().toISOString() }));
+      ok(await T(SB.from("backups").upsert({ user_id: this._uid, blob, at, updated_at: new Date().toISOString() }), 30000, "pushBackup"));
       this._seenAt = Math.max(this._seenAt || 0, at);
       // เก็บเวอร์ชันย้อนหลัง 7 ชุด ไม่ถี่กว่า 10 นาที
       let verList = null;
@@ -300,7 +308,7 @@ async function boot() {
     },
     async pullBackup() {
       if (!this._uid) return null;
-      const { data } = await SB.from("backups").select("blob,at").eq("user_id", this._uid).maybeSingle();
+      const { data } = await T(SB.from("backups").select("blob,at").eq("user_id", this._uid).maybeSingle(), 20000, "pullBackup");
       if (!data) return null;
       this._seenAt = Math.max(this._seenAt || 0, Number(data.at) || 0);
       try { return JSON.parse(data.blob); } catch (e) { return null; }
