@@ -3492,6 +3492,8 @@ class Component extends DCLogic {
     this.publishChapterRemote(storyId, chapterId, on);
   }
   async loadFeed() {
+    return; // เรื่องเล่าเป็นส่วนตัว — ปิดฟีดสาธารณะ
+    /* eslint-disable no-unreachable */
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     try {
@@ -3510,6 +3512,7 @@ class Component extends DCLogic {
       });
       this.setState({ remoteFeed: list });
     } catch (e) { console.warn('[wtn] feed', e); }
+    /* eslint-enable no-unreachable */
   }
   // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) ----------
   get moments() { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }
@@ -4630,7 +4633,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10c',
+      appVersion: '2026.08.10d',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5069,12 +5072,7 @@ class Component extends DCLogic {
               on: () => this.openPublicChapter(st.id, c.id) });
           });
         });
-        (this.state.remoteFeed || []).forEach(r => {
-          feed.push({ _t: r._t, photo: r.photo, hasCover: r.hasCover, series: r.series,
-            title: r.title, excerpt: r.excerpt, likes: r.likes, comments: r.comments || 0, byline: r.author,
-            byAvatar: '', byHasAvatar: false, byNoAvatar: true,
-            on: () => this.openRemoteChapter(r) });
-        });
+        // เรื่องเล่าเป็นของส่วนตัว — ไม่ดึงฟีดสาธารณะข้ามบัญชีมาแสดงแล้ว
         feed.sort((a, b) => b._t - a._t);
         const all = this.stories.slice().sort((a, b) => b.at - a.at);
         const myUid = (window.WTNBackend && window.WTNBackend._uid) || null;
