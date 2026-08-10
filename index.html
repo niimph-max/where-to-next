@@ -579,7 +579,7 @@
             <div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:5px">โน้ต (ถ้ามี)</div><input onInput="{{ onAddNote }}" placeholder="รายละเอียดเพิ่มเติม" style="width:100%;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:13px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
           <sc-if value="{{ showAffil }}" hint-placeholder-val="{{ true }}">
-            <div style="margin-top:16px;background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:14px;padding:14px 15px">
+            <div onClick="{{ affilGo }}" style="margin-top:16px;background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:14px;padding:14px 15px;cursor:pointer">
               <div style="display:flex;align-items:center;gap:11px">
                 <span style="width:38px;height:38px;border-radius:11px;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg></span>
                 <div style="flex:1;min-width:0"><div style="font:600 15.5px 'Anuphan';color:#2b241f">{{ affilLabel }}</div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f">{{ affilSub }}</div></div>
@@ -2472,14 +2472,49 @@ class Component extends DCLogic {
     this.saveItinerary(this.state.trip, days);
     this.forceUpdate();
   }
+  KLOOK_AID = '130623';
+  openAffiliate() {
+    const kind = this.state.addKind;
+    const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
+    const q = (this.state.addTitle || '').trim() || (t.city || '').trim() || (t.name || '').trim();
+    const path = { 'ที่พัก': 'hotels/', 'เดินทาง': 'search/', 'กิน': 'search/', 'ที่เที่ยว': 'search/' }[kind] || 'search/';
+    const u = new URL('https://www.klook.com/th/' + path);
+    if (q) u.searchParams.set('query', q);
+    // วันที่จากแผน — Klook นับเฉพาะ in-session ยิ่งลิงก์ตรงยิ่งได้ค่าคอม
+    if (t.start) {
+      const d0 = new Date(new Date(t.start).getTime() + (Number(this.state.day) || 0) * 86400000);
+      if (!isNaN(d0)) {
+        const iso = d0.toISOString().slice(0, 10);
+        u.searchParams.set('start_time', iso);
+        if (kind === 'ที่พัก') {
+          u.searchParams.set('checkin', iso);
+          u.searchParams.set('checkout', new Date(d0.getTime() + 86400000).toISOString().slice(0, 10));
+        }
+      }
+    }
+    u.searchParams.set('aid', this.KLOOK_AID);
+    u.searchParams.set('aff_ext', (this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1));
+    window.open(u.toString(), '_blank', 'noopener');
+  }
   catKind(cat) { return { place: 'ที่เที่ยว', act: 'กิจกรรม', food: 'กิน', go: 'เดินทาง' }[cat] || 'ที่เที่ยว'; }
   baseDaysFor(tid) {
-    const it = this.itineraryOf(tid); if (it && it.length) return it;
+    const it = this.itineraryOf(tid); if (it && it.length) return this.withRealDates(it, tid);
     if (tid === 'kazakh') return this.kzDays;
     if (tid === 'yamagata') return this.jpDays;
     if (tid === 'blank') return this.blankDays;
     const ut = this.userTrips.find(x => x.id === tid); if (ut) return this.userDays(ut);
     return this.blankDays;
+  }
+  // แผนที่บันทึกไว้เก็บ label วันแบบตายตัว — ถ้าทริปมีวันเริ่มแล้ว ให้คำนวณวันที่จริงใหม่ทุกครั้ง
+  withRealDates(days, tid) {
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    if (!t || !t.start) return days;
+    const start = new Date(t.start); if (isNaN(start)) return days;
+    const M = this.thMonths();
+    return days.map((d, i) => {
+      const dt = new Date(start.getTime() + i * 86400000);
+      return { ...d, date: dt.getDate() + ' ' + M[dt.getMonth()] };
+    });
   }
   openAddPick(payload) {
     const trips = this.userTrips;
@@ -4664,7 +4699,7 @@ class Component extends DCLogic {
     const coverOn = "flex:1;text-align:center;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverOff = "flex:1;text-align:center;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverChips = [1,2,3,4].map((n,i) => ({ n, on: () => this.setState({ coverIdx: i }), style: this.state.coverIdx === i ? coverOn : coverOff }));
-    const affilMap = { 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:'Booking / Agoda · พาร์ตเนอร์' }, 'เดินทาง': { l:'ตั๋ว / รถเช่า', s:'12Go / rental · พาร์ตเนอร์' }, 'กิน': { l:'ร้านแนะนำ / จองโต๊ะ', s:'รีวิว + จอง · พาร์ตเนอร์' }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:'Klook / GetYourGuide · พาร์ตเนอร์' } };
+    const affilMap = { 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:'Klook Hotels · พาร์ตเนอร์' }, 'เดินทาง': { l:'รถรับส่ง / รถเช่า / ตั๋ว', s:'Klook · พาร์ตเนอร์' }, 'กิน': { l:'ร้าน / คอร์สอาหาร', s:'Klook · พาร์ตเนอร์' }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:'Klook · พาร์ตเนอร์' } };
     const af = affilMap[this.state.addKind];
     const pillBase = 'flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:54px;border-radius:14px;cursor:pointer;border:1px solid rgba(43,36,32,.1)';
     const tc = (t) => this.state.tab === t ? '#c05f39' : '#b3a897';
@@ -4770,7 +4805,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10i',
+      appVersion: '2026.08.10k',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5185,6 +5220,7 @@ class Component extends DCLogic {
       onAddTitle: (e) => this.setState({ addTitle: e.target.value }),
       onAddTime: (e) => this.setState({ addTime: e.target.value }),
       onAddNote: (e) => this.setState({ addNote: e.target.value }),
+      affilGo: () => this.openAffiliate(),
       openAdd: () => this.go('addStop'), sAddStop: sc === 'addStop',
       saveStop: () => { const key = this.state.trip + ':' + this.state.day; const arr = (this.state.added[key] || []).concat([{ t: this.state.addTime || '—', kind: this.state.addKind, title: this.state.addTitle || 'กิจกรรมใหม่', note: this.state.addNote || '' }]); this.setState({ added: { ...this.state.added, [key]: arr }, addTitle: '', addTime: '', addNote: '' }); this.back(); },
       nowKicker: nowK, nowTitle: nowT, nowSub: nowS,
