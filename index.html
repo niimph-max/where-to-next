@@ -870,7 +870,7 @@
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><sc-if value="{{ st.byHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ st.byAvatar }}" alt="" style="width:23px;height:23px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ st.byNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:23px;height:23px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><span style="font:600 14px 'Anuphan';color:#5c5347">{{ st.byline }}</span><span style="font:500 14px 'Anuphan';color:#a99e8e">· {{ st.series }}</span></div>
                     <div style="font-family:'Chonburi',serif;font-size:21px;line-height:1.3;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
                     <p style="font:500 15px/1.6 'Anuphan';color:#6f6558;margin:0 0 11px;text-wrap:pretty">{{ st.excerpt }}</p>
-                    <div style="display:flex;align-items:center;gap:16px"><span style="display:inline-flex;align-items:center;gap:5px;font:600 14.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ st.likes }}</span><span style="display:inline-flex;align-items:center;gap:5px;font:600 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.8-5.5A8 8 0 1 1 21 12z"/></svg>{{ st.comments }}</span><span style="display:inline-flex;align-items:center;gap:5px;font:500 14.5px 'Anuphan';color:#8a7d6f;margin-left:auto"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8"/></svg>อ่านตอนนี้</span></div>
+                    <div style="display:flex;align-items:center;gap:16px"><span style="display:inline-flex;align-items:center;gap:5px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8"/></svg>อ่านตอนนี้</span></div>
                   </div>
                 </div>
               </sc-for>
@@ -988,8 +988,6 @@
                 <h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:29px;line-height:1.3;color:#2b241f;margin:0 0 12px;text-wrap:pretty">{{ oTitle }}</h1>
                 <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><sc-if value="{{ ownerHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ ownerAvatar }}" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ ownerNoAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><div style="flex:1"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ oAuthor }}</div><div style="font:500 13.5px 'Anuphan';color:#a99e8e">{{ oSubtitle }}</div></div><button onClick="{{ editOpenStory }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14px 'Anuphan';padding:8px 15px;border-radius:20px;cursor:pointer">จัดการ</button></div>
                 <div style="display:flex;align-items:center;gap:16px;padding:14px 0;margin-top:8px;border-top:1px solid rgba(43,36,32,.1);border-bottom:1px solid rgba(43,36,32,.1)">
-                  <span style="display:inline-flex;align-items:center;gap:6px;font:600 14.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ oLikes }}</span>
-                  <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>{{ oViews }}</span>
                   <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8"/></svg>{{ oChapCount }} ตอน</span>
                 </div>
                 <sc-if value="{{ oHasSyn }}" hint-placeholder-val="{{ false }}">
@@ -1014,19 +1012,6 @@
         </div>
       </sc-if>
 
-      <!-- ========== COMMENTS ========== -->
-      <sc-if value="{{ sComments }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen" style="padding:16px 20px 30px">
-          <div style="display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:1px solid rgba(43,36,32,.08);margin-bottom:16px"><img src="uploads/20240619_072028.jpg" alt="" style="width:44px;height:44px;border-radius:12px;object-fit:cover;flex:none"><div style="flex:1"><div style="font:600 15.5px 'Anuphan';color:#2b241f;line-height:1.25">คืนที่ Ginzan เหมือนหลุดเข้าการ์ตูน</div><div style="font:500 14px 'Anuphan';color:#a99e8e">Nim · ญี่ปุ่น</div></div></div>
-          <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px 15px;margin-bottom:16px">
-            <div style="display:inline-flex;align-items:center;gap:5px;font:600 12.5px 'Anuphan';color:#c05f39;margin-bottom:9px"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2 7h7l-5.5 4 2 7-5.5-4-5.5 4 2-7L3 9h7z"/></svg>เจ้าของปักหมุด</div>
-            <div style="display:flex;gap:10px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#bcd0c4,#8fae9c);flex:none"></span><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#2b241f">Ploy <span style="font:500 13px 'Anuphan';color:#a99e8e">· 2 วันก่อน</span></div><p style="font:500 15px/1.6 'Anuphan';color:#413931;margin:5px 0 0">ที่พัก Hatago Itouya จองยากไหมคะ ไปกลางมกราต้องจองล่วงหน้ากี่เดือน?</p></div></div>
-            <div style="display:flex;gap:10px;margin:12px 0 0;padding:12px 0 0;border-top:1px dashed rgba(192,95,57,.25)"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#2b241f">Nim <span style="display:inline-block;font:600 10.5px 'Anuphan';color:#fff;background:#c05f39;padding:1px 7px;border-radius:10px">ผู้เขียน</span></div><p style="font:500 15px/1.6 'Anuphan';color:#413931;margin:5px 0 0">จองล่วงหน้า 3 เดือนกำลังดีค่ะ ห้องริมลำธารเต็มไว เปิดจองใน booking กับเว็บเรียวกังโดยตรง</p></div></div>
-          </div>
-          <div style="display:flex;gap:10px;margin-bottom:16px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#cbb9d6,#a98fb8);flex:none"></span><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#2b241f">Beam <span style="font:500 13px 'Anuphan';color:#a99e8e">· 1 วันก่อน</span></div><p style="font:500 15px/1.6 'Anuphan';color:#413931;margin:5px 0 0">หนาวมากไหมคะ ต้องเตรียมเสื้อกันหนาวประมาณกี่องศา</p></div></div>
-          <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(43,36,32,.12);border-radius:22px;padding:11px 16px"><span style="flex:1;font:500 15px 'Anuphan';color:#a99e8e">ถามอะไรก็ได้เกี่ยวกับทริปนี้…</span><span style="width:32px;height:32px;border-radius:50%;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M5 12l14-7-4 14-3-5z"/></svg></span></div>
-        </div>
-      </sc-if>
 
       <!-- ========== TICKET VIEWER ========== -->
       <sc-if value="{{ sTicket }}" hint-placeholder-val="{{ false }}">
@@ -1132,8 +1117,6 @@
           <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px"><span style="width:30px;height:30px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"><sc-if value="{{ seHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ seAvatar }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></sc-if></span><div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">{{ seAuthor }}</div><sc-if value="{{ seMetaView }}" hint-placeholder-val="{{ true }}"><div style="font:500 13.5px 'Anuphan';color:#a99e8e">{{ seSubtitle }}</div></sc-if></div><button onClick="{{ toggleStoryMeta }}" style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14px 'Anuphan';padding:7px 14px;border-radius:20px;cursor:pointer;flex:none">{{ seMetaBtnLabel }}</button></div>
           <sc-if value="{{ seMetaEdit }}" hint-placeholder-val="{{ false }}"><input value="{{ smSubtitle }}" onInput="{{ setSmSubtitle }}" placeholder="คำโปรย เช่น 11 วัน 10 คืน · 24 ก.ค.–3 ส.ค." style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:10px 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none;margin-bottom:10px"></sc-if>
           <div style="display:flex;align-items:center;gap:16px;padding:13px 0;border-top:1px solid rgba(43,36,32,.09);border-bottom:1px solid rgba(43,36,32,.09);margin-bottom:14px">
-            <span style="display:inline-flex;align-items:center;gap:6px;font:600 14.5px 'Anuphan';color:#c05f39"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"></path></svg>{{ seLikes }}</span>
-            <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>{{ seViews }}</span>
             <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h8"></path></svg>{{ seChapCount }} ตอน</span>
           </div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
@@ -1273,23 +1256,8 @@
             </sc-if>
             <sc-if value="{{ crLive }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid rgba(43,36,32,.1)">
-                <button onClick="{{ crLikeToggle }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(43,36,32,.14);background:#fffaf0;font:700 15px 'Anuphan';color:{{ crLikeColor }};padding:9px 15px;border-radius:22px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="{{ crLikeFill }}" stroke="{{ crLikeColor }}" stroke-width="1.8"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"></path></svg>{{ crLikes }}</button>
                 <button onClick="{{ crShare }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(43,36,32,.14);background:#fffaf0;font:600 15px 'Anuphan';color:#5c5347;padding:9px 15px;border-radius:22px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg>แชร์</button>
-                <span style="flex:1"></span>
-                <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.8-5.5A8 8 0 1 1 21 12z"></path></svg>{{ crCommentCount }}</span>
               </div>
-              <div style="font:600 15px 'Anuphan';color:#2b241f;margin:22px 0 12px">ความคิดเห็น ({{ crCommentCount }})</div>
-              <div style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid rgba(43,36,32,.12);border-radius:22px;padding:5px 6px 5px 15px;margin-bottom:16px">
-                <input value="{{ commentDraft }}" onInput="{{ setCommentDraft }}" placeholder="เขียนความคิดเห็น…" style="flex:1;min-width:0;border:none;background:transparent;font:500 15px 'Anuphan';color:#2b241f;outline:none;min-height:38px">
-                <button onClick="{{ addCommentFn }}" style="width:40px;height:40px;border-radius:50%;border:none;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M5 12l14-7-4 14-3-5z"></path></svg></button>
-              </div>
-              <sc-if value="{{ crHasComments }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-direction:column;gap:14px">
-                  <sc-for list="{{ crComments }}" as="cm" hint-placeholder-count="0">
-                    <div style="display:flex;gap:10px"><sc-if value="{{ cm.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ cm.avatar }}" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;flex:none"></sc-if><sc-if value="{{ cm.noAvatar }}" hint-placeholder-val="{{ true }}"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span></sc-if><div style="flex:1"><div style="font:600 14.5px 'Anuphan';color:#2b241f">{{ cm.name }} <span style="font:500 13px 'Anuphan';color:#a99e8e">· {{ cm.at }}</span></div><p style="font:500 15px/1.6 'Anuphan';color:#413931;margin:4px 0 0;text-wrap:pretty">{{ cm.text }}</p></div></div>
-                  </sc-for>
-                </div>
-              </sc-if>
             </sc-if>
           </div>
           <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
@@ -1558,7 +1526,7 @@
             <div style="padding:16px 20px 30px;display:flex;flex-direction:column;gap:12px">
               <sc-if value="{{ noStories }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:40px 4px;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีเรื่องเล่า<br>บันทึกจากทริปของคุณได้เลย</div></sc-if>
               <sc-for list="{{ profileStories }}" as="st" hint-placeholder-count="3">
-                <div onClick="{{ st.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ st.photo }}" alt="" style="width:104px;height:88px;object-fit:cover;flex:none;display:block"><div style="flex:1;padding:11px 12px 11px;min-width:0"><div style="font:500 13px 'Anuphan';color:#c05f39;margin-bottom:3px">{{ st.place }}</div><div style="font:600 15.5px/1.35 'Anuphan';color:#2b241f">{{ st.title }}</div><div style="display:flex;align-items:center;gap:13px;margin-top:7px"><span style="display:inline-flex;align-items:center;gap:4px;font:600 13.5px 'Anuphan';color:#c05f39"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21C7 17 4 13.5 4 9.5 4 7 6 5 8.5 5c1.6 0 3 .8 3.5 2 .5-1.2 1.9-2 3.5-2C18 5 20 7 20 9.5c0 4-3 7.5-8 11.5z"/></svg>{{ st.likes }}</span><span style="display:inline-flex;align-items:center;gap:4px;font:500 13.5px 'Anuphan';color:#8a7d6f"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.8-5.5A8 8 0 1 1 21 12z"/></svg>{{ st.qa }}</span></div></div></div>
+                <div onClick="{{ st.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ st.photo }}" alt="" style="width:104px;height:88px;object-fit:cover;flex:none;display:block"><div style="flex:1;padding:11px 12px 11px;min-width:0"><div style="font:500 13px 'Anuphan';color:#c05f39;margin-bottom:3px">{{ st.place }}</div><div style="font:600 15.5px/1.35 'Anuphan';color:#2b241f">{{ st.title }}</div></div></div>
               </sc-for>
             </div>
           </sc-if>
@@ -4559,7 +4527,7 @@ class Component extends DCLogic {
       subscribeNow: () => this.startCheckout(this.state.premiumPlan || 'year'),
       sMyplans: sc==='myplans', sCreate: sc==='create', sTrip: sc==='trip', sBudget: sc==='budget',
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
-      sComments: sc==='comments', sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
+      sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
       sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard' && sc!=='country' && sc!=='city', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
       sOverview: sc==='overview', sPrep: sc==='prep',
@@ -4632,7 +4600,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.04d',
+      appVersion: '2026.08.10a',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -4960,7 +4928,6 @@ class Component extends DCLogic {
       goSummary: () => this.go('summary'),
       goOverview: () => this.go('overview'),
       goPrep: () => this.go('prep'),
-      goComments: () => this.go('comments'),
       tabStoriesFn: () => this.isGuest ? this.gotoSignup() : this.setTab('stories'),
       tabDiscoverFn: () => this.isGuest ? this.gotoSignup() : this.setTab('discover'),
       tabPlanFn: () => this.isGuest ? this.gotoSignup() : this.setTab('plan'),
@@ -5448,7 +5415,7 @@ class Component extends DCLogic {
           setSmTitle: e => this.setState({ smTitle: e.target.value }),
           setSmCategory: e => this.setState({ smCategory: e.target.value }),
           setSmSubtitle: e => this.setState({ smSubtitle: e.target.value }),
-          seViews: os.views || 0, seLikes: os.likes || 0, seChapCount: chs.length,
+          seChapCount: chs.length,
           seTags: (me ? (this.state.smTags || []) : (os.tags || [])).map((t, i) => ({ label: t,
             editable: me, rm: () => this.setState(st => ({ smTags: (st.smTags || []).filter((_, j) => j !== i) })) })),
           seHasTags: (me ? (this.state.smTags || []).length : (os.tags || []).length) > 0,
@@ -5518,16 +5485,7 @@ class Component extends DCLogic {
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
           chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => { const id = sp.getAttribute('data-yt'); const w = document.createElement('div'); w.className = 'wtn-embed-yt'; w.innerHTML = '<iframe src=\"https://www.youtube.com/embed/' + id + '\" allowfullscreen></iframe>'; sp.replaceWith(w); }); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
-          crLikes: (oc || {}).likes || 0, crLiked: this.isLiked(this.state.openChapterId),
-          crLikeFill: this.isLiked(this.state.openChapterId) ? '#c05f39' : 'none',
-          crLikeColor: this.isLiked(this.state.openChapterId) ? '#c05f39' : '#8a7d6f',
-          crLikeToggle: () => this.isGuest ? this.gotoSignup() : this.toggleLike(this.state.openStoryId, this.state.openChapterId),
           crShare: () => this.shareChapter(),
-          crComments: this.commentsFor(this.state.openChapterId).map(c => ({ name: c.name, text: c.text, at: fmtDT(c.at), avatar: c.avatar || '', hasAvatar: !!c.avatar, noAvatar: !c.avatar })),
-          crCommentCount: this.commentsFor(this.state.openChapterId).length,
-          crHasComments: this.commentsFor(this.state.openChapterId).length > 0,
-          commentDraft: this.state.commentDraft ?? '', setCommentDraft: e => this.setState({ commentDraft: e.target.value }),
-          addCommentFn: () => this.isGuest ? this.gotoSignup() : this.addComment(this.state.openStoryId, this.state.openChapterId, this.state.commentDraft),
           crPhotos: ((oc || {}).photos || []).map(p => ({ src: p })), crHasPhotos: (((oc || {}).photos) || []).length > 0,
           crYtId: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ''; })(),
           crHasYt: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return !!m; })(),
@@ -5537,7 +5495,7 @@ class Component extends DCLogic {
           ownerAvatar: this.coverOf('wtn-avatar', null), ownerHasAvatar: !!this.coverOf('wtn-avatar', null), ownerNoAvatar: !this.coverOf('wtn-avatar', null),
           oDraft: !os.published, oPublished: !!os.published, oFinished: !!os.finished,
           oSynopsis: os.synopsis || '', oHasSyn: !!(os.synopsis || '').trim(),
-          oLikes: os.likes || 0, oViews: os.views || 0, oChapCount: chs.length, oNoChapters: chs.length === 0,
+          oChapCount: chs.length, oNoChapters: chs.length === 0,
           oChapters: chs.map((c, i) => ({ n: 'ตอนที่ ' + (i + 1), title: c.title,
             meta: fmtD(c.updatedAt), free: !!c.free, premium: !c.free, freeLabel: c.free ? 'ฟรี' : 'พรีเมียม',
             on: () => this.openChapterRead(c.id, false) })),
