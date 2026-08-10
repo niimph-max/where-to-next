@@ -615,8 +615,8 @@
               <sc-for list="{{ ciList }}" as="ci" hint-placeholder-count="2">
                 <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px">
                   <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 13px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 16px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
-                  <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 14.5px/1.55 'Anuphan';color:#5c5347;margin-top:7px">{{ ci.note }}</div></sc-if>
-                  <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="width:76px;height:76px;object-fit:cover;border-radius:11px;flex:none"></sc-for></div></sc-if>
+                  <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 16.5px/1.7 'IBM Plex Sans Thai Looped','Anuphan',sans-serif;color:#4a4239;margin-top:8px;text-wrap:pretty">{{ ci.note }}</div></sc-if>
+                  <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" style="width:92px;height:92px;object-fit:cover;border-radius:12px;flex:none;cursor:pointer"></sc-for></div></sc-if>
                   <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
                     <span onClick="{{ ci.togglePub }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer"><span style="width:40px;height:23px;border-radius:13px;position:relative;flex:none;{{ ci.pubTrack }}"><span style="position:absolute;top:3px;{{ ci.pubKnob }};width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span><span style="font:600 13.5px 'Anuphan';color:{{ ci.pubColor }}">{{ ci.pubLabel }}</span></span>
                     <span style="flex:1"></span>
@@ -859,7 +859,41 @@
           <div style="display:flex;gap:7px;padding:14px 20px 10px;position:sticky;top:0;background:#f6efe2;z-index:5">
             <button onClick="{{ segStories }}" style="{{ segStoriesStyle }}">เรื่องเล่า</button>
             <button onClick="{{ segMoments }}" style="{{ segMomentsStyle }}">โมเมนต์</button>
+            <button onClick="{{ segMedia }}" style="{{ segMediaStyle }}">คลังรูป</button>
+            <button onClick="{{ segMap }}" style="{{ segMapStyle }}">แผนที่</button>
           </div>
+
+          <sc-if value="{{ segIsMap }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:6px 20px 30px">
+              <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin:2px 0 12px">{{ fmapCountLabel }}</div>
+              <div style="position:relative;width:100%;height:460px;border-radius:18px;overflow:hidden;border:1px solid rgba(43,36,32,.12);background:#e8dfc9">
+                <div ref="{{ feedMapRef }}" style="position:absolute;inset:0"></div>
+              </div>
+              <sc-if value="{{ fmapEmpty }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;padding:26px 24px 0;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีจุดบนแผนที่<br>โมเมนต์และเช็คอินที่มีพิกัดจะมาปักหมุดที่นี่</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ segIsMedia }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:6px 20px 30px">
+              <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin:2px 0 12px">{{ mediaCountLabel }}</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                <sc-for list="{{ mediaItems }}" as="mi" hint-placeholder-count="9">
+                  <div onClick="{{ mi.on }}" style="position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#e7dbc7;cursor:pointer">
+                    <img src="{{ mi.src }}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ noMedia }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;padding:54px 24px">
+                  <div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg></div>
+                  <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีรูป</div>
+                  <div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">รูปที่แนบในโมเมนต์ เช็คอิน และเรื่องเล่า<br>จะมารวมกันที่นี่</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
 
           <sc-if value="{{ segIsStories }}" hint-placeholder-val="{{ true }}">
             <div style="padding:6px 20px 30px">
@@ -957,7 +991,7 @@
                   </div>
                   <sc-if value="{{ mo.viewMode }}" hint-placeholder-val="{{ true }}">
                     <sc-if value="{{ mo.hasText }}" hint-placeholder-val="{{ true }}"><p style="font:500 17px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;margin:11px 0 0;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere">{{ mo.text }}</p></sc-if>
-                    <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img src="{{ ph.src }}" alt="" style="height:220px;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover"></sc-for></div></sc-if>
+                    <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" style="height:220px;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover;cursor:pointer"></sc-for></div></sc-if>
                   </sc-if>
                   <sc-if value="{{ mo.editingThis }}" hint-placeholder-val="{{ false }}">
                     <textarea value="{{ meText }}" onInput="{{ setMeText }}" placeholder="แก้ไขบันทึก…" rows="7" style="width:100%;box-sizing:border-box;margin-top:11px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 12px;font:500 17px/1.6 'IBM Plex Sans Thai Looped',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
@@ -1257,7 +1291,7 @@
             <div ref="{{ chReaderRef }}" class="wtn-read"></div>
             <sc-if value="{{ crHasPhotos }}" hint-placeholder-val="{{ false }}">
               <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
-                <sc-for list="{{ crPhotos }}" as="ph" hint-placeholder-count="0"><img src="{{ ph.src }}" alt="" style="width:100%;border-radius:14px;display:block"></sc-for>
+                <sc-for list="{{ crPhotos }}" as="ph" hint-placeholder-count="0"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" style="width:100%;border-radius:14px;display:block;cursor:pointer"></sc-for>
               </div>
             </sc-if>
             <sc-if value="{{ crHasYt }}" hint-placeholder-val="{{ false }}">
@@ -1690,6 +1724,24 @@
 <sc-if value="{{ cloudShow }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9000;background:rgba(43,36,32,.92);color:#f6efe2;font:600 14px 'Anuphan';padding:8px 15px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.28);display:flex;align-items:center;gap:8px;pointer-events:none">
     <span style="width:7px;height:7px;border-radius:50%;background:#e6a15c"></span>{{ cloudText }}
+  </div>
+</sc-if>
+<sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ lbClose }}" style="position:fixed;inset:0;z-index:9800;background:rgba(20,16,13,.96);display:flex;flex-direction:column">
+    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px">
+      <span style="font:600 14.5px 'Anuphan';color:rgba(246,239,226,.75)">{{ lbLabel }}</span>
+      <span style="flex:1"></span>
+      <button onClick="{{ lbClose }}" style="width:44px;height:44px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 10px">
+      <img src="{{ lbSrc }}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;display:block">
+    </div>
+    <sc-if value="{{ lbHasMany }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:none;display:flex;align-items:center;justify-content:center;gap:26px;padding:16px 0 calc(env(safe-area-inset-bottom) + 20px)">
+        <button onClick="{{ lbPrev }}" style="width:52px;height:52px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"></path></svg></button>
+        <button onClick="{{ lbNext }}" style="width:52px;height:52px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></button>
+      </div>
+    </sc-if>
   </div>
 </sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
@@ -2621,6 +2673,92 @@ class Component extends DCLogic {
       () => this.setState({ ciGeoStatus: 'fail' }),
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
   }
+  // ---------- แผนที่ความทรงจำ (แท็บแผนที่) ----------
+  memoryPoints() {
+    const out = [];
+    (this.moments || []).forEach(m => {
+      const p = m.pos; if (!p || p.lat == null) return;
+      out.push({ lat: p.lat, lng: p.lng, at: m.at || 0,
+        title: (m.place || '').trim() || (m.text || '').slice(0, 40) || 'โมเมนต์',
+        photo: this.px((m.photos || [])[0] || ''), kind: 'moment' });
+    });
+    const ci = this.checkins || {};
+    Object.keys(ci).forEach(k => (ci[k] || []).forEach(c => {
+      if (c.lat == null) return;
+      out.push({ lat: c.lat, lng: c.lng, at: c.at || 0,
+        title: c.name || 'เช็คอิน', photo: this.px((c.photos || [])[0] || ''), kind: 'checkin' });
+    }));
+    return out;
+  }
+  initFeedMap() {
+    const el = this._fmapEl;
+    const on = this.state.screen === 'feed' && (this.state.feedSeg || 'stories') === 'map';
+    if (!on) { if (this._fmap) { this._fmap.remove(); this._fmap = null; } return; }
+    if (!el) return;
+    if (!window.L) { clearTimeout(this._fmapWait); this._fmapWait = setTimeout(() => this.initFeedMap(), 300); return; }
+    if (this._fmap && this._fmap.getContainer() !== el) { this._fmap.remove(); this._fmap = null; }
+    const pts = this.memoryPoints();
+    if (!this._fmap) {
+      const m = L.map(el, { zoomControl: false, attributionControl: true });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }).addTo(m);
+      m.setView([13.75, 100.5], 3);
+      this._fmap = m;
+      setTimeout(() => m.invalidateSize(), 60);
+    }
+    if (this._fmapLayer) this._fmapLayer.remove();
+    this._fmapLayer = L.layerGroup().addTo(this._fmap);
+    const esc = t => String(t || '').replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+    pts.forEach(p => {
+      const dot = p.kind === 'moment' ? '#c05f39' : '#e07a3f';
+      const icon = L.divIcon({ className: '', iconSize: [20, 20], iconAnchor: [10, 10],
+        html: '<div style="width:20px;height:20px;border-radius:50%;background:' + dot + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>' });
+      const when = p.at ? new Date(p.at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : '';
+      const img = p.photo ? '<img src="' + esc(p.photo) + '" style="width:100%;max-width:180px;border-radius:8px;display:block;margin-top:6px">' : '';
+      L.marker([p.lat, p.lng], { icon }).addTo(this._fmapLayer)
+        .bindPopup('<div style="font:600 14px Anuphan,sans-serif;color:#2b241f">' + esc(p.title) +
+          '</div><div style="font:500 12.5px Anuphan,sans-serif;color:#8a7d6f">' + esc(when) + '</div>' + img);
+    });
+    if (pts.length && !this._fmapFitted) {
+      this._fmapFitted = true;
+      const b = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
+      this._fmap.fitBounds(b.pad(0.25), { maxZoom: 12 });
+    }
+  }
+  // ---------- ดูรูปใหญ่ (lightbox) ----------
+  openLightbox(list, i) {
+    const arr = (list || []).filter(Boolean);
+    if (!arr.length) return;
+    this.setState({ lbList: arr, lbIdx: Math.max(0, Math.min(i || 0, arr.length - 1)) });
+  }
+  closeLightbox() { this.setState({ lbList: null, lbIdx: 0 }); }
+  lbStep(d) {
+    const a = this.state.lbList || []; if (!a.length) return;
+    this.setState(st => ({ lbIdx: (st.lbIdx + d + a.length) % a.length }));
+  }
+  // ---------- คลังรูป: รวมรูปจากโมเมนต์ + เช็คอิน + เรื่องเล่า ----------
+  gatherMedia() {
+    const out = [], seen = new Set();
+    const push = (raw, at) => {
+      const src = this.px(raw);
+      if (!src || seen.has(src)) return;
+      seen.add(src); out.push({ src, at: at || 0 });
+    };
+    (this.moments || []).forEach(m => (m.photos || []).forEach(p => push(p, m.at || 0)));
+    const ci = this.checkins || {};
+    Object.keys(ci).forEach(k => (ci[k] || []).forEach(c => (c.photos || []).forEach(p => push(p, c.at || 0))));
+    (this.stories || []).forEach(st => {
+      if (st.cover) push(st.cover, st.at || 0);
+      (st.chapters || []).forEach(c => {
+        if (c.cover) push(c.cover, c.updatedAt || 0);
+        (c.photos || []).forEach(p => push(p, c.updatedAt || 0));
+        const re = /<img[^>]+src="([^"]+)"/g; let m;
+        while ((m = re.exec(c.html || ''))) push(m[1], c.updatedAt || 0);
+      });
+    });
+    out.sort((a, b) => b.at - a.at);
+    return out;
+  }
   showToast(msg) {
     clearTimeout(this._toastT);
     this.setState({ toast: msg });
@@ -2717,7 +2855,7 @@ class Component extends DCLogic {
       this.setState({ impBusy: false, impErr: 'อ่านโปรแกรมไม่สำเร็จ: ' + (e.message || e) });
     }
   }
-  componentDidUpdate() { this.initMap(); this._guardStoryScreens(); }
+  componentDidUpdate() { this.initMap(); this.initFeedMap(); this._guardStoryScreens(); }
   _guardStoryScreens() {
     const sc = this.state.screen;
     if (sc !== 'chapterRead' && sc !== 'chapterEdit') return;
@@ -4633,7 +4771,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10d',
+      appVersion: '2026.08.10g',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -4912,7 +5050,9 @@ class Component extends DCLogic {
       ciDayLabel: (this.days[active] || {}).tag || '',
       ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
         t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
-        photos: (c.photos || []).map(p => ({ src: this.px(p) })), hasPhotos: (c.photos || []).length > 0,
+        photos: (() => { const srcs = (c.photos || []).map(p => this.px(p));
+          return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+        hasPhotos: (c.photos || []).length > 0,
         togglePub: () => this.publishCheckin(this.ciKey, idx, !c.published),
         pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8',
         pubKnob: c.published ? 'right:3px' : 'left:3px',
@@ -4935,6 +5075,13 @@ class Component extends DCLogic {
       retryCiGeo: () => this.grabCiPos(),
       recenterMe: () => this.recenterMe(),
       toast: this.state.toast || '', hasToast: !!this.state.toast,
+      lbOpen: !!(this.state.lbList && this.state.lbList.length),
+      lbSrc: (this.state.lbList || [])[this.state.lbIdx || 0] || '',
+      lbLabel: (this.state.lbList || []).length > 1 ? ((this.state.lbIdx || 0) + 1) + ' / ' + this.state.lbList.length : '',
+      lbHasMany: (this.state.lbList || []).length > 1,
+      lbClose: () => this.closeLightbox(),
+      lbPrev: e => { if (e && e.stopPropagation) e.stopPropagation(); this.lbStep(-1); },
+      lbNext: e => { if (e && e.stopPropagation) e.stopPropagation(); this.lbStep(1); },
       ciName: this.state.ciName ?? '', ciNote: this.state.ciNote ?? '',
       setCiName: e => this.setState({ ciName: e.target.value }),
       ciWhenVal: this.tsToInput(this.state.ciAt || this.dayTs(this.state.day)),
@@ -5079,7 +5226,7 @@ class Component extends DCLogic {
         const seg = this.state.feedSeg || 'stories';
         const segBtn = on => (on
           ? 'flex:1;background:#2b241f;color:#f6efe2;'
-          : 'flex:1;background:#efe4d3;color:#7c7264;') + 'font:600 15.5px Anuphan;padding:11px;border-radius:14px;border:none;cursor:pointer';
+          : 'flex:1;background:#efe4d3;color:#7c7264;') + 'font:600 14px Anuphan;padding:11px 4px;border-radius:13px;border:none;cursor:pointer;white-space:nowrap';
         const cats = this.mcats;
         const mpCatSel = this.state.mpCat || 0;
         const catFilter = (this.state.catFilter == null) ? null : this.state.catFilter;
@@ -5103,7 +5250,9 @@ class Component extends DCLogic {
             text: m.text || '', hasText: !!(m.text || '').trim(),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
             hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
-            photos: (m.photos || []).map(p => ({ src: this.px(p) })), hasPhotos: (m.photos || []).length > 0,
+            photos: (() => { const srcs = (m.photos || []).map(p => this.px(p));
+              return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+            hasPhotos: (m.photos || []).length > 0,
             catIdx: ci, catName: cats[ci] || '', hasCat: true,
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),
             _dk: this.dkey(m.at),
@@ -5163,8 +5312,26 @@ class Component extends DCLogic {
           composeNew: () => this.openStoryEdit(null),
           segStories: () => this.setState({ feedSeg: 'stories' }),
           segMoments: () => { this.setState({ feedSeg: 'moments' }); this.loadMoments(); },
-          segIsStories: seg === 'stories', segIsMoments: seg === 'moments',
+          segMedia: () => this.setState({ feedSeg: 'media' }),
+          segMap: () => { this._fmapFitted = false; this.setState({ feedSeg: 'map' }); },
+          segIsStories: seg === 'stories', segIsMoments: seg === 'moments', segIsMedia: seg === 'media', segIsMap: seg === 'map',
           segStoriesStyle: segBtn(seg === 'stories'), segMomentsStyle: segBtn(seg === 'moments'),
+          segMediaStyle: segBtn(seg === 'media'), segMapStyle: segBtn(seg === 'map'),
+          feedMapRef: el => { this._fmapEl = el; if (el) setTimeout(() => this.initFeedMap(), 0); },
+          ...(() => {
+            if (seg !== 'map') return { fmapEmpty: false, fmapCountLabel: '' };
+            const n = this.memoryPoints().length;
+            return { fmapEmpty: n === 0, fmapCountLabel: n ? (n + ' จุด') : '' };
+          })(),
+          ...(() => {
+            if (seg !== 'media') return { mediaItems: [], noMedia: false, mediaCountLabel: '' };
+            const all = this.gatherMedia(), srcs = all.map(x => x.src);
+            return {
+              mediaItems: all.map((x, i) => ({ src: x.src, on: () => this.openLightbox(srcs, i) })),
+              noMedia: all.length === 0,
+              mediaCountLabel: all.length ? (all.length + ' รูป') : ''
+            };
+          })(),
           meAvatar: meAv, meHasAvatar: !!meAv, meNoAvatar: !meAv,
           mpText: this.state.mpText ?? '', setMpText: e => this.setState({ mpText: e.target.value }),
           mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: this.px(p),
@@ -5527,7 +5694,9 @@ class Component extends DCLogic {
           chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => { const id = sp.getAttribute('data-yt'); const w = document.createElement('div'); w.className = 'wtn-embed-yt'; w.innerHTML = '<iframe src=\"https://www.youtube.com/embed/' + id + '\" allowfullscreen></iframe>'; sp.replaceWith(w); }); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
-          crPhotos: ((oc || {}).photos || []).map(p => ({ src: p })), crHasPhotos: (((oc || {}).photos) || []).length > 0,
+          crPhotos: (() => { const srcs = ((oc || {}).photos || []).map(p => this.px(p));
+            return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+          crHasPhotos: (((oc || {}).photos) || []).length > 0,
           crYtId: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ''; })(),
           crHasYt: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return !!m; })(),
           crClipUrl: ((oc || {}).clip) || '', crHasClipLink: (() => { const u = ((oc || {}).clip) || ''; return !!u && !/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/.test(u); })(),
