@@ -1,345 +1,336 @@
-// where to next? — Firebase data layer (ESM, โหลดจาก CDN ไม่ต้อง build)
-// โหลดด้วย: <script type="module" src="wtn-backend.js"></script> ต่อจาก firebase-config.js
-// เปิดใช้เมื่อ window.WTN_BACKEND_ENABLED === true และกรอก config จริงแล้ว
+// where to next? — Supabase data layer (ESM, โหลดจาก CDN ไม่ต้อง build)
+// โหลดด้วย: <script type="module" src="wtn-backend.js"></script> ต่อจาก supabase-config.js
+// เปิดใช้เมื่อ window.WTN_BACKEND_ENABLED === true และกรอก supabase-config.js จริงแล้ว
 //
-// โครงข้อมูล Firestore:
-//   users/{uid}                         โปรไฟล์ (อ่านสาธารณะ) + users/{uid}/likes/{chapterId}
-//   trips/{tripId}                      ส่วนตัว (ownerUid) + subcollections checkins/expenses/docs/budget
-//   stories/{storyId}                   เมทาเดต้าเล่ม (อ่านสาธารณะ)
-//   stories/{storyId}/chapters/{cid}    ตอน (อ่านได้เมื่อ published==true หรือเป็นเจ้าของ)
-//   stories/{sid}/chapters/{cid}/comments/{id}
-//   Storage: users/{uid}/img/{ts}.jpg
-
-const V = "10.12.2";
-const B = `https://www.gstatic.com/firebasejs/${V}`;
+// โครงข้อมูล (ดู supabase/schema.sql):
+//   profiles(id)                       โปรไฟล์ + สถานะพรีเมียม (อ่านสาธารณะ)
+//   stories(id) / chapters(story_id,id) เล่ม + ตอน (อ่านสาธารณะเมื่อ published)
+//   moments(id)                        โพสต์สั้น (อ่านสาธารณะเมื่อ published)
+//   likes(user_id,key) / comments      ถูกใจ / ความคิดเห็น (UI ถอดออกแล้ว แต่คงตารางไว้)
+//   backups / backup_versions / backup_meta   ซิงก์ทั้งแอปข้ามเครื่อง
+//   Storage bucket "media": users/{uid}/img/{ts}.jpg
 
 async function boot() {
   if (!window.WTN_BACKEND_ENABLED) { console.info("[wtn] backend disabled — โหมด local"); return; }
-  const cfg = window.WTN_FIREBASE_CONFIG || {};
-  if (!cfg.apiKey || cfg.apiKey === "PASTE_API_KEY") { console.warn("[wtn] ยังไม่ได้ตั้ง firebase-config.js"); return; }
+  const cfg = window.WTN_SUPABASE || {};
+  if (!cfg.url || cfg.url === "PASTE_SUPABASE_URL") { console.warn("[wtn] ยังไม่ได้ตั้ง supabase-config.js"); return; }
 
-  const [{ initializeApp }, auth, fs, storage, fns] = await Promise.all([
-    import(`${B}/firebase-app.js`),
-    import(`${B}/firebase-auth.js`),
-    import(`${B}/firebase-firestore.js`),
-    import(`${B}/firebase-storage.js`),
-    import(`${B}/firebase-functions.js`),
-  ]);
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2.45.4");
+  const SB = createClient(cfg.url, cfg.anonKey, {
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: "pkce" }
+  });
 
-  const app = initializeApp(cfg);
-  const A = auth.getAuth(app);
-  const DB = fs.getFirestore(app);
-  const ST = storage.getStorage(app);
-  const FN = fns.getFunctions(app, "asia-southeast1");
+  // แปลง error ของ Supabase ให้เป็นโค้ดแบบเดิม (ข้อความในแอปยังใช้ชุดเดิมได้)
+  const mapErr = e => {
+    if (!e) return e;
+    const m = (e.message || "").toLowerCase(), s = e.status || 0;
+    let code = "";
+    if (m.includes("already registered") || m.includes("already been registered")) code = "auth/email-already-in-use";
+    else if (m.includes("invalid login credentials")) code = "auth/invalid-credential";
+    else if (m.includes("invalid email") || m.includes("unable to validate email")) code = "auth/invalid-email";
+    else if (m.includes("password should be") || m.includes("weak password")) code = "auth/weak-password";
+    else if (m.includes("email not confirmed")) code = "auth/email-not-confirmed";
+    else if (s === 429 || m.includes("rate limit") || m.includes("too many")) code = "auth/too-many-requests";
+    else if (m.includes("failed to fetch") || m.includes("network")) code = "auth/network-request-failed";
+    else if (m.includes("provider is not enabled")) code = "auth/operation-not-allowed";
+    const err = new Error(e.message || "เกิดข้อผิดพลาด");
+    if (code) err.code = code;
+    return err;
+  };
+  const ok = ({ data, error }) => { if (error) throw mapErr(error); return data; };
+
+  // ทำให้หน้าตา user เหมือนของเดิม (แอปอ่าน uid / displayName / email / providerData)
+  const shapeUser = u => u && ({
+    uid: u.id, email: u.email || "",
+    displayName: (u.user_metadata && (u.user_metadata.name || u.user_metadata.full_name)) || "",
+    photoURL: (u.user_metadata && (u.user_metadata.avatar_url || u.user_metadata.picture)) || "",
+    providerData: [{ providerId: (u.app_metadata && u.app_metadata.provider) || "password" }],
+    _raw: u
+  });
+  const secs = t => (t ? { seconds: Math.floor(new Date(t).getTime() / 1000) } : null);
+  const dataUrlToBlob = async d => (await fetch(d)).blob();
 
   const api = {
     _uid: null,
+    _sb: SB,
+
     // ---------- AUTH ----------
-    onUser(cb) { return auth.onAuthStateChanged(A, u => { this._uid = u ? u.uid : null; if (u) this.ensureUserDoc(u); cb(u); }); },
-    // สร้าง users/{uid} ให้ทุกคนตอนล็อกอิน (ไม่ใช่แค่สมัครด้วยอีเมล) เพื่อให้แดชบอร์ดนับผู้ใช้ฟรีครบ
+    onUser(cb) {
+      const handle = async u => {
+        this._uid = u ? u.uid : null;
+        if (u) await this.ensureUserDoc(u);
+        cb(u);
+      };
+      SB.auth.getSession().then(({ data }) => handle(shapeUser(data && data.session && data.session.user)));
+      const { data: sub } = SB.auth.onAuthStateChange((_e, session) =>
+        handle(shapeUser(session && session.user)));
+      return () => { try { sub.subscription.unsubscribe(); } catch (e) {} };
+    },
     async ensureUserDoc(u) {
       if (!u || !this._uid) return;
       try {
-        const ref = fs.doc(DB, "users", this._uid);
-        const snap = await fs.getDoc(ref);
-        if (!snap.exists()) {
-          const pid = (u.providerData && u.providerData[0] && u.providerData[0].providerId) || "password";
-          await fs.setDoc(ref, {
-            name: u.displayName || (u.email ? u.email.split("@")[0] : ""),
-            email: u.email || "",
-            provider: pid,
-            createdAt: fs.serverTimestamp(),
-            updatedAt: fs.serverTimestamp(),
-          }, { merge: true });
+        const { data } = await SB.from("profiles").select("id").eq("id", this._uid).maybeSingle();
+        if (!data) {
+          await SB.from("profiles").insert({
+            id: this._uid,
+            data: {
+              name: u.displayName || (u.email ? u.email.split("@")[0] : ""),
+              email: u.email || "",
+              avatar: u.photoURL || "",
+              provider: (u.providerData[0] || {}).providerId || "password"
+            }
+          });
         }
       } catch (e) { console.warn("[wtn] ensureUserDoc", e && e.message); }
     },
     async emailSignup(email, pass, name) {
-      const c = await auth.createUserWithEmailAndPassword(A, email, pass);
-      if (name) await auth.updateProfile(c.user, { displayName: name });
-      await this.saveProfile({ name: name || email.split("@")[0] });
-      return c.user;
+      const d = ok(await SB.auth.signUp({ email, password: pass, options: { data: { name: name || email.split("@")[0] } } }));
+      if (!d.session) { const e = new Error("ส่งอีเมลยืนยันแล้ว เปิดลิงก์ในอีเมลเพื่อเข้าใช้งาน"); e.code = "auth/confirm-email-sent"; throw e; }
+      return shapeUser(d.user);
     },
-    emailLogin(email, pass) { return auth.signInWithEmailAndPassword(A, email, pass); },
+    async emailLogin(email, pass) {
+      return shapeUser(ok(await SB.auth.signInWithPassword({ email, password: pass })).user);
+    },
     async google() {
-      try {
-        return await auth.signInWithPopup(A, new auth.GoogleAuthProvider());
-      } catch (e) {
-        const c = e && e.code;
-        if (c === "auth/popup-blocked" || c === "auth/popup-closed-by-user" ||
-            c === "auth/cancelled-popup-request" || c === "auth/operation-not-supported-in-this-environment") {
-          await auth.signInWithRedirect(A, new auth.GoogleAuthProvider());
-          return null;
-        }
-        throw e;
-      }
+      const redirectTo = location.origin + location.pathname;
+      ok(await SB.auth.signInWithOAuth({ provider: "google", options: { redirectTo } }));
+      return null; // เบราว์เซอร์จะ redirect ออกไป แล้วกลับมาพร้อม session
     },
-    facebook() { return auth.signInWithPopup(A, new auth.FacebookAuthProvider()); },
-    // เบอร์โทร OTP — สร้างกล่อง reCAPTCHA ของตัวเองแปะกับ body (นอก React tree กัน re-render ลบทิ้ง)
-    async phoneStart(phoneE164, _ignoredId) {
-      try { if (this._recaptchaVerifier) { this._recaptchaVerifier.clear(); this._recaptchaVerifier = null; } } catch (e) {}
-      try { if (this._recaptchaHost && this._recaptchaHost.parentNode) this._recaptchaHost.parentNode.removeChild(this._recaptchaHost); } catch (e) {}
-      const host = document.createElement("div");     // กล่องใหม่ทุกครั้ง แปะกับ body เอง
-      host.style.position = "fixed";
-      host.style.bottom = "0";
-      host.style.left = "0";
-      host.style.opacity = "0";
-      host.style.pointerEvents = "none";
-      host.style.zIndex = "-1";
-      document.body.appendChild(host);
-      this._recaptchaHost = host;
-      const verifier = new auth.RecaptchaVerifier(A, host, { size: "invisible" });
-      this._recaptchaVerifier = verifier;
-      try {
-        await verifier.render();                        // ให้ widget เกิดจริงก่อนใช้
-        this._confirm = await auth.signInWithPhoneNumber(A, phoneE164, verifier);
-      } catch (e) {
-        try { verifier.clear(); } catch (_) {}
-        try { if (host.parentNode) host.parentNode.removeChild(host); } catch (_) {}
-        this._recaptchaVerifier = null;
-        this._recaptchaHost = null;
-        throw e;
-      }
+    async resetPassword(email) {
+      ok(await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }));
       return true;
     },
-    async phoneVerify(code) { const c = await this._confirm.confirm(code); return c.user; },
-    logout() { return auth.signOut(A); },
+    logout() { return SB.auth.signOut(); },
 
     // ---------- PROFILE ----------
     async saveProfile(p) {
       if (!this._uid) return;
-      await fs.setDoc(fs.doc(DB, "users", this._uid), { ...p, updatedAt: fs.serverTimestamp() }, { merge: true });
+      const { data } = await SB.from("profiles").select("data").eq("id", this._uid).maybeSingle();
+      const merged = { ...((data && data.data) || {}), ...p };
+      ok(await SB.from("profiles").upsert({ id: this._uid, data: merged, updated_at: new Date().toISOString() }));
+    },
+    async getPremium() {
+      if (!this._uid) return null;
+      const { data } = await SB.from("profiles").select("premium,premium_until").eq("id", this._uid).maybeSingle();
+      if (!data) return { premium: false, until: null };
+      return { premium: data.premium === true, until: data.premium_until ? new Date(data.premium_until).getTime() : null };
     },
 
     // ---------- STORAGE (รูป/ไฟล์) ----------
     async uploadImage(blobOrDataUrl, name) {
       if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
-      const path = `users/${this._uid}/img/${Date.now()}_${name || "f"}`;
-      const r = storage.ref(ST, path);
-      if (typeof blobOrDataUrl === "string") await storage.uploadString(r, blobOrDataUrl, "data_url");
-      else await storage.uploadBytes(r, blobOrDataUrl);
-      return storage.getDownloadURL(r);
+      const path = `users/${this._uid}/img/${Date.now()}_${(name || "f").replace(/[^\w.\-]/g, "_")}`;
+      const body = typeof blobOrDataUrl === "string" ? await dataUrlToBlob(blobOrDataUrl) : blobOrDataUrl;
+      ok(await SB.storage.from("media").upload(path, body, { contentType: body.type || "image/jpeg", upsert: true }));
+      return SB.storage.from("media").getPublicUrl(path).data.publicUrl;
     },
 
     // ---------- STORIES / CHAPTERS ----------
-    async saveStory(story) { // story.id ต้องมี
-      const { id, ...data } = story;
-      await fs.setDoc(fs.doc(DB, "stories", id),
-        { ...data, ownerUid: this._uid, updatedAt: fs.serverTimestamp() }, { merge: true });
+    async saveStory(story) {
+      const { id, ...rest } = story;
+      const { data } = await SB.from("stories").select("data").eq("id", id).maybeSingle();
+      ok(await SB.from("stories").upsert({
+        id, owner: this._uid, data: { ...((data && data.data) || {}), ...rest },
+        updated_at: new Date().toISOString()
+      }));
       return id;
     },
-    async saveChapter(storyId, ch) { // ch.id ต้องมี
-      const { id, ...data } = ch;
-      await fs.setDoc(fs.doc(DB, "stories", storyId, "chapters", id),
-        { ...data, updatedAt: fs.serverTimestamp() }, { merge: true });
+    async saveChapter(storyId, ch) {
+      const { id, ...rest } = ch;
+      const { data } = await SB.from("chapters").select("data").eq("story_id", storyId).eq("id", id).maybeSingle();
+      const merged = { ...((data && data.data) || {}), ...rest };
+      ok(await SB.from("chapters").upsert({
+        story_id: storyId, id, owner: this._uid, data: merged,
+        published: merged.published === true, ord: Number(merged.order) || 0,
+        likes: Number(merged.likes) || 0, updated_at: new Date().toISOString()
+      }, { onConflict: "story_id,id" }));
     },
-    publishChapter(storyId, cid, on) {
-      return fs.updateDoc(fs.doc(DB, "stories", storyId, "chapters", cid), { published: !!on });
+    async publishChapter(storyId, cid, on) {
+      ok(await SB.from("chapters").update({ published: !!on, updated_at: new Date().toISOString() })
+        .eq("story_id", storyId).eq("id", cid));
     },
     async myStories() {
-      const q = fs.query(fs.collection(DB, "stories"), fs.where("ownerUid", "==", this._uid));
-      return (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+      const rows = ok(await SB.from("stories").select("*").eq("owner", this._uid));
+      return (rows || []).map(r => ({ id: r.id, ...r.data, updatedAt: secs(r.updated_at) }));
     },
     async chapters(storyId) {
-      const q = fs.query(fs.collection(DB, "stories", storyId, "chapters"), fs.orderBy("order", "asc"));
-      return (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+      const rows = ok(await SB.from("chapters").select("*").eq("story_id", storyId).order("ord", { ascending: true }));
+      return (rows || []).map(r => ({ id: r.id, ...r.data, published: r.published, likes: r.likes, updatedAt: secs(r.updated_at) }));
     },
-    // ดึงตอนเดียว (สำหรับลิงก์แชร์ ?st=&ch=) — อ่านได้แม้ยังไม่ล็อกอิน ถ้า published==true
     async getChapter(storyId, cid) {
       try {
-        const [s, c] = await Promise.all([
-          fs.getDoc(fs.doc(DB, "stories", storyId)),
-          fs.getDoc(fs.doc(DB, "stories", storyId, "chapters", cid))
+        const [{ data: s }, { data: c }] = await Promise.all([
+          SB.from("stories").select("*").eq("id", storyId).maybeSingle(),
+          SB.from("chapters").select("*").eq("story_id", storyId).eq("id", cid).maybeSingle()
         ]);
-        if (!c.exists()) return null;
-        return { story: s.exists() ? { id: s.id, ...s.data() } : { id: storyId }, chapter: { id: c.id, ...c.data() } };
+        if (!c) return null;
+        return {
+          story: s ? { id: s.id, ...s.data } : { id: storyId },
+          chapter: { id: c.id, ...c.data, published: c.published, likes: c.likes, updatedAt: secs(c.updated_at) }
+        };
       } catch (e) { console.warn("[wtn] getChapter", e); return null; }
     },
-    // ฟีดสาธารณะ: ตอนที่ published (collectionGroup) — ไม่ orderBy เพื่อเลี่ยง composite index, เรียงฝั่ง client
     async feed(max = 40) {
-      const q = fs.query(fs.collectionGroup(DB, "chapters"),
-        fs.where("published", "==", true), fs.limit(max));
-      const rows = (await fs.getDocs(q)).docs.map(d => ({ id: d.id, storyId: d.ref.parent.parent.id, ...d.data() }));
-      rows.sort((a, b) => ((b.updatedAt && b.updatedAt.seconds) || 0) - ((a.updatedAt && a.updatedAt.seconds) || 0));
-      return rows;
+      const rows = ok(await SB.from("chapters").select("*").eq("published", true)
+        .order("updated_at", { ascending: false }).limit(max));
+      return (rows || []).map(r => ({
+        id: r.id, storyId: r.story_id, ...r.data,
+        published: true, likes: r.likes, updatedAt: secs(r.updated_at)
+      }));
     },
 
-    // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) — ฟีดสาธารณะข้ามบัญชี ----------
-    async publishMoment(id, data) {
+    // ---------- MOMENTS ----------
+    async publishMoment(id, d) {
       if (!this._uid) return;
-      await fs.setDoc(fs.doc(DB, "moments", id),
-        { ...data, ownerUid: this._uid, published: true, updatedAt: fs.serverTimestamp() }, { merge: true });
+      const { data } = await SB.from("moments").select("data").eq("id", id).maybeSingle();
+      const merged = { ...((data && data.data) || {}), ...d };
+      ok(await SB.from("moments").upsert({
+        id, owner: this._uid, data: merged, published: true,
+        at: Number(merged.at) || Date.now(), likes: Number(merged.likes) || 0,
+        updated_at: new Date().toISOString()
+      }));
     },
     async unpublishMoment(id) {
       if (!this._uid) return;
-      try { await fs.updateDoc(fs.doc(DB, "moments", id), { published: false }); } catch (e) {}
+      try { await SB.from("moments").update({ published: false }).eq("id", id); } catch (e) {}
     },
     async deleteMoment(id) {
       if (!this._uid) return;
-      try { await fs.deleteDoc(fs.doc(DB, "moments", id)); } catch (e) {}
+      try { await SB.from("moments").delete().eq("id", id); } catch (e) {}
     },
     async moments(max = 60) {
-      const q = fs.query(fs.collection(DB, "moments"), fs.where("published", "==", true), fs.limit(max));
-      const rows = (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
-      rows.sort((a, b) => (b.at || 0) - (a.at || 0));
-      return rows;
+      const rows = ok(await SB.from("moments").select("*").eq("published", true)
+        .order("at", { ascending: false }).limit(max));
+      return (rows || []).map(r => ({ id: r.id, ...r.data, at: r.at, likes: r.likes }));
     },
     async toggleMomentLike(momentId) {
       if (!this._uid) return null;
-      const meRef = fs.doc(DB, "users", this._uid, "likes", "m_" + momentId);
-      const mRef = fs.doc(DB, "moments", momentId);
-      let nowLiked = false;
-      await fs.runTransaction(DB, async t => {
-        const me = await t.get(meRef);
-        const m = await t.get(mRef);
-        const cur = (m.exists() && m.data().likes) || 0;
-        if (me.exists()) { t.delete(meRef); t.update(mRef, { likes: Math.max(0, cur - 1) }); nowLiked = false; }
-        else { t.set(meRef, { at: fs.serverTimestamp() }); t.update(mRef, { likes: cur + 1 }); nowLiked = true; }
-      });
-      return nowLiked;
+      return ok(await SB.rpc("toggle_moment_like", { p_moment: momentId }));
     },
 
-    // ---------- LIKES ----------
+    // ---------- LIKES / COMMENTS (UI ถอดออกแล้ว — คงไว้ให้เข้ากันได้) ----------
     async toggleLike(storyId, cid) {
-      const meRef = fs.doc(DB, "users", this._uid, "likes", cid);
-      const chRef = fs.doc(DB, "stories", storyId, "chapters", cid);
-      await fs.runTransaction(DB, async t => {
-        const me = await t.get(meRef);
-        const liked = me.exists();
-        t.update(chRef, { likes: fs.increment(liked ? -1 : 1) });
-        if (liked) t.delete(meRef); else t.set(meRef, { at: fs.serverTimestamp() });
-      });
+      if (!this._uid) return null;
+      return ok(await SB.rpc("toggle_chapter_like", { p_story: storyId, p_chapter: cid }));
     },
-
-    // ---------- COMMENTS ----------
-    addComment(storyId, cid, name, text) {
-      return fs.addDoc(fs.collection(DB, "stories", storyId, "chapters", cid, "comments"),
-        { uid: this._uid, name, text, at: fs.serverTimestamp() });
+    async addComment(storyId, cid, name, text) {
+      ok(await SB.from("comments").insert({ story_id: storyId, chapter_id: cid, uid: this._uid, name, text }));
     },
     async comments(storyId, cid) {
-      const q = fs.query(fs.collection(DB, "stories", storyId, "chapters", cid, "comments"), fs.orderBy("at", "asc"));
-      return (await fs.getDocs(q)).docs.map(d => ({ id: d.id, ...d.data() }));
+      const rows = ok(await SB.from("comments").select("*").eq("story_id", storyId).eq("chapter_id", cid)
+        .order("at", { ascending: true }));
+      return (rows || []).map(r => ({ id: r.id, uid: r.uid, name: r.name, text: r.text, at: secs(r.at) }));
     },
 
     // ---------- ทริป/เช็คอิน/งบ/เอกสาร (ส่วนตัว) ----------
-    async saveTrip(tripId, data) {
-      await fs.setDoc(fs.doc(DB, "trips", tripId), { ...data, ownerUid: this._uid }, { merge: true });
+    async saveTrip(tripId, d) {
+      const { data } = await SB.from("trips").select("data").eq("id", tripId).maybeSingle();
+      ok(await SB.from("trips").upsert({ id: tripId, owner: this._uid, data: { ...((data && data.data) || {}), ...d } }));
     },
-    async saveSub(tripId, coll, id, data) {
-      await fs.setDoc(fs.doc(DB, "trips", tripId, coll, id), data, { merge: true });
+    async saveSub(tripId, coll, id, d) {
+      const { data } = await SB.from("trip_items").select("data").eq("trip_id", tripId).eq("coll", coll).eq("id", id).maybeSingle();
+      ok(await SB.from("trip_items").upsert({
+        trip_id: tripId, coll, id, owner: this._uid, data: { ...((data && data.data) || {}), ...d }
+      }, { onConflict: "trip_id,coll,id" }));
     },
     async getSub(tripId, coll) {
-      return (await fs.getDocs(fs.collection(DB, "trips", tripId, coll))).docs.map(d => ({ id: d.id, ...d.data() }));
+      const rows = ok(await SB.from("trip_items").select("*").eq("trip_id", tripId).eq("coll", coll));
+      return (rows || []).map(r => ({ id: r.id, ...r.data }));
     },
 
-    // ล้าง backup คลาวด์ของบัญชีนี้ทิ้ง (เอกสารหลัก + เวอร์ชันย้อนหลังทั้งหมด) — ใช้ตอนบัญชีปนเปื้อนข้อมูล
+    // ---------- FULL BACKUP (ซิงก์ทั้งแอปข้ามเครื่อง) ----------
     async wipeBackup() {
       if (!this._uid) return;
-      try {
-        const vers = await fs.getDocs(fs.collection(DB, "backups", this._uid, "versions"));
-        for (const d of vers.docs) { try { await fs.deleteDoc(d.ref); } catch (e) {} }
-      } catch (e) {}
-      try { await fs.deleteDoc(fs.doc(DB, "backups", this._uid)); } catch (e) {}
+      try { await SB.from("backup_versions").delete().eq("user_id", this._uid); } catch (e) {}
+      try { await SB.from("backups").delete().eq("user_id", this._uid); } catch (e) {}
+      try { await SB.from("backup_meta").delete().eq("user_id", this._uid); } catch (e) {}
       this._seenAt = 0; this._lastVerAt = 0; this._verList = null;
     },
-    // ---------- FULL BACKUP (ซิงก์ทั้งแอปข้ามเครื่อง) — เก็บใน Firestore (เลี่ยงปัญหา CORS ของ Storage) ----------
     async pushBackup(obj) {
       if (!this._uid) return;
       const blob = JSON.stringify(obj);
-      if (blob.length > 1000000) { const e = new Error("backup ใหญ่เกิน 1MB"); e.code = "backup/too-large"; throw e; }
+      if (blob.length > 4000000) { const e = new Error("backup ใหญ่เกิน 4MB"); e.code = "backup/too-large"; throw e; }
       const at = obj._at || Date.now();
-      await fs.setDoc(fs.doc(DB, "backups", this._uid),
-        { blob, at, updatedAt: fs.serverTimestamp() });
-      this._seenAt = Math.max(this._seenAt || 0, at); // กัน listener เครื่องนี้โหลด echo ของตัวเอง
-      const metaRef = fs.doc(DB, "backups", this._uid, "versions", "meta");
-      // เก็บเวอร์ชันย้อนหลัง (กันเขียนทับพลาด) — 7 ชุดล่าสุด, ไม่ถี่กว่า 10 นาที
+      ok(await SB.from("backups").upsert({ user_id: this._uid, blob, at, updated_at: new Date().toISOString() }));
+      this._seenAt = Math.max(this._seenAt || 0, at);
+      // เก็บเวอร์ชันย้อนหลัง 7 ชุด ไม่ถี่กว่า 10 นาที
       let verList = null;
       if (!this._lastVerAt || at - this._lastVerAt >= 600000) {
         this._lastVerAt = at;
         try {
-          await fs.setDoc(fs.doc(DB, "backups", this._uid, "versions", String(at)), { blob, at });
-          // ตัดเวอร์ชันเก่าด้วยรายชื่อ id ใน meta — ไม่ดาวน์โหลด blob ทั้ง 7 ชุดอีกแล้ว
+          await SB.from("backup_versions").upsert({ user_id: this._uid, at, blob });
           let list = this._verList;
-          if (!list) { try { const m = await fs.getDoc(metaRef); list = (m.exists() && m.data().verList) || null; } catch (e) {} }
-          if (!list) { // ครั้งแรกหลังอัปเดต: อ่านรายชื่อเดิมหนึ่งครั้ง
-            const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
-            list = q.docs.filter(d => d.id !== "meta").map(d => d.data().at || Number(d.id));
+          if (!list) {
+            const rows = ok(await SB.from("backup_versions").select("at").eq("user_id", this._uid).order("at", { ascending: false }));
+            list = (rows || []).map(r => Number(r.at));
           }
           list = list.filter(x => x && x !== at); list.push(at); list.sort((a, b) => b - a);
-          for (const old of list.slice(7)) { try { await fs.deleteDoc(fs.doc(DB, "backups", this._uid, "versions", String(old))); } catch (e) {} }
+          const drop = list.slice(7);
+          if (drop.length) await SB.from("backup_versions").delete().eq("user_id", this._uid).in("at", drop);
           this._verList = verList = list.slice(0, 7);
         } catch (e) { console.warn("[wtn] version snap", e); }
       }
-      // meta จิ๋ว (~ไม่กี่ร้อยไบต์) ให้เครื่องอื่นฟังแทน blob เต็ม — ประหยัด bandwidth มหาศาล
-      try { await fs.setDoc(metaRef, verList ? { at, verList } : { at }, { merge: true }); } catch (e) {}
+      // meta จิ๋ว — ให้เครื่องอื่นฟังผ่าน realtime แทน blob เต็ม
+      try {
+        await SB.from("backup_meta").upsert(verList
+          ? { user_id: this._uid, at, ver_list: verList }
+          : { user_id: this._uid, at });
+      } catch (e) {}
     },
     async listBackupVersions() {
       if (!this._uid) return [];
       try {
-        const q = await fs.getDocs(fs.query(fs.collection(DB, "backups", this._uid, "versions"), fs.orderBy("at", "desc")));
-        return q.docs.filter(d => d.id !== "meta").map(d => {
+        const rows = ok(await SB.from("backup_versions").select("at,blob").eq("user_id", this._uid).order("at", { ascending: false }));
+        return (rows || []).map(r => {
           let trips = 0, moments = 0;
-          try { const o = JSON.parse(d.data().blob); const dd = o.data || {}; trips = (JSON.parse(dd["wtn-trips"] || "[]") || []).length; moments = (JSON.parse(dd["wtn-moments"] || "[]") || []).length; } catch (e) {}
-          return { id: d.id, at: d.data().at || Number(d.id), trips, moments };
+          try {
+            const o = JSON.parse(r.blob), dd = o.data || {};
+            trips = (JSON.parse(dd["wtn-trips"] || "[]") || []).length;
+            moments = (JSON.parse(dd["wtn-moments"] || "[]") || []).length;
+          } catch (e) {}
+          return { id: String(r.at), at: Number(r.at), trips, moments };
         });
       } catch (e) { console.warn("[wtn] list versions", e); return []; }
     },
     async getBackupVersion(id) {
       if (!this._uid) return null;
-      const snap = await fs.getDoc(fs.doc(DB, "backups", this._uid, "versions", String(id)));
-      if (!snap.exists()) return null;
-      try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
+      const { data } = await SB.from("backup_versions").select("blob").eq("user_id", this._uid).eq("at", Number(id)).maybeSingle();
+      if (!data) return null;
+      try { return JSON.parse(data.blob); } catch (e) { return null; }
     },
     async pullBackup() {
       if (!this._uid) return null;
-      const snap = await fs.getDoc(fs.doc(DB, "backups", this._uid));
-      if (!snap.exists()) return null;
-      this._seenAt = Math.max(this._seenAt || 0, snap.data().at || 0);
-      try { return JSON.parse(snap.data().blob); } catch (e) { return null; }
+      const { data } = await SB.from("backups").select("blob,at").eq("user_id", this._uid).maybeSingle();
+      if (!data) return null;
+      this._seenAt = Math.max(this._seenAt || 0, Number(data.at) || 0);
+      try { return JSON.parse(data.blob); } catch (e) { return null; }
     },
-    // ฟังการเปลี่ยนแปลงแบบเรียลไทม์ — ฟังเฉพาะ meta จิ๋ว แล้วค่อยโหลด blob เต็มเมื่อมีของใหม่จริงเท่านั้น
     subscribeBackup(cb) {
       if (!this._uid) return () => {};
-      const metaRef = fs.doc(DB, "backups", this._uid, "versions", "meta");
-      return fs.onSnapshot(metaRef,
-        async snap => {
-          if (!snap.exists()) return;
-          const at = snap.data().at || 0;
-          if (!at || at <= (this._seenAt || 0)) return; // echo ของเราเอง/ของเก่า — ไม่โหลด
-          this._seenAt = at;
-          try { const bk = await this.pullBackup(); if (bk) cb(bk); } catch (e) { console.warn("[wtn] backup sub pull", e); }
-        },
-        err => console.warn("[wtn] backup sub", err));
+      const ch = SB.channel("wtn-backup-" + this._uid)
+        .on("postgres_changes",
+          { event: "*", schema: "public", table: "backup_meta", filter: "user_id=eq." + this._uid },
+          async payload => {
+            const at = Number((payload.new || {}).at || 0);
+            if (!at || at <= (this._seenAt || 0)) return;   // echo ของเราเอง/ของเก่า
+            this._seenAt = at;
+            try { const bk = await this.pullBackup(); if (bk) cb(bk); } catch (e) { console.warn("[wtn] backup sub pull", e); }
+          })
+        .subscribe();
+      return () => { try { SB.removeChannel(ch); } catch (e) {} };
     },
-    // ---------- AI กลาง (ผ่าน Cloud Function ที่ถือคีย์ Gemini) ----------
+
+    // ---------- AI กลาง (Edge Function ที่ถือคีย์ Gemini) ----------
     async aiComplete(prompt) {
-      const call = fns.httpsCallable(FN, "aiComplete");
-      const r = await call({ prompt });
-      return (r && r.data && r.data.text) || "";
-    },
-    // ---------- จ่ายเงิน (Stripe) ----------
-    async startCheckout(plan) {
-      const call = fns.httpsCallable(FN, "createCheckout");
-      const r = await call({ plan });
-      return (r && r.data && r.data.url) || "";
-    },
-    async adminStats() {
-      const call = fns.httpsCallable(FN, "adminStats");
-      const r = await call({});
-      return (r && r.data) || null;
-    },
-    async getPremium() {
-      if (!this._uid) return null;
-      const snap = await fs.getDoc(fs.doc(DB, "users", this._uid));
-      if (!snap.exists()) return { premium: false, until: null };
-      const d = snap.data();
-      return { premium: d.premium === true, until: d.premiumUntil && d.premiumUntil.toMillis ? d.premiumUntil.toMillis() : null };
-    },
+      const { data, error } = await SB.functions.invoke("ai-complete", { body: { prompt } });
+      if (error) throw new Error((error && error.message) || "เรียก AI ไม่สำเร็จ");
+      return (data && data.text) || "";
+    }
   };
 
   window.WTNBackend = api;
   window.dispatchEvent(new Event("wtn-backend-ready"));
-  console.info("[wtn] Firebase backend พร้อมใช้งาน");
+  console.info("[wtn] Supabase backend พร้อมใช้งาน");
 }
 
 boot().catch(e => console.error("[wtn] backend boot error", e));

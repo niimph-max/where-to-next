@@ -1,11 +1,11 @@
 // where to next? — service worker
 // เป้าหมาย: ใช้งานได้เต็มรูปแบบตอนไม่มีเน็ต + ไม่ค้างตอนสัญญาณอ่อน (มีเน็ตแต่ช้ามาก)
-const CACHE = 'wtn-2026.08.10a';
+const CACHE = 'wtn-2026.08.10c';
 const NET_TIMEOUT = 2500; // สัญญาณอ่อน: รอเน็ตเท่านี้ ไม่มาก็ใช้ของในแคชทันที
 
 const SHELL = [
   './', './index.html', './support.js', './wtn-backend.js', './photo-pick.js',
-  './firebase-config.js', './manifest.webmanifest',
+  './supabase-config.js', './manifest.webmanifest',
   './logo.png', './logo-small.png', './apple-touch-icon.png', './og-image.png',
   './icon-192.png', './icon-maskable.png',
   'https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Sans+Thai+Looped:wght@400;500;600;700&family=Chonburi&display=swap',

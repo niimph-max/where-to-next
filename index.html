@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<script src="firebase-config.js"></script>
+<script src="supabase-config.js"></script>
 <script type="module" src="wtn-backend.js"></script>
 <meta name="apple-mobile-web-app-title" content="Vela">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1204,8 +1204,20 @@
           </div>
           <div style="flex:none;display:flex;align-items:center;gap:9px;padding:9px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
             <button onClick="{{ runAiCh }}" style="display:inline-flex;align-items:center;gap:7px;min-height:40px;border:1px solid rgba(192,95,57,.35);background:#fbeee6;color:#c05f39;font:700 14.5px 'Anuphan';padding:0 14px;border-radius:11px;cursor:pointer;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M18 15l.9 2.4L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.6L18 15z"/></svg>{{ aiChLabel }}</button>
+            <button onClick="{{ toggleAiBrief }}" style="min-height:40px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:0 12px;border-radius:11px;cursor:pointer;flex:none">{{ aiBriefBtn }}</button>
             <span style="font:500 12.5px/1.4 'Anuphan';color:#a99e8e;min-width:0">{{ aiChSource }}</span>
           </div>
+          <sc-if value="{{ aiBriefOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:none;padding:11px 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+              <div style="font:600 12.5px 'Anuphan';color:#a99e8e;letter-spacing:.3px;margin-bottom:8px">อยากให้ตอนนี้เน้นอะไร</div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px">
+                <sc-for list="{{ aiBriefChips }}" as="cp" hint-placeholder-count="6">
+                  <button onClick="{{ cp.on }}" style="{{ cp.style }}">{{ cp.label }}</button>
+                </sc-for>
+              </div>
+              <input value="{{ aiBriefText }}" onInput="{{ setAiBriefText }}" placeholder="สั่งเพิ่มเอง เช่น เล่าถึงคนขับรถให้เยอะหน่อย" style="width:100%;box-sizing:border-box;min-height:42px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:9px 12px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none">
+            </div>
+          </sc-if>
           <sc-if value="{{ aiChOpen }}" hint-placeholder-val="{{ false }}">
             <div style="flex:none;max-height:46%;overflow-y:auto;padding:13px 16px;background:#f7f0e3;border-bottom:1px solid rgba(43,36,32,.1)">
               <sc-if value="{{ aiChBusy }}" hint-placeholder-val="{{ false }}"><div style="font:600 14.5px 'Anuphan';color:#8a7d6f">กำลังเรียบเรียงจากโมเมนต์ของวันนี้…</div></sc-if>
@@ -3981,10 +3993,28 @@ class Component extends DCLogic {
       mat.dayLabel + (mat.dateLabel ? ' · ' + mat.dateLabel : '') + '\n' +
       'โมเมนต์ของวันนี้ (เรียงตามเวลา):\n' + mat.text + '\n\n' +
       'เขียนเป็นเรื่องเล่าภาษาไทย มุมมองบุรุษที่หนึ่ง โทนอบอุ่น เป็นกันเอง เหมือนเล่าให้เพื่อนฟัง\n' +
-      'ข้อกำหนด: 3-5 ย่อหน้า เรียงตามลำดับเวลาจริง · ห้ามแต่งข้อมูลที่ไม่มีอยู่ในโมเมนต์ · ห้ามหัวข้อ/bullet · ห้ามเกริ่นนำว่ากำลังทำอะไร ขึ้นต้นด้วยเนื้อเรื่องเลย';
+      'ข้อกำหนด: 3-5 ย่อหน้า เรียงตามลำดับเวลาจริง · ห้ามแต่งข้อมูลที่ไม่มีอยู่ในโมเมนต์ · ห้ามหัวข้อ/bullet · ห้ามเกริ่นนำว่ากำลังทำอะไร ขึ้นต้นด้วยเนื้อเรื่องเลย' +
+      this.aiBriefLine();
     this.setState({ aiChOpen: true, aiChBusy: true, aiChErr: '', aiChText: '' });
     try { const text = await this.askLLM(prompt); this.setState({ aiChBusy: false, aiChText: (text || '').trim() }); }
     catch (e) { this.setState({ aiChBusy: false, aiChErr: String(e.message || e) }); }
+  }
+  aiBriefOptions = [
+    { key: 'history', label: 'ประวัติศาสตร์', hint: 'แทรกบริบทประวัติศาสตร์/ที่มาของสถานที่ที่ปรากฏในโมเมนต์ (เท่าที่แน่ใจจริงเท่านั้น)' },
+    { key: 'food', label: 'อาหาร', hint: 'ให้น้ำหนักกับอาหาร รสชาติ กลิ่น และบรรยากาศตอนกิน' },
+    { key: 'people', label: 'ผู้คน', hint: 'ให้น้ำหนักกับผู้คนที่เจอ บทสนทนา และปฏิสัมพันธ์' },
+    { key: 'nature', label: 'ธรรมชาติ/วิว', hint: 'ให้น้ำหนักกับภูมิทัศน์ แสง อากาศ และความรู้สึกต่อวิว' },
+    { key: 'warm', label: 'ซึ้ง คิดถึง', hint: 'โทนอ่อนโยน ซึ้ง ชวนคิดถึง' },
+    { key: 'fun', label: 'ขำๆ สนุก', hint: 'โทนสนุก ขำๆ มีจังหวะหยอกตัวเอง' },
+    { key: 'short', label: 'สั้น กระชับ', hint: 'สั้นลงเหลือ 2-3 ย่อหน้า ประโยคกระชับ' }
+  ];
+  aiBriefLine() {
+    const picked = this.state.aiBriefTags || [];
+    const hints = this.aiBriefOptions.filter(o => picked.includes(o.key)).map(o => o.hint);
+    const free = (this.state.aiBriefText || '').trim();
+    if (!hints.length && !free) return '';
+    return '\n\nสิ่งที่ผู้เขียนอยากเน้นเป็นพิเศษ (สำคัญกว่าข้อกำหนดด้านบนเมื่อขัดกัน แต่ยังห้ามแต่งข้อมูล):\n' +
+      hints.map(h => '· ' + h).join('\n') + (free ? (hints.length ? '\n' : '') + '· ' + free : '');
   }
   applyAiCh(mode) {
     const text = (this.state.aiChText || '').trim();
@@ -4600,7 +4630,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10a',
+      appVersion: '2026.08.10c',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5453,6 +5483,19 @@ class Component extends DCLogic {
           aiChLabel: this.state.aiChBusy ? 'กำลังเรียบเรียง…' : 'AI เรียบเรียงจากโมเมนต์วันนี้',
           aiChSource: (() => { const i = this.chapterDayIndex(); if (i == null) return ''; const m = this.dayMaterial(i); return m.count ? (m.dayLabel + ' · ' + m.count + ' โมเมนต์') : ''; })(),
           runAiCh: () => this.aiArrangeDay(),
+          aiBriefOpen: !!this.state.aiBriefOpen,
+          aiBriefBtn: (() => { const n = (this.state.aiBriefTags || []).length + ((this.state.aiBriefText || '').trim() ? 1 : 0); return n ? 'แนวเรื่อง · ' + n : 'แนวเรื่อง'; })(),
+          toggleAiBrief: () => this.setState(st => ({ aiBriefOpen: !st.aiBriefOpen })),
+          aiBriefText: this.state.aiBriefText || '',
+          setAiBriefText: e => this.setState({ aiBriefText: e.target.value }),
+          aiBriefChips: this.aiBriefOptions.map(o => {
+            const on = (this.state.aiBriefTags || []).includes(o.key);
+            return { label: o.label,
+              style: 'min-height:36px;padding:0 13px;border-radius:18px;cursor:pointer;font:600 14px \'Anuphan\';border:1px solid ' +
+                (on ? '#c05f39' : 'rgba(43,36,32,.16)') + ';background:' + (on ? '#c05f39' : '#fff') + ';color:' + (on ? '#fff' : '#5c5347'),
+              on: () => this.setState(st => { const cur = st.aiBriefTags || [];
+                return { aiBriefTags: cur.includes(o.key) ? cur.filter(k => k !== o.key) : cur.concat(o.key) }; }) };
+          }),
           aiChReplace: () => this.applyAiCh('replace'),
           aiChAppend: () => this.applyAiCh('append'),
           closeAiCh: () => this.setState({ aiChOpen: false, aiChErr: '' }),
