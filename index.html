@@ -455,7 +455,23 @@
             <div style="display:flex;gap:12px;margin-bottom:14px"><div style="width:46px;flex:none;display:flex;justify-content:center"><span style="width:10px;height:10px;border-radius:50%;border:2px dashed #c9baa4;margin-top:3px"></span></div><button onClick="{{ openAdd }}" style="flex:1;background:transparent;border:1.5px dashed rgba(43,36,32,.2);border-radius:15px;padding:12px;font:600 15px 'Anuphan';color:#a1927c;cursor:pointer">+ เพิ่มกิจกรรม</button></div>
           </div>
           <div style="padding:2px 20px 30px">
-            <div style="display:flex;align-items:center;gap:12px;background:#2b241f;border-radius:15px;padding:14px 15px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 9V7a2 2 0 0 1 2-2h5v4"/></svg><div style="flex:1"><div style="font:600 15.5px 'Anuphan';color:#f6efe2">{{ cur.stayName }}</div><div style="font:500 14px 'Anuphan';color:#c9b79b">{{ cur.stayMeta }}</div></div></div>
+            <sc-if value="{{ stayView }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ openStayEdit }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:15px;padding:14px 15px;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7" style="flex:none"><path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 9V7a2 2 0 0 1 2-2h5v4"/></svg><div style="flex:1"><div style="font:500 12px 'Anuphan';color:#a1907a">ที่พักคืนนี้</div><div style="font:600 15.5px 'Anuphan';color:#f6efe2">{{ cur.stayName }}</div><div style="font:500 14px 'Anuphan';color:#c9b79b">{{ cur.stayMeta }}</div></div><span style="flex:none;display:inline-flex;align-items:center;gap:4px;font:600 13.5px 'Anuphan';color:#e9b48a"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L18 10l-4-4L4 16z"/></svg>แก้ไข</span></button>
+            </sc-if>
+            <sc-if value="{{ stayEditing }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#2b241f;border-radius:15px;padding:15px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 9V7a2 2 0 0 1 2-2h5v4"/></svg><span style="font:600 15px 'Anuphan';color:#f6efe2">ที่พักคืนนี้</span></div>
+                <input value="{{ stayNameDraft }}" onInput="{{ setStayNameDraft }}" placeholder="ชื่อที่พัก เช่น The Hotel Sokcho" style="width:100%;box-sizing:border-box;border:1px solid rgba(246,239,226,.18);background:rgba(246,239,226,.07);border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#f6efe2;outline:none;margin-bottom:8px">
+                <input value="{{ stayMetaDraft }}" onInput="{{ setStayMetaDraft }}" placeholder="เมือง / โน้ต เช่น ซอรัคซาน" style="width:100%;box-sizing:border-box;border:1px solid rgba(246,239,226,.18);background:rgba(246,239,226,.07);border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#f6efe2;outline:none;margin-bottom:8px">
+                <div style="display:flex;gap:8px;margin-bottom:9px">
+                  <label style="flex:1"><span style="display:block;font:500 12px 'Anuphan';color:#a1907a;margin-bottom:4px">เช็คอิน</span><input type="date" value="{{ stayInDraft }}" onInput="{{ setStayInDraft }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(246,239,226,.18);background:rgba(246,239,226,.07);border-radius:11px;padding:10px 11px;font:500 15px 'Anuphan';color:#f6efe2;outline:none;color-scheme:dark"></label>
+                  <label style="flex:1"><span style="display:block;font:500 12px 'Anuphan';color:#a1907a;margin-bottom:4px">เช็คเอาต์</span><input type="date" value="{{ stayOutDraft }}" onInput="{{ setStayOutDraft }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(246,239,226,.18);background:rgba(246,239,226,.07);border-radius:11px;padding:10px 11px;font:500 15px 'Anuphan';color:#f6efe2;outline:none;color-scheme:dark"></label>
+                </div>
+                <div style="font:500 13px/1.5 'Anuphan';color:#c9b79b;background:rgba(246,239,226,.06);border-radius:10px;padding:9px 11px;margin-bottom:10px;text-wrap:pretty">{{ stayRangeNote }}</div>
+                <button onClick="{{ stayBooking }}" style="width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(233,180,138,.4);background:transparent;color:#e9b48a;font:600 14.5px 'Anuphan';border-radius:11px;cursor:pointer;margin-bottom:10px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>ค้นหา + จองที่พัก</button>
+                <div style="display:flex;gap:8px"><button onClick="{{ cancelStayEdit }}" style="flex:1;min-height:44px;border:1px solid rgba(246,239,226,.2);background:transparent;color:#c9b79b;font:600 14.5px 'Anuphan';border-radius:11px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveStayEdit }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';border-radius:11px;cursor:pointer">บันทึก</button></div>
+              </div>
+            </sc-if>
           </div>
         </div>
       </sc-if>
@@ -1659,7 +1675,7 @@
           <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">สำรอง & กู้ข้อมูล</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
-              <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ notGuest }}" hint-placeholder-val="{{ true }}">
                 <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
@@ -1887,7 +1903,6 @@ class Component extends DCLogic {
   scheduleCloudPush() {
     const be = window.WTNBackend;
     if (!be || !be._uid || this._applyingCloud) return;
-    if (!this.isPremium) return;
     this._pendingPush = true;
     try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {} // มาร์กไว้ถาวร — เน็ตช้า/โดนพักกลางคัน ก็รีทรายรอบหน้าได้
     clearTimeout(this._cloudT);
@@ -2168,7 +2183,7 @@ class Component extends DCLogic {
     } finally { this._applyingCloud = false; }
   }
   async _pushRaw(data) {
-    const be = window.WTNBackend; if (!be || !be._uid || !this.isPremium) return;
+    const be = window.WTNBackend; if (!be || !be._uid) return;
     const at = Date.now();
     await be.pushBackup({ _app: 'where-to-next', _at: at, data });
     try { localStorage.setItem('wtn-sync-base', JSON.stringify(data)); } catch (e) {}
@@ -2178,7 +2193,6 @@ class Component extends DCLogic {
   async cloudPush() {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
-    if (!this.isPremium) return;
     if (!this._synced) { return; } // ยังไม่ได้รับข้อมูลล่าสุดจากคลาวด์ — ห้ามดัน (กันเครื่องเปล่าทับ)
     if (navigator.onLine === false) {                                   // ออฟไลน์ — เก็บค้างไว้ ไม่ต้องยิงให้ค้าง
       this._pendingPush = true;
@@ -2276,7 +2290,6 @@ class Component extends DCLogic {
   subscribeCloud() {
     const be = window.WTNBackend;
     if (!be || !be._uid || !be.subscribeBackup) return;
-    if (!this.isPremium) return;
     if (this._cloudUnsub) { try { this._cloudUnsub(); } catch (e) {} }
     this._cloudUnsub = be.subscribeBackup(bk => {
       if (!bk) return;
@@ -2290,7 +2303,6 @@ class Component extends DCLogic {
   async cloudPull() {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
-    if (!this.isPremium) { this.setState({ cloud: 'idle' }); return; }
     if (navigator.onLine === false) { this.setState({ cloud: 'idle' }); return; }
     this._pulling = true;
     this.setState({ cloud: 'saving' });
@@ -2473,6 +2485,61 @@ class Component extends DCLogic {
     this.forceUpdate();
   }
   KLOOK_AID = '130623';
+  tripDayIso(i) {
+    const t = this.curTripRec();
+    if (!t || !t.start) return '';
+    const d = new Date(new Date(t.start).getTime() + (Number(i) || 0) * 86400000);
+    if (isNaN(d)) return '';
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  }
+  isoToDayIndex(iso) {
+    const t = this.curTripRec();
+    if (!t || !t.start || !iso) return null;
+    const a = new Date(t.start), b = new Date(iso);
+    if (isNaN(a) || isNaN(b)) return null;
+    a.setHours(0,0,0,0); b.setHours(0,0,0,0);
+    return Math.round((b - a) / 86400000);
+  }
+  stayNightRange() {
+    const i0 = this.isoToDayIndex(this.state.stayInDraft);
+    const i1 = this.isoToDayIndex(this.state.stayOutDraft);
+    const total = this.days.length;
+    if (i0 == null || i1 == null || i1 <= i0) return null;
+    const from = Math.max(0, i0), to = Math.min(total - 1, i1 - 1);   // คืน = วันเข้า ถึง วันก่อนออก
+    if (to < from) return null;
+    return { from, to, nights: to - from + 1, outOfTrip: i0 < 0 || i1 - 1 > total - 1 };
+  }
+  applyStayRange() {
+    const nm = (this.state.stayNameDraft || '').trim();
+    const mt = (this.state.stayMetaDraft || '').trim();
+    const r = this.stayNightRange();
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    const targets = r ? [] : [this.state.day];
+    if (r) for (let i = r.from; i <= r.to; i++) targets.push(i);
+    targets.forEach(i => {
+      if (!days[i]) return;
+      const n = r && r.nights > 1 ? (mt ? mt + ' · คืนที่ ' + (i - r.from + 1) : 'คืนที่ ' + (i - r.from + 1)) : mt;
+      days[i] = { ...days[i], stayName: nm || 'ยังไม่ได้เลือกที่พัก', stayMeta: n,
+        stayIn: this.state.stayInDraft || '', stayOut: this.state.stayOutDraft || '' };
+    });
+    this.saveItinerary(this.state.trip, days);
+    this.forceUpdate();
+    return targets.length;
+  }
+  openStayBooking() {
+    const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
+    const d = this.days[this.state.day] || {};
+    const q = (this.state.stayMetaDraft || '').trim() || (this.state.stayNameDraft || '').trim() || (d.city || '').trim() || (t.city || '').trim() || (t.name || '').trim();
+    const u = new URL('https://www.klook.com/th/hotels/');
+    if (q) u.searchParams.set('query', q);
+    const ci = this.state.stayInDraft || this.tripDayIso(this.state.day);
+    const co = this.state.stayOutDraft || this.tripDayIso((Number(this.state.day) || 0) + 1);
+    if (ci) u.searchParams.set('checkin', ci);
+    if (co) u.searchParams.set('checkout', co);
+    u.searchParams.set('aid', this.KLOOK_AID);
+    u.searchParams.set('aff_ext', (this.state.trip || 'trip') + '-stay-d' + ((Number(this.state.day) || 0) + 1));
+    window.open(u.toString(), '_blank', 'noopener');
+  }
   openAffiliate() {
     const kind = this.state.addKind;
     const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
@@ -4516,7 +4583,7 @@ class Component extends DCLogic {
       const was = localStorage.getItem('wtn-premium') === '1';
       try { localStorage.setItem('wtn-premium', on ? '1' : '0'); } catch (e) {}
       this.forceUpdate();
-      if (on && !was) { this.cloudPull && this.cloudPull(); this.subscribeCloud && this.subscribeCloud(); }
+      if (on !== was) { this.cloudPull && this.cloudPull(); this.subscribeCloud && this.subscribeCloud(); }
     } catch (e) {}
   }
   get isAdmin() {
@@ -4715,7 +4782,7 @@ class Component extends DCLogic {
         : (this.titles[sc] || 'Vela'),
       canBack: this.state.history.length > 0 && !this.roots.includes(sc),
       back: () => this.back(),
-      isGuest: this.isGuest, guestSignup: () => this.gotoSignup(),
+      isGuest: this.isGuest, notGuest: !this.isGuest, guestSignup: () => this.gotoSignup(),
       isPremium: this.isPremium, notPremium: !this.isPremium, goPremium: () => this.go('premium'),
       isAdmin: this.isAdmin, goAdmin: () => { this.go('admin'); this.loadAdminStats(); }, refreshAdmin: () => this.loadAdminStats(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
@@ -4805,7 +4872,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10k',
+      appVersion: '2026.08.10n',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5150,6 +5217,22 @@ class Component extends DCLogic {
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       notEditing: !this.state.editing,
+      stayView: !this.state.stayEdit, stayEditing: !!this.state.stayEdit,
+      openStayEdit: () => { const d = this.days[active] || {}; const nm = d.stayName || '', mt = d.stayMeta || ''; this.setState({ stayEdit: true, stayNameDraft: /ยังไม่ได้เลือก/.test(nm) ? '' : nm, stayMetaDraft: /เพิ่มได้ในโหมด/.test(mt) ? '' : mt.replace(/\s*·?\s*คืนที่\s*\d+\s*$/, ''), stayInDraft: d.stayIn || this.tripDayIso(active), stayOutDraft: d.stayOut || this.tripDayIso(active + 1) }); },
+      stayInDraft: this.state.stayInDraft ?? '', setStayInDraft: e => this.setState({ stayInDraft: e.target.value }),
+      stayOutDraft: this.state.stayOutDraft ?? '', setStayOutDraft: e => this.setState({ stayOutDraft: e.target.value }),
+      stayRangeNote: (() => {
+        const r = this.stayNightRange();
+        if (!r) return this.state.stayInDraft && this.state.stayOutDraft ? 'วันเช็คเอาต์ต้องหลังวันเช็คอิน — จะบันทึกให้เฉพาะวันนี้' : 'ใส่วันเข้า–ออก แล้วจะเติมที่พักให้ทุกคืนอัตโนมัติ';
+        const nm = (this.state.stayNameDraft || '').trim() || 'ที่พักนี้';
+        const a = this.days[r.from] || {}, b = this.days[r.to] || {};
+        return 'จะใส่ “' + nm + '” ให้ ' + r.nights + ' คืน · วันที่ ' + (r.from + 1) + (r.nights > 1 ? '–' + (r.to + 1) : '') + ' (' + (a.date || '') + (r.nights > 1 ? ' – ' + (b.date || '') : '') + ')' + (r.outOfTrip ? ' · บางคืนอยู่นอกช่วงทริป ใส่ได้เท่าที่มีวัน' : '');
+      })(),
+      stayNameDraft: this.state.stayNameDraft ?? '', setStayNameDraft: e => this.setState({ stayNameDraft: e.target.value }),
+      stayMetaDraft: this.state.stayMetaDraft ?? '', setStayMetaDraft: e => this.setState({ stayMetaDraft: e.target.value }),
+      cancelStayEdit: () => this.setState({ stayEdit: false }),
+      saveStayEdit: () => { const n = this.applyStayRange(); this.setState({ stayEdit: false }); this.showToast(n > 1 ? ('✓ ใส่ที่พักให้ ' + n + ' คืนแล้ว') : '✓ บันทึกที่พักแล้ว'); },
+      stayBooking: () => this.openStayBooking(),
       dayCity: dayCityVal, daySummary: daySummaryVal,
       setDayCity: e => this.patchDay(this.state.day, { city: e.target.value }),
       setDaySummary: e => this.patchDay(this.state.day, { summary: e.target.value }),
