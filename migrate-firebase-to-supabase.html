@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ย้ายข้อมูล Firebase → Supabase</title>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f6efe2;font:500 15px/1.6 'Anuphan',sans-serif;color:#2b241f}
+  .wrap{max-width:640px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:#8a7d6f;margin:0 0 22px}
+  fieldset{border:1px solid rgba(43,36,32,.14);border-radius:14px;background:#fffaf0;padding:16px;margin:0 0 16px}
+  legend{font-weight:700;padding:0 8px}
+  label{display:block;font-size:13.5px;color:#8a7d6f;margin:10px 0 4px}
+  input,textarea{width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.16);border-radius:10px;
+    padding:10px 12px;font:500 15px 'Anuphan';background:#fff;color:#2b241f;outline:none}
+  textarea{min-height:110px;font:500 13px/1.5 ui-monospace,monospace}
+  button{min-height:46px;border:none;border-radius:12px;background:#c05f39;color:#fff;
+    font:700 16px 'Anuphan';padding:0 20px;cursor:pointer;margin-top:14px}
+  button[disabled]{opacity:.5;cursor:default}
+  pre{background:#2b241f;color:#e9dfcd;padding:14px;border-radius:12px;font:500 12.5px/1.6 ui-monospace,monospace;
+    white-space:pre-wrap;max-height:340px;overflow:auto}
+  ol{padding-left:20px;color:#5c5347}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ย้ายข้อมูล Firebase → Supabase</h1>
+  <p class="sub">เครื่องมือใช้ครั้งเดียว — เปิดในเบราว์เซอร์เดสก์ท็อป ทำทีละขั้นตามลำดับ</p>
+
+  <fieldset>
+    <legend>0 · ก่อนเริ่ม</legend>
+    <ol>
+      <li>รัน <code>supabase/schema.sql</code> ใน SQL Editor ของโปรเจกต์ Supabase แล้ว</li>
+      <li>สมัครบัญชีใหม่ในแอปเวอร์ชัน Supabase ด้วย<b>อีเมลเดิม</b> (จะได้ uid ใหม่ ไม่เป็นไร)</li>
+    </ol>
+  </fieldset>
+
+  <fieldset>
+    <legend>1 · ต่อ Firebase (ของเดิม)</legend>
+    <label>firebaseConfig (วาง object ทั้งก้อนจาก firebase-config.js เดิม)</label>
+    <textarea id="fbcfg" placeholder='วางทั้งไฟล์ firebase-config.js เดิมได้เลย'></textarea>
+    <label>อีเมล (เฉพาะกรณีสมัครด้วยรหัสผ่าน — ถ้าใช้ Google ข้ามได้)</label><input id="fbEmail" type="email" autocomplete="off">
+    <label>รหัสผ่าน</label><input id="fbPass" type="password" autocomplete="off">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button id="btnRead">อ่านข้อมูล (อีเมล+รหัสผ่าน)</button>
+      <button id="btnReadG" style="background:#fff;color:#2b241f;border:1px solid rgba(43,36,32,.2)">อ่านข้อมูล (ล็อกอินด้วย Google)</button>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>2 · ต่อ Supabase (ปลายทาง)</legend>
+    <label>Project URL</label><input id="sbUrl" placeholder="https://xxxx.supabase.co">
+    <label>anon key</label><input id="sbKey">
+    <label>อีเมล</label><input id="sbEmail" type="email" autocomplete="off">
+    <label>รหัสผ่าน</label><input id="sbPass" type="password" autocomplete="off">
+    <button id="btnWrite" disabled>เขียนลง Supabase</button>
+  </fieldset>
+
+  <pre id="log">พร้อมเริ่ม…</pre>
+</div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const L = $('log');
+const say = m => { L.textContent += '\n' + m; L.scrollTop = L.scrollHeight; console.log(m); };
+let PAYLOAD = null;
+
+async function readFirebase(useGoogle) {
+  try {
+    L.textContent = 'กำลังต่อ Firebase…';
+    const raw = $('fbcfg').value;
+    const body = raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1);   // ตัดเอาเฉพาะก้อน {...}
+    const cfg = (new Function('return (' + body + ')'))();
+    const B = 'https://www.gstatic.com/firebasejs/10.12.2';
+    const [{ initializeApp }, auth, fs] = await Promise.all([
+      import(`${B}/firebase-app.js`), import(`${B}/firebase-auth.js`), import(`${B}/firebase-firestore.js`)
+    ]);
+    const app = initializeApp(cfg), A = auth.getAuth(app), DB = fs.getFirestore(app);
+    const c = useGoogle
+      ? await auth.signInWithPopup(A, new auth.GoogleAuthProvider())
+      : await auth.signInWithEmailAndPassword(A, $('fbEmail').value.trim(), $('fbPass').value);
+    const uid = c.user.uid;
+    say('ล็อกอินแล้ว uid=' + uid);
+
+    const out = { uid, profile: null, backup: null, versions: [], stories: [], chapters: [], moments: [] };
+
+    const p = await fs.getDoc(fs.doc(DB, 'users', uid));
+    if (p.exists()) { out.profile = p.data(); say('โปรไฟล์ ✓'); }
+
+    const bk = await fs.getDoc(fs.doc(DB, 'backups', uid));
+    if (bk.exists()) { out.backup = bk.data(); say('backup ล่าสุด ✓ (' + (bk.data().blob || '').length + ' ตัวอักษร)'); }
+
+    const vs = await fs.getDocs(fs.collection(DB, 'backups', uid, 'versions'));
+    vs.docs.filter(d => d.id !== 'meta').forEach(d => out.versions.push({ at: d.data().at || Number(d.id), blob: d.data().blob }));
+    say('เวอร์ชันสำรอง ' + out.versions.length + ' ชุด');
+
+    const st = await fs.getDocs(fs.query(fs.collection(DB, 'stories'), fs.where('ownerUid', '==', uid)));
+    for (const s of st.docs) {
+      out.stories.push({ id: s.id, ...s.data() });
+      const chs = await fs.getDocs(fs.collection(DB, 'stories', s.id, 'chapters'));
+      chs.docs.forEach(ch => out.chapters.push({ storyId: s.id, id: ch.id, ...ch.data() }));
+    }
+    say('เล่ม ' + out.stories.length + ' · ตอน ' + out.chapters.length);
+
+    const ms = await fs.getDocs(fs.query(fs.collection(DB, 'moments'), fs.where('ownerUid', '==', uid)));
+    ms.docs.forEach(d => out.moments.push({ id: d.id, ...d.data() }));
+    say('โมเมนต์ ' + out.moments.length);
+
+    PAYLOAD = out;
+    $('btnWrite').disabled = false;
+    say('\nอ่านครบแล้ว — ไปขั้นที่ 2');
+  } catch (e) { say('ผิดพลาด: ' + (e.message || e)); }
+}
+$('btnRead').onclick = () => readFirebase(false);
+$('btnReadG').onclick = () => readFirebase(true);
+
+$('btnWrite').onclick = async () => {
+  if (!PAYLOAD) return;
+  try {
+    say('\nกำลังต่อ Supabase…');
+    const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.4');
+    const SB = createClient($('sbUrl').value.trim(), $('sbKey').value.trim());
+    const { data: sess, error: se } = await SB.auth.signInWithPassword({
+      email: $('sbEmail').value.trim(), password: $('sbPass').value });
+    if (se) throw se;
+    const uid = sess.user.id;
+    say('ล็อกอิน Supabase แล้ว uid=' + uid);
+
+    const chk = (label, { error }) => { if (error) say('  ✗ ' + label + ': ' + error.message); else say('  ✓ ' + label); };
+    const strip = o => { const { id, storyId, ownerUid, updatedAt, createdAt, ...rest } = o; return rest; };
+
+    if (PAYLOAD.profile) {
+      const { premium, premiumUntil, ...rest } = PAYLOAD.profile;
+      chk('profile', await SB.from('profiles').upsert({
+        id: uid, data: rest, premium: premium === true,
+        premium_until: premiumUntil && premiumUntil.seconds ? new Date(premiumUntil.seconds * 1000).toISOString() : null
+      }));
+    }
+    for (const s of PAYLOAD.stories) {
+      chk('story ' + s.id, await SB.from('stories').upsert({ id: s.id, owner: uid, data: strip(s) }));
+    }
+    for (const c of PAYLOAD.chapters) {
+      const d = strip(c);
+      chk('chapter ' + c.id, await SB.from('chapters').upsert({
+        story_id: c.storyId, id: c.id, owner: uid, data: d,
+        published: c.published === true, ord: Number(c.order) || 0, likes: Number(c.likes) || 0
+      }, { onConflict: 'story_id,id' }));
+    }
+    for (const m of PAYLOAD.moments) {
+      const d = strip(m);
+      chk('moment ' + m.id, await SB.from('moments').upsert({
+        id: m.id, owner: uid, data: d, published: m.published !== false,
+        at: Number(m.at) || Date.now(), likes: Number(m.likes) || 0
+      }));
+    }
+    if (PAYLOAD.backup) {
+      const at = Number(PAYLOAD.backup.at) || Date.now();
+      chk('backup', await SB.from('backups').upsert({ user_id: uid, blob: PAYLOAD.backup.blob, at }));
+      chk('backup_meta', await SB.from('backup_meta').upsert({ user_id: uid, at }));
+    }
+    for (const v of PAYLOAD.versions.sort((a, b) => b.at - a.at).slice(0, 7)) {
+      chk('version ' + v.at, await SB.from('backup_versions').upsert({ user_id: uid, at: v.at, blob: v.blob }));
+    }
+    say('\nเสร็จแล้ว 🎉 เปิดแอปแล้วล็อกอินด้วยบัญชี Supabase ได้เลย');
+    say('หมายเหตุ: รูปที่เป็นลิงก์ Firebase Storage ยังชี้ที่เดิม — อย่าเพิ่งลบโปรเจกต์ Firebase จนกว่าจะอัปโหลดใหม่ครบ');
+  } catch (e) { say('ผิดพลาด: ' + (e.message || e)); }
+};
+</script>
+</body>
+</html>
