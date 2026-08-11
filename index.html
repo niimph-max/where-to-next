@@ -1044,7 +1044,7 @@
                 </div>
                 <sc-if value="{{ mpHasPhotos }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;padding-left:49px">
-                    <sc-for list="{{ mpPhotos }}" as="mp" hint-placeholder-count="0"><span style="position:relative;width:70px;height:70px;flex:none"><img src="{{ mp.src }}" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:11px;display:block"><button onClick="{{ mp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ mp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ mp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span></sc-for>
+                    <sc-for list="{{ mpPhotos }}" as="mp" hint-placeholder-count="0"><span style="position:relative;width:70px;height:70px;flex:none"><img src="{{ mp.src }}" alt="" style="width:70px;height:70px;object-fit:cover;border-radius:11px;display:block"><span title="{{ mp.gpsTitle }}" style="position:absolute;left:-5px;top:-5px;min-width:22px;height:22px;padding:0 5px;box-sizing:border-box;border-radius:11px;border:1.5px solid #fffaf0;background:{{ mp.gpsBg }};color:#fff;font:700 11px/19px 'Anuphan';text-align:center">{{ mp.gpsIcon }}</span><button onClick="{{ mp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ mp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ mp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span></sc-for>
                   </div>
                 </sc-if>
                 <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:12px;padding-left:49px">
@@ -1057,6 +1057,12 @@
                     <sc-for list="{{ catDraft }}" as="cd" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><span style="{{ cd.dotStyle }}"></span><input value="{{ cd.name }}" onInput="{{ cd.set }}" placeholder="ชื่อหมวดหมู่" style="flex:1;min-width:0;border:1px solid rgba(43,36,32,.15);background:#fff;border-radius:10px;padding:8px 11px;font:500 15.5px 'IBM Plex Sans Thai Looped',sans-serif;color:#2b241f;outline:none"><span style="font:600 13px 'Anuphan';color:#b3a897;flex:none;width:36px;text-align:right">{{ cd.label }}</span><sc-if value="{{ cd.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cd.del }}" style="flex:none;width:28px;height:28px;border-radius:50%;border:none;background:rgba(43,36,32,.08);color:#8a7d6f;font:700 14px 'Anuphan';cursor:pointer">×</button></sc-if></div></sc-for>
                     <button onClick="{{ addCat }}" style="width:100%;border:1px dashed rgba(43,36,32,.25);background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer;margin-top:2px">+ เพิ่มหมวด</button>
                     <div style="display:flex;gap:8px;margin-top:11px"><button onClick="{{ closeCatEdit }}" style="flex:1;border:1px solid rgba(43,36,32,.15);background:#fff;color:#5c5347;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCats }}" style="flex:1;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">บันทึกหมวด</button></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ mpShowGpsHint }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:8px;margin-top:10px;margin-left:49px;padding:9px 12px;background:#f7efdd;border:1px solid rgba(192,95,57,.22);border-radius:12px">
+                    <span style="flex:none;font:700 13px 'Anuphan';color:#c05f39">!</span>
+                    <span style="flex:1;min-width:0;font:600 12.5px/1.5 'Anuphan';color:#7a6a58">{{ mpGpsHint }}<br><span style="font-weight:500">iPhone: ตอนเลือกรูป กด Options มุมซ้ายบน แล้วเปิด “Location Is Included” ไว้ ไม่งั้นพิกัดจะถูกตัดทิ้งก่อนถึงแอป</span></span>
                   </div>
                 </sc-if>
                 <sc-if value="{{ mpFromPhoto }}" hint-placeholder-val="{{ false }}">
@@ -3932,22 +3938,44 @@ class Component extends DCLogic {
       cat: this.state.mpCat || 0, pos,
       authorName: this.myName, authorAvatar: this.myAvatar };
     this.upsertLocalMoment(m);
-    this.setState({ mpText: '', mpPhotos: [], mpCat: 0, mpAt: null, mpWhenOpen: false, mpPos: null, mpPlace: '', mpFromPhoto: false, mpPhotoNote: '' });
+    this.setState({ mpText: '', mpPhotos: [], mpCat: 0, mpAt: null, mpWhenOpen: false, mpPos: null, mpPlace: '', mpFromPhoto: false, mpPhotoNote: '', mpNoGps: 0 });
     this.showToast(backdated ? ('✓ บันทึกไว้ที่ ' + this.whenLabel(at)) : (pos ? '✓ บันทึกแล้ว · ปักพิกัดที่นี่' : '✓ บันทึกแล้ว'));
   }
-  addMpPhotos(ev) {
+  async addMpPhotos(ev) {
     let files = Array.from(ev.target.files || []); ev.target.value = '';
     const have = (this.state.mpPhotos || []).length;
     if (have >= 10) { this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์'); return; }
     if (files.length > 10 - have) this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์');
     const use = files.slice(0, 10 - have);
-    use.forEach(f => this.shrinkToUrl(f, 1100, url => { this.stashPhoto(url).then(ref => { this.notePhotoExif(f, ref); this.setState(s2 => ({ mpPhotos: [...(s2.mpPhotos || [])].concat(ref).slice(0, 10) })); }); }));
-    if (use[0]) this.applyPhotoMeta(use[0]);
+    if (!use.length) return;
+    if (use.length > 1) this.showToast('กำลังเพิ่ม ' + use.length + ' รูป…');
+    // อ่าน EXIF ก่อน แล้วเรียงตามเวลาที่ถ่ายจริง (ไม่มีก็ใช้เวลาแก้ไขไฟล์)
+    const items = [];
+    for (const f of use) {
+      let ex = null;
+      try { ex = await this.exifOf(f); } catch (e) {}
+      items.push({ f, ex, at: (ex && ex.at) || f.lastModified || 0 });
+    }
+    items.sort((a, b) => a.at - b.at);
+    if (!this._pMeta) this._pMeta = {};
+    for (const it of items) {
+      const url = await new Promise(res => this.shrinkToUrl(it.f, 1100, res));
+      const ref = await this.stashPhoto(url);
+      if (it.ex && (it.ex.at || it.ex.lat != null)) { this._pMeta[url] = it.ex; this._pMeta[ref] = it.ex; }
+      this.setState(s2 => ({ mpPhotos: [...(s2.mpPhotos || [])].concat(ref).slice(0, 10) }));
+    }
+    const noGps = items.filter(x => !x.ex || x.ex.lat == null).length;
+    this.setState({ mpNoGps: noGps, mpPickedCount: items.length });
+    const first = items.find(x => x.ex && (x.ex.at || x.ex.lat != null));
+    if (first) this.applyExifMeta(first.ex);
   }
   // ---------- EXIF: ดึงเวลาที่ถ่าย + พิกัดจากตัวรูป ----------
   async applyPhotoMeta(file) {
     let ex = null;
     try { ex = await this.exifOf(file); } catch (e) {}
+    return this.applyExifMeta(ex);
+  }
+  async applyExifMeta(ex) {
     if (!ex || (!ex.at && ex.lat == null)) return;
     const patch = { mpFromPhoto: true };
     if (ex.at) patch.mpAt = ex.at;
@@ -3971,26 +3999,45 @@ class Component extends DCLogic {
   }
   exifOf(file) {
     return new Promise(resolve => {
-      if (!file || !/^image\//i.test(file.type || '') && !/\.(jpe?g)$/i.test(file.name || '')) { resolve(null); return; }
+      if (!file || !/^image\//i.test(file.type || '') && !/\.(jpe?g|heic|heif|png|webp)$/i.test(file.name || '')) { resolve(null); return; }
       const rd = new FileReader();
       rd.onerror = () => resolve(null);
       rd.onload = () => { try { resolve(this._parseExif(rd.result)); } catch (e) { resolve(null); } };
-      rd.readAsArrayBuffer(file.slice(0, 262144));
+      // HEIC/HEIF ซ่อน EXIF ลึกกว่า JPEG → อ่านหัวไฟล์เผื่อ 2MB, ไฟล์อื่นแค่ 512KB (เร็วกว่าเวลาเลือกหลายรูป)
+      const heic = /heic|heif/i.test(file.type || '') || /\.(heic|heif)$/i.test(file.name || '');
+      rd.readAsArrayBuffer(file.slice(0, heic ? 2097152 : 524288));
     });
+  }
+  // สแกนหา "Exif\0\0" แล้วเช็คว่าตามด้วย TIFF header จริง (ใช้กับ HEIC/HEIF/PNG/WebP)
+  _findTiff(v) {
+    const n = v.byteLength;
+    for (let i = 0; i + 12 < n; i++) {
+      if (v.getUint8(i) !== 0x45) continue;                       // 'E'
+      if (v.getUint32(i) !== 0x45786966) continue;                // 'Exif'
+      if (v.getUint16(i + 4) !== 0x0000) continue;
+      const t = i + 6, tag = v.getUint16(t);
+      if ((tag === 0x4949 && v.getUint16(t + 2, true) === 0x002A) ||
+          (tag === 0x4D4D && v.getUint16(t + 2) === 0x002A)) return t;
+    }
+    return -1;
   }
   _parseExif(buf) {
     const v = new DataView(buf);
-    if (v.byteLength < 8 || v.getUint16(0) !== 0xFFD8) return null;
-    let off = 2, app1 = -1;
-    while (off + 4 <= v.byteLength) {
-      if (v.getUint8(off) !== 0xFF) { off++; continue; }
-      const marker = v.getUint8(off + 1);
-      if (marker === 0xD8 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) { off += 2; continue; }
-      if (marker === 0xDA) break;
-      const size = v.getUint16(off + 2);
-      if (marker === 0xE1 && off + 10 < v.byteLength && v.getUint32(off + 4) === 0x45786966) { app1 = off + 10; break; }
-      off += 2 + size;
+    if (v.byteLength < 16) return null;
+    let app1 = -1;
+    if (v.getUint16(0) === 0xFFD8) {           // JPEG → เดินตาม marker
+      let off = 2;
+      while (off + 4 <= v.byteLength) {
+        if (v.getUint8(off) !== 0xFF) { off++; continue; }
+        const marker = v.getUint8(off + 1);
+        if (marker === 0xD8 || marker === 0x01 || (marker >= 0xD0 && marker <= 0xD7)) { off += 2; continue; }
+        if (marker === 0xDA) break;
+        const size = v.getUint16(off + 2);
+        if (marker === 0xE1 && off + 10 < v.byteLength && v.getUint32(off + 4) === 0x45786966) { app1 = off + 10; break; }
+        off += 2 + size;
+      }
     }
+    if (app1 < 0) app1 = this._findTiff(v);    // HEIC/HEIF/PNG/WebP → หา "Exif\0\0" + TIFF header
     if (app1 < 0) return null;
     const T = app1, le = v.getUint16(T) === 0x4949;
     const u16 = o => v.getUint16(o, le), u32 = o => v.getUint32(o, le);
@@ -5066,7 +5113,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.11y',
+      appVersion: '2026.08.11z',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5686,9 +5733,14 @@ class Component extends DCLogic {
           mpText: this.state.mpText ?? '', setMpText: e => this.setState({ mpText: e.target.value }),
           mpPhotos: (this.state.mpPhotos || []).map((p, i) => ({ src: this.px(p),
             hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
+            gpsIcon: (this.photoMeta(p) && this.photoMeta(p).lat != null) ? '📍' : '!',
+            gpsBg: (this.photoMeta(p) && this.photoMeta(p).lat != null) ? '#4a7c59' : '#a99e8e',
+            gpsTitle: (this.photoMeta(p) && this.photoMeta(p).lat != null) ? 'รูปนี้มีพิกัดติดมา' : 'รูปนี้ไม่มีพิกัด',
             useDate: () => this.useMpPhotoDate(p),
             rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
           mpHasPhotos: mpN > 0, mpPhotoCount: mpN, mpCanAddPhoto: mpN < 10,
+          mpShowGpsHint: mpN > 0 && (this.state.mpNoGps || 0) > 0,
+          mpGpsHint: (this.state.mpNoGps || 0) + ' รูปไม่มีพิกัดติดมากับไฟล์',
           addMpPhotos: e => this.addMpPhotos(e),
           postMomentFn: () => this.postMoment(), mpPostOpacity: canPost ? '1' : '.5',
           momentFeed: momentList, noMoments: momentList.length === 0,
