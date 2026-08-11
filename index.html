@@ -2321,8 +2321,9 @@ class Component extends DCLogic {
   }
   async forceRestoreCloud() {
     const be = window.WTNBackend;
-    const uid = await this.ensureUid();
-    if (!be || !uid) { alert('เครื่องนี้ยังไม่ได้ล็อกอิน — เข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
+    let uid = await this.ensureUid();
+    if (!uid) uid = await this.reAuth();
+    if (!be || !uid) return;
     if (!confirm('ดึงข้อมูลสำรองล่าสุดจากคลาวด์มาทับข้อมูลในเครื่องนี้?')) return;
     this.setState({ restoreBusy: true });
     try {
@@ -3939,7 +3940,10 @@ class Component extends DCLogic {
     const photos = (this.state.mpPhotos || []).slice(0, 10);
     if (!text && !photos.length) return;
     const at = this.state.mpAt || Date.now();
-    const backdated = Math.abs(Date.now() - at) > 900000;   // จดย้อนหลัง → ไม่ปักพิกัดตอนนี้ (คนละที่แล้ว)
+    // จดย้อนหลัง = คนละวัน หรือห่างเกิน 6 ชม. → ไม่ปักพิกัดตอนนี้ (คนละที่แล้ว)
+    // รูปที่อ่านเวลาถ่ายได้แต่โพสต์ทีหลังไม่กี่ชั่วโมงในวันเดียวกัน ยังถือว่าอยู่ที่เดิม → ปักพิกัดได้
+    const sameDay = new Date(at).toDateString() === new Date().toDateString();
+    const backdated = !sameDay || Math.abs(Date.now() - at) > 21600000;
     const pos = this.state.mpPos || (backdated ? null : await this.getMomentPos());   // พิกัดจาก EXIF มาก่อน
     const id = 'm' + Date.now() + Math.floor(Math.random() * 1000);
     const m = { id, type: 'post', text, place: this.state.mpPlace || '', photos, at, published: true, likes: 0,
@@ -3974,8 +3978,8 @@ class Component extends DCLogic {
     }
     const noGps = items.filter(x => !x.ex || x.ex.lat == null).length;
     this.setState({ mpNoGps: noGps, mpPickedCount: items.length });
-    const first = items.find(x => x.ex && (x.ex.at || x.ex.lat != null));
-    if (first) this.applyExifMeta(first.ex);
+    // ไม่ตั้งเวลา/พิกัดของโพสต์จาก EXIF อัตโนมัติ — โพสต์นับเป็น "ตอนนี้" เสมอ
+    // ผู้ใช้กด "ใช้เวลาจากรูปนี้" เองได้ถ้าต้องการ
   }
   // ---------- EXIF: ดึงเวลาที่ถ่าย + พิกัดจากตัวรูป ----------
   async applyPhotoMeta(file) {
@@ -4320,10 +4324,28 @@ class Component extends DCLogic {
     } catch (e) { console.warn('[wtn] ensureUid', e); }
     return null;
   }
+  // เซสชันหมดอายุ → ขอรหัสผ่านเข้าใหม่ตรงนี้ ไม่ต้อง logout (logout ล้างข้อมูลในเครื่อง)
+  async reAuth() {
+    const be = window.WTNBackend;
+    const email = ((this.acct && this.acct.email) || '').trim();
+    if (!be || !be.emailLogin || !email) {
+      alert('เซสชันหมดอายุ — ต้องเข้าสู่ระบบใหม่\n\nกด "ดาวน์โหลดไฟล์สำรอง" เก็บไว้ก่อนทุกครั้ง แล้วค่อยเข้าสู่ระบบ');
+      return null;
+    }
+    const pass = prompt('เซสชันหมดอายุ ใส่รหัสผ่านของ ' + email + ' เพื่อเชื่อมต่อใหม่\n(ข้อมูลในเครื่องไม่หาย ไม่ใช่การ logout)');
+    if (!pass) return null;
+    try {
+      await be.emailLogin(email, pass);
+      const uid = await this.ensureUid();
+      if (uid) { this.showToast('เชื่อมต่อบัญชีใหม่แล้ว'); return uid; }
+    } catch (e) { alert(this.authErrMsg(e)); }
+    return null;
+  }
   async syncNow() {
     const be = window.WTNBackend;
-    const uid = await this.ensureUid();
-    if (!be || !uid) { alert('เครื่องนี้ยังไม่ได้ล็อกอิน — ไปที่ ฉัน แล้วเข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
+    let uid = await this.ensureUid();
+    if (!uid) uid = await this.reAuth();
+    if (!be || !uid) return;
     if (this._syncing) return;
     this._syncing = true; this.setState({ syncBusy: true });
     try {
@@ -5136,7 +5158,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.12e',
+      appVersion: '2026.08.12h',
       multiRef: this.multiRef,
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
