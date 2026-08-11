@@ -662,7 +662,7 @@
                     <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
                       <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
-                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" multiple onChange="{{ ciAddPhotos }}" style="display:none"></label></sc-if>
+                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/png,image/jpeg,image/jpg,image/heic,image/heif,image/webp,image/gif" multiple onChange="{{ ciAddPhotos }}" style="display:none"></label></sc-if>
                   </div>
                   <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
                 </div>
@@ -918,7 +918,7 @@
                 <span style="width:42px;height:42px;border-radius:12px;background:#fbe0cb;display:flex;align-items:center;justify-content:center;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg></span>
                 <span style="flex:1;font:600 16px 'Anuphan';color:#2b241f">รูปของวันนี้</span>
                 <span style="font:600 15px 'Anuphan';color:#c05f39">{{ tdPhotoStatus }}</span>
-                <input type="file" accept="image/*" multiple onChange="{{ tdPickPhotos }}" style="display:none">
+                <input type="file" accept="image/png,image/jpeg,image/jpg,image/heic,image/heif,image/webp,image/gif" multiple onChange="{{ tdPickPhotos }}" style="display:none">
               </label>
               <sc-if value="{{ tdHasPhotos }}" hint-placeholder-val="{{ false }}">
                 <div style="padding:0 15px 14px;display:flex;gap:8px;flex-wrap:wrap">
@@ -1078,7 +1078,7 @@
                 </sc-if>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.08);flex-wrap:wrap">
                   <button onClick="{{ toggleMpWhen }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:{{ mpWhenColor }};font:600 14px 'Anuphan';cursor:pointer;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>{{ mpWhenLabel }}</button>
-                  <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 14px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/10)<input type="file" accept="image/*" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
+                  <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 14px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/10)<input type="file" accept="image/png,image/jpeg,image/jpg,image/heic,image/heif,image/webp,image/gif" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
                   <span style="flex:1"></span>
                   <button onClick="{{ postMomentFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px 22px;border-radius:20px;cursor:pointer;opacity:{{ mpPostOpacity }}">บันทึก</button>
                 </div>
@@ -1342,7 +1342,7 @@
             <button onMouseDown="{{ rtCenter }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 6h16M7 12h10M6 18h12"></path></svg></button>
             <button onMouseDown="{{ rtRight }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 6h16M10 12h10M7 18h13"></path></svg></button>
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
-            <label onMouseDown="{{ saveChSelFn }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/*" onChange="{{ insertChImage }}" style="display:none"></label>
+            <label onMouseDown="{{ saveChSelFn }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/png,image/jpeg,image/jpg,image/heic,image/heif,image/webp,image/gif" multiple onChange="{{ insertChImage }}" style="display:none"></label>
             <button onMouseDown="{{ insertChClip }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 9.5v5l4-2.5z"></path></svg></button>
             <button onClick="{{ cleanChFormat }}" title="ล้างรูปแบบที่ติดมาจากการวาง" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h11"></path><path d="M9 7l-2 12"></path><path d="M13 7l-1 6"></path><path d="M15 15l6 6M21 15l-6 6"></path></svg></button>
           </div>
@@ -1643,13 +1643,13 @@
           </div>
           <div style="padding:16px 20px 0">
             <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px"><span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">โลกของฉัน</span><span style="font:600 13.5px 'Anuphan';color:#c05f39">เคยไป {{ beenCount }} ประเทศ</span></div>
-            <div style="position:relative;width:100%;aspect-ratio:5/2;border-radius:16px;overflow:hidden;border:1px solid rgba(43,36,32,.12);background:#f3e7d3">
+            <div style="position:relative;width:100%;aspect-ratio:5/2;border-radius:16px;overflow:hidden;border:1px solid rgba(43,36,32,.12);background:#efe5d3">
               <svg viewBox="-10 -6 1020 412" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;display:block">
-                <sc-for list="{{ beenShapes }}" as="s" hint-placeholder-count="0"><path d="{{ s.d }}" fill="{{ s.fill }}" stroke="#d9c6a8" stroke-width="0.5" stroke-linejoin="round"></path></sc-for>
+                <sc-for list="{{ beenShapes }}" as="s" hint-placeholder-count="0"><path d="{{ s.d }}" fill="{{ s.fill }}" stroke="#fdf8ee" stroke-width="0.6" stroke-linejoin="round"></path></sc-for>
               </svg>
               <sc-for list="{{ beenPins }}" as="p" hint-placeholder-count="0"><div title="{{ p.name }}" style="{{ p.style }}"></div></sc-for>
               <sc-if value="{{ beenLoading }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 13.5px 'Anuphan';color:#a1927c">กำลังโหลดแผนที่…</div></sc-if>
-              <sc-if value="{{ beenEmpty }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 13px 'Anuphan';color:#96856f;padding:0 20px">ยังไม่ได้ปักประเทศ — แตะปุ่มด้านล่างเพื่อเพิ่มที่เคยไป</div></sc-if>
+              <sc-if value="{{ beenEmpty }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 13px 'Anuphan';color:#8f8069;padding:0 20px">ยังไม่ได้ปักประเทศ — แตะปุ่มด้านล่างเพื่อเพิ่มที่เคยไป</div></sc-if>
             </div>
             <button onClick="{{ toggleBeenPicker }}" style="width:100%;min-height:46px;margin-top:10px;border:1.5px dashed rgba(192,95,57,.5);background:#fff6ee;color:#c05f39;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">{{ beenPickerLabel }}</button>
             <sc-if value="{{ beenPickerOpen }}" hint-placeholder-val="{{ false }}">
@@ -3749,33 +3749,43 @@ class Component extends DCLogic {
     if (this._chSel && this._chEl.contains(this._chSel.startContainer)) { sel.removeAllRanges(); sel.addRange(this._chSel); }
   }
   insertChImage(ev) {
-    const f = (ev.target.files || [])[0]; ev.target.value = '';
-    if (!f) return;
-    if (this._chEl && this._chEl.querySelectorAll('img').length >= 4) { alert('แนบรูปในตอนได้ไม่เกิน 4 รูป'); return; }
-    this.shrinkToUrl(f, 1400, url => {
+    const files = Array.from(ev.target.files || []); ev.target.value = '';
+    if (!files.length) return;
+    const MAX = 10;
+    const have = this._chEl ? this._chEl.querySelectorAll('img').length : 0;
+    if (have >= MAX) { alert('แนบรูปในตอนได้ไม่เกิน ' + MAX + ' รูป'); return; }
+    const use = files.slice(0, MAX - have);
+    if (files.length > use.length) alert('แนบรูปในตอนได้ไม่เกิน ' + MAX + ' รูป');
+    const urls = new Array(use.length);
+    let done = 0;
+    use.forEach((file, i) => this.shrinkToUrl(file, 1400, url => {
+      urls[i] = url; done++;
+      if (done < use.length) return;
       if (!this._chEl) return;
       const sc = this._chEl.parentElement;
       const keepTop = sc ? sc.scrollTop : 0;
       this.restoreChSel();
-      const fig = '<figure data-newfig="1"><img src="' + url + '"><figcaption data-cap="1"></figcaption></figure><p><br></p>';
+      const fig = urls.filter(Boolean).map(u => '<figure data-newfig="1"><img src="' + u + '"><figcaption data-cap="1"></figcaption></figure>').join('') + '<p><br></p>';
       try { document.execCommand('insertHTML', false, fig); } catch (e) {}
       this._chSel = null;
-      const el = this._chEl.querySelector('[data-newfig]');
+      const els = Array.from(this._chEl.querySelectorAll('[data-newfig]'));
+      els.forEach(x => x.removeAttribute('data-newfig'));
+      const el = els[0];
       if (el) {
-        el.removeAttribute('data-newfig');
         const cap = el.querySelector('figcaption');
         if (cap) {
           const r = document.createRange(); r.selectNodeContents(cap); r.collapse(true);
           const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
         }
+        const last = els[els.length - 1] || el;
         if (sc) {
           sc.scrollTop = keepTop;
-          const need = el.offsetTop + el.offsetHeight - sc.clientHeight + 40;
+          const need = last.offsetTop + last.offsetHeight - sc.clientHeight + 40;
           if (need > sc.scrollTop) sc.scrollTop = need;
         }
       }
       this.updateCounts();
-    });
+    }));
   }
   insertChClip() {
     const el = this._chEl; if (!el) return;
@@ -4882,17 +4892,17 @@ class Component extends DCLogic {
     const tr = topo.transform, sc = tr.scale, tl = tr.translate;
     const arcs = topo.arcs.map(a => { let x = 0, y = 0; return a.map(p => { x += p[0]; y += p[1]; return [x * sc[0] + tl[0], y * sc[1] + tl[1]]; }); });
     const ring = idxs => {
-      let d = '', started = false, px = null;
+      let d = '', started = false, prev = null;
       idxs.forEach(i => {
-        const a = i < 0 ? arcs[~i].slice().reverse() : arcs[i];
-        for (let j = 0; j < a.length; j++) {
+        const arc = i < 0 ? arcs[~i].slice().reverse() : arcs[i];
+        for (let j = 0; j < arc.length; j++) {
           if (j === 0 && started) continue;
-          const x = this.geoX(a[j][0]), y = this.geoY(a[j][1]);
-          // ข้ามเส้นแบ่งวันสากล: ตัดเส้นทางใหม่ ไม่ลากพาดทั้งแผนที่
-          const jump = px != null && Math.abs(x - px) > 500;
-          const cmd = (!started || jump) ? ((started ? 'Z' : '') + 'M') : 'L';
-          started = true; px = x;
-          d += cmd + x.toFixed(1) + ' ' + y.toFixed(1);
+          // คลี่ลองจิจูดให้ต่อเนื่อง กันเส้นลากพาดข้ามแผนที่ตรงเส้นแบ่งวันสากล
+          let lng = arc[j][0];
+          if (prev != null) { while (lng - prev > 180) lng -= 360; while (lng - prev < -180) lng += 360; }
+          prev = lng;
+          d += (started ? 'L' : 'M') + this.geoX(lng).toFixed(1) + ' ' + this.geoY(arc[j][1]).toFixed(1);
+          started = true;
         }
       });
       return d ? d + 'Z' : '';
@@ -4911,14 +4921,14 @@ class Component extends DCLogic {
     if (this._geo || this._geoLoading) return;
     this._geoLoading = true;
     // แผนที่เป็นข้อมูลสาธารณะ สร้างใหม่ได้ — ห้ามอยู่ใน namespace wtn- ที่ถูกซิงก์/สำรอง
-    try { localStorage.removeItem('wtn-geo-v1'); localStorage.removeItem('wtn-geo-v2'); } catch (e) {}
-    try { const c = JSON.parse(localStorage.getItem('vela-geo-cache-v2')); if (c && c.length) { this._geo = c; this._geoLoading = false; return; } } catch (e) {}
+    try { localStorage.removeItem('wtn-geo-v1'); localStorage.removeItem('wtn-geo-v2'); localStorage.removeItem('vela-geo-cache-v2'); } catch (e) {}
+    try { const c = JSON.parse(localStorage.getItem('vela-geo-cache-v3')); if (c && c.length) { this._geo = c; this._geoLoading = false; return; } } catch (e) {}
     fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json')
       .then(r => r.json())
       .then(topo => {
         const g = this.buildGeo(topo);
         this._geo = g;
-        try { localStorage.setItem('vela-geo-cache-v2', JSON.stringify(g)); } catch (e) {}
+        try { localStorage.setItem('vela-geo-cache-v3', JSON.stringify(g)); } catch (e) {}
       })
       .catch(e => console.warn('[wtn] geo', e))
       .then(() => { this._geoLoading = false; this.forceUpdate(); });
@@ -5056,7 +5066,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.11r',
+      appVersion: '2026.08.11y',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5478,10 +5488,10 @@ class Component extends DCLogic {
         const onList = W.filter(isOn);
         const onEn = {}; onList.forEach(c => { const en = this.GEO_EN[c[0]]; if (en) onEn[en] = 1; });
         const geo = this._geo || [];
-        const beenShapes = geo.map(g => ({ d: g.d, fill: onEn[g.n] ? '#c05f39' : '#e3d3b8' }));
+        const beenShapes = geo.map(g => ({ d: g.d, fill: onEn[g.n] ? '#c05f39' : '#e3d8c1' }));
         const drawn = {}; geo.forEach(g => { drawn[g.n] = 1; });
         const pins = onList.filter(c => { const en = this.GEO_EN[c[0]]; return !en || !drawn[en]; })
-          .map(c => { const x = this.geoX(c[3]) / 10, y = this.geoY(c[2]) / 4; return { name: c[0], flag: c[1], style: 'position:absolute;left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px rgba(243,231,211,.95)' }; });
+          .map(c => { const x = this.geoX(c[3]) / 10, y = this.geoY(c[2]) / 4; return { name: c[0], flag: c[1], style: 'position:absolute;left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px rgba(253,248,238,.95)' }; });
         const q = (this.state.beenSearch || '').trim().toLowerCase();
         const opts = W.filter(c => !q || c[0].toLowerCase().includes(q)).map(c => { const isAuto = !!auto[c[0]], checked = isOn(c); return { name: c[0], flag: c[1], checked, isAuto, autoNote: 'จากทริป', toggle: isAuto ? () => this.showToast('ปักอัตโนมัติจากทริปแล้ว') : () => this.toggleBeen(c[0]), rowStyle: 'display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(43,36,32,.06);' + (checked ? 'background:rgba(192,95,57,.08)' : ''), checkStyle: 'width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;' + (checked ? 'background:#c05f39;color:#fff' : 'border:1.5px solid rgba(43,36,32,.22);color:transparent') }; });
         return { beenCount: onList.length, beenEmpty: onList.length === 0, beenPins: pins,
