@@ -306,6 +306,7 @@
       <!-- ========== MY PLANS (home) ========== -->
       <sc-if value="{{ sMyplans }}" hint-placeholder-val="{{ true }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
+          <sc-if value="{{ showNow }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:13px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:18px;padding:14px 16px;margin-bottom:16px">
             <span style="position:relative;width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center">
               <span style="position:absolute;width:38px;height:38px;border-radius:50%;background:rgba(192,95,57,.3);animation:wtnPulse 2.1s ease-out infinite"></span>
@@ -317,6 +318,7 @@
               <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ nowSub }}</div>
             </div>
           </div>
+          </sc-if>
           <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:22px;padding:22px;color:#fff;margin-bottom:20px">
             <div style="font-family:'Chonburi',serif;font-size:24px;line-height:1.25;margin-bottom:6px">ทริปหน้าไปไหน?</div>
             <p style="font:500 15px/1.6 'Anuphan';color:#f6d9c6;margin:0 0 16px">ตั้งชื่อ ใส่ช่วงวันกับงบ แล้วเริ่มวางแผนรายวันได้เลย</p>
@@ -340,7 +342,7 @@
             </div>
           </sc-for>
           <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}">
-            <div onClick="{{ loadKazakh }}" style="display:flex;align-items:center;gap:13px;background:#2b241f;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:14px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M9 3v14M15 7v14M9 3l6 4M9 17l6 4M4 6l5-3v14l-5 3zM20 4l-5 3v14l5-3z"/></svg></span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#f6efe2">โหลดโปรแกรมทัวร์ (คาซัคสถาน)</div><div style="font:500 14px 'Anuphan';color:#c9b79b">ทริปตัวอย่างจากตั๋ว + โปรแกรมทัวร์ 11 วัน</div></div></div>
+            <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">ยังไม่มีทริป</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e">แตะ “สร้างทริปใหม่” ด้านบน แล้ววางแผนวันแรกได้เลย</div></div>
           </sc-if>
         </div>
       </sc-if>
@@ -349,7 +351,7 @@
       <sc-if value="{{ sCreate }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 34px">
           <div style="position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;border:1px solid rgba(43,36,32,.1)">
-            <photo-pick id="{{ ncCoverId }}" fallback="uploads/20171210_150759619_iOS.jpg" style="display:block;width:100%;height:150px"></photo-pick>
+            <photo-pick id="{{ ncCoverId }}" fallback="default-cover.jpg" style="display:block;width:100%;height:150px"></photo-pick>
             <div style="position:absolute;bottom:10px;left:12px;background:rgba(43,36,32,.62);color:#fff;font:600 13px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>แตะเพื่อเลือกรูปปก</div>
           </div>
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ชื่อทริป</div>
@@ -480,7 +482,7 @@
       <sc-if value="{{ sOverview }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" id="wtn-ov" style="padding:16px 20px 30px">
           <div style="position:relative;border-radius:18px;overflow:hidden;margin-bottom:16px">
-            <photo-pick id="{{ ovCoverId }}" readonly fallback="uploads/20171210_150759619_iOS.jpg" style="display:block;width:100%;height:140px"></photo-pick>
+            <photo-pick id="{{ ovCoverId }}" readonly fallback="default-cover.jpg" style="display:block;width:100%;height:140px"></photo-pick>
             <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.05),rgba(43,36,32,.7));pointer-events:none"></div>
             <div style="position:absolute;left:16px;right:16px;bottom:13px;pointer-events:none">
               <div style="font-family:'Chonburi',serif;font-size:23px;color:#fff;line-height:1.2">{{ ovTitle }}</div>
@@ -660,7 +662,7 @@
                     <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
                       <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
-                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" onChange="{{ ciAddPhotos }}" style="display:none"></label></sc-if>
+                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" multiple onChange="{{ ciAddPhotos }}" style="display:none"></label></sc-if>
                   </div>
                   <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
                 </div>
@@ -868,6 +870,97 @@
         </div>
       </sc-if>
 
+      <!-- ========== TODAY ========== -->
+      <sc-if value="{{ sToday }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:16px 20px 30px">
+          <div style="background:linear-gradient(140deg,#f0a765 0%,#d9723f 46%,#c05f39 100%);border-radius:22px;padding:19px 19px 17px;color:#fff;box-shadow:0 14px 30px -18px rgba(160,72,38,.75)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+              <div style="min-width:0">
+                <div style="font-family:'Chonburi',serif;font-size:28px;line-height:1.1">{{ tdHeading }}</div>
+                <div style="font:500 14px 'Anuphan';color:#ffe9d6;margin-top:3px">{{ tdDateLabel }}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex:none">
+                <button onClick="{{ tdPrev }}" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.22);color:#fff;font-size:19px;cursor:pointer">‹</button>
+                <button onClick="{{ tdNext }}" style="width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.22);color:#fff;font-size:19px;cursor:pointer;opacity:{{ tdNextOpacity }}">›</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px">
+                <span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">{{ tdMomentLabel }}</span>
+              </div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px">
+                <span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">{{ tdStoryLabel }}</span>
+              </div>
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px">
+                <span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">{{ tdOtdLabel }}</span>
+              </div>
+            </div>
+            <sc-if value="{{ tdNowShow }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ tdNowGo }}" style="display:flex;align-items:center;gap:11px;margin-top:12px;padding-top:13px;border-top:1px solid rgba(255,255,255,.28);cursor:pointer">
+                <span style="position:relative;width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center">
+                  <span style="position:absolute;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.45);animation:wtnPulse 2.1s ease-out infinite"></span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff" style="position:relative"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6" fill="#d9723f"></circle></svg>
+                </span>
+                <div style="flex:1;min-width:0">
+                  <div style="font:500 12.5px 'Anuphan';color:#ffe0c8">{{ tdNowKicker }}</div>
+                  <div style="font:600 15.5px 'Anuphan';color:#fff">{{ tdNowTitle }}</div>
+                </div>
+                <span style="font:600 13.5px 'Anuphan';color:#ffe0c8;flex:none">{{ tdNowSub }}</span>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="margin-top:22px">
+            <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f;margin-bottom:3px">โมเมนต์</div>
+            <div style="font:500 14px 'Anuphan';color:#8a7d6f;margin-bottom:12px">เลือกรูปของวันนี้ แล้วเปลี่ยนเป็นบันทึกได้เลย</div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:16px;overflow:hidden">
+              <label style="display:flex;align-items:center;gap:13px;padding:15px;cursor:pointer">
+                <span style="width:42px;height:42px;border-radius:12px;background:#fbe0cb;display:flex;align-items:center;justify-content:center;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg></span>
+                <span style="flex:1;font:600 16px 'Anuphan';color:#2b241f">รูปของวันนี้</span>
+                <span style="font:600 15px 'Anuphan';color:#c05f39">{{ tdPhotoStatus }}</span>
+                <input type="file" accept="image/*" multiple onChange="{{ tdPickPhotos }}" style="display:none">
+              </label>
+              <sc-if value="{{ tdHasPhotos }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:0 15px 14px;display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-for list="{{ tdPhotos }}" as="tp" hint-placeholder-count="0"><span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ tp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ tp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#fff;font:700 12px 'Anuphan';cursor:pointer">×</button></span></sc-for>
+                </div>
+                <div style="padding:0 15px 15px"><button onClick="{{ tdMakeMoment }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';border-radius:13px;cursor:pointer">เขียนโมเมนต์จาก {{ tdPhotoCount }} รูปนี้</button></div>
+              </sc-if>
+              <sc-if value="{{ tdSkippedShow }}" hint-placeholder-val="{{ false }}"><div style="padding:0 15px 14px;font:500 13.5px/1.5 'Anuphan';color:#a1927c">{{ tdSkippedNote }}</div></sc-if>
+            </div>
+          </div>
+
+          <div style="margin-top:22px">
+            <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f;margin-bottom:12px">บันทึกของวันนี้</div>
+            <sc-for list="{{ tdEntries }}" as="e" hint-placeholder-count="0">
+              <div onClick="{{ e.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:16px;padding:13px;margin-bottom:10px;cursor:pointer">
+                <sc-if value="{{ e.hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ e.photo }}" alt="" style="width:58px;height:58px;object-fit:cover;border-radius:11px;flex:none;display:block"></sc-if>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 15.5px 'Anuphan';color:#2b241f">{{ e.title }}</div>
+                  <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ e.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ tdNoEntries }}" hint-placeholder-val="{{ true }}"><div style="padding:18px 12px 22px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีบันทึกของวันนี้</div></sc-if>
+          </div>
+
+          <div style="margin-top:22px">
+            <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f;margin-bottom:12px">วันนี้เมื่อปีก่อน</div>
+            <sc-for list="{{ tdOnThisDay }}" as="o" hint-placeholder-count="0">
+              <div onClick="{{ o.on }}" style="display:flex;gap:12px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:16px;padding:13px;margin-bottom:10px;cursor:pointer">
+                <sc-if value="{{ o.hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ o.photo }}" alt="" style="width:58px;height:58px;object-fit:cover;border-radius:11px;flex:none;display:block"></sc-if>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 13px 'Anuphan';color:#b07a5f">{{ o.ago }}</div>
+                  <div style="font:600 15.5px 'Anuphan';color:#2b241f;margin-top:1px">{{ o.title }}</div>
+                  <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ o.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ tdNoOtd }}" hint-placeholder-val="{{ true }}"><div style="padding:18px 12px 22px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีความทรงจำของวันนี้<br>บันทึกไว้วันนี้ ปีหน้าจะกลับมาโผล่ตรงนี้เอง</div></sc-if>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- ========== FEED ========== -->
       <sc-if value="{{ sFeed }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
@@ -960,8 +1053,9 @@
                 </div>
                 <sc-if value="{{ catEditOpen }}" hint-placeholder-val="{{ false }}">
                   <div style="margin-top:12px;padding:13px 14px;background:#f7f0e3;border:1px solid rgba(43,36,32,.1);border-radius:14px">
-                    <div style="font:700 15px 'Anuphan';color:#2b241f;margin-bottom:10px">ตั้งชื่อหมวดหมู่เอง (5 หมวด)</div>
-                    <sc-for list="{{ catDraft }}" as="cd" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><span style="{{ cd.dotStyle }}"></span><input value="{{ cd.name }}" onInput="{{ cd.set }}" placeholder="ชื่อหมวดหมู่" style="flex:1;min-width:0;border:1px solid rgba(43,36,32,.15);background:#fff;border-radius:10px;padding:8px 11px;font:500 15.5px 'IBM Plex Sans Thai Looped',sans-serif;color:#2b241f;outline:none"><span style="font:600 13px 'Anuphan';color:#b3a897;flex:none;width:36px;text-align:right">{{ cd.label }}</span></div></sc-for>
+                    <div style="font:700 15px 'Anuphan';color:#2b241f;margin-bottom:10px">ตั้งชื่อหมวดหมู่เอง</div>
+                    <sc-for list="{{ catDraft }}" as="cd" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:9px;margin-bottom:8px"><span style="{{ cd.dotStyle }}"></span><input value="{{ cd.name }}" onInput="{{ cd.set }}" placeholder="ชื่อหมวดหมู่" style="flex:1;min-width:0;border:1px solid rgba(43,36,32,.15);background:#fff;border-radius:10px;padding:8px 11px;font:500 15.5px 'IBM Plex Sans Thai Looped',sans-serif;color:#2b241f;outline:none"><span style="font:600 13px 'Anuphan';color:#b3a897;flex:none;width:36px;text-align:right">{{ cd.label }}</span><sc-if value="{{ cd.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cd.del }}" style="flex:none;width:28px;height:28px;border-radius:50%;border:none;background:rgba(43,36,32,.08);color:#8a7d6f;font:700 14px 'Anuphan';cursor:pointer">×</button></sc-if></div></sc-for>
+                    <button onClick="{{ addCat }}" style="width:100%;border:1px dashed rgba(43,36,32,.25);background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer;margin-top:2px">+ เพิ่มหมวด</button>
                     <div style="display:flex;gap:8px;margin-top:11px"><button onClick="{{ closeCatEdit }}" style="flex:1;border:1px solid rgba(43,36,32,.15);background:#fff;color:#5c5347;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCats }}" style="flex:1;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px;border-radius:11px;cursor:pointer">บันทึกหมวด</button></div>
                   </div>
                 </sc-if>
@@ -984,7 +1078,7 @@
                 </sc-if>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.08);flex-wrap:wrap">
                   <button onClick="{{ toggleMpWhen }}" style="display:inline-flex;align-items:center;gap:6px;border:none;background:transparent;color:{{ mpWhenColor }};font:600 14px 'Anuphan';cursor:pointer;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>{{ mpWhenLabel }}</button>
-                  <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 14px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/3)<input type="file" accept="image/*" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
+                  <sc-if value="{{ mpCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="display:inline-flex;align-items:center;gap:6px;color:#c05f39;font:600 14px 'Anuphan';cursor:pointer"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>รูป ({{ mpPhotoCount }}/10)<input type="file" accept="image/*" multiple onChange="{{ addMpPhotos }}" style="display:none"></label></sc-if>
                   <span style="flex:1"></span>
                   <button onClick="{{ postMomentFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';padding:9px 22px;border-radius:20px;cursor:pointer;opacity:{{ mpPostOpacity }}">บันทึก</button>
                 </div>
@@ -1105,6 +1199,7 @@
               <span style="font:600 14px 'Anuphan';color:#c05f39;flex:none">เปิด</span>
             </div>
           </sc-for>
+          <sc-if value="{{ noDocs }}" hint-placeholder-val="{{ false }}"><div style="padding:22px 12px 26px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีเอกสารในทริปนี้<br>แนบตั๋ว พาสปอร์ต วีซ่า หรือใบจองที่พักไว้ได้เลย</div></sc-if>
           <label style="display:block;width:100%;box-sizing:border-box;border:1.5px dashed rgba(43,36,32,.2);background:transparent;color:#a1927c;font:600 15px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer;margin-top:4px;text-align:center">+ เพิ่มเอกสาร (พาสปอร์ต, วีซ่า, ประกัน)<input type="file" accept="image/*,application/pdf" onChange="{{ addDocFile }}" style="display:none"></label>
         </div>
       </sc-if>
@@ -1357,8 +1452,8 @@
           <sc-if value="{{ exploreIdle }}" hint-placeholder-val="{{ true }}">
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:10px">เลือกจุดหมาย</div>
           <div style="display:flex;gap:12px;overflow-x:auto;margin:0 -20px;padding:2px 20px 4px;scrollbar-width:none">
-            <div onClick="{{ pickKz }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ kzCardRing }}"><photo-pick id="wtn-cover-kazakh" readonly fallback="uploads/20211027_071410292_iOS.jpg" style="position:absolute;inset:0"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#fff">คาซัคสถาน</div><div style="font:500 13px 'Anuphan';color:#e9cdb8;margin-top:2px">16 ที่แนะนำ</div></div></div>
-            <div onClick="{{ pickJp }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ jpCardRing }}"><img src="uploads/20240619_072028.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#fff">ญี่ปุ่น</div><div style="font:500 13px 'Anuphan';color:#e9cdb8;margin-top:2px">12 ที่แนะนำ</div></div></div>
+            <div onClick="{{ pickKz }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ kzCardRing }}"><photo-pick id="wtn-cover-kazakh" readonly fallback="default-cover.jpg" style="position:absolute;inset:0"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#fff">คาซัคสถาน</div><div style="font:500 13px 'Anuphan';color:#e9cdb8;margin-top:2px">16 ที่แนะนำ</div></div></div>
+            <div onClick="{{ pickJp }}" style="position:relative;flex:none;width:150px;height:170px;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:{{ jpCardRing }}"><img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 35%,rgba(43,36,32,.78))"></div><div style="position:absolute;left:13px;right:13px;bottom:12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#fff">ญี่ปุ่น</div><div style="font:500 13px 'Anuphan';color:#e9cdb8;margin-top:2px">12 ที่แนะนำ</div></div></div>
             <div style="flex:none;width:150px;height:170px;border-radius:20px;border:1.5px dashed rgba(43,36,32,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#a1927c"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg><span style="font:600 14px 'Anuphan';text-align:center;line-height:1.4">จุดหมายใหม่<br>กำลังทยอยเพิ่ม</span></div>
           </div>
           </sc-if>
@@ -1544,17 +1639,18 @@
             <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 14.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
             <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><button onClick="{{ goAdmin }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.2);background:#fff;color:#2b241f;font:600 13px 'Anuphan';padding:7px 13px;border-radius:20px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="14" width="3" height="3"/></svg>แดชบอร์ดแอดมิน</button></div></sc-if>
             <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:700 12.5px 'Anuphan';padding:5px 12px;border-radius:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg>พรีเมียม</span></div></sc-if>
-            <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">1</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ storyCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">0</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ผู้ติดตาม</span></div></div>
+            <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profTripCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profStoryCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profMomentCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">โมเมนต์</span></div></div>
           </div>
           <div style="padding:16px 20px 0">
             <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px"><span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">โลกของฉัน</span><span style="font:600 13.5px 'Anuphan';color:#c05f39">เคยไป {{ beenCount }} ประเทศ</span></div>
-            <div style="position:relative;width:100%;aspect-ratio:2/1;border-radius:16px;overflow:hidden;border:1px solid rgba(43,36,32,.14);background:#e7d9c0">
-              <div style="{{ beenMapLayer }}"></div>
-              <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 120% at 50% 35%,rgba(120,60,35,0) 50%,rgba(93,51,28,.22) 100%)"></div>
-              <sc-for list="{{ beenPins }}" as="p" hint-placeholder-count="0"><div title="{{ p.name }}" style="{{ p.style }}">{{ p.flag }}</div></sc-for>
-              <sc-if value="{{ beenEmpty }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 14px 'Anuphan';color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.7);text-align:center;padding:0 24px">ยังไม่ได้ปักประเทศ — แตะปุ่มด้านล่างเพื่อเพิ่มที่เคยไป</div></sc-if>
+            <div style="position:relative;width:100%;aspect-ratio:5/2;border-radius:16px;overflow:hidden;border:1px solid rgba(43,36,32,.12);background:#f3e7d3">
+              <svg viewBox="-10 -6 1020 412" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;display:block">
+                <sc-for list="{{ beenShapes }}" as="s" hint-placeholder-count="0"><path d="{{ s.d }}" fill="{{ s.fill }}" stroke="#d9c6a8" stroke-width="0.5" stroke-linejoin="round"></path></sc-for>
+              </svg>
+              <sc-for list="{{ beenPins }}" as="p" hint-placeholder-count="0"><div title="{{ p.name }}" style="{{ p.style }}"></div></sc-for>
+              <sc-if value="{{ beenLoading }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 13.5px 'Anuphan';color:#a1927c">กำลังโหลดแผนที่…</div></sc-if>
+              <sc-if value="{{ beenEmpty }}" hint-placeholder-val="{{ true }}"><div style="position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 13px 'Anuphan';color:#96856f;padding:0 20px">ยังไม่ได้ปักประเทศ — แตะปุ่มด้านล่างเพื่อเพิ่มที่เคยไป</div></sc-if>
             </div>
-            <div style="display:flex;gap:7px;margin-top:9px;overflow-x:auto"><sc-for list="{{ mapStyleChips }}" as="ms" hint-placeholder-count="4"><button onClick="{{ ms.on }}" style="{{ ms.style }}">{{ ms.label }}</button></sc-for></div>
             <button onClick="{{ toggleBeenPicker }}" style="width:100%;min-height:46px;margin-top:10px;border:1.5px dashed rgba(192,95,57,.5);background:#fff6ee;color:#c05f39;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">{{ beenPickerLabel }}</button>
             <sc-if value="{{ beenPickerOpen }}" hint-placeholder-val="{{ false }}">
               <div style="margin-top:10px;border:1px solid rgba(43,36,32,.1);border-radius:14px;background:#fffaf0;overflow:hidden">
@@ -1638,22 +1734,6 @@
               </sc-if>
             </div>
           </div>
-          <div>
-            <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">การผูกบัญชี</div>
-            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
-              <div onClick="{{ toggleFb }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:0 15px;cursor:pointer">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="#1877F2" style="flex:none"><path d="M24 12a12 12 0 1 0-13.88 11.85v-8.38H7.08V12h3.04V9.36c0-3 1.79-4.67 4.53-4.67 1.31 0 2.68.24 2.68.24v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.38A12 12 0 0 0 24 12z"></path></svg>
-                <div style="flex:1;min-width:0"><div style="font:500 16px 'Anuphan';color:#2b241f">Facebook</div><div style="font:500 14px 'Anuphan';color:#8a7d6f;margin-top:1px">{{ fbStatus }}</div></div>
-                <span style="font:600 14px 'Anuphan';color:{{ fbActionColor }}">{{ fbAction }}</span>
-              </div>
-              <div style="height:1px;background:rgba(43,36,32,.07);margin:0 15px"></div>
-              <div onClick="{{ toggleGoogle }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:0 15px;cursor:pointer">
-                <span style="width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid rgba(43,36,32,.1);display:flex;align-items:center;justify-content:center;flex:none"><svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"></path><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.1A12 12 0 0 0 12 24z"></path><path fill="#FBBC05" d="M5.27 14.28A7.2 7.2 0 0 1 4.9 12c0-.79.14-1.56.37-2.28v-3.1H1.29a12 12 0 0 0 0 10.76l3.98-3.1z"></path><path fill="#EA4335" d="M12 4.76c1.76 0 3.34.6 4.59 1.8l3.44-3.44A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.29 6.62l3.98 3.1C6.22 6.87 8.87 4.76 12 4.76z"></path></svg></span>
-                <div style="flex:1;min-width:0"><div style="font:500 16px 'Anuphan';color:#2b241f">Google</div><div style="font:500 14px 'Anuphan';color:#8a7d6f;margin-top:1px">{{ ggStatus }}</div></div>
-                <span style="font:600 14px 'Anuphan';color:{{ ggActionColor }}">{{ ggAction }}</span>
-              </div>
-            </div>
-          </div>
           <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
             <sc-if value="{{ notDelConfirm }}" hint-placeholder-val="{{ true }}">
               <div onClick="{{ askDelete }}" style="display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 15px;cursor:pointer">
@@ -1675,7 +1755,7 @@
           <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">สำรอง & กู้ข้อมูล</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
-              <sc-if value="{{ notGuest }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
                 <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
@@ -1700,6 +1780,7 @@
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
     <div class="wtn-tabbar" style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
+      <button onClick="{{ tabTodayFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cToday }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Today</button>
       <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Feed</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
       <button onClick="{{ tabMeFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
@@ -1771,10 +1852,10 @@ class Component extends DCLogic {
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
     tab: 'plan', history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
-  tabRoot = { plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
-  titles = { premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
-  roots = ['myplans','feed','discover','profile'];
+  tabRoot = { today: 'today', plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
+  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
+  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  roots = ['today','myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
     try { localStorage.setItem('wtn-auth', JSON.stringify({ provider, name, email, at: Date.now() })); } catch (e) {}
@@ -2349,7 +2430,7 @@ class Component extends DCLogic {
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
   setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') { this.loadFeed(); this.loadMoments(); } }
   openTrip(id) { this.setState({ trip: id, day: id === 'yamagata' ? 2 : 0 }); this.go('trip'); }
-  kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'uploads/20211027_071410292_iOS.jpg' }; }
+  kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'default-cover.jpg' }; }
   loadKazakh() {
     const list = this.userTrips;
     if (!list.some(t => t.id === 'kazakh')) this.saveUserTrips([this.kzSeed(), ...list]);
@@ -2625,6 +2706,29 @@ class Component extends DCLogic {
       list.splice(si, 1); added[key] = list; this.setState({ added });
     }
     if (this.state.stopEdit) this.setState({ stopEdit: null });
+  }
+  nowBanner() {
+    const list = this.userTrips;
+    if (!list.length) return { show: false, k: '', t: '', s: '' };
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const pd = s => { if (!s) return null; const d = new Date(s); if (isNaN(d)) return null; d.setHours(0, 0, 0, 0); return d; };
+    const days = d => Math.round((d - today) / 86400000);
+    const live = list.find(x => { const st = pd(x.start), en = pd(x.end); return st && en && today >= st && today <= en; });
+    if (live) {
+      const st = pd(live.start), en = pd(live.end);
+      const n = Math.round((en - st) / 86400000) + 1, i = Math.round((today - st) / 86400000) + 1;
+      return { show: true, k: 'กำลังเที่ยวอยู่ · Vela', t: live.name || 'ทริปนี้', s: 'วันที่ ' + i + ' จาก ' + n + ' · บันทึกเรื่องวันนี้เลย' };
+    }
+    const up = list.filter(x => { const st = pd(x.start); return st && st > today; }).sort((a, b) => pd(a.start) - pd(b.start))[0];
+    if (up) {
+      const d = days(pd(up.start));
+      return { show: true, k: 'เตรียมตัว! · Vela', t: 'อีก ' + d + ' วันได้ออกเดินทาง', s: (up.name || 'ทริปถัดไป') + ' · เก็บกระเป๋ายัง?' };
+    }
+    const past = list.filter(x => { const en = pd(x.end); return en && en < today; }).sort((a, b) => pd(b.end) - pd(a.end))[0];
+    if (past && -days(pd(past.end)) <= 60) {
+      return { show: true, k: 'กลับมาแล้ว!', t: 'เที่ยว' + (past.name || 'ทริปนี้') + 'จบแล้ว', s: 'ทำรีแคป/หนังสือเก็บความทรงจำเลยไหม' };
+    }
+    return { show: false, k: '', t: '', s: '' };
   }
   tripPhaseInfo(rec) {
     const tRec = rec || this.curTripRec();
@@ -3074,7 +3178,7 @@ class Component extends DCLogic {
     const t = this.curTripRec();
     const place = [t.country, t.city].filter(Boolean).join(' · ');
     return { id: c.mid, type: 'checkin', text: [c.name, c.note].filter(Boolean).join(' · '), place,
-      photos: (c.photos || []).slice(0, 3), tripId: this.state.trip, lat: c.lat, lng: c.lng,
+      photos: (c.photos || []).slice(0, 10), tripId: this.state.trip, lat: c.lat, lng: c.lng,
       at: c.at || Date.now(), published: on, cat: 0,
       authorName: this.myName, authorAvatar: this.myAvatar };
   }
@@ -3082,8 +3186,9 @@ class Component extends DCLogic {
     let files = Array.from(ev.target.files || []);
     ev.target.value = '';
     const have = (this.state.ciPhotos || []).length;
-    if (have >= 3) return;
-    files = files.slice(0, 3 - have);
+    if (have >= 10) { this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์'); return; }
+    if (files.length > 10 - have) this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์');
+    files = files.slice(0, 10 - have);
     if (files[0]) this.applyCiPhotoMeta(files[0]);
     files.forEach(f => {
       const rd = new FileReader();
@@ -3098,7 +3203,7 @@ class Component extends DCLogic {
           this.notePhotoExif(f, url);
           this.stashPhoto(url).then(ref => {
             this.notePhotoExif(f, ref);
-            this.setState(s2 => ({ ciPhotos: [...(s2.ciPhotos || [])].slice(0, 3).concat(ref).slice(0, 3) }));
+            this.setState(s2 => ({ ciPhotos: [...(s2.ciPhotos || [])].concat(ref).slice(0, 10) }));
           });
         };
         im.src = rd.result;
@@ -3170,7 +3275,7 @@ class Component extends DCLogic {
       list.push({
         t: tLabel,
         at: cts,
-        name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 3),
+        name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 10),
         lat: pos.lat, lng: pos.lng,
         mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() });
     }
@@ -3272,14 +3377,14 @@ class Component extends DCLogic {
     if (ut) {
       const range = this.fmtRange(ut.start, ut.end);
       const parts = [ut.country, ut.city].filter(Boolean).join(' · ');
-      return { title: ut.name, hero: 'uploads/20171210_150759619_iOS.jpg',
+      return { title: ut.name, hero: 'default-cover.jpg',
         m1: range || parts || 'ยังไม่ระบุวัน',
         m2: ut.budget ? ('~฿' + ut.budget.toLocaleString()) : (range ? parts : ''),
         live: false, status: 'ร่าง' };
     }
-    if (this.state.trip === 'kazakh') return { title:'คาซัคสถาน 11 วัน', hero:'uploads/20211027_071410292_iOS.jpg', m1:'24 ก.ค.–3 ส.ค.', m2:'Jeep ส่วนตัว', live:false, status:'โปรแกรมทัวร์' };
-    if (this.state.trip === 'blank') return { title:(this.state.ncName || '').trim() || 'ทริปใหม่', hero:'uploads/20171210_150759619_iOS.jpg', m1:(this.state.ncDates || '').trim() || 'ยังไม่มีวัน', m2:(this.state.ncPax || '').trim() ? (this.state.ncPax.trim() + ' คน') : 'เริ่มเพิ่มได้เลย', live:false, status:'ร่าง' };
-    return { title:'ยามากาตะ 8 วัน', hero:'uploads/20240619_072028.jpg', m1:'5 เมือง', m2:'~฿70k', live:true, status:'' };
+    if (this.state.trip === 'kazakh') return { title:'คาซัคสถาน 11 วัน', hero:'default-cover.jpg', m1:'24 ก.ค.–3 ส.ค.', m2:'Jeep ส่วนตัว', live:false, status:'โปรแกรมทัวร์' };
+    if (this.state.trip === 'blank') return { title:(this.state.ncName || '').trim() || 'ทริปใหม่', hero:'default-cover.jpg', m1:(this.state.ncDates || '').trim() || 'ยังไม่มีวัน', m2:(this.state.ncPax || '').trim() ? (this.state.ncPax.trim() + ' คน') : 'เริ่มเพิ่มได้เลย', live:false, status:'ร่าง' };
+    return { title:'ยามากาตะ 8 วัน', hero:'default-cover.jpg', m1:'5 เมือง', m2:'~฿70k', live:true, status:'' };
   }
 
   get kzDays() {
@@ -3367,12 +3472,12 @@ class Component extends DCLogic {
   get trips() {
     return [];
     return [
-      { name:'ยามากาตะ', country:'ญี่ปุ่น', meta:'8 วัน · ~฿70k', photo:'uploads/542169.jpg' },
-      { name:'Everest BC', country:'เนปาล', meta:'12 วัน · ~฿55k', photo:'uploads/20190508_094303777_iOS.jpg' },
-      { name:'ทะเลทรายซาฮารา', country:'โมร็อกโก', meta:'6 วัน · ~฿48k', photo:'uploads/20190531_220756000_iOS.jpg' },
-      { name:'Mardin', country:'ตุรกี', meta:'5 วัน · ~฿40k', photo:'uploads/20211027_071410292_iOS.jpg' },
-      { name:'Dolomites', country:'อิตาลี', meta:'7 วัน · ~฿72k', photo:'uploads/20240619_072028.jpg' },
-      { name:'มิลาน & โคโม', country:'อิตาลี', meta:'5 วัน · ~฿52k', photo:'uploads/20240630_153041.jpg' },
+      { name:'ยามากาตะ', country:'ญี่ปุ่น', meta:'8 วัน · ~฿70k', photo:'default-cover.jpg' },
+      { name:'Everest BC', country:'เนปาล', meta:'12 วัน · ~฿55k', photo:'default-cover.jpg' },
+      { name:'ทะเลทรายซาฮารา', country:'โมร็อกโก', meta:'6 วัน · ~฿48k', photo:'default-cover.jpg' },
+      { name:'Mardin', country:'ตุรกี', meta:'5 วัน · ~฿40k', photo:'default-cover.jpg' },
+      { name:'Dolomites', country:'อิตาลี', meta:'7 วัน · ~฿72k', photo:'default-cover.jpg' },
+      { name:'มิลาน & โคโม', country:'อิตาลี', meta:'5 วัน · ~฿52k', photo:'default-cover.jpg' },
     ];
   }
 
@@ -3744,7 +3849,7 @@ class Component extends DCLogic {
         const img = r.cover || firstImg(r.html) || '';
         const ex = strip(r.html).slice(0, 100);
         return { storyId: r.storyId, chapterId: r.id, series: r.storyTitle || '', title: r.title || 'ตอน',
-          author: r.authorName || 'นักเดินทาง', photo: img || 'uploads/20211027_071410292_iOS.jpg',
+          author: r.authorName || 'นักเดินทาง', photo: img || 'default-cover.jpg',
           hasCover: !!img, excerpt: ex ? (ex + (ex.length >= 100 ? '…' : '')) : '',
           likes: r.likes || 0, _t: (r.updatedAt && r.updatedAt.seconds ? r.updatedAt.seconds * 1000 : Date.now()),
           raw: r };
@@ -3764,9 +3869,9 @@ class Component extends DCLogic {
   }
   get mlikes() { try { return JSON.parse(localStorage.getItem('wtn-mlikes')) || {}; } catch (e) { return {}; } }
   momentLiked(id) { return !!this.mlikes[id]; }
-  get mcats() { try { const a = JSON.parse(localStorage.getItem('wtn-mcats')); if (Array.isArray(a) && a.length) return a.slice(0, 5); } catch (e) {} return ['ท่องเที่ยว', 'อาหาร', 'ที่พัก', 'ผู้คน', 'ความรู้สึก']; }
-  saveMcats(a) { try { localStorage.setItem('wtn-mcats', JSON.stringify(a.slice(0, 5))); } catch (e) {} }
-  catColor(i) { return ['#c05f39', '#6f8f6a', '#cf9440', '#8a6ea0', '#5f86a8'][((i % 5) + 5) % 5]; }
+  get mcats() { try { const a = JSON.parse(localStorage.getItem('wtn-mcats')); if (Array.isArray(a) && a.length) return a; } catch (e) {} return ['ท่องเที่ยว', 'อาหาร', 'ที่พัก', 'ผู้คน', 'ความรู้สึก']; }
+  saveMcats(a) { try { localStorage.setItem('wtn-mcats', JSON.stringify(a)); } catch (e) {} }
+  catColor(i) { const P = ['#c05f39', '#6f8f6a', '#cf9440', '#8a6ea0', '#5f86a8', '#a8695f', '#4f8f86', '#9a7b3f']; return P[((i % P.length) + P.length) % P.length]; }
   dkey(ts) { const d = new Date(ts); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   timeAgo(ts) {
     if (!ts) return '';
@@ -3807,7 +3912,7 @@ class Component extends DCLogic {
   }
   async postMoment() {
     const text = (this.state.mpText || '').trim();
-    const photos = (this.state.mpPhotos || []).slice(0, 3);
+    const photos = (this.state.mpPhotos || []).slice(0, 10);
     if (!text && !photos.length) return;
     const at = this.state.mpAt || Date.now();
     const backdated = Math.abs(Date.now() - at) > 900000;   // จดย้อนหลัง → ไม่ปักพิกัดตอนนี้ (คนละที่แล้ว)
@@ -3823,9 +3928,10 @@ class Component extends DCLogic {
   addMpPhotos(ev) {
     let files = Array.from(ev.target.files || []); ev.target.value = '';
     const have = (this.state.mpPhotos || []).length;
-    if (have >= 3) return;
-    const use = files.slice(0, 3 - have);
-    use.forEach(f => this.shrinkToUrl(f, 1100, url => { this.stashPhoto(url).then(ref => { this.notePhotoExif(f, ref); this.setState(s2 => ({ mpPhotos: [...(s2.mpPhotos || [])].concat(ref).slice(0, 3) })); }); }));
+    if (have >= 10) { this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์'); return; }
+    if (files.length > 10 - have) this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์');
+    const use = files.slice(0, 10 - have);
+    use.forEach(f => this.shrinkToUrl(f, 1100, url => { this.stashPhoto(url).then(ref => { this.notePhotoExif(f, ref); this.setState(s2 => ({ mpPhotos: [...(s2.mpPhotos || [])].concat(ref).slice(0, 10) })); }); }));
     if (use[0]) this.applyPhotoMeta(use[0]);
   }
   // ---------- EXIF: ดึงเวลาที่ถ่าย + พิกัดจากตัวรูป ----------
@@ -4109,7 +4215,7 @@ class Component extends DCLogic {
       { id: 'flight', name: 'ตั๋วเครื่องบิน AirAsia', sub: 'กรุงเทพ ⇄ อัลมาตี · e-ticket', kind: 'flight', url: 'uploads/airasia-ticket.pdf', mime: 'application/pdf' },
       { id: 'tour', name: 'โปรแกรมทัวร์ 8 วัน', sub: 'Private Jeep Tour', kind: 'file', url: '', mime: '' },
       { id: 'hotel', name: 'ที่พัก / โรงแรม', sub: 'Yurt camp, Glamping, Rancho…', kind: 'file', url: '', mime: '' } ];
-    return [ { id: 'flight', name: 'ตั๋วเครื่องบิน', sub: 'e-ticket', kind: 'flight', url: '', mime: '' } ];
+    return [];
   }
   get docs() {
     try { const all = JSON.parse(localStorage.getItem('wtn-docs')) || {}; if (all[this.state.trip]) return all[this.state.trip]; } catch (e) {}
@@ -4122,7 +4228,7 @@ class Component extends DCLogic {
     this.forceUpdate();
   }
   get openDoc() { return this.docs.find(d => d.id === this.state.openDocId) || null; }
-  openDocument(d) { if (d.kind === 'flight') { this.setState({ openDocId: d.id }); this.go('ticket'); return; } this.setState({ openDocId: d.id }); this.go('docView'); }
+  openDocument(d) { if (d.kind === 'flight' && this.state.trip === 'kazakh' && !d.url) { this.setState({ openDocId: d.id }); this.go('ticket'); return; } this.setState({ openDocId: d.id }); this.go('docView'); }
   _readDoc(f, cb) { if (f.type.startsWith('image/')) this.shrinkToUrl(f, 1600, cb); else { const rd = new FileReader(); rd.onload = () => cb(rd.result); rd.readAsDataURL(f); } }
   addDocFile(ev) {
     const f = (ev.target.files || [])[0]; ev.target.value = '';
@@ -4588,7 +4694,8 @@ class Component extends DCLogic {
   }
   get isAdmin() {
     const u = (window.WTNBackend && window.WTNBackend._uid) || (this.acct && this.acct.uid);
-    return u === 'ABu9cHcecbPpFBJgwrbR6rf8sa83' || u === 'E9wuPSIdQQOuPwvnSoW6Y427PrA3';
+    const em = ((this.acct && this.acct.email) || '').trim().toLowerCase();
+    return u === 'ABu9cHcecbPpFBJgwrbR6rf8sa83' || u === 'E9wuPSIdQQOuPwvnSoW6Y427PrA3' || em === 'niimph@gmail.com';
   }
   async loadAdminStats() {
     const be = window.WTNBackend;
@@ -4643,53 +4750,53 @@ class Component extends DCLogic {
     if (this._exData) return this._exData;
     const kz = {
       id: 'kz', name: 'คาซัคสถาน', tagline: 'ประเทศไร้ทางออกทะเลที่ใหญ่ที่สุดในโลก',
-      hero: 'uploads/20171210_150759619_iOS.jpg',
+      hero: 'default-cover.jpg',
       blurb: 'อัสตานาและอัลมาตี เมืองหลวงปัจจุบันและอดีต ผสานตึกระฟ้าทันสมัยเข้ากับสถาปัตยกรรมยุคโซเวียต พ้นจากเมืองออกไปคือทุ่งหญ้าสเตปป์กว้างไกลสุดลูกหูลูกตา ทะเลทราย และเทือกเขาสูงโอบล้อม',
       cities: [
         { id: 'almaty', name: 'อัลมาตี', one: 'เมืองภูเขาที่โซเวียตพบเอเชียกลาง',
-          hero: 'uploads/20240619_072028.jpg',
+          hero: 'default-cover.jpg',
           blurb: 'มีเทือกเขาเทียนซานปกคลุมหิมะเป็นฉากหลัง อดีตเมืองหลวงที่ผสานสถาปัตยกรรมโซเวียตกับถนนร่มไม้ ตลาดคึกคัก และคาเฟ่เก๋ๆ เป็นประตูสู่ธรรมชาติของคาซัคสถาน',
           popularity: 'เที่ยวกันพอสมควร', temp: '26°C',
           stay: { short: '2–3 วัน', long: '4–5 วัน',
             textShort: 'เดิน Panfilov Park และมหาวิหารเซนคอฟ แวะตลาด Green Bazaar แล้วนั่งกระเช้าขึ้น Kok-Tobe ชมวิวเมือง ปิดท้ายด้วยอาหารคาซัคที่ร้านท้องถิ่น',
             textLong: 'เพิ่มวันขึ้น Big Almaty Lake ชมทะเลสาบสีเทอร์ควอยซ์กลางภูเขา และเที่ยว Charyn Canyon แบบไปเช้าเย็นกลับ ถ้ามาหน้าหนาวต่อสกีที่ Shymbulak ได้อีก' },
-          highlights: [ { label: 'เทือกเขาเทียนซาน', photo: 'uploads/20240619_072028.jpg' }, { label: 'มหาวิหารเซนคอฟ', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'Green Bazaar', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          highlights: [ { label: 'เทือกเขาเทียนซาน', photo: 'default-cover.jpg' }, { label: 'มหาวิหารเซนคอฟ', photo: 'default-cover.jpg' }, { label: 'Green Bazaar', photo: 'default-cover.jpg' } ],
           qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ผ่อนคลายแบบเมืองภูเขา ถนนกว้างร่มไม้ คาเฟ่เยอะ คนเป็นมิตร จังหวะชีวิตช้ากว่ากรุงเทพชัดเจน' }, { q: 'พักย่านไหนดี', a: 'ย่านใจกลางใกล้ถนน Dostyk หรือ Panfilov เดินสะดวก ใกล้ร้านอาหารและตลาด เดินทางต่อง่าย' }, { q: 'ทริคเด็ดจากคนใน', a: 'ขึ้น Kok-Tobe ช่วงเย็นชมพระอาทิตย์ตกเหนือเมือง แล้วต่อมื้อค่ำวิวภูเขา คุ้มกว่าไปกลางวันมาก' }, { q: 'ช่วงไหนควรไป', a: 'มิ.ย.–ก.ย. อากาศอุ่นเหมาะเดินเขา ส่วน ธ.ค.–มี.ค. มาเล่นสกีที่ Shymbulak ได้' } ] },
         { id: 'astana', name: 'อัสตานา', one: 'เมืองหลวงแห่งอนาคตกลางทุ่งสเตปป์',
-          hero: 'uploads/20211027_071410292_iOS.jpg',
+          hero: 'default-cover.jpg',
           blurb: 'เมืองหลวงใหม่ที่ผุดขึ้นกลางทุ่งหญ้า เต็มไปด้วยสถาปัตยกรรมล้ำสมัยจากสถาปนิกระดับโลก หนาวจัดในฤดูหนาวแต่โอ่อ่าตระการตาทุกฤดู',
           popularity: 'เที่ยวกันบ้าง', temp: '24°C',
           stay: { short: '1–2 วัน', long: '2–3 วัน',
             textShort: 'ชมหอคอย Bayterek สัญลักษณ์ของเมือง เดินชมกลุ่มอาคารล้ำสมัยรอบ Nurzhol Boulevard แล้วแวะห้าง Khan Shatyr เต็นท์ยักษ์ใสที่ใหญ่ที่สุดในโลก',
             textLong: 'เพิ่มการเยี่ยม Hazrat Sultan Mosque มัสยิดที่ใหญ่ที่สุดในเอเชียกลาง และพิพิธภัณฑ์แห่งชาติ เก็บภาพเมืองยามค่ำที่ไฟประดับสวยเป็นพิเศษ' },
-          highlights: [ { label: 'หอคอย Bayterek', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'Khan Shatyr', photo: 'uploads/20240619_072028.jpg' }, { label: 'มัสยิด Hazrat Sultan', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          highlights: [ { label: 'หอคอย Bayterek', photo: 'default-cover.jpg' }, { label: 'Khan Shatyr', photo: 'default-cover.jpg' }, { label: 'มัสยิด Hazrat Sultan', photo: 'default-cover.jpg' } ],
           qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ทันสมัย โล่งกว้าง อาคารใหญ่โต เหมาะกับสายถ่ายภาพสถาปัตยกรรม แต่ระยะเดินไกลควรใช้แท็กซี่' }, { q: 'พักย่านไหนดี', a: 'ฝั่งซ้ายของแม่น้ำ (Left Bank) ใกล้ Bayterek และย่านราชการใหม่ เดินชมอาคารเด่นๆ ได้' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปช่วงเย็นแล้วรอไฟเมืองเปิด อาคารกระจกสะท้อนแสงสวยกว่ากลางวันมาก' }, { q: 'ช่วงไหนควรไป', a: 'พ.ค.–ก.ย. อากาศกำลังดี เลี่ยงฤดูหนาวที่ลงได้ถึง -30°C' } ] },
         { id: 'charyn', name: 'แคนยอนชารึน', one: 'แกรนด์แคนยอนแห่งเอเชียกลาง',
-          hero: 'uploads/20171210_150759619_iOS.jpg',
+          hero: 'default-cover.jpg',
           blurb: 'หุบผาหินทรายสีส้มแดงที่ธารน้ำกัดเซาะมานับล้านปี จุดเด่นคือ Valley of Castles ที่หินตั้งตระหง่านเหมือนปราสาท เที่ยวได้แบบไปเช้าเย็นกลับจากอัลมาตี',
           popularity: 'ยอดนิยม', temp: '30°C',
           stay: { short: 'ไปเช้าเย็นกลับ', long: '1 คืน',
             textShort: 'ขับ 3 ชม. จากอัลมาตี เดินลง Valley of Castles ราว 1–2 ชม. เก็บภาพหุบผาแล้วกลับเข้าเมืองภายในวันเดียว',
             textLong: 'ค้างที่ eco-camp ริมแม่น้ำหนึ่งคืน เพื่อชมแสงเช้า-เย็นที่หินเปลี่ยนสี และเดินสำรวจได้ไกลขึ้นโดยไม่รีบ' },
-          highlights: [ { label: 'Valley of Castles', photo: 'uploads/20171210_150759619_iOS.jpg' }, { label: 'แม่น้ำชารึน', photo: 'uploads/20240619_072028.jpg' }, { label: 'จุดชมวิวขอบผา', photo: 'uploads/20211027_071410292_iOS.jpg' } ],
+          highlights: [ { label: 'Valley of Castles', photo: 'default-cover.jpg' }, { label: 'แม่น้ำชารึน', photo: 'default-cover.jpg' }, { label: 'จุดชมวิวขอบผา', photo: 'default-cover.jpg' } ],
           qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'เงียบสงบ กว้างใหญ่ กลางวันร้อนและแดดแรง ควรเตรียมน้ำ หมวก และรองเท้าเดินสบาย' }, { q: 'ไปยังไงดี', a: 'ง่ายสุดคือจอยทัวร์วันเดย์จากอัลมาตี หรือเช่ารถขับเอง ถนนช่วงท้ายเป็นทางลูกรังบางส่วน' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปถึงก่อนเที่ยงเพื่อเลี่ยงแดดแรงตอนเดินลงหุบ และได้เงาหินที่ให้ภาพมีมิติ' }, { q: 'ช่วงไหนควรไป', a: 'เม.ย.–มิ.ย. และ ก.ย.–ต.ค. อากาศกำลังดี เลี่ยงกลางฤดูร้อนที่ร้อนจัด' } ] },
         { id: 'kolsai', name: 'ทะเลสาบคอลไซ', one: 'ทะเลสาบสามชั้นกลางป่าสน',
-          hero: 'uploads/Gemini_Generated_Image_lts58ilts58ilts5.png',
+          hero: 'default-cover.jpg',
           blurb: 'สามทะเลสาบน้ำใสไล่ระดับกลางเทือกเขาเทียนซาน ล้อมด้วยป่าสนเขียวขจี ได้ชื่อว่า "ไข่มุกแห่งเทียนซาน" เหมาะกับสายเดินป่าและตั้งแคมป์',
           popularity: 'เที่ยวกันบ้าง', temp: '20°C',
           stay: { short: '1 คืน', long: '2 คืน',
             textShort: 'เดินรอบทะเลสาบชั้นแรกที่เข้าถึงง่ายสุด พักโฮมสเตย์หมู่บ้าน Saty หนึ่งคืน แล้วแวะทะเลสาบ Kaindy ต้นสนจมน้ำในวันถัดไป',
             textLong: 'เทรกจากทะเลสาบชั้น 1 ขึ้นชั้น 2 (ราว 4–5 ชม.) ค้างเต็นท์ริมน้ำ สำหรับสายเดินป่าจริงจังที่อยากได้วิวเงียบสงบ' },
-          highlights: [ { label: 'ทะเลสาบชั้นแรก', photo: 'uploads/Gemini_Generated_Image_lts58ilts58ilts5.png' }, { label: 'ทะเลสาบ Kaindy', photo: 'uploads/20240619_072028.jpg' }, { label: 'หมู่บ้าน Saty', photo: 'uploads/20171210_150759619_iOS.jpg' } ],
+          highlights: [ { label: 'ทะเลสาบชั้นแรก', photo: 'default-cover.jpg' }, { label: 'ทะเลสาบ Kaindy', photo: 'default-cover.jpg' }, { label: 'หมู่บ้าน Saty', photo: 'default-cover.jpg' } ],
           qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'ธรรมชาติบริสุทธิ์ เงียบสงบ สัญญาณโทรศัพท์น้อย เหมาะกับการพักผ่อนแบบตัดขาดจากเมือง' }, { q: 'พักที่ไหนดี', a: 'โฮมสเตย์ในหมู่บ้าน Saty เจ้าของอบอุ่น อาหารโฮมเมด เป็นฐานไปทั้งคอลไซและ Kaindy' }, { q: 'ทริคเด็ดจากคนใน', a: 'พกเสื้อกันหนาวแม้หน้าร้อน กลางคืนบนภูเขาอุณหภูมิลงต่ำ และดาวสวยมาก' }, { q: 'ช่วงไหนควรไป', a: 'มิ.ย.–ก.ย. ทางเดินเปิดและน้ำใส หน้าหนาวถนนขึ้นเขาอาจปิดจากหิมะ' } ] },
         { id: 'turkistan', name: 'เตอร์กิสถาน', one: 'เมืองศักดิ์สิทธิ์ริมเส้นทางสายไหม',
-          hero: 'uploads/20211027_071410292_iOS.jpg',
+          hero: 'default-cover.jpg',
           blurb: 'เมืองประวัติศาสตร์ทางใต้ ที่ตั้งของสุสาน Khoja Ahmed Yasawi มรดกโลก UNESCO โดมสีฟ้าครามและงานกระเบื้องเปอร์เซียอันวิจิตร ศูนย์กลางจิตวิญญาณของชาวเติร์ก',
           popularity: 'กำลังมาแรง', temp: '32°C',
           stay: { short: '1 วัน', long: '2 วัน',
             textShort: 'ชมสุสาน Khoja Ahmed Yasawi ใจกลางเมือง เดินชมงานกระเบื้องและพิพิธภัณฑ์รอบๆ ครบได้ในหนึ่งวัน',
             textLong: 'เพิ่มวันไปเมืองโบราณ Otrar และ Sauran ป้อมดินริมเส้นทางสายไหม สำหรับสายประวัติศาสตร์ที่อยากเจาะลึก' },
-          highlights: [ { label: 'สุสาน Yasawi', photo: 'uploads/20211027_071410292_iOS.jpg' }, { label: 'งานกระเบื้องเปอร์เซีย', photo: 'uploads/20171210_150759619_iOS.jpg' }, { label: 'เมืองเก่า Otrar', photo: 'uploads/20240619_072028.jpg' } ],
+          highlights: [ { label: 'สุสาน Yasawi', photo: 'default-cover.jpg' }, { label: 'งานกระเบื้องเปอร์เซีย', photo: 'default-cover.jpg' }, { label: 'เมืองเก่า Otrar', photo: 'default-cover.jpg' } ],
           qa: [ { q: 'บรรยากาศเป็นยังไง', a: 'สงบขรึมแบบเมืองศาสนา ผู้คนมาแสวงบุญ ควรแต่งกายสุภาพเมื่อเข้าเขตสุสาน' }, { q: 'ไปยังไงดี', a: 'นั่งรถไฟความเร็วสูงหรือเครื่องบินจากอัลมาตี/อัสตานา มีสนามบินในเมืองแล้ว สะดวกขึ้นมาก' }, { q: 'ทริคเด็ดจากคนใน', a: 'ไปช่วงบ่ายแก่ๆ แสงทองตกกระทบโดมสีฟ้าให้ภาพสวยที่สุด และคนน้อยลง' }, { q: 'ช่วงไหนควรไป', a: 'เม.ย.–พ.ค. และ ก.ย.–ต.ค. เลี่ยงหน้าร้อนทางใต้ที่ร้อนจัดเกิน 35°C' } ] } ]
     };
     this._exData = { kz };
@@ -4737,17 +4844,90 @@ class Component extends DCLogic {
     return out;
   }
 
+  // ---------- Today ----------
+  tdDate() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (this.state.tdOffset || 0)); return d; }
+  tdRange() { const s = this.tdDate().getTime(); return [s, s + 86400000 - 1]; }
+  tdShiftDay(n) { const v = Math.max(0, (this.state.tdOffset || 0) + n); this.setState({ tdOffset: v, tdPhotos: [], tdSkipped: 0 }); }
+  async addTodayPhotos(ev) {
+    const files = Array.from(ev.target.files || []); ev.target.value = '';
+    if (!files.length) return;
+    const [s, e] = this.tdRange();
+    const have = (this.state.tdPhotos || []).length;
+    let skipped = 0; const keep = [];
+    for (const file of files) {
+      let at = file.lastModified || 0;
+      try { const ex = await this.exifOf(file); if (ex && ex.at) at = ex.at; } catch (err) {}
+      if (at >= s && at <= e) keep.push(file); else skipped++;
+    }
+    const use = keep.slice(0, Math.max(0, 10 - have));
+    if (keep.length > use.length) this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์');
+    this.setState({ tdSkipped: skipped });
+    use.forEach(file => this.shrinkToUrl(file, 1100, url => {
+      this.stashPhoto(url).then(ref => { this.notePhotoExif(file, ref); this.setState(st => ({ tdPhotos: [...(st.tdPhotos || [])].concat(ref).slice(0, 10) })); });
+    }));
+  }
+  tdStartMoment() {
+    const ph = this.state.tdPhotos || [];
+    if (!ph.length) return;
+    const at = this.tdDate().getTime() + 12 * 3600000;
+    this.setState({ mpPhotos: [...ph], mpAt: at, feedSeg: 'moments', tdPhotos: [], tdSkipped: 0 });
+    this.setTab('stories');
+  }
+  GEO_EN = { 'ไทย':'Thailand','ญี่ปุ่น':'Japan','เกาหลีใต้':'South Korea','จีน':'China','ไต้หวัน':'Taiwan','เวียดนาม':'Vietnam','ลาว':'Laos','กัมพูชา':'Cambodia','เมียนมา':'Myanmar','มาเลเซีย':'Malaysia','อินโดนีเซีย':'Indonesia','ฟิลิปปินส์':'Philippines','อินเดีย':'India','เนปาล':'Nepal','ภูฏาน':'Bhutan','ศรีลังกา':'Sri Lanka','คาซัคสถาน':'Kazakhstan','อุซเบกิสถาน':'Uzbekistan','คีร์กีซสถาน':'Kyrgyzstan','จอร์เจีย':'Georgia','ตุรกี':'Turkey','สหรัฐอาหรับเอมิเรตส์':'United Arab Emirates','กาตาร์':'Qatar','ซาอุดีอาระเบีย':'Saudi Arabia','จอร์แดน':'Jordan','อิสราเอล':'Israel','โอมาน':'Oman','อิหร่าน':'Iran','อังกฤษ':'United Kingdom','ฝรั่งเศส':'France','อิตาลี':'Italy','สเปน':'Spain','โปรตุเกส':'Portugal','เยอรมนี':'Germany','สวิตเซอร์แลนด์':'Switzerland','ออสเตรีย':'Austria','เนเธอร์แลนด์':'Netherlands','เบลเยียม':'Belgium','กรีซ':'Greece','เช็ก':'Czechia','ฮังการี':'Hungary','โปแลนด์':'Poland','โครเอเชีย':'Croatia','นอร์เวย์':'Norway','สวีเดน':'Sweden','เดนมาร์ก':'Denmark','ฟินแลนด์':'Finland','ไอซ์แลนด์':'Iceland','ไอร์แลนด์':'Ireland','รัสเซีย':'Russia','อียิปต์':'Egypt','โมร็อกโก':'Morocco','แอฟริกาใต้':'South Africa','เคนยา':'Kenya','แทนซาเนีย':'Tanzania','สหรัฐฯ':'United States of America','แคนาดา':'Canada','เม็กซิโก':'Mexico','บราซิล':'Brazil','อาร์เจนตินา':'Argentina','เปรู':'Peru','ชิลี':'Chile','คิวบา':'Cuba','ออสเตรเลีย':'Australia','นิวซีแลนด์':'New Zealand','ฟิจิ':'Fiji','เอธิโอเปีย':'Ethiopia','มาดากัสการ์':'Madagascar','ตูนิเซีย':'Tunisia','แอลจีเรีย':'Algeria','นามิเบีย':'Namibia','บอตสวานา':'Botswana','ซิมบับเว':'Zimbabwe','แซมเบีย':'Zambia','โมซัมบิก':'Mozambique','ยูกันดา':'Uganda','รวันดา':'Rwanda','เซเนกัล':'Senegal','กานา':'Ghana','ไนจีเรีย':'Nigeria','เลบานอน':'Lebanon','คูเวต':'Kuwait','ทาจิกิสถาน':'Tajikistan','เติร์กเมนิสถาน':'Turkmenistan','อาเซอร์ไบจาน':'Azerbaijan','อาร์เมเนีย':'Armenia','มองโกเลีย':'Mongolia','บังกลาเทศ':'Bangladesh','ปากีสถาน':'Pakistan','บรูไน':'Brunei','ยูเครน':'Ukraine','โรมาเนีย':'Romania','บัลแกเรีย':'Bulgaria','เซอร์เบีย':'Serbia','สโลวีเนีย':'Slovenia','สโลวาเกีย':'Slovakia','เอสโตเนีย':'Estonia','ลัตเวีย':'Latvia','ลิทัวเนีย':'Lithuania','ไซปรัส':'Cyprus','แอลเบเนีย':'Albania','ลักเซมเบิร์ก':'Luxembourg','โคลอมเบีย':'Colombia','เอกวาดอร์':'Ecuador','โบลิเวีย':'Bolivia','อุรุกวัย':'Uruguay','คอสตาริกา':'Costa Rica','ปานามา':'Panama','กัวเตมาลา':'Guatemala','ปาปัวนิวกินี':'Papua New Guinea','วานูอาตู':'Vanuatu' };
+  // แผนที่เวกเตอร์: Natural Earth 110m (world-atlas) → เส้นทางแบบ equirectangular
+  geoX(lng) { return (lng + 180) / 360 * 1000; }
+  geoY(lat) { return (84 - lat) / 144 * 400; }
+  buildGeo(topo) {
+    const o = topo.objects && topo.objects.countries; if (!o) return [];
+    const tr = topo.transform, sc = tr.scale, tl = tr.translate;
+    const arcs = topo.arcs.map(a => { let x = 0, y = 0; return a.map(p => { x += p[0]; y += p[1]; return [x * sc[0] + tl[0], y * sc[1] + tl[1]]; }); });
+    const ring = idxs => {
+      let d = '', started = false, px = null;
+      idxs.forEach(i => {
+        const a = i < 0 ? arcs[~i].slice().reverse() : arcs[i];
+        for (let j = 0; j < a.length; j++) {
+          if (j === 0 && started) continue;
+          const x = this.geoX(a[j][0]), y = this.geoY(a[j][1]);
+          // ข้ามเส้นแบ่งวันสากล: ตัดเส้นทางใหม่ ไม่ลากพาดทั้งแผนที่
+          const jump = px != null && Math.abs(x - px) > 500;
+          const cmd = (!started || jump) ? ((started ? 'Z' : '') + 'M') : 'L';
+          started = true; px = x;
+          d += cmd + x.toFixed(1) + ' ' + y.toFixed(1);
+        }
+      });
+      return d ? d + 'Z' : '';
+    };
+    const out = [];
+    o.geometries.forEach(g => {
+      const n = (g.properties && g.properties.name) || '';
+      let d = '';
+      if (g.type === 'Polygon') g.arcs.forEach(r => { d += ring(r); });
+      else if (g.type === 'MultiPolygon') g.arcs.forEach(poly => poly.forEach(r => { d += ring(r); }));
+      if (d) out.push({ n, d });
+    });
+    return out;
+  }
+  ensureGeo() {
+    if (this._geo || this._geoLoading) return;
+    this._geoLoading = true;
+    // แผนที่เป็นข้อมูลสาธารณะ สร้างใหม่ได้ — ห้ามอยู่ใน namespace wtn- ที่ถูกซิงก์/สำรอง
+    try { localStorage.removeItem('wtn-geo-v1'); localStorage.removeItem('wtn-geo-v2'); } catch (e) {}
+    try { const c = JSON.parse(localStorage.getItem('vela-geo-cache-v2')); if (c && c.length) { this._geo = c; this._geoLoading = false; return; } } catch (e) {}
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json')
+      .then(r => r.json())
+      .then(topo => {
+        const g = this.buildGeo(topo);
+        this._geo = g;
+        try { localStorage.setItem('vela-geo-cache-v2', JSON.stringify(g)); } catch (e) {}
+      })
+      .catch(e => console.warn('[wtn] geo', e))
+      .then(() => { this._geoLoading = false; this.forceUpdate(); });
+  }
   WORLD = [["ไทย","🇹🇭",15,101],["ญี่ปุ่น","🇯🇵",36.2,138.3],["เกาหลีใต้","🇰🇷",36.5,127.8],["จีน","🇨🇳",35.9,104.2],["ฮ่องกง","🇭🇰",22.3,114.2],["ไต้หวัน","🇹🇼",23.7,121],["เวียดนาม","🇻🇳",16,108],["ลาว","🇱🇦",19.9,102.5],["กัมพูชา","🇰🇭",12.5,105],["เมียนมา","🇲🇲",21.9,95.9],["มาเลเซีย","🇲🇾",4.2,101.9],["สิงคโปร์","🇸🇬",1.35,103.8],["อินโดนีเซีย","🇮🇩",-2,117],["ฟิลิปปินส์","🇵🇭",12.8,121.7],["อินเดีย","🇮🇳",22.6,79],["เนปาล","🇳🇵",28.4,84.1],["ภูฏาน","🇧🇹",27.5,90.4],["ศรีลังกา","🇱🇰",7.9,80.7],["มัลดีฟส์","🇲🇻",3.2,73],["คาซัคสถาน","🇰🇿",48,66.9],["อุซเบกิสถาน","🇺🇿",41.4,64.6],["คีร์กีซสถาน","🇰🇬",41.2,74.8],["จอร์เจีย","🇬🇪",42.3,43.4],["ตุรกี","🇹🇷",39,35.2],["สหรัฐอาหรับเอมิเรตส์","🇦🇪",23.4,53.8],["กาตาร์","🇶🇦",25.3,51.2],["ซาอุดีอาระเบีย","🇸🇦",23.9,45.1],["จอร์แดน","🇯🇴",30.6,36.2],["อิสราเอล","🇮🇱",31,34.9],["โอมาน","🇴🇲",21,57],["อิหร่าน","🇮🇷",32.4,53.7],["อังกฤษ","🇬🇧",54,-2.4],["ฝรั่งเศส","🇫🇷",46.6,2.2],["อิตาลี","🇮🇹",42.5,12.6],["สเปน","🇪🇸",40,-3.7],["โปรตุเกส","🇵🇹",39.5,-8],["เยอรมนี","🇩🇪",51.2,10.4],["สวิตเซอร์แลนด์","🇨🇭",46.8,8.2],["ออสเตรีย","🇦🇹",47.5,14.5],["เนเธอร์แลนด์","🇳🇱",52.1,5.3],["เบลเยียม","🇧🇪",50.5,4.5],["กรีซ","🇬🇷",39.1,21.8],["เช็ก","🇨🇿",49.8,15.5],["ฮังการี","🇭🇺",47.2,19.5],["โปแลนด์","🇵🇱",51.9,19.1],["โครเอเชีย","🇭🇷",45.1,15.2],["นอร์เวย์","🇳🇴",60.5,8.5],["สวีเดน","🇸🇪",60.1,18.6],["เดนมาร์ก","🇩🇰",56,10],["ฟินแลนด์","🇫🇮",64,26],["ไอซ์แลนด์","🇮🇸",64.9,-19],["ไอร์แลนด์","🇮🇪",53.4,-8],["รัสเซีย","🇷🇺",61.5,105],["อียิปต์","🇪🇬",26.8,30.8],["โมร็อกโก","🇲🇦",31.8,-7.1],["แอฟริกาใต้","🇿🇦",-30.6,22.9],["เคนยา","🇰🇪",-0.02,37.9],["แทนซาเนีย","🇹🇿",-6.4,34.9],["สหรัฐฯ","🇺🇸",39.8,-100.4],["แคนาดา","🇨🇦",56.1,-106.3],["เม็กซิโก","🇲🇽",23.6,-102.5],["บราซิล","🇧🇷",-10.3,-53.2],["อาร์เจนตินา","🇦🇷",-38.4,-63.6],["เปรู","🇵🇪",-9.2,-75],["ชิลี","🇨🇱",-35.7,-71.5],["คิวบา","🇨🇺",21.5,-77.8],["ออสเตรเลีย","🇦🇺",-25.3,133.8],["นิวซีแลนด์","🇳🇿",-40.9,174.9],["ฟิจิ","🇫🇯",-17.7,178],["เอธิโอเปีย","🇪🇹",9.1,40.5],["มาดากัสการ์","🇲🇬",-18.8,46.9],["ตูนิเซีย","🇹🇳",33.9,9.5],["แอลจีเรีย","🇩🇿",28,1.7],["นามิเบีย","🇳🇦",-22.6,18.5],["บอตสวานา","🇧🇼",-22.3,24.7],["ซิมบับเว","🇿🇼",-19,29.2],["แซมเบีย","🇿🇲",-13.1,27.8],["โมซัมบิก","🇲🇿",-18.7,35.5],["ยูกันดา","🇺🇬",1.4,32.3],["รวันดา","🇷🇼",-1.9,29.9],["เซเนกัล","🇸🇳",14.5,-14.5],["กานา","🇬🇭",7.9,-1],["ไนจีเรีย","🇳🇬",9.1,8.7],["มอริเชียส","🇲🇺",-20.3,57.6],["เซเชลส์","🇸🇨",-4.7,55.5],["เลบานอน","🇱🇧",33.9,35.9],["คูเวต","🇰🇼",29.3,47.5],["บาห์เรน","🇧🇭",26,50.5],["ทาจิกิสถาน","🇹🇯",38.9,71.3],["เติร์กเมนิสถาน","🇹🇲",38.9,59.6],["อาเซอร์ไบจาน","🇦🇿",40.1,47.6],["อาร์เมเนีย","🇦🇲",40.1,45],["มองโกเลีย","🇲🇳",46.9,103.8],["บังกลาเทศ","🇧🇩",23.7,90.4],["ปากีสถาน","🇵🇰",30.4,69.3],["บรูไน","🇧🇳",4.5,114.7],["ยูเครน","🇺🇦",48.4,31.2],["โรมาเนีย","🇷🇴",45.9,24.9],["บัลแกเรีย","🇧🇬",42.7,25.5],["เซอร์เบีย","🇷🇸",44,21],["สโลวีเนีย","🇸🇮",46.1,14.8],["สโลวาเกีย","🇸🇰",48.7,19.7],["เอสโตเนีย","🇪🇪",58.6,25],["ลัตเวีย","🇱🇻",56.9,24.6],["ลิทัวเนีย","🇱🇹",55.2,23.9],["มอลตา","🇲🇹",35.9,14.4],["ไซปรัส","🇨🇾",35.1,33.4],["แอลเบเนีย","🇦🇱",41.2,20.2],["ลักเซมเบิร์ก","🇱🇺",49.8,6.1],["โคลอมเบีย","🇨🇴",4.6,-74.3],["เอกวาดอร์","🇪🇨",-1.8,-78.2],["โบลิเวีย","🇧🇴",-16.3,-63.6],["อุรุกวัย","🇺🇾",-32.5,-55.8],["คอสตาริกา","🇨🇷",9.7,-83.8],["ปานามา","🇵🇦",8.5,-80.8],["กัวเตมาลา","🇬🇹",15.8,-90.2],["ปาปัวนิวกินี","🇵🇬",-6.3,143.9],["เฟรนช์โปลินีเซีย","🇵🇫",-17.7,-149.4],["ซามัว","🇼🇸",-13.8,-172.1],["วานูอาตู","🇻🇺",-15.4,166.9]];
   renderVals() {
     const sc = this.state.screen, active = this.state.day;
-    const kz = this.kzDays, kzn = kz.length;
-    const start = new Date(2026, 6, 24);
-    const t = new Date(); const d0 = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-    const diff = Math.round((d0 - start) / 86400000);
-    let nowK, nowT, nowS;
-    if (diff < 0) { nowK = 'เตรียมตัว! · Vela'; nowT = 'อีก ' + (-diff) + ' วันได้ออกเดินทาง'; nowS = 'คาซัคสถาน · เริ่ม 24 ก.ค. · เก็บกระเป๋ายัง?'; }
-    else if (diff < kzn) { const c = kz[diff], nx = kz[diff + 1]; nowK = 'ตอนนี้คุณอยู่ที่ · ตามแผน'; nowT = c.city; nowS = 'วันที่ ' + (diff + 1) + ' จาก ' + kzn + (nx ? ' · ต่อไป → ' + nx.city : ' · วันสุดท้าย'); }
-    else { nowK = 'กลับมาแล้ว!'; nowT = 'เที่ยวคาซัคสถานจบแล้ว'; nowS = 'ทำรีแคป/หนังสือเก็บความทรงจำเลยไหม'; }
+    const nowCard = this.nowBanner();
+    const nowK = nowCard.k, nowT = nowCard.t, nowS = nowCard.s;
     const curKey = this.state.trip + ':' + active;
     const curExtra = this.state.added[curKey] || [];
     const baseDay = this.days[active] || this.days[0];
@@ -4783,6 +4963,9 @@ class Component extends DCLogic {
       canBack: this.state.history.length > 0 && !this.roots.includes(sc),
       back: () => this.back(),
       isGuest: this.isGuest, notGuest: !this.isGuest, guestSignup: () => this.gotoSignup(),
+      profTripCount: this.userTrips.length,
+      profStoryCount: this.stories.reduce((n, s) => n + ((this.normStory(s).chapters || []).length), 0),
+      profMomentCount: this.moments.length,
       isPremium: this.isPremium, notPremium: !this.isPremium, goPremium: () => this.go('premium'),
       isAdmin: this.isAdmin, goAdmin: () => { this.go('admin'); this.loadAdminStats(); }, refreshAdmin: () => this.loadAdminStats(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
@@ -4855,6 +5038,7 @@ class Component extends DCLogic {
       goTicket: () => this.go('ticket'),
       docItems: this.docs.map(d => ({ name: d.name, sub: d.sub || (d.url ? '' : 'ยังไม่ได้แนบไฟล์'),
         isFlight: d.kind === 'flight', hasFile: !!d.url, on: () => this.openDocument(d) })),
+      noDocs: this.docs.length === 0,
       addDocFile: e => this.addDocFile(e),
       viewFlightFile: () => { this.setState({ openDocId: 'flight' }); this.go('docView'); },
       ...(() => {
@@ -4872,7 +5056,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.10n',
+      appVersion: '2026.08.11r',
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
@@ -5049,14 +5233,6 @@ class Component extends DCLogic {
       setPassA: e => this.setState({ passA: e.target.value, passErr: '' }),
       setPassB: e => this.setState({ passB: e.target.value, passErr: '' }),
       savePass: () => this.savePass(),
-      fbStatus: this.links.facebook ? (this.acct.name || 'Nim') : 'ยังไม่ได้ผูก',
-      ggStatus: this.links.google ? (this.acct.name || 'Nim') : 'ยังไม่ได้ผูก',
-      fbAction: this.links.facebook ? 'ยกเลิกการผูก' : 'ผูกบัญชี',
-      ggAction: this.links.google ? 'ยกเลิกการผูก' : 'ผูกบัญชี',
-      fbActionColor: this.links.facebook ? '#8a7d6f' : '#c05f39',
-      ggActionColor: this.links.google ? '#8a7d6f' : '#c05f39',
-      toggleFb: () => this.toggleLink('facebook'),
-      toggleGoogle: () => this.toggleLink('google'),
       delConfirm: !!this.state.delConfirm, notDelConfirm: !this.state.delConfirm,
       askDelete: () => this.setState({ delConfirm: true }),
       cancelDelete: () => this.setState({ delConfirm: false }),
@@ -5120,7 +5296,7 @@ class Component extends DCLogic {
         const va = isNaN(ta) ? Infinity : ta, vb = isNaN(tb) ? Infinity : tb;
         return ra === 2 ? vb - va : va - vb; // ผ่านมา: ล่าสุดก่อน · ที่เหลือ: ใกล้→ไกล
       }).map(t => ({ id: t.id, name: t.name || 'ทริปใหม่', coverId: 'wtn-cover-' + t.id,
-        cover: t.cover || 'uploads/20171210_150759619_iOS.jpg', badge: this.tripPhaseInfo(t).status || t.badge || '', hasBadge: !!(this.tripPhaseInfo(t).status || t.badge),
+        cover: t.cover || 'default-cover.jpg', badge: this.tripPhaseInfo(t).status || t.badge || '', hasBadge: !!(this.tripPhaseInfo(t).status || t.badge),
         meta: t.metaOverride || ([t.country, this.fmtRange(t.start, t.end), (t.budget ? '~฿' + Number(t.budget).toLocaleString() : '')].filter(Boolean).join(' · ') || 'ยังไม่ระบุรายละเอียด'),
         open: () => this.openTrip(t.id),
         edit: e => { if (e && e.stopPropagation) e.stopPropagation(); this.openCreate(t.id); },
@@ -5194,7 +5370,7 @@ class Component extends DCLogic {
         useDate: () => this.useCiPhotoDate(p),
         rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
       ciAddPhotos: e => this.addCiPhotos(e),
-      ciCanAddPhoto: (this.state.ciPhotos || []).length < 3,
+      ciCanAddPhoto: (this.state.ciPhotos || []).length < 10,
       saveCi: () => this.saveCi(),
       ciAmt: this.state.ciAmt ?? '',
       setCiAmt: e => this.setState({ ciAmt: e.target.value.replace(/[^\d.]/g, '') }),
@@ -5213,7 +5389,56 @@ class Component extends DCLogic {
       tabDiscoverFn: () => this.isGuest ? this.gotoSignup() : this.setTab('discover'),
       tabPlanFn: () => this.isGuest ? this.gotoSignup() : this.setTab('plan'),
       tabMeFn: () => this.isGuest ? this.gotoSignup() : this.setTab('me'),
-      cStories: tc('stories'), cDiscover: tc('discover'), cPlan: tc('plan'), cMe: tc('me'),
+      tabTodayFn: () => this.isGuest ? this.gotoSignup() : this.setTab('today'),
+      cStories: tc('stories'), cDiscover: tc('discover'), cPlan: tc('plan'), cMe: tc('me'), cToday: tc('today'),
+      ...(() => {
+        const off = this.state.tdOffset || 0;
+        const d0 = this.tdDate(), [rs, re] = this.tdRange();
+        const fmt = ts => new Date(ts).toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        const heading = off === 0 ? 'Today' : (off === 1 ? 'เมื่อวาน' : new Date(rs).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
+        const ms = this.moments.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
+        const cats = this.mcats;
+        const catName = i => cats[i] || cats[0] || '';
+        const tHour = ts => new Date(ts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        const mkRow = m => ({ title: (m.text || '').trim().slice(0, 70) || (m.place || 'โมเมนต์'),
+          meta: [tHour(m.at || 0), m.place || '', catName(m.cat || 0)].filter(Boolean).join(' · '),
+          hasPhoto: !!(m.photos || []).length, photo: (m.photos || [])[0] ? this.px((m.photos || [])[0]) : '',
+          on: () => { this.setState({ feedSeg: 'moments' }); this.setTab('stories'); } });
+        const todays = ms.filter(m => (m.at || 0) >= rs && (m.at || 0) <= re);
+        const chapsOf = s => (this.normStory(s).chapters || []);
+        const stToday = this.stories.reduce((n, s) => n + chapsOf(s).filter(c => { const t = c.updatedAt || s.at || 0; return t >= rs && t <= re; }).length, 0);
+        const mm = d0.getMonth(), dd = d0.getDate(), yy = d0.getFullYear();
+        const sameDay = ts => { const t = new Date(ts || 0); return t.getMonth() === mm && t.getDate() === dd && t.getFullYear() < yy; };
+        const agoOf = ts => { const y = yy - new Date(ts).getFullYear(); return y === 1 ? 'ปีที่แล้ว' : (y + ' ปีก่อน'); };
+        const otd = ms.filter(m => sameDay(m.at)).map(m => ({ ...mkRow(m), ago: agoOf(m.at) }))
+          .concat(this.stories.reduce((acc, s0) => { const s = this.normStory(s0);
+            chapsOf(s0).forEach(c => { const t = c.updatedAt || s.at || 0; if (!sameDay(t)) return;
+              acc.push({ title: c.title || s.title || 'เรื่องเล่า', meta: ['เรื่องเล่า', s.title || ''].filter(Boolean).join(' · '),
+                hasPhoto: !!s.cover, photo: s.cover ? this.px(s.cover) : '', ago: agoOf(t),
+                on: () => this.openStoryRead(s.id) }); });
+            return acc; }, []))
+          .sort((x, y2) => x.ago.localeCompare(y2.ago));
+        const tp = this.state.tdPhotos || [], sk = this.state.tdSkipped || 0;
+        const nb = this.nowBanner();
+        return {
+          tdNowShow: off === 0 && nb.show, tdNowKicker: nb.k, tdNowTitle: nb.t, tdNowSub: nb.s.split(' · ')[0],
+          tdNowGo: () => this.setTab('plan'),
+          sToday: sc === 'today',
+          tdHeading: heading, tdDateLabel: fmt(rs),
+          tdPrev: () => this.tdShiftDay(1), tdNext: () => this.tdShiftDay(-1), tdNextOpacity: off === 0 ? '.35' : '1',
+          tdMomentLabel: todays.length + ' โมเมนต์',
+          tdStoryLabel: stToday + ' เรื่องเล่า',
+          tdOtdLabel: otd.length + ' ในอดีต',
+          tdEntries: todays.map(mkRow), tdNoEntries: todays.length === 0,
+          tdOnThisDay: otd, tdNoOtd: otd.length === 0,
+          tdPickPhotos: e => this.addTodayPhotos(e),
+          tdPhotos: tp.map((p, i) => ({ src: this.px(p), rm: e => { if (e && e.stopPropagation) e.stopPropagation(); if (e && e.preventDefault) e.preventDefault(); this.setState(s2 => ({ tdPhotos: (s2.tdPhotos || []).filter((_, j) => j !== i) })); } })),
+          tdHasPhotos: tp.length > 0, tdPhotoCount: tp.length,
+          tdPhotoStatus: tp.length ? (tp.length + ' รูป') : 'เลือกรูป ›',
+          tdSkippedShow: sk > 0, tdSkippedNote: 'ข้าม ' + sk + ' รูปที่ไม่ได้ถ่ายวันนี้',
+          tdMakeMoment: () => this.tdStartMoment(),
+        };
+      })(),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       notEditing: !this.state.editing,
@@ -5249,21 +5474,18 @@ class Component extends DCLogic {
         const auto = {};
         this.userTrips.forEach(t => { const ph = this.tripPhaseInfo(t); const cn = (t.country || '').trim(); if (ph.past && cn && nameSet[cn]) { (auto[cn] = auto[cn] || []).push(t.name || 'ทริป'); } });
         const isOn = c => !!been[c[0]] || !!auto[c[0]];
-        const _mapBase = "position:absolute;inset:0;background-image:url('https://unpkg.com/three-globe@2.31.0/example/img/earth-blue-marble.jpg');background-size:cover;background-position:center;";
-        const _mapPresets = {
-          bright: _mapBase + 'filter:saturate(1.6) brightness(1.1) contrast(1.06);opacity:1',
-          natural: _mapBase + 'opacity:1',
-          warm: _mapBase + 'filter:sepia(.4) saturate(1.75) brightness(1.16) hue-rotate(-12deg) contrast(1.02);opacity:1',
-          vintage: _mapBase + 'filter:sepia(1) saturate(1.55) brightness(1.12) contrast(.92);opacity:.9;mix-blend-mode:multiply',
-        };
-        const _ms = this.mapStyle || 'warm';
-        const _mapLabels = [['bright','สดใส'],['natural','ธรรมชาติ'],['warm','อุ่น'],['vintage','วินเทจ']];
-        const mapStyleChips = _mapLabels.map(p => ({ label: p[1], on: () => this.setMapStyle(p[0]), style: 'flex:none;border:none;cursor:pointer;font:600 12.5px \'Anuphan\';padding:6px 13px;border-radius:15px;' + (_ms === p[0] ? 'background:#c05f39;color:#fff' : 'background:#efe4d3;color:#6f6558') }));
-        const pins = W.filter(isOn).map(c => { const x = (c[3] + 180) / 360 * 100, y = (90 - c[2]) / 180 * 100; return { name: c[0], flag: c[1], style: 'position:absolute;left:' + x + '%;top:' + y + '%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:#c05f39;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:12px' }; });
+        this.ensureGeo();
+        const onList = W.filter(isOn);
+        const onEn = {}; onList.forEach(c => { const en = this.GEO_EN[c[0]]; if (en) onEn[en] = 1; });
+        const geo = this._geo || [];
+        const beenShapes = geo.map(g => ({ d: g.d, fill: onEn[g.n] ? '#c05f39' : '#e3d3b8' }));
+        const drawn = {}; geo.forEach(g => { drawn[g.n] = 1; });
+        const pins = onList.filter(c => { const en = this.GEO_EN[c[0]]; return !en || !drawn[en]; })
+          .map(c => { const x = this.geoX(c[3]) / 10, y = this.geoY(c[2]) / 4; return { name: c[0], flag: c[1], style: 'position:absolute;left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px rgba(243,231,211,.95)' }; });
         const q = (this.state.beenSearch || '').trim().toLowerCase();
         const opts = W.filter(c => !q || c[0].toLowerCase().includes(q)).map(c => { const isAuto = !!auto[c[0]], checked = isOn(c); return { name: c[0], flag: c[1], checked, isAuto, autoNote: 'จากทริป', toggle: isAuto ? () => this.showToast('ปักอัตโนมัติจากทริปแล้ว') : () => this.toggleBeen(c[0]), rowStyle: 'display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(43,36,32,.06);' + (checked ? 'background:rgba(192,95,57,.08)' : ''), checkStyle: 'width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;' + (checked ? 'background:#c05f39;color:#fff' : 'border:1.5px solid rgba(43,36,32,.22);color:transparent') }; });
-        return { beenCount: pins.length, beenEmpty: pins.length === 0, beenPins: pins,
-          beenMapLayer: _mapPresets[_ms] || _mapPresets.warm, mapStyleChips,
+        return { beenCount: onList.length, beenEmpty: onList.length === 0, beenPins: pins,
+          beenShapes, beenLoading: !this._geo,
           beenPickerOpen: !!this.state.beenPickerOpen, beenPickerLabel: this.state.beenPickerOpen ? 'เสร็จแล้ว' : '＋ เพิ่มประเทศที่เคยไป',
           toggleBeenPicker: () => this.setState(s => ({ beenPickerOpen: !s.beenPickerOpen })),
           beenSearch: this.state.beenSearch || '', setBeenSearch: e => this.setState({ beenSearch: e.target.value }),
@@ -5306,7 +5528,7 @@ class Component extends DCLogic {
       affilGo: () => this.openAffiliate(),
       openAdd: () => this.go('addStop'), sAddStop: sc === 'addStop',
       saveStop: () => { const key = this.state.trip + ':' + this.state.day; const arr = (this.state.added[key] || []).concat([{ t: this.state.addTime || '—', kind: this.state.addKind, title: this.state.addTitle || 'กิจกรรมใหม่', note: this.state.addNote || '' }]); this.setState({ added: { ...this.state.added, [key]: arr }, addTitle: '', addTime: '', addNote: '' }); this.back(); },
-      nowKicker: nowK, nowTitle: nowT, nowSub: nowS,
+      nowKicker: nowK, nowTitle: nowT, nowSub: nowS, showNow: nowCard.show,
       trips: this.trips, noTrips: this.trips.length === 0,
       ...(() => {
         const strip = h => (h || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -5316,7 +5538,7 @@ class Component extends DCLogic {
           const chs = s.chapters || [];
           let ex = (s.synopsis || strip((chs[0] || {}).html) || '').slice(0, 96);
           return {
-            photo: s.cover || 'uploads/20211027_071410292_iOS.jpg',
+            photo: s.cover || 'default-cover.jpg',
             hasCover: !!s.cover, place: s.category || '', title: s.title,
             excerpt: ex ? (ex + (ex.length >= 96 ? '…' : '')) : 'ยังไม่มีเนื้อหา — แตะเพื่อเริ่มเขียน',
             draft: !s.published, likes: s.likes || 0, chapCount: chs.length,
@@ -5330,7 +5552,7 @@ class Component extends DCLogic {
             const img = c.cover || firstImg(c.html) || st.cover || '';
             const ex = strip(c.html).slice(0, 100);
             feed.push({ _t: c.updatedAt || st.at || 0,
-              photo: img || 'uploads/20211027_071410292_iOS.jpg', hasCover: !!img,
+              photo: img || 'default-cover.jpg', hasCover: !!img,
               series: st.title, title: c.title, byline: this.myName, byAvatar: this.myAvatar, byHasAvatar: !!this.myAvatar, byNoAvatar: !this.myAvatar,
               excerpt: ex ? (ex + (ex.length >= 100 ? '…' : '')) : '',
               likes: c.likes || 0, comments: this.commentsFor(c.id).length,
@@ -5456,7 +5678,7 @@ class Component extends DCLogic {
             hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
             useDate: () => this.useMpPhotoDate(p),
             rm: () => this.setState(s => ({ mpPhotos: (s.mpPhotos || []).filter((_, j) => j !== i) })) })),
-          mpHasPhotos: mpN > 0, mpPhotoCount: mpN, mpCanAddPhoto: mpN < 3,
+          mpHasPhotos: mpN > 0, mpPhotoCount: mpN, mpCanAddPhoto: mpN < 10,
           addMpPhotos: e => this.addMpPhotos(e),
           postMomentFn: () => this.postMoment(), mpPostOpacity: canPost ? '1' : '.5',
           momentFeed: momentList, noMoments: momentList.length === 0,
@@ -5487,8 +5709,9 @@ class Component extends DCLogic {
           catEditOpen: !!this.state.catEditOpen,
           openCatEdit: () => this.setState({ catEditOpen: true, catDraft: [...cats] }),
           closeCatEdit: () => this.setState({ catEditOpen: false, catDraft: null }),
-          catDraft: draft.map((c, i) => ({ name: c, label: i === 0 ? 'หลัก' : ('หมวด ' + (i + 1)), dotStyle: 'width:11px;height:11px;border-radius:50%;flex:none;background:' + this.catColor(i), set: e => { const v = e.target.value; this.setState(s => { const d = [...(s.catDraft || cats)]; d[i] = v; return { catDraft: d }; }); } })),
-          saveCats: () => { const base = ['ท่องเที่ยว', 'หมวด 2', 'หมวด 3', 'หมวด 4', 'หมวด 5']; const d = (this.state.catDraft || cats).map((x, i) => ((x || '').trim()) || base[i]); this.saveMcats(d); this.setState({ catEditOpen: false, catDraft: null }); this.forceUpdate(); },
+          catDraft: draft.map((c, i) => ({ name: c, label: i === 0 ? 'หลัก' : ('หมวด ' + (i + 1)), canDel: i > 0, dotStyle: 'width:11px;height:11px;border-radius:50%;flex:none;background:' + this.catColor(i), set: e => { const v = e.target.value; this.setState(s => { const d = [...(s.catDraft || cats)]; d[i] = v; return { catDraft: d }; }); }, del: () => this.setState(s => ({ catDraft: (s.catDraft || cats).filter((_, j) => j !== i) })) })),
+          addCat: () => this.setState(s => ({ catDraft: [...(s.catDraft || cats), 'หมวด ' + ((s.catDraft || cats).length + 1)] })),
+          saveCats: () => { let d = (this.state.catDraft || cats).map((x, i) => ((x || '').trim()) || (i === 0 ? 'ท่องเที่ยว' : 'หมวด ' + (i + 1))); if (!d.length) d = ['ท่องเที่ยว']; this.saveMcats(d); this.setState({ catEditOpen: false, catDraft: null }); this.forceUpdate(); },
         };
       })(),
       budgetRows: this.budgetRows,
@@ -5591,8 +5814,14 @@ class Component extends DCLogic {
       ...(() => {
         const rows = [], slides = [];
         let cis = 0, photos = 0, daysWith = 0;
-        this.days.forEach((d, i) => {
-          const list = this.checkins[this.state.trip + ':' + i] || [];
+        const _tid = this.state.trip, _ck = this.checkins;
+        // รวมทุกวันที่มีเช็คอินจริง ไม่ใช่แค่วันที่มีในแผน (กันรูปวันท้ายๆ หาย)
+        const _extra = Object.keys(_ck).filter(k => k.indexOf(_tid + ':') === 0)
+          .map(k => parseInt(k.slice(_tid.length + 1), 10)).filter(n => !isNaN(n));
+        const _idxs = Array.from(new Set(this.days.map((_, i) => i).concat(_extra))).sort((x, y) => x - y);
+        _idxs.forEach(i => {
+          const d = this.days[i] || { n: String(i + 1), city: 'วันที่ ' + (i + 1), tag: 'วันที่ ' + (i + 1) };
+          const list = _ck[_tid + ':' + i] || [];
           if (!list.length) return;
           daysWith++; cis += list.length;
           let ph = 0;
@@ -5616,7 +5845,7 @@ class Component extends DCLogic {
           hasBookContent: rows.length > 0, bookEmpty: rows.length === 0, bookRows: rows,
           hasRecap: slides.length > 0, recapEmpty: slides.length === 0,
           recapDays: daysWith, recapCis: cis, recapPhotoCount: photos,
-          recapPhoto: cur.img || '', recapCaption: cur.cap || '', recapCaptionDay: cur.day || '',
+          recapPhoto: this.px(cur.img || ''), recapCaption: cur.cap || '', recapCaptionDay: cur.day || '',
           recapPlayLabel: this.state.recapPlaying ? '⏸ หยุด' : '▶ เล่นรีแคป',
           toggleRecapPlay: () => {
             if (this.state.recapPlaying) {
@@ -5662,7 +5891,7 @@ class Component extends DCLogic {
       pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
       profileStories: this.stories.slice().sort((a, b) => b.at - a.at).map(s => {
         s = this.normStory(s);
-        return { photo: s.cover || 'uploads/20211027_071410292_iOS.jpg', place: s.category || '',
+        return { photo: s.cover || 'default-cover.jpg', place: s.category || '',
           title: s.title, likes: s.likes || 0, chapCount: (s.chapters || []).length,
           on: () => this.openStoryRead(s.id) };
       }),
