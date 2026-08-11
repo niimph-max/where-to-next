@@ -2321,7 +2321,8 @@ class Component extends DCLogic {
   }
   async forceRestoreCloud() {
     const be = window.WTNBackend;
-    if (!be || !be._uid) { alert('ยังไม่ได้ล็อกอิน — เข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
+    const uid = await this.ensureUid();
+    if (!be || !uid) { alert('เครื่องนี้ยังไม่ได้ล็อกอิน — เข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
     if (!confirm('ดึงข้อมูลสำรองล่าสุดจากคลาวด์มาทับข้อมูลในเครื่องนี้?')) return;
     this.setState({ restoreBusy: true });
     try {
@@ -4305,9 +4306,24 @@ class Component extends DCLogic {
     this._readDoc(f, url => this.saveDocs(this.docs.map(d => d.id === id ? { ...d, url, mime: f.type, sub: /pdf/i.test(f.type) ? 'PDF' : 'รูปภาพ' } : d)));
   }
   deleteDoc(id) { this.saveDocs(this.docs.filter(d => d.id !== id)); this.back(); }
+  // เซสชันคืนค่าแบบ async — ถ้ากดก่อนคืนเสร็จ _uid ยังว่าง ต้องเช็คของจริงก่อนค่อยฟ้อง
+  async ensureUid() {
+    const be = window.WTNBackend;
+    if (!be) return null;
+    if (be._uid) return be._uid;
+    try {
+      const sb = be._sb;
+      if (!sb) return null;
+      const { data } = await sb.auth.getSession();
+      const u = data && data.session && data.session.user;
+      if (u) { be._uid = u.id; return be._uid; }
+    } catch (e) { console.warn('[wtn] ensureUid', e); }
+    return null;
+  }
   async syncNow() {
     const be = window.WTNBackend;
-    if (!be || !be._uid) { alert('ยังไม่ได้ล็อกอิน'); return; }
+    const uid = await this.ensureUid();
+    if (!be || !uid) { alert('เครื่องนี้ยังไม่ได้ล็อกอิน — ไปที่ ฉัน แล้วเข้าสู่ระบบด้วยบัญชีเดิมก่อน'); return; }
     if (this._syncing) return;
     this._syncing = true; this.setState({ syncBusy: true });
     try {
@@ -5120,7 +5136,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.12d',
+      appVersion: '2026.08.12e',
       multiRef: this.multiRef,
       offlineShow: this.state.online === false,
       ...this._exploreVals(),
