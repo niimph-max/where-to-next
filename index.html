@@ -1801,7 +1801,6 @@
                 <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
-                <button onClick="{{ goRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">🕑 เวอร์ชันสำรองย้อนหลัง (กู้กลับได้)</button>
               </sc-if>
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
               <div style="display:flex;gap:9px">
@@ -2194,6 +2193,15 @@ class Component extends DCLogic {
   _parseJSON(s) { try { return JSON.parse(s); } catch (e) { return undefined; } }
   _idField(arr) { for (const x of (arr || [])) { if (x && typeof x === 'object' && !Array.isArray(x)) { if ('id' in x) return 'id'; if ('mid' in x) return 'mid'; } } return null; }
   _tombs() { try { return JSON.parse(localStorage.getItem('wtn-tombs')) || {}; } catch (e) { return {}; } }
+  // ใบสั่งลบของโมเมนต์ที่ยังมีเช็คอินคู่อยู่ = ตกค้าง ไม่ควรมีผล
+  _sweepCiTombs() {
+    try {
+      const ids = [];
+      const all = this.checkins;
+      Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c && c.mid) ids.push(c.mid); }));
+      this._dropTombs(ids);
+    } catch (e) {}
+  }
   _dropTombs(ids) {
     if (!ids || !ids.length) return;
     const t = this._tombs(); let hit = false;
@@ -4222,8 +4230,10 @@ class Component extends DCLogic {
     this.forceUpdate();
   }
   // เช็คอินที่ published แต่ไม่มีโมเมนต์คู่แล้ว (โดนคำสั่งลบเก่ากินไป) → สร้างกลับ
-  rebuildCiMoments() {
+  rebuildCiMoments(force) {
     try {
+      if (force) { try { localStorage.removeItem('wtn-tombs'); } catch (e) {} this._mTombs = {}; }
+      this._sweepCiTombs();   // เช็คอินที่ยังอยู่ = ยกเลิกใบสั่งลบของโมเมนต์คู่มันเสมอ
       const all = this.checkins, have = {};
       this.moments.forEach(m => { have[m.id] = 1; });
       const add = [];
@@ -4240,11 +4250,12 @@ class Component extends DCLogic {
             authorName: this.myName, authorAvatar: this.myAvatar, _m: Date.now() });
         });
       });
-      if (!add.length) return;
+      if (!add.length) return 0;
       this._dropTombs(add.map(m => m.id));
       this.saveMoments(add.concat(this.moments));
       this.forceUpdate();
-    } catch (e) {}
+      return add.length;
+    } catch (e) { return 0; }
   }
   deleteMoment(id) {
     this.saveMoments(this.moments.filter(x => x.id !== id));
@@ -5523,7 +5534,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.13k',
+      appVersion: '2026.08.13n',
       multiRef: this.multiRef,
       recExport: !!this.state.recExport,
       recExportPct: this.state.recExportPct || 0,
