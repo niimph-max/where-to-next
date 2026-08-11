@@ -144,8 +144,11 @@
       }
       var self = this, img = this._imgEl;
       if (img.src !== this._state.img) {
+        img.decoding = 'async';
+        img.style.opacity = '0'; img.style.transition = 'opacity .25s';   // กันรูปขึ้นครึ่งๆ ตอนเน็ตช้า
         img.onload = function () {
           self._nat = { w: img.naturalWidth, h: img.naturalHeight };
+          img.style.opacity = '1';
           self._place(); if (cb) cb();
         };
         img.src = this._state.img;
