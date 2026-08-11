@@ -1215,6 +1215,7 @@
             <div onClick="{{ d.on }}" style="display:flex;align-items:center;gap:13px;background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:16px;padding:15px;margin-bottom:11px;cursor:pointer">
               <span style="width:46px;height:46px;border-radius:12px;background:#efe4d3;display:flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg></span>
               <div style="flex:1;min-width:0"><div style="font:600 16px 'Anuphan';color:#2b241f">{{ d.name }}</div><div style="font:500 14px 'Anuphan';color:#8a7d6f">{{ d.sub }}</div></div>
+              <button onClick="{{ d.rename }}" style="flex:none;width:40px;height:40px;border-radius:11px;border:1px solid rgba(43,36,32,.12);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
               <span style="font:600 14px 'Anuphan';color:#c05f39;flex:none">เปิด</span>
             </div>
           </sc-for>
@@ -1780,13 +1781,13 @@
                   <button onClick="{{ fo.on }}" style="{{ fo.style }}"><span style="{{ fo.sample }}">{{ fo.name }}</span><span style="{{ fo.hint }}">{{ fo.note }}</span></button>
                 </sc-for>
               </div>
-              <div style="font:600 15px 'Anuphan';color:#2b241f;margin:17px 0 9px">เปิดแอปมาที่แท็บ</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <sc-for list="{{ homeTabOpts }}" as="ho" hint-placeholder-count="4"><button onClick="{{ ho.on }}" style="{{ ho.style }}">{{ ho.name }}</button></sc-for>
-              </div>
               <div style="font:600 15px 'Anuphan';color:#2b241f;margin:17px 0 9px">ขนาดตัวอักษร</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap">
                 <sc-for list="{{ sizeOpts }}" as="so" hint-placeholder-count="4"><button onClick="{{ so.on }}" style="{{ so.style }}">{{ so.name }}</button></sc-for>
+              </div>
+              <div style="font:600 15px 'Anuphan';color:#2b241f;margin:17px 0 9px">เปิดแอปมาที่แท็บ</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <sc-for list="{{ homeTabOpts }}" as="ho" hint-placeholder-count="4"><button onClick="{{ ho.on }}" style="{{ ho.style }}">{{ ho.name }}</button></sc-for>
               </div>
               <div style="margin-top:15px;padding:12px 13px;background:#f6efe2;border-radius:12px">
                 <div style="font:600 12.5px 'Anuphan';color:#a1927c;margin-bottom:6px">ตัวอย่าง</div>
@@ -4456,6 +4457,14 @@ class Component extends DCLogic {
     const id = this.state.openDocId; if (!f || !id) return;
     this._readDoc(f, url => this.saveDocs(this.docs.map(d => d.id === id ? { ...d, url, mime: f.type, sub: /pdf/i.test(f.type) ? 'PDF' : 'รูปภาพ' } : d)));
   }
+  renameDoc(id) {
+    const d = this.docs.find(x => x.id === id); if (!d) return;
+    const name = (window.prompt('ตั้งชื่อไฟล์นี้', d.name || '') || '').trim();
+    if (!name) return;
+    const note = (window.prompt('คำอธิบายสั้นๆ (เว้นว่างได้)', d.sub || '') || '').trim();
+    this.saveDocs(this.docs.map(x => x.id === id ? { ...x, name, sub: note } : x));
+    this.showToast && this.showToast('✓ เปลี่ยนชื่อแล้ว');
+  }
   deleteDoc(id) { this.saveDocs(this.docs.filter(d => d.id !== id)); this.back(); }
   // เซสชันคืนค่าแบบ async — ถ้ากดก่อนคืนเสร็จ _uid ยังว่าง ต้องเช็คของจริงก่อนค่อยฟ้อง
   async ensureUid() {
@@ -5515,7 +5524,8 @@ class Component extends DCLogic {
       goDocs: () => this.go('docs'),
       goTicket: () => this.go('ticket'),
       docItems: this.docs.map(d => ({ name: d.name, sub: d.sub || (d.url ? '' : 'ยังไม่ได้แนบไฟล์'),
-        isFlight: d.kind === 'flight', hasFile: !!d.url, on: () => this.openDocument(d) })),
+        isFlight: d.kind === 'flight', hasFile: !!d.url, on: () => this.openDocument(d),
+        rename: e => { if (e && e.stopPropagation) e.stopPropagation(); this.renameDoc(d.id); } })),
       noDocs: this.docs.length === 0,
       addDocFile: e => this.addDocFile(e),
       viewFlightFile: () => { this.setState({ openDocId: 'flight' }); this.go('docView'); },
@@ -5534,7 +5544,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.13n',
+      appVersion: '2026.08.13o',
       multiRef: this.multiRef,
       recExport: !!this.state.recExport,
       recExportPct: this.state.recExportPct || 0,
@@ -6077,7 +6087,7 @@ class Component extends DCLogic {
         this.moments.forEach(m => { mMap[m.id] = { ...m, mine: true }; });
         const momentFeed = Object.values(mMap).sort((a, b) => (b.at || 0) - (a.at || 0)).map(m => {
           const av = m.authorAvatar || '';
-          const ci = Math.max(0, Math.min(4, m.cat || 0));
+          const ci = Math.max(0, Math.min(cats.length - 1, m.cat || 0));
           const _dt = new Date(m.at || Date.now());
           const dateStr = isNaN(_dt) ? '' : _dt.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short' });
           const timeStr = isNaN(_dt) ? '' : _dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
