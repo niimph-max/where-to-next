@@ -1,0 +1,34 @@
+{
+  "appId": "net.onevela.app",
+  "appName": "Vela",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "always",
+    "scrollEnabled": true,
+    "backgroundColor": "#f6efe2"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#f6efe2"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#2b241f",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#f6efe2",
+      "overlaysWebView": false
+    },
+    "Keyboard": {
+      "resize": "native"
+    }
+  },
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "capacitor"
+  }
+}
