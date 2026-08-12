@@ -57,6 +57,11 @@ async function boot() {
   });
   const secs = t => (t ? { seconds: Math.floor(new Date(t).getTime() / 1000) } : null);
   const dataUrlToBlob = async d => (await fetch(d)).blob();
+  const countsOf = (obj) => {
+    const dd = (obj && obj.data) || {};
+    const n = (k) => { try { return (JSON.parse(dd[k] || "[]") || []).length; } catch (e) { return 0; } };
+    return { trips: n("wtn-trips"), moments: n("wtn-moments") };
+  };
 
   const api = {
     _uid: null,
@@ -122,6 +127,37 @@ async function boot() {
       const { data } = await T(SB.from("profiles").select("premium,premium_until").eq("id", this._uid).maybeSingle(), 15000, "getPremium");
       if (!data) return { premium: false, until: null };
       return { premium: data.premium === true, until: data.premium_until ? new Date(data.premium_until).getTime() : null };
+    },
+
+    // ---------- BILLING (Stripe) ----------
+    async startCheckout(plan) {
+      if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
+      const { data, error } = await SB.functions.invoke("stripe-checkout", { body: { plan: plan === "year" ? "year" : "trip" } });
+      if (error) throw new Error((error && error.message) || "เปิดหน้าชำระเงินไม่สำเร็จ");
+      if (data && data.error) throw new Error(data.error);
+      return (data && data.url) || null;
+    },
+    async billingPortal() {
+      if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
+      const { data, error } = await SB.functions.invoke("billing-portal", { body: {} });
+      if (error) throw new Error((error && error.message) || "เปิดหน้าจัดการไม่สำเร็จ");
+      if (data && data.error) throw new Error(data.error);
+      return (data && data.url) || null;
+    },
+
+    // ---------- ADMIN ----------
+    async adminStats() {
+      const n = async (q) => { const { count } = await q; return count || 0; };
+      const P = () => SB.from("profiles").select("id", { count: "exact", head: true });
+      const total = await n(P());
+      const premium = await n(P().eq("premium", true));
+      const activeSubs = await n(P().eq("premium", true).eq("plan", "year"));
+      let revenue = 0;
+      try {
+        const { data } = await SB.from("payments").select("amount").eq("status", "paid");
+        revenue = (data || []).reduce((s, r) => s + (Number(r.amount) || 0), 0);
+      } catch (e) {}
+      return { total, premium, free: Math.max(0, total - premium), activeSubs, revenue };
     },
 
     // ---------- STORAGE (รูป/ไฟล์) ----------
@@ -301,7 +337,7 @@ async function boot() {
       if (!this._lastVerAt || at - this._lastVerAt >= 600000) {
         this._lastVerAt = at;
         try {
-          await SB.from("backup_versions").upsert({ user_id: this._uid, at, blob });
+          await SB.from("backup_versions").upsert({ user_id: this._uid, at, blob, ...countsOf(obj) });
           let list = this._verList;
           if (!list) {
             const rows = ok(await SB.from("backup_versions").select("at").eq("user_id", this._uid).order("at", { ascending: false }));
@@ -323,16 +359,8 @@ async function boot() {
     async listBackupVersions() {
       if (!this._uid) return [];
       try {
-        const rows = ok(await SB.from("backup_versions").select("at,blob").eq("user_id", this._uid).order("at", { ascending: false }));
-        return (rows || []).map(r => {
-          let trips = 0, moments = 0;
-          try {
-            const o = JSON.parse(r.blob), dd = o.data || {};
-            trips = (JSON.parse(dd["wtn-trips"] || "[]") || []).length;
-            moments = (JSON.parse(dd["wtn-moments"] || "[]") || []).length;
-          } catch (e) {}
-          return { id: String(r.at), at: Number(r.at), trips, moments };
-        });
+        const rows = ok(await SB.from("backup_versions").select("at,trips,moments").eq("user_id", this._uid).order("at", { ascending: false }));
+        return (rows || []).map(r => ({ id: String(r.at), at: Number(r.at), trips: Number(r.trips) || 0, moments: Number(r.moments) || 0 }));
       } catch (e) { console.warn("[wtn] list versions", e); return []; }
     },
     async getBackupVersion(id) {
@@ -361,11 +389,11 @@ async function boot() {
       const ch = SB.channel("wtn-backup-" + this._uid)
         .on("postgres_changes",
           { event: "*", schema: "public", table: "backup_meta", filter: "user_id=eq." + this._uid },
-          async payload => {
+          payload => {
             const at = Number((payload.new || {}).at || 0);
             if (!at || at <= (this._seenAt || 0)) return;   // echo ของเราเอง/ของเก่า
             this._seenAt = at;
-            try { const bk = await this.pullBackup(); if (bk) cb(bk); } catch (e) { console.warn("[wtn] backup sub pull", e); }
+            cb({ _at: at });   // แจ้งเฉยๆ ว่ามีของใหม่ — ฝั่งแอปตัดสินใจเองว่าจะดึงก้อนเต็มไหม (ประหยัด egress)
           })
         .subscribe();
       return () => { try { SB.removeChannel(ch); } catch (e) {} };

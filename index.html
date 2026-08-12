@@ -261,11 +261,12 @@
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรวจจุดหมายด้วย AI</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:11px">
-            <button onClick="{{ pickPlanYear }}" style="{{ planYearStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ yearSel }}" hint-placeholder-val="{{ true }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายปี · ฿599<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/ปี</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ตกเดือนละ ~฿50</div></div><span style="flex:none;background:#c05f39;color:#fff;font:700 12px 'Anuphan';padding:5px 10px;border-radius:12px">ประหยัด 15%</span></button>
-            <button onClick="{{ pickPlanMonth }}" style="{{ planMonthStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ monthSel }}" hint-placeholder-val="{{ false }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายเดือน · ฿59<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/เดือน</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ยกเลิกได้ทุกเมื่อ</div></div></button>
+            <button onClick="{{ pickPlanTrip }}" style="{{ planTripStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ tripSel }}" hint-placeholder-val="{{ true }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">Trip Pass · ฿99<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/30 วัน</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">จ่ายครั้งเดียว ไม่ตัดเงินอัตโนมัติ</div></div><span style="flex:none;background:#c05f39;color:#fff;font:700 12px 'Anuphan';padding:5px 10px;border-radius:12px">ยอดนิยม</span></button>
+            <button onClick="{{ pickPlanYear }}" style="{{ planYearStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ yearSel }}" hint-placeholder-val="{{ false }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายปี · ฿790<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/ปี</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">เที่ยวบ่อย — ถูกกว่าซื้อ Trip Pass 8 ครั้ง</div></div></button>
           </div>
           <button onClick="{{ subscribeNow }}" style="width:100%;min-height:52px;margin-top:18px;border:none;background:#c05f39;color:#fff;font:700 17px 'Anuphan';border-radius:15px;cursor:pointer;box-shadow:0 10px 24px -8px rgba(192,95,57,.6)">สมัครพรีเมียม {{ planPriceLabel }}</button>
-          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:13px;text-wrap:pretty">ระบบชำระเงินจริงกำลังจะมาเร็วๆ นี้ — ตอนนี้กดเพื่อทดลองโหมดพรีเมียม · ยกเลิกได้ทุกเมื่อ</div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:13px;text-wrap:pretty">ชำระผ่าน Stripe · รับบัตรเครดิต/เดบิต · Trip Pass ไม่ตัดเงินซ้ำ · รายปียกเลิกได้ทุกเมื่อ</div>
+          <sc-if value="{{ hasBilling }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openBilling }}" style="width:100%;min-height:44px;margin-top:10px;border:none;background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';cursor:pointer">จัดการการชำระเงิน / ใบเสร็จ</button></sc-if>
         </div>
       </sc-if>
 
@@ -2093,7 +2094,7 @@ class Component extends DCLogic {
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
     const data = {};
-    const IMG_MAX = 380000, TOTAL_MAX = 850000; // รูปเล็ก (<~285KB) ฝังใน backup ได้ตรงๆ, รวมไม่เกิน ~640KB กัน doc เกิน 1MB
+    const IMG_MAX = 120000, TOTAL_MAX = 250000; // ฝังรูปใน backup ให้น้อยที่สุด — ก้อนยิ่งเล็ก ยิ่งประหยัดค่าซิงก์ (รูปจริงอยู่บน Storage แล้ว)
     let imgTotal = 0;
     try {
       const keys = [];
@@ -2554,14 +2555,33 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid || !be.subscribeBackup) return;
     if (this._cloudUnsub) { try { this._cloudUnsub(); } catch (e) {} }
-    this._cloudUnsub = be.subscribeBackup(bk => {
-      if (!bk) return;
-      this._synced = true; // ได้รับสถานะคลาวด์ล่าสุดแล้ว — อนุญาตให้ push ได้
-      if (this._applyingCloud) return;
-      if ((bk._at || 0) <= Number(localStorage.getItem('wtn-cloud-at') || 0)) return; // เสียงสะท้อนจาก push ของเครื่องนี้เอง
-      if (this._pushing) { this._pendingBk = bk; return; } // กำลังดันอยู่ — คิวไว้ ไม่แย่งกันทำงาน
-      this.applyCloudBackup(bk); // ซิงก์เงียบๆ ไม่เด้งรบกวน
+    // realtime แจ้งแค่ "มีของใหม่" (ไม่กี่ไบต์) — ก้อนเต็มค่อยดึงแบบมีจังหวะ ไม่ใช่ทุกครั้งที่บันทึก
+    this._cloudUnsub = be.subscribeBackup(async note => {
+      if (!note) return;
+      this._synced = true;
+      if (this._applyingCloud || this._pushing) return;
+      const at = Number(note._at || 0);
+      if (at <= Number(localStorage.getItem('wtn-cloud-at') || 0)) return; // เสียงสะท้อนจาก push ของเครื่องนี้เอง
+      const gap = Date.now() - (this._lastFullPull || 0);
+      if (gap < 60000) {                      // เพิ่งดึงไป — รอให้ครบนาทีแล้วค่อยดึงรอบเดียว
+        clearTimeout(this._pullSoonT);
+        this._pullSoonT = setTimeout(() => this.pullRemote(), 60000 - gap);
+        return;
+      }
+      this.pullRemote();
     });
+  }
+  // ดึงก้อนเต็มจริงๆ (ใช้ตอน realtime บอกว่ามีของใหม่) — ที่เดียวที่โหลด blob เต็ม
+  async pullRemote() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || this._applyingCloud || this._pushing) return;
+    if (navigator.onLine === false) return;
+    try {
+      const bk = await be.pullBackup();
+      this._lastFullPull = Date.now();
+      this._synced = true;
+      if (bk && bk.data) this.applyCloudBackup(bk);
+    } catch (e) { console.warn('[wtn] pullRemote', e); }
   }
   async cloudPull() {
     const be = window.WTNBackend;
@@ -2580,7 +2600,11 @@ class Component extends DCLogic {
           return;
         }
       }
+      // กันดึงก้อนเต็มซ้ำๆ ตอนสลับแท็บ (ประหยัด egress) — 5 นาที/ครั้ง ถ้าเครื่องนี้ซิงก์แล้วและมีข้อมูลอยู่
+      const fresh = this._lastFullPull && (Date.now() - this._lastFullPull) < 300000;
+      if (fresh && this._synced && this.localHasData()) { this.setState({ cloud: 'saved' }); return; }
       const bk = await be.pullBackup();
+      this._lastFullPull = Date.now();
       this._synced = true; // เห็นสถานะคลาวด์แล้ว — จากนี้ push/merge ได้
       if (bk && bk.data) { this.applyCloudBackup(bk); }          // merge เสมอ (ไม่ทับของเรา ไม่ทับของคลาวด์)
       else if (this.localHasData()) { this.cloudPush(); }        // คลาวด์ว่าง — ดันของเราขึ้น
@@ -2758,6 +2782,37 @@ class Component extends DCLogic {
     this.forceUpdate();
   }
   KLOOK_AID = '130623';
+  // ── CJ Affiliate ────────────────────────────────────────────────
+  // 1) ใส่ PID (Publisher ID 7 หลัก) ที่ได้จาก CJ
+  CJ_PID = '8039718';
+  // 2) พอ advertiser อนุมัติ → CJ > Links > Get Code > คัดลอก "click URL" มาวางที่ click
+  //    (ตัวที่ขึ้นต้น https://www.anrdoezrs.net/click-XXXXXXX-XXXXXXXX หรือโดเมนพี่น้อง)
+  //    เว้นว่าง = ยังไม่อนุมัติ ระบบจะถอยไปใช้ Klook ให้อัตโนมัติ
+  CJ_ADV = {
+    booking:  { name: 'Booking.com', click: '', url: 'https://www.booking.com/searchresults.html', q: 'ss', ci: 'checkin', co: 'checkout' },
+    agoda:    { name: 'Agoda',       click: '', url: 'https://www.agoda.com/search',               q: 'city', ci: 'checkIn', co: 'checkOut' },
+    trip:     { name: 'Trip.com',    click: '', url: 'https://th.trip.com/hotels/list',            q: 'city', ci: 'checkin', co: 'checkout' },
+    twelvego: { name: '12Go',        click: '', url: 'https://12go.asia/th/travel',                q: 'query' },
+    kkday:    { name: 'KKday',       click: '', url: 'https://www.kkday.com/th/product/productlist', q: 'keyword' },
+  };
+  AFF_ROUTE = { 'ที่พัก': ['booking', 'agoda', 'trip'], 'เดินทาง': ['twelvego'], 'กิน': [], 'ที่เที่ยว': ['kkday'] };
+  affPartner(kind) {
+    if (!this.CJ_PID) return null;
+    for (const k of (this.AFF_ROUTE[kind] || [])) {
+      const a = this.CJ_ADV[k];
+      if (a && a.click) return a;
+    }
+    return null;
+  }
+  affPartnerName(kind) { const p = this.affPartner(kind); return (p ? p.name : 'Klook') + ' · พาร์ตเนอร์'; }
+  cjOpen(p, q, ci, co, sid) {
+    const u = new URL(p.url);
+    if (q && p.q) u.searchParams.set(p.q, q);
+    if (ci && p.ci) u.searchParams.set(p.ci, ci);
+    if (co && p.co) u.searchParams.set(p.co, co);
+    const sep = p.click.includes('?') ? '&' : '?';
+    window.open(p.click + sep + 'url=' + encodeURIComponent(u.toString()) + '&sid=' + encodeURIComponent(sid || ''), '_blank', 'noopener');
+  }
   tripDayIso(i) {
     const t = this.curTripRec();
     if (!t || !t.start) return '';
@@ -2803,10 +2858,13 @@ class Component extends DCLogic {
     const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
     const d = this.days[this.state.day] || {};
     const q = (this.state.stayMetaDraft || '').trim() || (this.state.stayNameDraft || '').trim() || (d.city || '').trim() || (t.city || '').trim() || (t.name || '').trim();
-    const u = new URL('https://www.klook.com/th/hotels/');
-    if (q) u.searchParams.set('query', q);
     const ci = this.state.stayInDraft || this.tripDayIso(this.state.day);
     const co = this.state.stayOutDraft || this.tripDayIso((Number(this.state.day) || 0) + 1);
+    const sid = (this.state.trip || 'trip') + '-stay-d' + ((Number(this.state.day) || 0) + 1);
+    const p = this.affPartner('ที่พัก');
+    if (p) return this.cjOpen(p, q, ci, co, sid);
+    const u = new URL('https://www.klook.com/th/hotels/');
+    if (q) u.searchParams.set('query', q);
     if (ci) u.searchParams.set('checkin', ci);
     if (co) u.searchParams.set('checkout', co);
     u.searchParams.set('aid', this.KLOOK_AID);
@@ -2818,6 +2876,12 @@ class Component extends DCLogic {
     const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
     const q = (this.state.addTitle || '').trim() || (t.city || '').trim() || (t.name || '').trim();
     const path = { 'ที่พัก': 'hotels/', 'เดินทาง': 'search/', 'กิน': 'search/', 'ที่เที่ยว': 'search/' }[kind] || 'search/';
+    const p = this.affPartner(kind);
+    if (p) {
+      const i0 = this.tripDayIso(this.state.day);
+      const i1 = this.tripDayIso((Number(this.state.day) || 0) + 1);
+      return this.cjOpen(p, q, i0, i1, (this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1));
+    }
     const u = new URL('https://www.klook.com/th/' + path);
     if (q) u.searchParams.set('query', q);
     // วันที่จากแผน — Klook นับเฉพาะ in-session ยิ่งลิงก์ตรงยิ่งได้ค่าคอม
@@ -5101,14 +5165,24 @@ class Component extends DCLogic {
         if (url) { window.location.href = url; return; }
         throw new Error('ไม่ได้ url');
       } catch (e) {
-        const msg = (e && (e.message || e.code)) || '';
-        // ยังไม่ได้ตั้ง Price ID / backend จ่ายเงิน → โหมดทดลอง
-        if (/Price ID|failed-precondition|not-found|internal/i.test(msg)) { this.subscribePremium(plan); return; }
-        this.showToast('เปิดหน้าจ่ายไม่ได้: ' + msg);
+        this.showToast('เปิดหน้าจ่ายไม่ได้: ' + ((e && (e.message || e.code)) || 'ลองใหม่อีกครั้ง'));
       }
       return;
     }
-    this.subscribePremium(plan); // ยังไม่มี backend จ่ายเงิน → ทดลอง
+    this.showToast('ต้องล็อกอินก่อนถึงจะซื้อได้');
+    this.go('profile');
+  }
+  async openBilling() {
+    const be = window.WTNBackend;
+    if (!be || !be.billingPortal || !be._uid) { this.showToast('ต้องล็อกอินก่อน'); return; }
+    try {
+      this.showToast('กำลังเปิดหน้าจัดการ…');
+      const url = await be.billingPortal();
+      if (url) { window.location.href = url; return; }
+      throw new Error('ไม่ได้ url');
+    } catch (e) {
+      this.showToast('เปิดไม่ได้: ' + ((e && (e.message || e.code)) || 'ลองใหม่อีกครั้ง'));
+    }
   }
   async syncPremium() {
     const be = window.WTNBackend;
@@ -6203,7 +6277,7 @@ class Component extends DCLogic {
     const coverOn = "flex:1;text-align:center;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverOff = "flex:1;text-align:center;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverChips = [1,2,3,4].map((n,i) => ({ n, on: () => this.setState({ coverIdx: i }), style: this.state.coverIdx === i ? coverOn : coverOff }));
-    const affilMap = { 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:'Klook Hotels · พาร์ตเนอร์' }, 'เดินทาง': { l:'รถรับส่ง / รถเช่า / ตั๋ว', s:'Klook · พาร์ตเนอร์' }, 'กิน': { l:'ร้าน / คอร์สอาหาร', s:'Klook · พาร์ตเนอร์' }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:'Klook · พาร์ตเนอร์' } };
+    const affilMap = { 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:this.affPartnerName('ที่พัก') }, 'เดินทาง': { l:'รถรับส่ง / รถเช่า / ตั๋ว', s:this.affPartnerName('เดินทาง') }, 'กิน': { l:'ร้าน / คอร์สอาหาร', s:this.affPartnerName('กิน') }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:this.affPartnerName('ที่เที่ยว') } };
     const af = affilMap[this.state.addKind];
     const pillBase = 'flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:54px;border-radius:14px;cursor:pointer;border:1px solid rgba(43,36,32,.1)';
     const tc = (t) => this.state.tab === t ? '#c05f39' : '#b3a897';
@@ -6244,12 +6318,13 @@ class Component extends DCLogic {
       adminFree: (this.state.adminStats && this.state.adminStats.free != null) ? this.state.adminStats.free : '—',
       adminSubs: (this.state.adminStats && this.state.adminStats.activeSubs != null) ? this.state.adminStats.activeSubs : '—',
       adminRevenue: (this.state.adminStats && this.state.adminStats.revenue != null) ? ('฿' + Number(this.state.adminStats.revenue).toLocaleString()) : '—',
-      pickPlanYear: () => this.setState({ premiumPlan: 'year' }), pickPlanMonth: () => this.setState({ premiumPlan: 'month' }),
-      yearSel: (this.state.premiumPlan || 'year') === 'year', monthSel: (this.state.premiumPlan || 'year') === 'month',
-      planYearStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'year') === 'year' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
-      planMonthStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'year') === 'month' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
-      planPriceLabel: (this.state.premiumPlan || 'year') === 'year' ? '฿599/ปี' : '฿59/เดือน',
-      subscribeNow: () => this.startCheckout(this.state.premiumPlan || 'year'),
+      pickPlanTrip: () => this.setState({ premiumPlan: 'trip' }), pickPlanYear: () => this.setState({ premiumPlan: 'year' }),
+      tripSel: (this.state.premiumPlan || 'trip') === 'trip', yearSel: (this.state.premiumPlan || 'trip') === 'year',
+      hasBilling: this.isPremium, openBilling: () => this.openBilling(),
+      planTripStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'trip') === 'trip' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
+      planYearStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'trip') === 'year' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
+      planPriceLabel: (this.state.premiumPlan || 'trip') === 'year' ? '฿790/ปี' : '฿99',
+      subscribeNow: () => this.startCheckout(this.state.premiumPlan || 'trip'),
       sMyplans: sc==='myplans', sCreate: sc==='create', sTrip: sc==='trip', sBudget: sc==='budget',
       sAi: sc==='ai', sSummary: sc==='summary', sFeed: sc==='feed', sStory: sc==='story',
       sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
@@ -6327,9 +6402,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14d',
+      appVersion: '2026.08.14i',
       ...(() => {
-        this._appVer = '2026.08.14d';
+        this._appVer = '2026.08.14i';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
