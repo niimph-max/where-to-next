@@ -257,15 +257,15 @@
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">วางแผนทริป &amp; จดบันทึก</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">เก็บข้อมูลในเครื่อง</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ซิงก์ข้ามอุปกรณ์</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
-            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
+            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">5 ครั้ง/ด</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรวจจุดหมายด้วย AI</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:11px">
-            <button onClick="{{ pickPlanTrip }}" style="{{ planTripStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ tripSel }}" hint-placeholder-val="{{ true }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">Trip Pass · ฿99<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/30 วัน</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">จ่ายครั้งเดียว ไม่ตัดเงินอัตโนมัติ</div></div><span style="flex:none;background:#c05f39;color:#fff;font:700 12px 'Anuphan';padding:5px 10px;border-radius:12px">ยอดนิยม</span></button>
-            <button onClick="{{ pickPlanYear }}" style="{{ planYearStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ yearSel }}" hint-placeholder-val="{{ false }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายปี · ฿790<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/ปี</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">เที่ยวบ่อย — ถูกกว่าซื้อ Trip Pass 8 ครั้ง</div></div></button>
+            <button onClick="{{ pickPlanTrip }}" style="{{ planTripStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ tripSel }}" hint-placeholder-val="{{ true }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">Trip Pass · ฿99<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/30 วัน</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">จ่ายครั้งเดียว · AI 60 ครั้ง</div></div><span style="flex:none;background:#c05f39;color:#fff;font:700 12px 'Anuphan';padding:5px 10px;border-radius:12px">ยอดนิยม</span></button>
+            <button onClick="{{ pickPlanYear }}" style="{{ planYearStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ yearSel }}" hint-placeholder-val="{{ false }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายปี · ฿790<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/ปี</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ถูกกว่าซื้อ Trip Pass 8 ครั้ง · AI 100 ครั้ง/เดือน</div></div></button>
           </div>
           <button onClick="{{ subscribeNow }}" style="width:100%;min-height:52px;margin-top:18px;border:none;background:#c05f39;color:#fff;font:700 17px 'Anuphan';border-radius:15px;cursor:pointer;box-shadow:0 10px 24px -8px rgba(192,95,57,.6)">สมัครพรีเมียม {{ planPriceLabel }}</button>
-          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:13px;text-wrap:pretty">ชำระผ่าน Stripe · รับบัตรเครดิต/เดบิต · Trip Pass ไม่ตัดเงินซ้ำ · รายปียกเลิกได้ทุกเมื่อ</div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:13px;text-wrap:pretty">ชำระผ่าน Stripe · รับบัตรเครดิต/เดบิต · Trip Pass ไม่ตัดเงินซ้ำ · รายปียกเลิกได้ทุกเมื่อ<br>ผู้ช่วย AI มีจำนวนครั้งจำกัดตามแพ็ก (1 คำขอ = 1 ครั้ง) — ฟีเจอร์อื่นใช้ได้ไม่จำกัด</div>
           <sc-if value="{{ hasBilling }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openBilling }}" style="width:100%;min-height:44px;margin-top:10px;border:none;background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';cursor:pointer">จัดการการชำระเงิน / ใบเสร็จ</button></sc-if>
         </div>
       </sc-if>
@@ -1726,8 +1726,17 @@
           <div style="padding:14px 20px 0">
             <div onClick="{{ goPremium }}" style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:16px;color:#fff;cursor:pointer;display:flex;align-items:center;gap:12px">
               <span style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg></span>
-              <div style="flex:1;min-width:0"><div style="font:700 16px 'Anuphan';color:#fff">อัปเกรดเป็นพรีเมียม</div><div style="font:500 13px 'Anuphan';color:#f2ddcd;margin-top:1px">ซิงก์ข้ามเครื่อง + ผู้ช่วย AI · เริ่ม ฿59/ด</div></div>
+              <div style="flex:1;min-width:0"><div style="font:700 16px 'Anuphan';color:#fff">อัปเกรดเป็นพรีเมียม</div><div style="font:500 13px 'Anuphan';color:#f2ddcd;margin-top:1px">ซิงก์ข้ามเครื่อง + ผู้ช่วย AI · Trip Pass ฿99</div></div>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg>
+            </div>
+          </div>
+          </sc-if>
+          <sc-if value="{{ hasCredits }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:14px 20px 0">
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;display:flex;align-items:center;gap:12px">
+              <span style="width:38px;height:38px;border-radius:11px;background:#f3ece0;display:flex;align-items:center;justify-content:center;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M12 3l1.9 5.5L19.5 10l-4.5 3.6L16.4 20 12 16.9 7.6 20l1.4-6.4L4.5 10l5.6-1.5z"/></svg></span>
+              <div style="flex:1;min-width:0"><div style="font:700 15.5px 'Anuphan';color:#2b241f">AI เหลือ {{ aiCreditsLeft }} ครั้ง</div><div style="font:500 13px 'Anuphan';color:#8a7d6f;margin-top:1px">{{ aiCreditsNote }}</div></div>
+              <button onClick="{{ buyCredits }}" style="flex:none;background:#2b241f;color:#f6efe2;font:600 13.5px 'Anuphan';border:none;padding:9px 14px;border-radius:12px;cursor:pointer;min-height:38px">ซื้อ Trip Pass</button>
             </div>
           </div>
           </sc-if>
@@ -2089,7 +2098,7 @@ class Component extends DCLogic {
     this.loadFeed();
     this.loadMoments();
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
-    Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); });
+    Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); this.loadCredits(); });
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
@@ -3230,7 +3239,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (this.isPremium && !this.aiKey && be && be.aiComplete) {
       if (files.length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
-      return await be.aiComplete(promptText);
+      return await this.aiViaVela(be, promptText);
     }
     const key = this.aiKey, p = this.aiProvider;
     if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
@@ -3346,7 +3355,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     // พรีเมียม + ไม่ได้ใส่คีย์เอง → ใช้ AI กลางผ่าน Cloud Function
     if (this.isPremium && !this.aiKey && be && be.aiComplete) {
-      return await be.aiComplete(prompt);
+      return await this.aiViaVela(be, prompt);
     }
     const key = this.aiKey, p = this.aiProvider;
     if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
@@ -5184,6 +5193,28 @@ class Component extends DCLogic {
       this.showToast('เปิดไม่ได้: ' + ((e && (e.message || e.code)) || 'ลองใหม่อีกครั้ง'));
     }
   }
+  // เรียก AI ของ Vela + คุมเครดิต (หมดแล้วพาไปหน้าเติม ไม่ใช่ error ดิบๆ)
+  async aiViaVela(be, prompt) {
+    try {
+      const t = await be.aiComplete(prompt);
+      if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
+      return t;
+    } catch (e) {
+      if (e && e.code === 'no-credits') {
+        this.setState({ aiCredits: 0 });
+        this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
+      }
+      throw e;
+    }
+  }
+  async loadCredits() {
+    const be = window.WTNBackend;
+    if (!be || !be.aiCredits || !be._uid) return;
+    try {
+      const c = await be.aiCredits();
+      if (c) this.setState({ aiCredits: c.credits, aiPlan: c.plan });
+    } catch (e) {}
+  }
   async syncPremium() {
     const be = window.WTNBackend;
     if (!be || !be.getPremium || !be._uid) return;
@@ -6321,6 +6352,10 @@ class Component extends DCLogic {
       pickPlanTrip: () => this.setState({ premiumPlan: 'trip' }), pickPlanYear: () => this.setState({ premiumPlan: 'year' }),
       tripSel: (this.state.premiumPlan || 'trip') === 'trip', yearSel: (this.state.premiumPlan || 'trip') === 'year',
       hasBilling: this.isPremium, openBilling: () => this.openBilling(),
+      hasCredits: this.state.aiCredits != null && this.state.aiCredits < 10,
+      aiCreditsLeft: String(this.state.aiCredits ?? '—'),
+      aiCreditsNote: this.state.aiCredits === 0 ? 'ซื้อ Trip Pass เพื่อใช้ AI ต่อ' : 'ครบแล้วต้องซื้อ Trip Pass ใหม่',
+      buyCredits: () => this.go('premium'),
       planTripStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'trip') === 'trip' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
       planYearStyle: 'width:100%;text-align:left;display:flex;align-items:center;gap:13px;border-radius:16px;padding:15px 16px;cursor:pointer;' + ((this.state.premiumPlan || 'trip') === 'year' ? 'border:2px solid #c05f39;background:#fff6ee' : 'border:1.5px solid rgba(43,36,32,.14);background:#fffaf0'),
       planPriceLabel: (this.state.premiumPlan || 'trip') === 'year' ? '฿790/ปี' : '฿99',
@@ -6402,9 +6437,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14i',
+      appVersion: '2026.08.14m',
       ...(() => {
-        this._appVer = '2026.08.14i';
+        this._appVer = '2026.08.14m';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';

@@ -402,8 +402,19 @@ async function boot() {
     // ---------- AI กลาง (Edge Function ที่ถือคีย์ Gemini) ----------
     async aiComplete(prompt) {
       const { data, error } = await SB.functions.invoke("ai-complete", { body: { prompt } });
+      if (data && data.code === "no-credits") { const e = new Error(data.error || "เครดิต AI หมดแล้ว"); e.code = "no-credits"; e.credits = data.credits; throw e; }
       if (error) throw new Error((error && error.message) || "เรียก AI ไม่สำเร็จ");
+      if (data && data.error) throw new Error(data.error);
+      if (data && typeof data.credits === "number") this._credits = data.credits;
       return (data && data.text) || "";
+    },
+    // ยอดเครดิตคงเหลือ (รีเซ็ตรายเดือนคิดฝั่งเซิร์ฟเวอร์)
+    async aiCredits() {
+      if (!this._uid) return null;
+      const { data, error } = await SB.functions.invoke("ai-complete", { body: { peek: true } });
+      if (error || !data || data.error) return null;
+      this._credits = data.credits;
+      return data;
     }
   };
 
