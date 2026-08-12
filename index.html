@@ -283,6 +283,50 @@
           </div>
           <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:18px;margin-top:12px;color:#fff"><div style="font:500 13.5px 'Anuphan';color:#f2ddcd;margin-bottom:6px">รายได้เดือนนี้</div><div style="font-family:'Chonburi',serif;font-size:34px;color:#fff">{{ adminRevenue }}</div></div>
           <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:16px">ตัวเลขเรียลไทม์จาก Firebase + Stripe · เฉพาะแอดมินเห็นหน้านี้</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">กล่องรับเรื่อง</div><button onClick="{{ loadTickets }}" style="border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:7px 14px;border-radius:18px;cursor:pointer">{{ ticketsLabel }}</button></div>
+          <sc-if value="{{ noTickets }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:24px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px">{{ ticketsEmpty }}</div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ tickets }}" as="tk" hint-placeholder-count="0">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px"><span style="{{ tk.badgeStyle }}">{{ tk.kindLabel }}</span><span style="font:500 12.5px 'Anuphan';color:#a1927c">{{ tk.when }}</span></div>
+                <div style="font:500 14.5px/1.7 'Anuphan';color:#2b241f;white-space:pre-wrap">{{ tk.message }}</div>
+                <div style="font:500 12.5px 'Anuphan';color:#8a7d6f;margin-top:8px">{{ tk.who }}</div>
+                <sc-if value="{{ tk.hasDiag }}" hint-placeholder-val="{{ false }}"><div style="font:500 12px/1.5 'Anuphan';color:#a1927c;background:#f6efe2;border-radius:10px;padding:8px 10px;margin-top:8px">{{ tk.diagText }}</div></sc-if>
+                <div style="display:flex;gap:8px;margin-top:11px">
+                  <a href="{{ tk.mailto }}" style="flex:1;display:flex;align-items:center;justify-content:center;min-height:42px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 14px 'Anuphan';border-radius:12px;text-decoration:none">ตอบทางอีเมล</a>
+                  <button onClick="{{ tk.toggleDone }}" style="{{ tk.doneStyle }}">{{ tk.doneLabel }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ========== ช่วยเหลือ & ติดต่อเรา ========== -->
+      <sc-if value="{{ sSupport }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:18px 20px 34px">
+          <div style="font-family:'Chonburi',serif;font-size:23px;color:#2b241f;margin-bottom:6px">ติดต่อเรา</div>
+          <div style="font:500 14px/1.65 'Anuphan';color:#8a7d6f;margin-bottom:18px">เจอปัญหา อยากได้ฟีเจอร์ หรือเรื่องการจ่ายเงิน — เขียนมาได้เลย เราตอบกลับทางอีเมลภายใน 1–2 วัน</div>
+          <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:9px">เรื่องอะไร</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+            <sc-for list="{{ supKinds }}" as="k" hint-placeholder-count="5"><button onClick="{{ k.on }}" style="{{ k.style }}">{{ k.name }}</button></sc-for>
+          </div>
+          <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:9px">รายละเอียด</div>
+          <textarea value="{{ supMsg }}" onInput="{{ setSupMsg }}" placeholder="เล่าให้ฟังหน่อยว่าเกิดอะไรขึ้น — ยิ่งละเอียดยิ่งช่วยได้เร็ว" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.16);border-radius:14px;padding:13px 14px;font:500 15px/1.7 'Anuphan';background:#fffaf0;color:#2b241f;outline:none;resize:vertical"></textarea>
+          <div style="font:600 14px 'Anuphan';color:#2b241f;margin:18px 0 9px">อีเมลสำหรับตอบกลับ</div>
+          <input value="{{ supEmail }}" onInput="{{ setSupEmail }}" placeholder="you@email.com" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(43,36,32,.16);border-radius:14px;padding:0 14px;font:500 15px 'Anuphan';background:#fffaf0;color:#2b241f;outline:none">
+          <button onClick="{{ toggleSupDiag }}" style="{{ supDiagStyle }}">
+            <div style="flex:1;min-width:0;text-align:left"><div style="font:600 14.5px 'Anuphan';color:#2b241f">แนบข้อมูลเครื่องไปด้วย</div><div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">{{ supDiagText }}</div></div>
+            <span style="{{ supDiagDot }}"></span>
+          </button>
+          <sc-if value="{{ supErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.09);border:1px solid rgba(192,86,58,.22);border-radius:14px;padding:12px 14px;font:500 14px/1.55 'Anuphan';color:#b3402a;margin-top:14px">{{ supErrText }}</div></sc-if>
+          <sc-if value="{{ supSent }}" hint-placeholder-val="{{ false }}"><div style="background:#eef3e8;border:1px solid rgba(90,120,70,.25);border-radius:14px;padding:13px 15px;font:500 14.5px/1.6 'Anuphan';color:#4a6035;margin-top:14px">✓ ส่งเรื่องแล้ว — เราจะตอบกลับที่อีเมลที่ให้ไว้</div></sc-if>
+          <button onClick="{{ sendSupport }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:18px">{{ supSendLabel }}</button>
+          <div style="text-align:center;margin-top:16px">
+            <div style="font:500 13px 'Anuphan';color:#a1927c;margin-bottom:6px">หรือส่งอีเมลหาเราตรงๆ</div>
+            <a href="{{ supMailto }}" style="font:600 15px 'Anuphan';color:#c05f39;text-decoration:none">admin@onevela.net</a>
+          </div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#b3a897;text-align:center;margin-top:20px">คำถามที่พบบ่อยอยู่ที่ <a href="https://onevela.net#faq" target="_blank" style="color:#8a7d6f">onevela.net</a></div>
         </div>
       </sc-if>
 
@@ -811,7 +855,7 @@
                   <div style="text-align:center;padding:26px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:14px;margin-bottom:16px">ยังไม่มีตอน<br>กด “บันทึกเรื่องวันนี้” ในแต่ละวันจากหน้าทริป แล้วตอนจะมารวมที่นี่</div>
                 </sc-if>
                 <button onClick="{{ manageBook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:12px">จัดการบันทึกเรื่องเล่า · เพิ่ม / แก้ตอน</button>
-                <div style="display:flex;align-items:center;gap:12px;background:#2b241f;border-radius:14px;padding:13px 15px"><span style="width:36px;height:36px;border-radius:10px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก / สั่งพิมพ์</div><div style="font:500 12.5px 'Anuphan';color:#c9b79b">พอครบทุกตอน ส่งออก ebook / พิมพ์เล่มได้ · เร็วๆ นี้</div></div></div>
+                <button onClick="{{ openEbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#c9b79b">{{ ebCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
               </div>
             </sc-if>
             <sc-if value="{{ bookNo }}" hint-placeholder-val="{{ true }}">
@@ -864,7 +908,6 @@
                   <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:15px 16px;margin-top:14px"><div style="font:500 16px/1.9 'IBM Plex Sans Thai Looped',sans-serif;color:#2f2a24;white-space:pre-wrap;text-wrap:pretty">{{ artText }}</div></div>
                   <div style="display:flex;gap:8px;margin-top:10px"><button onClick="{{ genArt }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">สร้างใหม่</button><button onClick="{{ saveArt }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกลงเรื่องเล่า</button></div>
                 </sc-if>
-                <div style="display:flex;align-items:center;gap:12px;background:#2b241f;border-radius:16px;padding:14px 15px;margin-top:20px"><span style="width:38px;height:38px;border-radius:11px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18M12 8h5M12 12h5"/></svg></span><div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#f6efe2">ทำเป็นโฟโต้บุ๊ก · เร็วๆ นี้</div><div style="font:500 13px/1.5 'Anuphan';color:#c9b79b">รวมรูป+บันทึกทั้งทริปเป็นบันทึกการเดินทาง ส่งออกเป็น ebook หรือสั่งพิมพ์เป็นเล่ม</div></div></div>
               </div>
             </div>
           </sc-if>
@@ -1323,10 +1366,7 @@
             </sc-for>
           </div>
           <sc-if value="{{ seNoChapters }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c">ยังไม่มีตอน — กด “เพิ่มตอนใหม่” หรือให้ AI สรุปทริปเป็นบทความในหน้ารีแคป</div></sc-if>
-          <div style="display:flex;align-items:center;gap:12px;background:#2b241f;border-radius:16px;padding:14px 15px;margin-top:22px">
-            <span style="width:38px;height:38px;border-radius:11px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span>
-            <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก / หนังสือ</div><div style="font:500 13px 'Anuphan';color:#c9b79b">พอครบทุกตอน ส่งออกเป็น ebook หรือสั่งพิมพ์ได้ · เร็วๆ นี้</div></div>
-          </div>
+
           <button onClick="{{ deleteStory }}" style="width:100%;border:none;background:transparent;color:#b3402a;font:600 14.5px 'Anuphan';cursor:pointer;padding:16px 0 0">ลบบันทึกนี้ทั้งเล่ม</button>
         </div>
       </sc-if>
@@ -1803,6 +1843,13 @@
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
               </sc-if>
+              <sc-if value="{{ hasLegacyImgs }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:11px">
+                  <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">ดูแลรูปภาพ</div>
+                  <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px">{{ legacyImgNote }}</div>
+                  <button onClick="{{ rehostImgs }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ rehostLabel }}</button>
+                </div>
+              </sc-if>
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
               <div style="display:flex;gap:9px">
                 <button onClick="{{ doBackup }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดาวน์โหลดไฟล์สำรอง</button>
@@ -1810,6 +1857,11 @@
               </div>
             </div>
           </div>
+          <button onClick="{{ goSupport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
+            <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">ช่วยเหลือ &amp; ติดต่อเรา</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">แจ้งปัญหา ถามคำถาม หรือเสนอฟีเจอร์</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
           <div style="text-align:center;font:500 13px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
         </div>
@@ -1888,6 +1940,34 @@
         <button onClick="{{ lbNext }}" style="width:52px;height:52px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"></path></svg></button>
       </div>
     </sc-if>
+  </div>
+</sc-if>
+<sc-if value="{{ ebOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,16,13,.55);display:flex;align-items:flex-end;justify-content:center;z-index:60">
+    <div style="width:100%;max-width:402px;background:#f6efe2;border-radius:22px 22px 0 0;padding:20px 20px 26px;max-height:88%;overflow:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">ทำเป็นอีบุ๊ก</div>
+        <button onClick="{{ closeEbook }}" style="min-width:44px;min-height:44px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ปิด</button>
+      </div>
+      <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px">{{ ebSummary }}</div>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
+      <photo-pick id="{{ ebCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:150px;border-radius:14px;margin-bottom:18px"></photo-pick>
+      <button onClick="{{ toggleEbAi }}" style="{{ ebAiStyle }}">
+        <div style="flex:1;min-width:0;text-align:left"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ให้ AI เกลาสำนวน</div><div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">เขียนย่อหน้าเปิดแต่ละวันจากบันทึกจริง · ใช้เครดิต</div></div>
+        <span style="{{ ebAiDot }}"></span>
+      </button>
+      <sc-if value="{{ ebBusy }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ ebBarStyle }}"></div></div>
+        <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ ebBusyLabel }}</div></div>
+      </sc-if>
+      <sc-if value="{{ ebIdle }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ runEbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:18px">สร้างเล่ม</button>
+      </sc-if>
+      <sc-if value="{{ ebHasUrl }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ ebUrl }}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;text-decoration:none">เปิดเล่ม</a>
+      </sc-if>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มจะเปิดในแท็บใหม่ · กด "บันทึกเป็น PDF" ในหน้านั้น</div>
+    </div>
   </div>
 </sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
@@ -2105,6 +2185,27 @@ class Component extends DCLogic {
     }
     return 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=';
   }
+  // คืน src ของรูปย่อ 640px สำหรับที่ที่แสดงเล็ก (ฟีด/ตารางรูป) — ประหยัดแบนด์วิดท์
+  // รูปเก่าที่ยังไม่มีตัวย่อ: <img> จะ error → _imgFallback สลับกลับไปตัวเต็มให้เอง
+  pxT(p) {
+    const s = this.px(p);
+    if (typeof s !== 'string' || s.indexOf('/storage/v1/object/public/media/') === -1) return s;
+    return s.replace(/(\.[a-z0-9]+)(\?|$)/i, '_t$1$2');
+  }
+  // ทำรูปย่อ JPEG จาก data url / Image — ด้านยาวสุด 640px
+  async makeThumbBlob(src, max) {
+    try {
+      const im = (src && src.naturalWidth) ? src : await this._img(typeof src === 'string' ? src : '', false);
+      if (!im) return null;
+      const M = max || 640;
+      const r = Math.min(1, M / Math.max(im.naturalWidth || im.width, im.naturalHeight || im.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round((im.naturalWidth || im.width) * r));
+      cv.height = Math.max(1, Math.round((im.naturalHeight || im.height) * r));
+      cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+      return await new Promise(res => cv.toBlob(res, 'image/jpeg', 0.8));
+    } catch (e) { return null; }
+  }
   // ย้ายรูป base64 ที่ฝังอยู่ในก้อนข้อมูลไป IDB แล้วแทนด้วย ref (ใช้ตอนเครื่องเต็ม)
   async offloadPhotos(obj) {
     if (Array.isArray(obj)) { const out = []; for (const v of obj) out.push(await this.offloadPhotos(v)); return out; }
@@ -2151,7 +2252,7 @@ class Component extends DCLogic {
     for (const d of found) {
       const h = hash(d);
       if (map[h]) { urlFor[d] = map[h]; continue; }
-      try { const u = await be.uploadImage(d, 'img.jpg'); map[h] = u; urlFor[d] = u; } catch (e) { /* อัพไม่ได้ก็คงเป็น data url ไว้ก่อน */ }
+      try { const u = await be.uploadImage(d, 'img.jpg'); map[h] = u; urlFor[d] = u; try { const tb = await this.makeThumbBlob(d); if (tb) await be.uploadThumbFor(u, tb); } catch (e2) {} } catch (e) { /* อัพไม่ได้ก็คงเป็น data url ไว้ก่อน */ }
     }
     this._applyingCloud = true;
     try {
@@ -2358,7 +2459,15 @@ class Component extends DCLogic {
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
-      let remote = null; try { remote = await be.pullBackup(); } catch (e) {}
+      // ดึงก้อนเต็มจากคลาวด์เฉพาะเมื่อมันเปลี่ยนจริง — ไม่งั้นใช้สำเนาที่ดันขึ้นครั้งก่อน (ประหยัด egress)
+      let remote = null;
+      try {
+        const rAt = be.backupAt ? await be.backupAt() : -1;
+        const knownAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
+        let base = null;
+        if (rAt > 0 && knownAt && rAt <= knownAt) { try { base = JSON.parse(localStorage.getItem('wtn-sync-base') || 'null'); } catch (e) {} }
+        remote = base ? { data: base, _at: knownAt } : await be.pullBackup();
+      } catch (e) {}
       const rData = (remote && remote.data) || null;
       const merged = this._mergeData(rData);                           // รวมกับของล่าสุดบนคลาวด์ก่อนเสมอ (ไม่ทับทั้งก้อน)
       this._writeLocal(merged);
@@ -2461,6 +2570,16 @@ class Component extends DCLogic {
     this._pulling = true;
     this.setState({ cloud: 'saving' });
     try {
+      // เช็คเวลาก่อน — ถ้าคลาวด์ไม่มีอะไรใหม่กว่าที่เครื่องนี้มี ไม่ต้องโหลดก้อนสำรองทั้งก้อนซ้ำ
+      if (be.backupAt) {
+        const rAt = await be.backupAt();
+        const knownAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
+        if (rAt > 0 && knownAt && rAt <= knownAt && this.localHasData()) {
+          this._synced = true;
+          this.setState({ cloud: 'saved' });
+          return;
+        }
+      }
       const bk = await be.pullBackup();
       this._synced = true; // เห็นสถานะคลาวด์แล้ว — จากนี้ push/merge ได้
       if (bk && bk.data) { this.applyCloudBackup(bk); }          // merge เสมอ (ไม่ทับของเรา ไม่ทับของคลาวด์)
@@ -2958,13 +3077,13 @@ class Component extends DCLogic {
       const p = m.pos; if (!p || p.lat == null) return;
       out.push({ lat: p.lat, lng: p.lng, at: m.at || 0,
         title: (m.place || '').trim() || (m.text || '').slice(0, 40) || 'โมเมนต์',
-        photo: this.px((m.photos || [])[0] || ''), kind: 'moment' });
+        photo: this.pxT((m.photos || [])[0] || ''), kind: 'moment' });
     });
     const ci = this.checkins || {};
     Object.keys(ci).forEach(k => (ci[k] || []).forEach(c => {
       if (c.lat == null) return;
       out.push({ lat: c.lat, lng: c.lng, at: c.at || 0,
-        title: c.name || 'เช็คอิน', photo: this.px((c.photos || [])[0] || ''), kind: 'checkin' });
+        title: c.name || 'เช็คอิน', photo: this.pxT((c.photos || [])[0] || ''), kind: 'checkin' });
     }));
     return out;
   }
@@ -4864,7 +4983,18 @@ class Component extends DCLogic {
     try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); } catch (e) {}
     try { const q = new URLSearchParams(location.search); if (q.get('paid')) { this.showToast('ขอบคุณ! กำลังยืนยันการชำระเงิน…'); let n = 0; const t = setInterval(() => { this.syncPremium(); if (++n >= 8) clearInterval(t); }, 2500); history.replaceState(null, '', location.pathname); } } catch (e) {}
     this._pp = () => this.forceUpdate();
+    window.__wtn = this;   // ช่องทางตรวจสอบจากคอนโซล (อ่านอย่างเดียว)
     window.addEventListener('photopick-change', this._pp);
+    // รูปย่อยังไม่มี (รูปเก่าก่อนทำระบบย่อ) → สลับกลับไปตัวเต็มอัตโนมัติ
+    this._imgFallback = e => {
+      const im = e.target;
+      if (!im || im.tagName !== 'IMG' || im.dataset.tFallback) return;
+      const s = im.currentSrc || im.src || '';
+      if (s.indexOf('/storage/v1/object/public/media/') === -1 || !/_t\.[a-z0-9]+(\?|$)/i.test(s)) return;
+      im.dataset.tFallback = '1';
+      im.src = s.replace(/_t(\.[a-z0-9]+)(\?|$)/i, '$1$2');
+    };
+    document.addEventListener('error', this._imgFallback, true);
     // เปลี่ยนรูปเมื่อไหร่ สั่งซิงก์ขึ้นคลาวด์ทันที (กันรูปโปรไฟล์/ปกไม่ push)
     this._ppSync = () => { if (!this._applyingCloud) this.scheduleCloudPush(); };
     window.addEventListener('photopick-change', this._ppSync);
@@ -5036,7 +5166,671 @@ class Component extends DCLogic {
     clearTimeout(this._cloudT); clearTimeout(this._cloudRetry);
     clearInterval(this._recapTimer);
   }
+  // ---------- อีบุ๊ก: รวมทริปเป็นไฟล์ A5 พร้อมพิมพ์/บันทึกเป็น PDF ----------
+  ebDayLabel(i) {
+    try {
+      const t = (this.userTrips || []).find(x => x.id === this.ebTripId()) || this.curTripRec() || {};
+      if (!t.start) return 'วันที่ ' + (i + 1);
+      const d = new Date(t.start + 'T12:00:00');
+      d.setDate(d.getDate() + i);
+      return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long' });
+    } catch (e) { return 'วันที่ ' + (i + 1); }
+  }
+  // เล่มผูกกับทริปของเรื่องเล่าที่เปิดอยู่ ไม่ใช่ทริปที่เลือกค้างไว้ในแอป
+  ebStory() { return this.openStory || this.tripStoryExisting || null; }
+  ebTripId() {
+    const s = this.ebStory();
+    return (s && s.tripId) || this.state.trip;
+  }
+  ebExpenses(trip) {
+    try { return (JSON.parse(localStorage.getItem('wtn-expenses')) || {})[trip] || []; } catch (e) { return []; }
+  }
+  // ดึงเนื้อเรื่องเล่าออกมาเป็นย่อหน้า
+  _htmlParas(html) {
+    const s = String(html || '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/(p|div|h[1-6]|li|blockquote)>/gi, '\n')
+      .replace(/<[^>]*>/g, '');
+    const ta = document.createElement('textarea'); ta.innerHTML = s;
+    return ta.value.split(/\n+/).map(x => x.trim()).filter(Boolean);
+  }
+  // ตอนของเรื่องเล่าที่ผูกกับวัน (สร้างจากบันทึกรายวัน → gen = 'dayN')
+  ebChapterMap() {
+    const s = this.ebStory();
+    const chs = (s && s.chapters) || [];
+    const byDay = {}, extra = [];
+    chs.forEach(c => {
+      const m = /^day(\d+)$/.exec(c.gen || '');
+      if (m) byDay[+m[1]] = c; else extra.push(c);
+    });
+    return { byDay, extra };
+  }
+  async ebGather() {
+    const trip = this.ebTripId();
+    const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
+    const ci = this.checkins || {};
+    const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
+    const cmap = this.ebChapterMap();
+    const days = [];
+    for (let i = 0; i < n; i++) {
+      const list = (ci[trip + ':' + i] || []).filter(c => (c.name || c.note));
+      const ch = cmap.byDay[i];
+      if (!list.length && !ch) continue;
+      const items = [];
+      for (const c of list) {
+        const ph = [];
+        for (const p of (c.photos || []).slice(0, 3)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
+        items.push({ t: c.t || '', name: c.name || '', note: c.note || '', photos: ph });
+      }
+      const story = ch ? { title: ch.title || '', paras: this._htmlParas(ch.html), photos: [], cover: '' } : null;
+      if (ch) {
+        story.cover = await this.resolvePhoto(ch.cover || '') || '';
+        for (const p of (ch.photos || []).slice(0, 2)) { const r = await this.resolvePhoto(p); if (r) story.photos.push(r); }
+        // ยืมรูปที่สองของเช็คอินมาแทรกในเนื้อเรื่อง — หน้าจะไม่เป็นกำแพงตัวหนังสือ
+        for (const it of items) {
+          if (story.photos.length >= 2) break;
+          if (it.photos.length >= 2) story.photos.push(it.photos.splice(1, 1)[0]);
+        }
+      }
+      days.push({ n: i + 1, label: this.ebDayLabel(i), items, story,
+        title: (ch && ch.title) || (items[0] || {}).name || 'วันใหม่' });
+    }
+    // ตอนที่ไม่ผูกกับวันไหน — ต่อท้ายเล่ม ไม่ทิ้ง
+    for (const c of cmap.extra) {
+      const paras = this._htmlParas(c.html);
+      if (!paras.length) continue;
+      const st = { title: c.title || 'ตอนหนึ่ง', paras, photos: [], cover: await this.resolvePhoto(c.cover || '') || '' };
+      for (const p of (c.photos || []).slice(0, 2)) { const r = await this.resolvePhoto(p); if (r) st.photos.push(r); }
+      days.push({ n: 0, label: '', items: [], story: st, title: st.title });
+    }
+    days.forEach((d, i) => { d.n = i + 1; });                 // เลขตอนเรียงต่อเนื่องตามสารบัญ
+    const cover = await this.resolvePhoto(this.coverOf('wtn-eb-cover-' + trip, '') || this.coverOf('wtn-cover-' + trip, '') || '');
+    const cats = {};
+    this.ebExpenses(trip).forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + (Number(e.amt) || 0); });
+    const rows = Object.keys(cats).filter(k => cats[k] > 0).sort((a, b) => cats[b] - cats[a]);
+    const total = rows.reduce((s, k) => s + cats[k], 0);
+    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + 543) || ''; } catch (e) { return ''; } })();
+    const ttl = (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
+    return {
+      title: ttl,
+      sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
+      when: this.fmtRange(t.start, t.end) || '',
+      author: this.profile.name || 'นักเดินทาง',
+      cover, days,
+      expense: { total, rows: rows.map(k => ({ k, v: cats[k], pct: total ? Math.round(cats[k] / total * 100) : 0 })) },
+      stats: {
+        days: days.length,
+        cis: days.reduce((s, d) => s + d.items.length, 0),
+        chapters: days.filter(d => d.story).length,
+        photos: days.reduce((s, d) => s + d.items.reduce((m, i) => m + i.photos.length, 0) + ((d.story && d.story.photos.length) || 0), 0)
+      }
+    };
+  }
+  // แผนที่เส้นทาง: ต่อไทล์เป็นรูปเดียว แล้ววาดเส้นทาง/หมุดทับ (ฝังลงไฟล์ได้ เปิดออฟไลน์ได้)
+  async ebMapImage(W, H) {
+    const trip = this.ebTripId(), ci = this.checkins || {};
+    let pts = [];
+    Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0)
+      .sort((a, b) => (+a.split(':')[1]) - (+b.split(':')[1]))
+      .forEach(k => (ci[k] || []).forEach(c => { if (c.lat != null && c.lng != null) pts.push({ la: +c.lat, lo: +c.lng, n: c.name || '' }); }));
+    if (pts.length < 2) return null;
+    // ตัดพิกัดหลุด: เก็บเฉพาะจุดที่อยู่ใกล้ค่ากลาง
+    const med = arr => { const s = arr.slice().sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
+    const mla = med(pts.map(p => p.la)), mlo = med(pts.map(p => p.lo));
+    pts = pts.filter(p => Math.abs(p.la - mla) < 12 && Math.abs(p.lo - mlo) < 12);
+    if (pts.length < 2) return null;
+    const la1 = Math.min(...pts.map(p => p.la)), la2 = Math.max(...pts.map(p => p.la));
+    const lo1 = Math.min(...pts.map(p => p.lo)), lo2 = Math.max(...pts.map(p => p.lo));
+    const padLa = Math.max(0.05, (la2 - la1) * 0.14), padLo = Math.max(0.05, (lo2 - lo1) * 0.14);
+    const b = { la1: la1 - padLa, la2: la2 + padLa, lo1: lo1 - padLo, lo2: lo2 + padLo };
+    const xOf = (lo, z) => (lo + 180) / 360 * Math.pow(2, z) * 256;
+    const yOf = (la, z) => { const s = Math.sin(la * Math.PI / 180); return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * Math.pow(2, z) * 256; };
+    let z = 12;
+    for (; z > 2; z--) {
+      if (Math.abs(xOf(b.lo2, z) - xOf(b.lo1, z)) <= W && Math.abs(yOf(b.la1, z) - yOf(b.la2, z)) <= H) break;
+    }
+    const cx0 = (xOf(b.lo1, z) + xOf(b.lo2, z)) / 2, cy0 = (yOf(b.la1, z) + yOf(b.la2, z)) / 2;
+    const left = cx0 - W / 2, top = cy0 - H / 2;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#efe4d3'; g.fillRect(0, 0, W, H);
+    const t0 = Math.floor(left / 256), t1 = Math.floor((left + W) / 256);
+    const s0 = Math.floor(top / 256), s1 = Math.floor((top + H) / 256);
+    const jobs = [];
+    for (let tx = t0; tx <= t1; tx++) for (let ty = s0; ty <= s1; ty++) {
+      const sub = 'abcd'[Math.abs(tx + ty) % 4];
+      const url = 'https://' + sub + '.basemaps.cartocdn.com/rastertiles/voyager/' + z + '/' + ((tx % Math.pow(2, z)) + Math.pow(2, z)) % Math.pow(2, z) + '/' + ty + '@2x.png';
+      jobs.push(this.loadImgForCanvas(url).then(im => ({ im, x: tx * 256 - left, y: ty * 256 - top })));
+    }
+    (await Promise.all(jobs)).forEach(r => { if (r.im) g.drawImage(r.im, r.x, r.y, 256, 256); });
+    const px = p => ({ x: xOf(p.lo, z) - left, y: yOf(p.la, z) - top });
+    g.strokeStyle = '#c05f39'; g.lineWidth = 3; g.lineCap = 'round'; g.setLineDash([2, 9]);
+    g.beginPath();
+    pts.forEach((p, i) => { const q = px(p); i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y); });
+    g.stroke(); g.setLineDash([]);
+    const stops = [];
+    pts.forEach(p => { if (!stops.some(s => Math.abs(s.la - p.la) < (b.la2 - b.la1) / 12 && Math.abs(s.lo - p.lo) < (b.lo2 - b.lo1) / 12)) stops.push(p); });
+    stops.slice(0, 8).forEach((p, i) => {
+      const q = px(p);
+      g.beginPath(); g.arc(q.x, q.y, 13, 0, 7); g.fillStyle = '#c05f39'; g.fill();
+      g.lineWidth = 3; g.strokeStyle = '#fffaf0'; g.stroke();
+      g.fillStyle = '#fff'; g.font = "700 14px 'Anuphan', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(String(i + 1), q.x, q.y + 1);
+    });
+    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    return { url: cv.toDataURL('image/jpeg', 0.9), stops: stops.slice(0, 8).map((s, i) => ({ no: i + 1, name: s.n })) };
+  }
+  async ebPolish(days) {
+    const out = [];
+    for (let i = 0; i < days.length; i++) {
+      const d = days[i];
+      const raw = d.items.map(x => [x.t, x.name, x.note].filter(Boolean).join(' — ')).join('\n');
+      try {
+        const txt = await this.askLLM(
+          'นี่คือบันทึกเช็คอินดิบของนักเดินทางใน 1 วัน เขียนเป็นย่อหน้าเปิดวันสั้นๆ 2-3 ประโยค ' +
+          'ภาษาไทย น้ำเสียงอบอุ่นเป็นกันเองเหมือนเล่าให้เพื่อนฟัง ห้ามแต่งเรื่องที่ไม่มีในบันทึก ' +
+          'ตอบเฉพาะเนื้อความ ไม่ต้องมีหัวข้อ\n\n' + raw);
+        out.push((txt || '').trim());
+      } catch (e) { out.push(''); }
+      this.setState({ ebPct: 30 + Math.round((i + 1) / days.length * 45) });
+    }
+    days.forEach((d, i) => { d.intro = out[i] || ''; });
+  }
+  _esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  // แบ่งข้อความยาวเป็นท่อนๆ ตามจำนวนตัวอักษรที่หน้าหนึ่งรับไหว
+  _ebChunk(text, max) {
+    const s = String(text || '').trim();
+    if (s.length <= max) return s ? [s] : [];
+    const out = [];
+    let rest = s;
+    while (rest.length > max) {
+      let cut = rest.lastIndexOf(' ', max);
+      const nl = rest.lastIndexOf('\n', max);
+      if (nl > max * 0.5) cut = nl;
+      if (cut < max * 0.5) cut = max;
+      out.push(rest.slice(0, cut).trim());
+      rest = rest.slice(cut).trim();
+    }
+    if (rest) out.push(rest);
+    return out;
+  }
+  // แตกเช็คอินเป็นบล็อก พร้อมความสูงโดยประมาณ (มม.) เพื่อจัดหน้าไม่ให้ล้น
+  _ebBlocks(it) {
+    const E = s => this._esc(s);
+    const head = '<div class="kick3">' + E(it.t) + (it.name ? ' · ' + E(it.name) : '') + '</div>';
+    const note = (it.note || '').trim();
+    const bs = [];
+    const LINE = 6.4, SIDE_CPL = 30, FULL_CPL = 58;
+    if (it.photos[0] && note.length <= 230) {                 // โน้ตสั้น — รูปคู่ข้อความเหมือนเดิม
+      const h = Math.max(62, 9 + Math.ceil(note.length / SIDE_CPL) * LINE) + 9;
+      bs.push({ h, html: '<div class="row"><div class="ph"><img src="' + E(it.photos[0]) + '"></div>' +
+        '<div class="tx">' + head + (note ? '<p>' + E(note) + '</p>' : '') + '</div></div>' });
+      if (it.photos[1]) bs.push({ h: 46, html: '<div class="phwide sm"><img src="' + E(it.photos[1]) + '"></div>' });
+      return bs;
+    }
+    if (it.photos[0]) {                                        // โน้ตยาว — รูปเต็มความกว้าง แล้วข้อความไหลต่อ
+      bs.push({ h: 68, html: '<div class="phwide"><img src="' + E(it.photos[0]) + '"></div>' });
+    }
+    const parts = this._ebChunk(note, 1200);
+    if (!parts.length) { bs.push({ h: 14, html: '<div class="tx wide">' + head + '</div>' }); return bs; }
+    parts.forEach((p, i) => {
+      const h = (i ? 0 : 9) + Math.ceil(p.length / FULL_CPL) * LINE + 8;
+      bs.push({ h, html: '<div class="tx wide">' + (i ? '' : head) + '<p>' + E(p) + '</p></div>' });
+    });
+    return bs;
+  }
+  ebHtml(D, map) {
+    const E = s => this._esc(s);
+    const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const page = inner => '<section class="pg">' + inner + '</section>';
+    const foot = (no) => '<div class="ft"><span>' + E(D.title) + '</span><span>' + no + '</span></div>';
+    const pad = (d, inner, no) => '<div class="pad"><div class="rh"><span>' + (d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : E(d.title)) +
+      '</span><span>' + E(D.sub) + '</span></div>' + inner + '</div>' + foot(no);
+    const out = [];
+    // คำโปรยหน้าเปิดตอน: ตัดจากย่อหน้าแรกของเรื่องเล่า — หน้าจะไม่โล่ง
+    const lead = d => {
+      const p = (d.story && d.story.paras[0]) || (d.items[0] || {}).note || '';
+      if (p.length <= 190) return p;
+      const cut = p.lastIndexOf(' ', 190);
+      return p.slice(0, cut > 120 ? cut : 190).trim() + '…';
+    };
+    let no = 2;
+    out.push(page(
+      (D.cover ? '<img class="bleed" src="' + E(D.cover) + '">' : '<div class="bleed" style="background:linear-gradient(155deg,#8f7b62,#5b4c3d 55%,#2b241f)"></div>') +
+      '<div class="scrim"></div>' +
+      '<div class="brand"><i></i>VELA</div>' +
+      '<div class="covtx"><div class="kick">' + E(D.sub) + '</div><h1>' + E(D.title) + '</h1><div class="rule"></div>' +
+      '<div class="by">' + E(D.when) + (D.author ? ' &nbsp;·&nbsp; บันทึกโดย ' + E(D.author) : '') + '</div></div>'));
+    const toc = D.days.map(d => '<div class="tr"><span class="no">' + String(d.n).padStart(2, '0') + '</span>' +
+      '<span class="tt">' + E(d.title) + (d.label ? '<i class="sm">' + E(d.label) + '</i>' : '') + '</span></div>').join('');
+    out.push(page('<div class="pad"><h2>สารบัญ</h2><div class="rule"></div><div class="toc">' + toc + '</div>' +
+      '<div class="statline">' + D.stats.chapters + ' ตอน · ' + D.stats.days + ' วัน · ' + D.stats.cis + ' เช็คอิน · ' + D.stats.photos + ' รูป</div></div>' + foot(no++)));
+    D.days.forEach(d => {
+      const hero = (d.story && d.story.cover) ? [d.story.cover]
+        : ((d.story && d.story.photos[0]) ? d.story.photos : ((d.items.find(i => i.photos.length) || {}).photos || []));
+      out.push(page('<div class="dayhead">' + (hero[0] ? '<img class="dayimg" src="' + E(hero[0]) + '">' : '<div class="dayimg"></div>') +
+        '<div class="daytx"><div class="kick2">' + (d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'ตอนที่ ' + d.n) + '</div>' +
+        '<h3>' + E(d.title) + '</h3><div class="rule"></div>' +
+        ((d.intro || lead(d)) ? '<p class="intro">' + E(d.intro || lead(d)) + '</p>' : '') +
+        '<div class="daystat">' + (d.story ? '<b>เรื่องเล่า</b> &nbsp;·&nbsp; ' : '') + '<b>' + d.items.length + '</b> เช็คอิน &nbsp;·&nbsp; <b>' +
+        d.items.reduce((s, i) => s + i.photos.length, 0) + '</b> รูป</div></div></div>'));
+      // เนื้อเรื่องเล่ามาก่อน — ต่อด้วยโมเมนต์ของวันนั้น
+      const seq = [];
+      if (d.story) {
+        const photos = (d.story.photos || []).filter(u => u !== hero[0]);
+        let ppi = 0;
+        d.story.paras.forEach((p, pi) => {
+          this._ebChunk(p, 1200).forEach(part => {
+            seq.push({ h: Math.ceil(part.length / 52) * 6.9 + 5, html: '<p class="story' + (pi === 0 ? ' lead' : '') + '">' + E(part) + '</p>' });
+          });
+          if (photos[ppi] && (pi === 1 || (pi > 1 && pi % 3 === 1))) {          // แทรกรูประหว่างย่อหน้า
+            seq.push({ h: 68, html: '<div class="phwide"><img src="' + E(photos[ppi]) + '"></div>' });
+            ppi++;
+          }
+        });
+        while (photos[ppi]) { seq.push({ h: 68, html: '<div class="phwide"><img src="' + E(photos[ppi]) + '"></div>' }); ppi++; }
+        if (d.items.length) seq.push({ h: 16, html: '<div class="sect">จากสมุดระหว่างวัน</div>' });
+      }
+      d.items.forEach(it => this._ebBlocks(it).forEach(b => seq.push(b)));
+      let blocks = [], hUsed = 0;
+      seq.forEach(b => {
+        if (hUsed + b.h > 168 && blocks.length) { out.push(page(pad(d, blocks.join(''), no++))); blocks = []; hUsed = 0; }
+        blocks.push(b.html); hUsed += b.h;
+      });
+      if (blocks.length) out.push(page(pad(d, blocks.join(''), no++)));
+    });
+    if (map) {
+      out.push(page('<div class="pad"><h2>เส้นทางทั้งหมด</h2><div class="rule"></div>' +
+        '<img class="map" src="' + E(map.url) + '">' +
+        '<div class="stops">' + map.stops.map(s => '<div class="st"><span class="no">' + String(s.no).padStart(2, '0') + '</span>' + E(s.name) + '</div>').join('') + '</div></div>' + foot(no++)));
+    }
+    if (D.expense.total > 0) {
+      out.push(page('<div class="pad"><h2>ทริปนี้ใช้ไปเท่าไหร่</h2><div class="rule"></div>' +
+        '<div class="tot"><div class="lb">รวมทั้งทริป</div><div class="big">฿' + D.expense.total.toLocaleString() + '</div>' +
+        '<div class="lb">เฉลี่ยวันละ ฿' + Math.round(D.expense.total / Math.max(1, D.stats.days)).toLocaleString() + ' · ' + D.stats.days + ' วัน</div></div>' +
+        D.expense.rows.map(r => '<div class="ex"><div class="exh"><span>' + E(r.k) + '</span><span>฿' + r.v.toLocaleString() + '</span></div>' +
+          '<div class="bar"><i style="width:' + r.pct + '%"></i></div></div>').join('') + '</div>' + foot(no++)));
+    }
+    out.push(page('<div class="end"><div class="endq">' + D.stats.days + ' วันนี้ เช็คอิน ' + D.stats.cis + ' ครั้ง เก็บรูปไว้ ' + D.stats.photos + ' รูป</div>' +
+      '<div class="rule c"></div><div class="endn">บันทึกไว้ระหว่างทาง แล้วรวมเป็นเล่มนี้เมื่อกลับถึงบ้าน</div>' +
+      '<div class="brand dark"><i></i>VELA</div><div class="endn sm">ทำจากแอป ทริปหน้าไปไหน · onevela.net</div></div>'));
+    return '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(D.title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '@page{size:148mm 210mm;margin:0}' +
+      '*{box-sizing:border-box}' +
+      'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.pg{width:148mm;height:210mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
+      '.pg:last-child{margin-bottom:0}' +
+      '.bleed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}' +
+      '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.5),rgba(20,16,13,0) 34%,rgba(20,16,13,.12) 55%,rgba(20,16,13,.9))}' +
+      '.brand{position:absolute;left:14mm;top:12mm;display:flex;align-items:center;gap:2mm;font-weight:600;font-size:9pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
+      '.brand i{width:2mm;height:2mm;border-radius:50%;background:#e9b48a}' +
+      '.brand.dark{position:static;color:#8a7d6f;justify-content:center;margin:6mm 0 2mm}.brand.dark i{background:#c05f39}' +
+      '.covtx{position:absolute;left:14mm;right:14mm;bottom:16mm;color:#fffaf0}' +
+      '.covtx .kick{font-weight:600;font-size:9pt;letter-spacing:2px;color:#e9b48a;margin-bottom:4mm}' +
+      '.covtx h1{font-family:' + C + ';font-size:27pt;line-height:1.25;margin:0;font-weight:400}' +
+      '.covtx .by{font-size:10.5pt;color:rgba(246,239,226,.78);margin-top:3mm}' +
+      '.rule{width:14mm;height:.7mm;background:#c05f39;margin:5mm 0}.rule.c{margin:6mm auto}' +
+      '.pad{position:absolute;inset:0;padding:16mm 14mm 12mm}' +
+      'h2{font-family:' + C + ';font-size:18pt;margin:0;font-weight:400}' +
+      'h3{font-family:' + C + ';font-size:16pt;line-height:1.35;margin:0;font-weight:400}' +
+      '.toc{display:flex;flex-direction:column;gap:3.6mm}' +
+      '.tr{display:flex;align-items:baseline;gap:3mm;font-size:10.5pt}' +
+      '.tr .no{color:#c05f39;font-weight:600;font-size:8.5pt;width:6mm}' +
+      '.tr .tt{flex:1}.tr .tt i{display:block;font-style:normal;font-size:8.5pt;color:#a99e8e;margin-top:.6mm}' +
+      '.story{font-size:11pt;line-height:2.02;margin:0 0 4.5mm;color:#332c25;text-indent:7mm;max-width:104mm;text-wrap:pretty}' +
+      '.story.lead{text-indent:0}' +
+      '.story.lead::first-letter{font-family:' + C + ';font-size:24pt;line-height:1;float:left;margin:1.5mm 2.5mm 0 0;color:#c05f39}' +
+      '.sect{font-size:8.5pt;letter-spacing:2px;color:#c05f39;font-weight:600;border-top:.3mm solid rgba(43,36,32,.12);padding-top:4mm;margin:2mm 0 6mm}' +
+      '.statline{position:absolute;left:14mm;right:14mm;bottom:12mm;border-top:.3mm solid rgba(43,36,32,.12);padding-top:3mm;font-size:8.5pt;color:#a99e8e}' +
+      '.dayhead{position:absolute;inset:0;display:flex;flex-direction:column}' +
+      '.dayimg{height:100mm;width:100%;object-fit:cover;background:linear-gradient(135deg,#c9b79b,#a08d72);display:block}' +
+      '.daytx{padding:11mm 14mm;flex:1;display:flex;flex-direction:column}' +
+      '.kick2{font-weight:600;font-size:8.5pt;letter-spacing:2px;color:#c05f39;margin-bottom:3mm}' +
+      '.intro{font-size:10.5pt;line-height:1.85;color:#5c5347;margin:0;max-width:92mm}' +
+      '.daystat{margin-top:auto;font-size:9.5pt;color:#8a7d6f}.daystat b{color:#2b241f}' +
+      '.rh{display:flex;justify-content:space-between;font-size:8pt;letter-spacing:1.4px;color:#a99e8e;border-bottom:.3mm solid rgba(43,36,32,.12);padding-bottom:3mm;margin-bottom:7mm}' +
+      '.row{display:flex;gap:6mm;margin-bottom:8mm;align-items:flex-start}' +
+      '.ph{width:52mm;flex:none}.ph img{width:100%;height:62mm;object-fit:cover;display:block}' +
+      '.phwide{margin-bottom:7mm}.phwide img{width:100%;height:62mm;object-fit:cover;display:block}' +
+      '.phwide.sm img{height:40mm}' +
+      '.tx{flex:1;min-width:0}.tx.wide{margin-bottom:7mm}' +
+      '.kick3{font-weight:600;font-size:8.5pt;letter-spacing:1.2px;color:#c05f39;margin-bottom:2mm}' +
+      '.tx p{font-size:10pt;line-height:1.8;margin:0;color:#453c33}' +
+      '.map{width:100%;height:105mm;object-fit:cover;display:block;border:.3mm solid rgba(43,36,32,.12)}' +
+      '.stops{display:grid;grid-template-columns:1fr 1fr;gap:3mm 6mm;margin-top:6mm;font-size:10pt}' +
+      '.st{display:flex;gap:2.5mm}.st .no{color:#c05f39;font-weight:600;font-size:8.5pt}' +
+      '.tot{background:#f6efe2;padding:7mm 8mm;margin:6mm 0}' +
+      '.tot .lb{font-size:9.5pt;color:#8a7d6f}.tot .big{font-family:' + C + ';font-size:22pt;margin:1.5mm 0}' +
+      '.ex{margin-bottom:4.5mm}.exh{display:flex;justify-content:space-between;font-size:10.5pt;margin-bottom:1.6mm}' +
+      '.bar{height:2mm;background:#efe4d3}.bar i{display:block;height:2mm;background:#c05f39}' +
+      '.end{position:absolute;inset:0;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
+      '.endq{font-family:' + C + ';font-size:15pt;line-height:1.6;max-width:95mm}' +
+      '.endn{font-size:10pt;color:#6f6455;max-width:85mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:#a99e8e}' +
+      '.ft{position:absolute;left:14mm;right:14mm;bottom:9mm;display:flex;justify-content:space-between;font-size:8pt;color:#a99e8e;border-top:.3mm solid rgba(43,36,32,.1);padding-top:2.5mm}' +
+      '.bar-print{position:sticky;top:0;z-index:9;display:flex;gap:8px;justify-content:center;padding:12px;background:#2b241f}' +
+      '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
+      '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
+      '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
+      '</style></head><body>' +
+      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5</span></div>' +
+      out.join('') + '</body></html>';
+  }
+  async makeEbook() {
+    if (this._ebBusy) return;
+    this._ebBusy = true;
+    this.setState({ ebBusy: true, ebPct: 4 });
+    try {
+      const D = await this.ebGather();
+      if (!D.days.length) { this.showToast('ยังไม่มีบันทึกในทริปนี้'); return; }
+      this.setState({ ebPct: 26 });
+      if (this.state.ebAi) await this.ebPolish(D.days);
+      this.setState({ ebPct: 80 });
+      let map = null;
+      try { map = await this.ebMapImage(1000, 700); } catch (e) {}
+      this.setState({ ebPct: 92 });
+      const html = this.ebHtml(D, map);
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const w = window.open(url, '_blank');
+      if (!w) { this.setState({ ebUrl: url }); this.showToast('เบราว์เซอร์บล็อกหน้าต่างใหม่ — กดปุ่ม "เปิดเล่ม" อีกที'); }
+      else setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 120000);
+      this.setState({ ebPct: 100, ebOpen: false });
+    } catch (e) {
+      console.warn('[wtn] ebook', e);
+      this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
+    } finally {
+      this._ebBusy = false;
+      this.setState({ ebBusy: false });
+    }
+  }
+  // ประเมินจำนวนหน้าด้วยตัวจัดหน้าชุดเดียวกับตอนสร้างจริง (ตัวเลขในชีตต้องตรงกับเล่ม)
+  ebEstimate(trip) {
+    const ci = this.checkins || {};
+    const cmap = this.ebChapterMap();
+    let days = 0, cis = 0, photos = 0, chapters = 0, pages = 2;   // ปก + สารบัญ
+    const dayIdx = {};
+    Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => { dayIdx[+k.split(':')[1]] = true; });
+    Object.keys(cmap.byDay).forEach(k => { dayIdx[+k] = true; });
+    Object.keys(dayIdx).map(Number).sort((a, b) => a - b).forEach(i => {
+      const list = (ci[trip + ':' + i] || []).filter(c => c.name || c.note);
+      const ch = cmap.byDay[i];
+      if (!list.length && !ch) return;
+      days++; cis += list.length;
+      pages++;                                      // หน้าเปิดวัน/ตอน
+      let h = 0, any = false;
+      const put = need => { if (h + need > 168 && any) { pages++; h = 0; } h += need; any = true; };
+      if (ch) {
+        chapters++;
+        const nSp = Math.min(2, ((ch.photos || []).length || list.filter(c => (c.photos || []).length >= 2).length));
+        photos += Math.min(2, (ch.photos || []).length);
+        this._htmlParas(ch.html).forEach(p => this._ebChunk(p, 1200).forEach(part => put(Math.ceil(part.length / 52) * 6.9 + 5)));
+        for (let s = 0; s < nSp; s++) put(68);
+        if (list.length) put(16);
+      }
+      list.forEach(c => {
+        const ph = (c.photos || []).slice(0, 3);
+        photos += ph.length;
+        this._ebBlocks({ t: c.t || '', name: c.name || '', note: c.note || '', photos: ph.map(() => 'x') }).forEach(b => put(b.h));
+      });
+      if (any) pages++;
+    });
+    cmap.extra.forEach(c => {
+      const paras = this._htmlParas(c.html);
+      if (!paras.length) return;
+      chapters++; pages++;
+      let h = 0, any = false;
+      paras.forEach(p => this._ebChunk(p, 1200).forEach(part => {
+        const need = Math.ceil(part.length / 52) * 6.9 + 5;
+        if (h + need > 168 && any) { pages++; h = 0; }
+        h += need; any = true;
+      }));
+      if (any) pages++;
+    });
+    if (cis || chapters) pages += 3;                // แผนที่ + ค่าใช้จ่าย + หน้าท้าย
+    return { days, cis, photos, chapters, pages };
+  }
+  // ---------- SUPPORT ----------
+  supDiagInfo() {
+    let ver = '';
+    try { ver = (document.querySelector('[data-app-version]') || {}).dataset ? '' : ''; } catch (e) {}
+    const be = window.WTNBackend;
+    return {
+      app: this._appVer || '',
+      ua: (navigator.userAgent || '').slice(0, 220),
+      lang: navigator.language || '',
+      screen: (window.screen ? window.screen.width + 'x' + window.screen.height : '') + ' @' + (window.devicePixelRatio || 1),
+      standalone: !!(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches),
+      online: navigator.onLine !== false,
+      signedIn: !!(be && be._uid),
+      trips: (this.userTrips || []).length,
+      sync: this.state.cloud || '',
+      syncErr: this.state.cloudErr || ''
+    };
+  }
+  async submitSupport() {
+    const msg = (this.state.supMsg || '').trim();
+    if (msg.length < 8) { this.setState({ supErr: 'เขียนรายละเอียดอีกนิด จะได้ช่วยได้ตรงจุด' }); return; }
+    const email = (this.state.supEmail ?? this.acct.email ?? '').trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { this.setState({ supErr: 'ใส่อีเมลที่ติดต่อกลับได้ด้วยนะ' }); return; }
+    const be = window.WTNBackend;
+    this.setState({ supBusy: true, supErr: '', supSent: false });
+    const payload = {
+      email, name: this.profile.name || this.acct.name || '',
+      kind: this.state.supKind || 'bug', message: msg,
+      diag: this.state.supDiag ? this.supDiagInfo() : null
+    };
+    try {
+      if (!be || !be.sendSupport) throw new Error('offline');
+      await be.sendSupport(payload);
+      this.setState({ supBusy: false, supSent: true, supMsg: '' });
+    } catch (e) {
+      console.warn('[wtn] support', e);
+      // ส่งไม่ผ่าน (ออฟไลน์/ยังไม่ล็อกอิน) → เปิดอีเมลให้แทน ไม่ให้เรื่องหาย
+      this.setState({ supBusy: false, supErr: 'ส่งผ่านแอปไม่สำเร็จ — เปิดอีเมลให้แทนแล้ว ถ้าไม่ขึ้น ส่งมาที่ admin@onevela.net ได้เลย' });
+      try { window.location.href = this.supMailtoUrl(msg); } catch (e2) {}
+    }
+  }
+  supMailtoUrl(msg) {
+    const kinds = { bug: 'แจ้งปัญหา', question: 'คำถาม', billing: 'การจ่ายเงิน', idea: 'เสนอฟีเจอร์', other: 'อื่นๆ' };
+    const body = (msg || this.state.supMsg || '') +
+      (this.state.supDiag ? ('\n\n---\n' + JSON.stringify(this.supDiagInfo(), null, 1)) : '');
+    return 'mailto:admin@onevela.net?subject=' + encodeURIComponent('[Vela] ' + (kinds[this.state.supKind || 'bug'])) +
+      '&body=' + encodeURIComponent(body);
+  }
+  async loadTickets() {
+    const be = window.WTNBackend;
+    if (!be || !be.listSupport) { this.setState({ ticketsErr: 'ยังไม่พร้อม' }); return; }
+    this.setState({ ticketsBusy: true });
+    try { const l = await be.listSupport(50); this.setState({ ticketsList: l, ticketsBusy: false }); }
+    catch (e) { this.setState({ ticketsBusy: false, ticketsErr: (e && e.message) || 'โหลดไม่สำเร็จ' }); }
+  }
   // ---------- EXPORT รีแคปเป็นวิดีโอแนวนอน 16:9 ----------
+  // สร้างรูปย่อย้อนหลังให้รูปที่อยู่บน Supabase อยู่แล้ว
+  async backfillThumbs() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || !be.uploadThumbFor) return;
+    let tmap = {};
+    try { tmap = JSON.parse(localStorage.getItem('wtn-thumb-map') || '{}'); } catch (e) {}
+    const urls = new Set();
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !(/^wtn-/.test(k) || k.indexOf('photopick:') === 0)) continue;
+      ((localStorage.getItem(k) || '').match(/https:\/\/[^"'\\\s)]*\/storage\/v1\/object\/public\/media\/[^"'\\\s)]+/g) || [])
+        .forEach(u => { if (!/_t\.[a-z0-9]+$/i.test(u)) urls.add(u); });
+    }
+    const list = [...urls].filter(u => !tmap[u]);
+    if (!list.length) return;
+    for (let i = 0; i < list.length; i++) {
+      const im = await this.loadImgForCanvas(list[i]);
+      if (!im) continue;
+      const tb = await this.makeThumbBlob(im);
+      if (!tb) continue;
+      const t = await be.uploadThumbFor(list[i], tb);
+      if (t) tmap[list[i]] = 1;
+      this.setState({ rehostPct: Math.round((i + 1) / list.length * 100) });
+    }
+    try { localStorage.setItem('wtn-thumb-map', JSON.stringify(tmap)); } catch (e) {}
+  }
+  thumbMissingCount() {
+    if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
+    let n = 0;
+    try {
+      let tmap = {};
+      try { tmap = JSON.parse(localStorage.getItem('wtn-thumb-map') || '{}'); } catch (e) {}
+      const seen = new Set();
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !(/^wtn-/.test(k) || k.indexOf('photopick:') === 0)) continue;
+        ((localStorage.getItem(k) || '').match(/https:\/\/[^"'\\\s)]*\/storage\/v1\/object\/public\/media\/[^"'\\\s)]+/g) || [])
+          .forEach(u => { if (!/_t\.[a-z0-9]+$/i.test(u) && !tmap[u]) seen.add(u); });
+      }
+      n = seen.size;
+    } catch (e) {}
+    this._thumbN = n; this._thumbAt = Date.now();
+    return n;
+  }
+  legacyImgCount() {
+    if (this._legacyN !== undefined && Date.now() - (this._legacyAt || 0) < 4000) return this._legacyN;
+    let n = 0;
+    try {
+      const re = /https:\/\/(?:firebasestorage\.googleapis\.com|[a-z0-9-]+\.firebasestorage\.app)\//g;
+      const seen = new Set();
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !(/^wtn-/.test(k) || k.indexOf('photopick:') === 0) || k === 'wtn-rehost-map') continue;
+        const v = localStorage.getItem(k) || '';
+        (v.match(/https:\/\/(?:firebasestorage\.googleapis\.com|[a-z0-9-]+\.firebasestorage\.app)\/[^"'\\\s)]+/g) || []).forEach(u => seen.add(u));
+        re.lastIndex = 0;
+      }
+      n = seen.size;
+    } catch (e) {}
+    this._legacyN = n; this._legacyAt = Date.now();
+    return n;
+  }
+  // โหลดรูปให้ "วาดลงแคนวาสแล้ว export ได้" — ถ้ารูปทำให้แคนวาสเปื้อน (tainted) จะคืน null
+  // สาเหตุหลัก: รูปเก่าที่ยังอยู่บน Firebase Storage ซึ่งไม่ส่ง CORS header
+  _tainted(im) {
+    try {
+      const c = this._taintCv || (this._taintCv = document.createElement('canvas'));
+      c.width = c.height = 1;
+      const g = c.getContext('2d');
+      g.drawImage(im, 0, 0, 1, 1);
+      g.getImageData(0, 0, 1, 1);
+      return false;
+    } catch (e) { return true; }
+  }
+  _img(src, cors) {
+    return new Promise(res => {
+      if (!src || src.indexOf('data:image/gif') === 0) { res(null); return; }
+      const im = new Image();
+      if (cors && /^https?:/i.test(src)) im.crossOrigin = 'anonymous';
+      im.onload = () => res(im);
+      im.onerror = () => res(null);
+      im.src = src;
+    });
+  }
+  async _blobImg(url, opts) {
+    try {
+      const r = await fetch(url, Object.assign({ mode: 'cors', cache: 'force-cache' }, opts || {}));
+      if (!r.ok) return null;
+      const b = await r.blob();
+      if (!b.size) return null;
+      const u = URL.createObjectURL(b);
+      const im = await this._img(u, false);
+      setTimeout(() => { try { URL.revokeObjectURL(u); } catch (e) {} }, 120000);
+      return im;
+    } catch (e) { return null; }
+  }
+  async loadImgForCanvas(p) {
+    let src = p || '';
+    if (typeof src === 'string' && src.indexOf('idb:') === 0) src = (await this.idbGet(src.slice(4))) || '';
+    if (!src) return null;
+    if (!/^https?:/i.test(src)) return await this._img(src, false);          // data:/blob:/ไฟล์ในแอป
+    const cache = this._imgOkCache || (this._imgOkCache = {});
+    if (cache[src] !== undefined) return cache[src];
+    let im = await this._img(src, true);                                     // 1) crossOrigin ตรงๆ
+    if (im && this._tainted(im)) im = null;
+    if (!im) im = await this._blobImg(src);                                  // 2) fetch เป็น blob
+    if (!im) {                                                               // 3) ผ่านพร็อกซีที่ส่ง CORS ให้ (รูปเก่าบน Firebase)
+      for (const mk of [u => 'https://wsrv.nl/?url=' + encodeURIComponent(u) + '&w=1600&output=jpg&q=88',
+                        u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+                        u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)]) {
+        im = await this._blobImg(mk(src), { cache: 'default' });
+        if (im) break;
+      }
+    }
+    if (im && this._tainted(im)) im = null;
+    cache[src] = im;
+    return im;
+  }
+  // ย้ายรูปที่ยังอยู่บนคลาวด์เดิม (Firebase) ขึ้น Supabase แล้วเขียนลิงก์ใหม่ทับ
+  async rehostLegacyImages() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) { this.showToast('ต้องล็อกอินก่อนถึงจะย้ายรูปได้'); return; }
+    if (this._rehosting) return;
+    this._rehosting = true;
+    this.setState({ rehostBusy: true, rehostPct: 0 });
+    try {
+      const re = /https:\/\/(?:firebasestorage\.googleapis\.com|[a-z0-9-]+\.firebasestorage\.app)\/[^"'\\\s)]+/g;
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && k !== 'wtn-img-map') keys.push(k); }
+      const raw = {}, urls = new Set();
+      keys.forEach(k => { const v = localStorage.getItem(k) || ''; raw[k] = v; (v.match(re) || []).forEach(u => urls.add(u)); });
+      const list = [...urls];
+      if (!list.length) {                                   // ไม่มีรูปค้างแล้ว — เหลือแค่สร้างรูปย่อให้ครบ
+        await this.backfillThumbs();
+        this._thumbN = undefined;
+        this.showToast('✓ รูปย่อครบแล้ว');
+        return;
+      }
+      let map = {};
+      try { map = JSON.parse(localStorage.getItem('wtn-rehost-map') || '{}'); } catch (e) {}
+      let done = 0, fail = 0;
+      for (let i = 0; i < list.length; i++) {
+        const old = list[i];
+        if (!map[old]) {
+          const im = await this.loadImgForCanvas(old);
+          if (im) {
+            try {
+              const cv = document.createElement('canvas');
+              const s = Math.min(1, 1600 / Math.max(im.width, im.height));
+              cv.width = Math.round(im.width * s); cv.height = Math.round(im.height * s);
+              cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+              const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.85));
+              map[old] = await be.uploadImage(blob, 'img.jpg');
+              try { const tb = await this.makeThumbBlob(im); if (tb) await be.uploadThumbFor(map[old], tb); } catch (e2) {}
+              done++;
+            } catch (e) { fail++; }
+          } else fail++;
+        }
+        this.setState({ rehostPct: Math.round((i + 1) / list.length * 100) });
+      }
+      try { localStorage.setItem('wtn-rehost-map', JSON.stringify(map)); } catch (e) {}
+      await this.backfillThumbs();
+      this._applyingCloud = true;
+      try {
+        keys.forEach(k => {
+          let nv = raw[k];
+          Object.keys(map).forEach(o => { if (map[o]) nv = nv.split(o).join(map[o]); });
+          if (nv !== raw[k]) { try { localStorage.setItem(k, nv); } catch (e) {} }
+        });
+      } finally { this._applyingCloud = false; }
+      this._imgOkCache = {};
+      window.dispatchEvent(new Event('photopick-change'));
+      this.forceUpdate();
+      try { this.cloudPush && this.cloudPush(); } catch (e) {}
+      this.showToast(fail ? ('ย้ายแล้ว ' + done + ' รูป · ไม่สำเร็จ ' + fail) : ('✓ ย้ายรูปขึ้นคลาวด์ใหม่ครบ ' + done + ' รูป'));
+    } catch (e) {
+      console.warn('[wtn] rehost', e);
+      this.showToast('ย้ายรูปไม่สำเร็จ — ลองใหม่ตอนเน็ตนิ่งๆ');
+    } finally {
+      this._rehosting = false;
+      this.setState({ rehostBusy: false });
+    }
+  }
   _cvWrap(cx, text, maxW, maxLines) {
     const words = String(text || '').split(/(\s+)/);
     const lines = []; let cur = '';
@@ -5067,31 +5861,7 @@ class Component extends DCLogic {
     this.setState({ recExport: true, recExportPct: 0 });
     try {
       try { await document.fonts.ready; } catch (e) {}
-      const el = src => new Promise(res => {
-        if (!src || src.indexOf('data:image/gif') === 0) { res(null); return; }
-        const im = new Image();
-        if (/^https?:/i.test(src)) im.crossOrigin = 'anonymous';
-        im.onload = () => res(im);
-        im.onerror = () => res(null);
-        im.src = src;
-      });
-      // รูปที่เก็บเป็น ref ของ IDB ต้องดึงตัวจริงออกมาก่อน (px() คืนรูปเปล่าระหว่างรอ)
-      const load = async p => {
-        let src = p || '';
-        if (typeof src === 'string' && src.indexOf('idb:') === 0) src = (await this.idbGet(src.slice(4))) || '';
-        if (!src) return null;
-        let im = await el(src);
-        if (im || !/^https?:/i.test(src)) return im;
-        try {                                   // โดน CORS → ดึงผ่าน fetch แล้วทำเป็น blob
-          const r = await fetch(src, { mode: 'cors', cache: 'force-cache' });
-          if (r.ok) {
-            const u = URL.createObjectURL(await r.blob());
-            im = await el(u);
-            setTimeout(() => { try { URL.revokeObjectURL(u); } catch (e2) {} }, 120000);
-          }
-        } catch (e) {}
-        return im;
-      };
+      const load = p => this.loadImgForCanvas(p);
       const cover = await load(this.coverOf('wtn-cover-' + this.state.trip, '') || 'default-cover.jpg');
       const imgs = [];
       let okN = 0;
@@ -5101,7 +5871,7 @@ class Component extends DCLogic {
         imgs.push(im);
         this.setState({ recExportPct: Math.round((i + 1) / slides.length * 20) });
       }
-      if (!okN) this.showToast('โหลดรูปในทริปไม่ได้ — คลิปจะมีแต่ปก');
+      if (!okN) this.showToast('โหลดรูปในทริปไม่ได้ — ลองไปที่ ฉัน › ย้ายรูปขึ้นคลาวด์ใหม่');
       const t = this.curTripRec() || {};
       const title = this.tripInfo.title || t.name || 'ทริปของฉัน';
       const sub = [this.fmtRange(t.start, t.end), [t.country, t.city].filter(Boolean).join(' · ')].filter(Boolean).join('  ·  ');
@@ -5455,6 +6225,19 @@ class Component extends DCLogic {
       profMomentCount: this.moments.length,
       isPremium: this.isPremium, notPremium: !this.isPremium, goPremium: () => this.go('premium'),
       isAdmin: this.isAdmin, goAdmin: () => { this.go('admin'); this.loadAdminStats(); }, refreshAdmin: () => this.loadAdminStats(),
+      ...(() => {
+        const n = this.legacyImgCount(), tn = this.thumbMissingCount();
+        return {
+          hasLegacyImgs: (n > 0 || tn > 0) && !!(window.WTNBackend && window.WTNBackend._uid),
+          legacyImgNote: n > 0
+            ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
+            : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก'),
+          rehostLabel: this.state.rehostBusy
+            ? ('กำลังทำ… ' + (this.state.rehostPct || 0) + '%')
+            : (n > 0 ? 'ย้ายรูปขึ้นคลาวด์ใหม่' : 'สร้างรูปย่อ'),
+          rehostImgs: () => this.rehostLegacyImages()
+        };
+      })(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
       adminTotal: (this.state.adminStats && this.state.adminStats.total != null) ? this.state.adminStats.total : '—',
       adminPremium: (this.state.adminStats && this.state.adminStats.premium != null) ? this.state.adminStats.premium : '—',
@@ -5544,7 +6327,82 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.13o',
+      appVersion: '2026.08.14d',
+      ...(() => {
+        this._appVer = '2026.08.14d';
+        const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
+        const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
+        const cur = this.state.supKind || 'bug';
+        const chip = on => 'min-height:42px;padding:0 15px;border-radius:21px;cursor:pointer;font:600 14.5px \'Anuphan\';' +
+          (on ? 'background:#c05f39;color:#fff;border:none' : 'background:#fffaf0;color:#5c5347;border:1px solid rgba(43,36,32,.14)');
+        const list = (this.state.ticketsList || []).map(t => ({
+          message: t.message || '',
+          kindLabel: kName(t.kind || 'other'),
+          badgeStyle: 'font:600 12px \'Anuphan\';padding:4px 10px;border-radius:12px;background:' +
+            (t.status === 'done' ? '#e6e2d8;color:#8a7d6f' : 'rgba(192,95,57,.12);color:#c05f39'),
+          when: (() => { try { return new Date(t.created_at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } })(),
+          who: [t.name, t.email].filter(Boolean).join(' · ') || 'ไม่ระบุผู้ส่ง',
+          hasDiag: !!t.diag, diagText: t.diag ? JSON.stringify(t.diag) : '',
+          mailto: 'mailto:' + (t.email || '') + '?subject=' + encodeURIComponent('Re: [Vela] ' + kName(t.kind || 'other')),
+          doneLabel: t.status === 'done' ? 'เปิดใหม่' : 'ปิดเรื่อง',
+          doneStyle: 'flex:1;min-height:42px;border-radius:12px;cursor:pointer;font:600 14px \'Anuphan\';border:none;' +
+            (t.status === 'done' ? 'background:#efe4d3;color:#5c5347' : 'background:#2b241f;color:#f6efe2'),
+          toggleDone: async () => {
+            const be = window.WTNBackend;
+            if (!be || !be.setSupportStatus) return;
+            try { await be.setSupportStatus(t.id, t.status === 'done' ? 'open' : 'done'); this.loadTickets(); } catch (e) {}
+          }
+        }));
+        return {
+          sSupport: sc === 'support',
+          goSupport: () => this.go('support'),
+          supKinds: kinds.map(([id, name]) => ({ name, on: () => this.setState({ supKind: id, supErr: '' }), style: chip(cur === id) })),
+          supMsg: this.state.supMsg ?? '',
+          setSupMsg: e => this.setState({ supMsg: e.target.value, supErr: '', supSent: false }),
+          supEmail: this.state.supEmail ?? (this.acct.email || ''),
+          setSupEmail: e => this.setState({ supEmail: e.target.value, supErr: '' }),
+          toggleSupDiag: () => this.setState(s => ({ supDiag: !s.supDiag })),
+          supDiagStyle: 'width:100%;display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;cursor:pointer;margin-top:16px;background:#fffaf0;border:' +
+            (this.state.supDiag ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.14)'),
+          supDiagDot: 'width:22px;height:22px;border-radius:50%;flex:none;background:' + (this.state.supDiag ? '#c05f39' : 'transparent') +
+            ';border:2px solid ' + (this.state.supDiag ? '#c05f39' : '#c9b79b'),
+          supDiagText: this.state.supDiag ? 'เวอร์ชันแอป รุ่นเครื่อง ขนาดจอ สถานะซิงก์ — ไม่มีรูปหรือบันทึกของคุณ' : 'ช่วยให้แก้ปัญหาได้เร็วขึ้น · เปิดเมื่อคุณอนุญาตเท่านั้น',
+          supErr: !!this.state.supErr, supErrText: this.state.supErr || '',
+          supSent: !!this.state.supSent,
+          supSendLabel: this.state.supBusy ? 'กำลังส่ง…' : 'ส่งเรื่อง',
+          sendSupport: () => this.submitSupport(),
+          supMailto: this.supMailtoUrl(''),
+          loadTickets: () => this.loadTickets(),
+          ticketsLabel: this.state.ticketsBusy ? 'กำลังโหลด…' : 'โหลดเรื่อง',
+          tickets: list, noTickets: list.length === 0,
+          ticketsEmpty: this.state.ticketsErr || (this.state.ticketsList ? 'ยังไม่มีเรื่องเข้ามา' : 'กด "โหลดเรื่อง" เพื่อดูกล่องรับเรื่อง')
+        };
+      })(),
+      ...(() => {
+        const trip = this.ebTripId();
+        const est = this.ebEstimate(trip);
+        const d = est.days, n = est.cis, ph = est.photos;
+        const pct = this.state.ebPct || 0;
+        return {
+          ebOpen: !!this.state.ebOpen,
+          openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0 }),
+          closeEbook: () => this.setState({ ebOpen: false }),
+          ebCoverId: 'wtn-eb-cover-' + trip,
+          ebSummary: d ? (est.chapters + ' ตอนเรื่องเล่า · ' + d + ' วัน · ' + n + ' เช็คอิน · ' + ph + ' รูป — ประมาณ ' + est.pages + ' หน้า')
+                       : 'ทริปนี้ยังไม่มีบันทึก — เช็คอินระหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม',
+          toggleEbAi: () => this.setState(s => ({ ebAi: !s.ebAi })),
+          ebAiStyle: 'width:100%;display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;cursor:pointer;background:#fffaf0;border:' +
+            (this.state.ebAi ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.14)'),
+          ebAiDot: 'width:22px;height:22px;border-radius:50%;flex:none;background:' + (this.state.ebAi ? '#c05f39' : 'transparent') +
+            ';border:2px solid ' + (this.state.ebAi ? '#c05f39' : '#c9b79b'),
+          ebBusy: !!this.state.ebBusy, ebIdle: !this.state.ebBusy,
+          ebBarStyle: 'width:' + pct + '%;height:6px;background:#c05f39;transition:width .3s',
+          ebBusyLabel: pct < 26 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 80 ? 'กำลังให้ AI เกลาสำนวน…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
+          ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
+          ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
+          runEbook: () => this.makeEbook()
+        };
+      })(),
       multiRef: this.multiRef,
       recExport: !!this.state.recExport,
       recExportPct: this.state.recExportPct || 0,
@@ -5836,8 +6694,8 @@ class Component extends DCLogic {
       ciDayLabel: (this.days[active] || {}).tag || '',
       ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
         t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
-        photos: (() => { const srcs = (c.photos || []).map(p => this.px(p));
-          return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+        photos: (() => { const srcs = (c.photos || []).map(p => this.px(p)), ts = (c.photos || []).map(p => this.pxT(p));
+          return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
         hasPhotos: (c.photos || []).length > 0,
         togglePub: () => this.publishCheckin(this.ciKey, idx, !c.published),
         pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8',
@@ -5911,7 +6769,7 @@ class Component extends DCLogic {
         const tHour = ts => new Date(ts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
         const mkRow = m => ({ title: (m.text || '').trim().slice(0, 70) || (m.place || 'โมเมนต์'),
           meta: [tHour(m.at || 0), m.place || '', catName(m.cat || 0)].filter(Boolean).join(' · '),
-          hasPhoto: !!(m.photos || []).length, photo: (m.photos || [])[0] ? this.px((m.photos || [])[0]) : '',
+          hasPhoto: !!(m.photos || []).length, photo: (m.photos || [])[0] ? this.pxT((m.photos || [])[0]) : '',
           on: () => { this.setState({ feedSeg: 'moments' }); this.setTab('stories'); } });
         const todays = ms.filter(m => (m.at || 0) >= rs && (m.at || 0) <= re);
         const chapsOf = s => (this.normStory(s).chapters || []);
@@ -5923,7 +6781,7 @@ class Component extends DCLogic {
           .concat(this.stories.reduce((acc, s0) => { const s = this.normStory(s0);
             chapsOf(s0).forEach(c => { const t = c.updatedAt || s.at || 0; if (!sameDay(t)) return;
               acc.push({ title: c.title || s.title || 'เรื่องเล่า', meta: ['เรื่องเล่า', s.title || ''].filter(Boolean).join(' · '),
-                hasPhoto: !!s.cover, photo: s.cover ? this.px(s.cover) : '', ago: agoOf(t),
+                hasPhoto: !!s.cover, photo: s.cover ? this.pxT(s.cover) : '', ago: agoOf(t),
                 on: () => this.openStoryRead(s.id) }); });
             return acc; }, []))
           .sort((x, y2) => x.ago.localeCompare(y2.ago));
@@ -6106,8 +6964,8 @@ class Component extends DCLogic {
             text: _body, hasText: !!_body.trim(),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
             hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
-            photos: (() => { const srcs = (m.photos || []).map(p => this.px(p));
-              return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+            photos: (() => { const srcs = (m.photos || []).map(p => this.px(p)), ts = (m.photos || []).map(p => this.pxT(p));
+              return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
             hasPhotos: (m.photos || []).length > 0,
             catIdx: ci, catName: cats[ci] || '', hasCat: true,
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),

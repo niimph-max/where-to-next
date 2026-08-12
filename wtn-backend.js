@@ -132,6 +132,41 @@ async function boot() {
       ok(await SB.storage.from("media").upload(path, body, { contentType: body.type || "image/jpeg", upsert: true }));
       return SB.storage.from("media").getPublicUrl(path).data.publicUrl;
     },
+    // อัปโหลดรูปย่อไปไว้คู่กับตัวเต็ม — ชื่อไฟล์เดียวกันแค่เติม _t ก่อนนามสกุล (แอปเดาลิงก์เองได้)
+    async uploadThumbFor(fullUrl, blob) {
+      if (!this._uid || !fullUrl) return null;
+      const m = /\/media\/(users\/[^?]+)$/.exec(fullUrl);
+      if (!m) return null;
+      const path = m[1].replace(/(\.[a-z0-9]+)$/i, "_t$1");
+      try {
+        ok(await SB.storage.from("media").upload(path, blob, { contentType: "image/jpeg", upsert: true }));
+        return SB.storage.from("media").getPublicUrl(path).data.publicUrl;
+      } catch (e) { return null; }
+    },
+
+    // ---------- SUPPORT ----------
+    async sendSupport(t) {
+      const row = {
+        user_id: this._uid || null,
+        email: (t.email || "").trim() || null,
+        name: (t.name || "").trim() || null,
+        kind: t.kind || "other",
+        message: String(t.message || "").slice(0, 4000),
+        diag: t.diag || null
+      };
+      ok(await T(SB.from("support_tickets").insert(row), 20000, "sendSupport"));
+      return true;
+    },
+    async listSupport(limit) {
+      const data = ok(await T(
+        SB.from("support_tickets").select("*").order("created_at", { ascending: false }).limit(limit || 50),
+        20000, "listSupport"));
+      return data || [];
+    },
+    async setSupportStatus(id, status) {
+      ok(await T(SB.from("support_tickets").update({ status }).eq("id", id), 15000, "setSupportStatus"));
+      return true;
+    },
 
     // ---------- STORIES / CHAPTERS ----------
     async saveStory(story) {
@@ -305,6 +340,14 @@ async function boot() {
       const { data } = await SB.from("backup_versions").select("blob").eq("user_id", this._uid).eq("at", Number(id)).maybeSingle();
       if (!data) return null;
       try { return JSON.parse(data.blob); } catch (e) { return null; }
+    },
+    // อ่านแค่เวลาล่าสุดของก้อนสำรอง (ไม่กี่ไบต์) — ใช้เช็กก่อนโหลด blob เต็ม เพื่อประหยัด egress
+    async backupAt() {
+      if (!this._uid) return 0;
+      try {
+        const { data } = await T(SB.from("backup_meta").select("at").eq("user_id", this._uid).maybeSingle(), 15000, "backupAt");
+        return Number((data || {}).at || 0);
+      } catch (e) { return -1; }   // -1 = เช็คไม่ได้ → ให้ฝั่งแอปดึงเต็มตามเดิม
     },
     async pullBackup() {
       if (!this._uid) return null;
