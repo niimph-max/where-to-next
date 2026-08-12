@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Vela · ทริปหน้าไปไหน — วางแผนทริป แล้วเก็บไว้เป็นเรื่องเล่า</title>
+<meta name="description" content="Vela ช่วยวางแผนทริปรายวัน จดงบ เช็คอินระหว่างเที่ยว แล้วเปลี่ยนทุกอย่างเป็นเรื่องเล่าของคุณ">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
+<script src="image-slot.js"></script>
+<style>
+  body { margin:0; background:#f6efe2; -webkit-font-smoothing:antialiased; }
+  a { color:#a54e2c; text-decoration:none; }
+  a:hover { color:#c05f39; }
+  details summary::-webkit-details-marker { display:none; }
+  details[open] .vl-plus { transform:rotate(45deg); }
+</style>
+</helmet>
+
+<div style="font-family:'Anuphan',system-ui,sans-serif;color:#2b241f;background:#f6efe2;overflow-x:hidden">
+
+  <header style="position:sticky;top:0;z-index:20;background:rgba(246,239,226,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(43,36,32,.07)">
+    <div style="max-width:1120px;margin:0 auto;padding:12px clamp(18px,4vw,40px);display:flex;align-items:center;gap:14px">
+      <a href="#top" style="display:flex;align-items:center;gap:10px"><img src="logo.png" alt="Vela" width="36" height="36" style="width:36px;height:36px;display:block"><span style="font-family:'Chonburi',serif;font-size:21px;color:#2b241f">Vela</span></a>
+      <nav style="display:flex;gap:22px;margin-left:auto;font-weight:600;font-size:14.5px;color:#6c5f4f">
+        <a href="#how" style="color:inherit">วิธีใช้</a>
+        <a href="#features" style="color:inherit">ฟีเจอร์</a>
+        <a href="#pricing" style="color:inherit">ราคา</a>
+        <a href="#faq" style="color:inherit">คำถาม</a>
+      </nav>
+      <a href="{{ appUrl }}" style="flex:none;background:#c05f39;color:#fff;font-weight:600;font-size:14.5px;padding:10px 18px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center;box-shadow:0 8px 18px -8px rgba(192,95,57,.7)">{{ launchLabel }}</a>
+    </div>
+  </header>
+
+  <section id="top" style="position:relative;padding:clamp(44px,7vw,86px) clamp(20px,5vw,48px) clamp(30px,5vw,60px)">
+    <div style="position:absolute;top:-140px;left:-90px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(192,95,57,.16),transparent 68%);pointer-events:none"></div>
+    <div style="position:absolute;top:180px;right:-120px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(160,140,90,.16),transparent 68%);pointer-events:none"></div>
+    <div style="position:relative;max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(28px,5vw,56px);align-items:center">
+      <div>
+        <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(192,95,57,.11);color:#a54e2c;font-weight:600;font-size:13px;padding:7px 15px;border-radius:999px;margin-bottom:18px">✦ ทริปหน้าไปไหน?</span>
+        <h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(33px,5.4vw,58px);line-height:1.17;margin:0 0 18px;text-wrap:pretty">วางแผนทริป<br>แล้วเก็บไว้เป็นเรื่องเล่า</h1>
+        <p style="font-size:clamp(15.5px,1.6vw,19px);line-height:1.75;color:#6c5f4f;margin:0 0 28px;max-width:520px;text-wrap:pretty">จัดแผนรายวัน จดงบ ใส่ที่พัก แล้วเช็คอินระหว่างเที่ยว — กลับมาบ้าน Vela เรียงรูปกับโน้ตทั้งทริปให้เป็นเรื่องเล่าของคุณเอง</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+          <a href="{{ appUrl }}" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#c05f39;color:#fff;font-weight:700;font-size:16.5px;padding:15px 28px;min-height:52px;border-radius:16px;box-shadow:0 14px 30px -12px rgba(192,95,57,.8)">เริ่มใช้ฟรี</a>
+          <a href="#how" style="display:inline-flex;align-items:center;justify-content:center;background:#fffaf0;color:#2b241f;font-weight:600;font-size:16.5px;padding:15px 26px;min-height:52px;border-radius:16px;border:1px solid rgba(43,36,32,.12)">ดูวิธีใช้</a>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:18px;font-size:13.5px;font-weight:500;color:#8a7d6f">
+          <span>ไม่ต้องโหลดจากสโตร์</span><span>·</span><span>ใช้ออฟไลน์ได้</span><span>·</span><span>ภาษาไทยเต็มระบบ</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div style="position:relative;width:310px;max-width:100%;box-sizing:border-box;padding:11px;background:#2b241f;border-radius:44px;box-shadow:0 3px 10px rgba(90,60,35,.12),0 20px 40px -16px rgba(90,60,35,.28),0 44px 90px -30px rgba(90,60,35,.32)">
+          <div style="position:absolute;left:50%;top:20px;transform:translateX(-50%);width:82px;height:6px;border-radius:99px;background:rgba(255,255,255,.22);z-index:2"></div>
+          <div role="img" aria-label="ตัวอย่างหน้าจอแผนเที่ยวรายวันในแอป Vela" style="position:relative;width:288px;height:516px;border-radius:34px;overflow:hidden;background:#f6efe2;user-select:none">
+  <div style="position:absolute;top:0;left:0;width:402px;height:720px;transform:scale(0.7164);transform-origin:top left;display:flex;flex-direction:column;background:#f6efe2;font-family:'Anuphan',sans-serif">
+<div style="flex:none;display:flex;align-items:center;padding:12px 22px 2px;font:600 13px 'Anuphan';color:#2b241f"><span>9:41</span><span style="margin-left:auto;letter-spacing:1px;font-size:11px;color:#6f6558">▪▪▫ ▮</span></div>
+<div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+  <div style="position:relative;height:140px;flex:none">
+    <img src="default-cover.jpg" alt="" style="width:100%;height:140px;object-fit:cover;display:block">
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 45%,rgba(43,36,32,.42))"></div>
+    <span style="position:absolute;left:14px;top:12px;width:34px;height:34px;border-radius:50%;background:rgba(43,36,32,.5);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M15 6l-6 6 6 6"></path></svg></span>
+    <div style="position:absolute;left:20px;bottom:12px;color:#fdf6ea">
+      <div style="font-family:'Chonburi',serif;font-size:21px;line-height:1.15">ทริปทะเลสาบเหนือ</div>
+      <div style="font:500 13px 'Anuphan';color:rgba(253,246,234,.8);margin-top:2px">24 ก.ค. – 3 ส.ค. · 11 วัน</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;padding:12px 20px 14px;flex:none">
+    <div style="flex:none;width:50px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fffaf0;border:1px solid rgba(43,36,32,.1);color:#6f6558"><span style="font:700 17px 'Anuphan';line-height:1">1</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">จ.</span></div><div style="flex:none;width:50px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fffaf0;border:1px solid rgba(43,36,32,.1);color:#6f6558"><span style="font:700 17px 'Anuphan';line-height:1">2</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">อ.</span></div><div style="flex:none;width:50px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#c05f39;color:#fff"><span style="font:700 17px 'Anuphan';line-height:1">3</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">พ.</span></div><div style="flex:none;width:50px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fffaf0;border:1px solid rgba(43,36,32,.1);color:#6f6558"><span style="font:700 17px 'Anuphan';line-height:1">4</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">พฤ.</span></div><div style="flex:none;width:50px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fffaf0;border:1px solid rgba(43,36,32,.1);color:#6f6558"><span style="font:700 17px 'Anuphan';line-height:1">5</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">ศ.</span></div>
+    <div style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);color:#a1927c;font:600 20px 'Anuphan';display:flex;align-items:center;justify-content:center">+</div>
+  </div>
+  <div style="padding:2px 20px 0;flex:none">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font:600 14px 'Anuphan';color:#c05f39">วันที่ 3</div>
+      <span style="display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 14px 'Anuphan';padding:5px 12px;border-radius:16px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16z"></path></svg>แก้ไข</span>
+    </div>
+    <div style="font-family:'Chonburi',serif;font-size:24px;color:#2b241f;margin:2px 0">เดินเมืองเก่า</div>
+    <div style="font:500 14.5px 'Anuphan';color:#8a7d6f;margin-bottom:10px">ตลาดเช้า → พิพิธภัณฑ์ → ร้านกาแฟริมน้ำ</div>
+  </div>
+  <div style="padding:0 20px 14px;flex:none">
+    <div style="display:flex;align-items:center;gap:12px;background:#fbf3e6;border:1px solid rgba(192,95,57,.22);border-radius:15px;padding:13px 15px">
+      <span style="width:38px;height:38px;border-radius:11px;background:#c05f39;display:flex;align-items:center;justify-content:center;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M4 20h4L18 10l-4-4L4 16z"></path><path d="M14 6l4 4"></path></svg></span>
+      <div style="flex:1"><div style="font:600 15.5px 'Anuphan';color:#2b241f">บันทึกเรื่องวันนี้</div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f">เก็บรูป คลิป โน้ต ระหว่างเที่ยว</div></div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg>
+    </div>
+  </div>
+  <div style="padding:0 20px">
+    
+    <div style="display:flex;gap:12px">
+      <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex:none;padding-top:3px"><span style="font:600 12.5px 'Anuphan';color:#5c5347">08:30</span><span style="width:10px;height:10px;border-radius:50%;background:#c05f39;margin:6px 0 0;box-shadow:0 0 0 4px #f2e3d4"></span><span style="flex:1;width:2px;background:rgba(43,36,32,.12)"></span></div>
+      <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:11px">
+        <span style="display:inline-block;background:#efe4d3;color:#6f6558;font:600 12px 'Anuphan';padding:3px 9px;border-radius:8px;margin-bottom:6px">อาหาร</span>
+        <div style="font:600 16.5px 'Anuphan';color:#2b241f;line-height:1.3">ตลาดเช้าริมคลอง</div>
+        <div style="font:500 14.5px/1.5 'Anuphan';color:#6f6558;margin-top:3px">ชิมของกินท้องถิ่น เผื่อเวลา 1 ชม.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex:none;padding-top:3px"><span style="font:600 12.5px 'Anuphan';color:#5c5347">13:00</span><span style="width:10px;height:10px;border-radius:50%;background:#c05f39;margin:6px 0 0;box-shadow:0 0 0 4px #f2e3d4"></span><span style="flex:1;width:2px;background:rgba(43,36,32,.12)"></span></div>
+      <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:11px">
+        <span style="display:inline-block;background:#efe4d3;color:#6f6558;font:600 12px 'Anuphan';padding:3px 9px;border-radius:8px;margin-bottom:6px">ที่เที่ยว</span>
+        <div style="font:600 16.5px 'Anuphan';color:#2b241f;line-height:1.3">กระเช้าขึ้นเขา</div>
+        <div style="font:500 14.5px/1.5 'Anuphan';color:#6f6558;margin-top:3px">อากาศเย็น พกแจ็คเก็ตบางๆ ไปด้วย</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex:none;padding-top:3px"><span style="font:600 12.5px 'Anuphan';color:#5c5347">19:30</span><span style="width:10px;height:10px;border-radius:50%;background:#c05f39;margin:6px 0 0;box-shadow:0 0 0 4px #f2e3d4"></span><span style="flex:1;width:2px;background:rgba(43,36,32,.12)"></span></div>
+      <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:11px">
+        <span style="display:inline-block;background:#efe4d3;color:#6f6558;font:600 12px 'Anuphan';padding:3px 9px;border-radius:8px;margin-bottom:6px">กิน</span>
+        <div style="font:600 16.5px 'Anuphan';color:#2b241f;line-height:1.3">มื้อเย็นย่านเมืองเก่า</div>
+        <div style="font:500 14.5px/1.5 'Anuphan';color:#6f6558;margin-top:3px">ยังไม่ได้จองโต๊ะ</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="flex:none;display:flex;justify-content:space-around;align-items:center;background:#fffaf0;border-top:1px solid rgba(43,36,32,.08);padding:10px 8px 22px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Today</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h8M8 17h5"></path></svg>Feed</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#c05f39;font:600 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path></svg>แผนของฉัน</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"></circle><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"></path></svg>ฉัน</div></div></div>
+</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" style="padding:clamp(38px,6vw,78px) clamp(20px,5vw,48px);background:#f1e7d4">
+    <div style="max-width:1120px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:clamp(26px,4vw,46px)">
+        <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#a54e2c">วิธีใช้</span>
+        <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.6vw,40px);line-height:1.28;margin:8px 0 0;text-wrap:pretty">สามขั้น จากแพลนในหัว สู่เรื่องเล่าที่เก็บไว้ได้</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:18px">
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:22px;padding:24px 22px 26px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#c05f39;color:#fff;font-weight:700;font-size:16px;margin-bottom:14px">1</span>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 8px">วางแผนรายวัน</h3>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0">ใส่กิจกรรมทีละวัน เติมที่พักโดยกรอกวันเข้า–ออกครั้งเดียว แล้ว Vela เติมให้ทุกคืนเอง พร้อมจดงบทริปควบไปด้วย</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:22px;padding:24px 22px 26px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#c05f39;color:#fff;font-weight:700;font-size:16px;margin-bottom:14px">2</span>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 8px">เช็คอินระหว่างเที่ยว</h3>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0">ถึงที่ไหนก็เก็บรูป คลิป และโน้ตสั้นๆ ไว้ในวันนั้น ไม่ต้องเรียบเรียง — แค่บันทึกให้ทัน ระหว่างที่ยังรู้สึกอยู่</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:22px;padding:24px 22px 26px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#c05f39;color:#fff;font-weight:700;font-size:16px;margin-bottom:14px">3</span>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 8px">ได้เรื่องเล่าเมื่อกลับบ้าน</h3>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0">Vela เรียงทุกโมเมนต์ตามวัน ให้คุณเรียบเรียงเป็นบทๆ หรือให้ AI ช่วยร่างจากสิ่งที่คุณบันทึกไว้จริง</p>
+        </div>
+        <div style="background:#2b241f;border-radius:22px;padding:24px 22px 26px">
+          <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(233,180,138,.16);color:#e9b48a;font-weight:600;font-size:12.5px;padding:5px 12px;border-radius:999px;margin-bottom:14px">โบนัส</span>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 8px;color:#f6efe2">ใช้เป็นไดอารี่ก็ได้</h3>
+          <p style="font-size:15px;line-height:1.7;color:#c9b79b;margin:0">ไม่มีทริปก็บันทึกได้ — จดวันธรรมดา ใส่รูปกับความรู้สึกลงไป Vela เก็บเรียงตามวันให้เหมือนไดอารี่ส่วนตัวที่ย้อนอ่านได้ทุกเมื่อ</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" style="padding:clamp(38px,6vw,80px) clamp(20px,5vw,48px)">
+    <div style="max-width:1120px;margin:0 auto">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:clamp(24px,4vw,48px);align-items:center;margin-bottom:clamp(30px,4vw,52px)">
+        <div>
+          <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#a54e2c">ฟีเจอร์</span>
+          <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.6vw,40px);line-height:1.28;margin:8px 0 14px;text-wrap:pretty">ครบตั้งแต่ก่อนไป จนถึงหลังกลับ</h2>
+          <p style="font-size:16px;line-height:1.75;color:#6c5f4f;margin:0;max-width:460px;text-wrap:pretty">Vela ทำงานบนมือถือเป็นหลัก เปิดจากหน้าจอโฮมได้เหมือนแอป และซิงก์ให้ทุกเครื่องที่ล็อกอินบัญชีเดียวกัน</p>
+        </div>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <div style="flex:none;border-radius:24px;overflow:hidden;box-shadow:0 16px 34px -18px rgba(90,60,35,.35);"><div role="img" aria-label="ตัวอย่างหน้าจอวันนี้ในแอป Vela" style="position:relative;width:210px;height:376px;border-radius:24px;overflow:hidden;background:#f6efe2;user-select:none">
+  <div style="position:absolute;top:0;left:0;width:402px;height:720px;transform:scale(0.5224);transform-origin:top left;display:flex;flex-direction:column;background:#f6efe2;font-family:'Anuphan',sans-serif">
+<div style="flex:none;display:flex;align-items:center;padding:12px 22px 2px;font:600 13px 'Anuphan';color:#2b241f"><span>9:41</span><span style="margin-left:auto;letter-spacing:1px;font-size:11px;color:#6f6558">▪▪▫ ▮</span></div>
+<div style="flex:1;overflow:hidden;padding:16px 20px 0">
+  <div style="background:linear-gradient(140deg,#f0a765 0%,#d9723f 46%,#c05f39 100%);border-radius:22px;padding:19px 19px 17px;color:#fff;box-shadow:0 14px 30px -18px rgba(160,72,38,.75)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div><div style="font-family:'Chonburi',serif;font-size:28px;line-height:1.1">วันนี้</div><div style="font:500 14px 'Anuphan';color:#ffe9d6;margin-top:3px">พฤหัสบดี 26 ก.ค.</div></div>
+      <div style="display:flex;gap:8px;flex:none"><span style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px">‹</span><span style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:19px">›</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px"><span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">3 โมเมนต์</span></div><div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px"><span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">1 เรื่องเล่า</span></div><div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.9);border-radius:14px;padding:11px 8px"><span style="font:600 14px 'Anuphan';color:#a4482a;white-space:nowrap">ย้อนไป 1 ปี</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:11px;margin-top:12px;padding-top:13px;border-top:1px solid rgba(255,255,255,.28)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff" style="flex:none"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6" fill="#d9723f"></circle></svg>
+      <div style="flex:1;min-width:0"><div style="font:500 12.5px 'Anuphan';color:#ffe0c8">ตอนนี้อยู่ที่</div><div style="font:600 15.5px 'Anuphan';color:#fff">ร้านกาแฟริมน้ำ</div></div>
+      <span style="font:600 13.5px 'Anuphan';color:#ffe0c8;flex:none">เช็คอิน</span>
+    </div>
+  </div>
+  <div style="margin-top:22px">
+    <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f;margin-bottom:10px">โมเมนต์</div>
+    <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:14px 15px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font:600 14px 'Anuphan';color:#2b241f">14:20</span><span style="display:inline-flex;align-items:center;gap:5px;font:700 13px 'Anuphan';color:#6f8f6a;background:rgba(111,143,106,.12);padding:3px 9px;border-radius:20px"><span style="width:6px;height:6px;border-radius:50%;background:#6f8f6a"></span>อาหาร</span></div>
+      <div style="font:500 15px/1.65 'Anuphan';color:#413931">แวะร้านเล็กๆ ข้างทาง สั่งของกินมาแบ่งกันคนละครึ่ง ลมเย็นกำลังดี นั่งยาวจนแดดหมด</div>
+      <img src="default-cover.jpg" alt="" style="width:100%;height:118px;object-fit:cover;border-radius:12px;margin-top:10px;display:block">
+    </div>
+    <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:14px 15px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font:600 14px 'Anuphan';color:#2b241f">09:05</span><span style="display:inline-flex;align-items:center;gap:5px;font:700 13px 'Anuphan';color:#c05f39;background:rgba(192,95,57,.12);padding:3px 9px;border-radius:20px"><span style="width:6px;height:6px;border-radius:50%;background:#c05f39"></span>ท่องเที่ยว</span></div>
+      <div style="font:500 15px/1.65 'Anuphan';color:#413931">ออกเช้ากว่าที่คิด ถนนยังว่าง เดินดูตลาดจนครบทุกซอย</div>
+    </div>
+  </div>
+</div>
+<div style="flex:none;display:flex;justify-content:space-around;align-items:center;background:#fffaf0;border-top:1px solid rgba(43,36,32,.08);padding:10px 8px 22px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#c05f39;font:600 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Today</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h8M8 17h5"></path></svg>Feed</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path></svg>แผนของฉัน</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"></circle><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"></path></svg>ฉัน</div></div></div>
+</div></div>
+          <div style="flex:none;border-radius:24px;overflow:hidden;box-shadow:0 16px 34px -18px rgba(90,60,35,.35);margin-top:26px"><div role="img" aria-label="ตัวอย่างหน้าจอเรื่องเล่าในแอป Vela" style="position:relative;width:210px;height:376px;border-radius:24px;overflow:hidden;background:#f6efe2;user-select:none">
+  <div style="position:absolute;top:0;left:0;width:402px;height:720px;transform:scale(0.5224);transform-origin:top left;display:flex;flex-direction:column;background:#f6efe2;font-family:'Anuphan',sans-serif">
+<div style="flex:none;display:flex;align-items:center;padding:12px 22px 2px;font:600 13px 'Anuphan';color:#2b241f"><span>9:41</span><span style="margin-left:auto;letter-spacing:1px;font-size:11px;color:#6f6558">▪▪▫ ▮</span></div>
+<div style="flex:1;overflow:hidden;background:#fdfaf3">
+  <div style="position:relative;height:200px"><img src="default-cover.jpg" alt="" style="width:100%;height:200px;object-fit:cover;display:block"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,0) 45%,rgba(43,36,32,.35))"></div></div>
+  <div style="padding:20px 26px 0">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><span style="font:600 13.5px 'Anuphan';color:#c05f39">บันทึกการเดินทาง</span><span style="background:rgba(143,206,155,.2);color:#4e8a5c;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:20px">จบแล้ว</span></div>
+    <div style="font-family:'Chonburi',serif;font-size:27px;line-height:1.3;color:#2b241f;margin-bottom:12px">สิบเอ็ดวันที่ไม่ได้วางแผนไว้ทั้งหมด</div>
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#d8c6a8,#b89d78);flex:none"></span><div style="flex:1"><div style="font:600 15px 'Anuphan';color:#2b241f">nimjourney</div><div style="font:500 13.5px 'Anuphan';color:#a99e8e">อัปเดตล่าสุด 3 ส.ค.</div></div><span style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14px 'Anuphan';padding:8px 15px;border-radius:20px">จัดการ</span></div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;margin-top:8px;border-top:1px solid rgba(43,36,32,.1);border-bottom:1px solid rgba(43,36,32,.1)">
+      <span style="display:inline-flex;align-items:center;gap:6px;font:500 14.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h8"></path></svg>5 ตอน</span>
+    </div>
+    <div style="font:500 17px/1.9 'Anuphan';color:#413931;margin:18px 0 4px">ตั้งใจไว้ว่าจะไปตามแผนทุกวัน สุดท้ายวันที่ชอบที่สุดคือวันที่หลงทาง</div>
+    <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin:22px 0 10px">สารบัญ · 5 ตอน</div>
+    <div style="display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(43,36,32,.07)"><div style="flex:1;min-width:0"><div style="font:600 17px 'Anuphan';color:#2b241f;line-height:1.35">วันแรกที่ยังงงกับเวลา</div><div style="font:500 13.5px 'Anuphan';color:#a99e8e;margin-top:3px">ตอนที่ 1 · 24 ก.ค.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></div><div style="display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(43,36,32,.07)"><div style="flex:1;min-width:0"><div style="font:600 17px 'Anuphan';color:#2b241f;line-height:1.35">ตลาดเช้าที่ไม่ได้อยู่ในแผน</div><div style="font:500 13.5px 'Anuphan';color:#a99e8e;margin-top:3px">ตอนที่ 2 · 26 ก.ค.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></div><div style="display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid rgba(43,36,32,.07)"><div style="flex:1;min-width:0"><div style="font:600 17px 'Anuphan';color:#2b241f;line-height:1.35">ขึ้นเขาแล้วเจอหมอก</div><div style="font:500 13.5px 'Anuphan';color:#a99e8e;margin-top:3px">ตอนที่ 3 · 28 ก.ค.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></div>
+  </div>
+</div>
+<div style="flex:none;display:flex;justify-content:space-around;align-items:center;background:#fffaf0;border-top:1px solid rgba(43,36,32,.08);padding:10px 8px 22px"><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Today</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#c05f39;font:600 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h8M8 17h5"></path></svg>Feed</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"></rect><path d="M8 3v4M16 3v4M4 10h16"></path></svg>แผนของฉัน</div><div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:#a1927c;font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"></circle><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"></path></svg>ฉัน</div></div></div>
+</div></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">แผนรายวัน + ที่พัก</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">ไทม์ไลน์ต่อวัน แก้ไขได้ไว ใส่วันเข้า–ออกที่พักครั้งเดียว เติมให้ครบทุกคืนอัตโนมัติ</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">งบทริป</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">ตั้งงบก่อนไป จดค่าใช้จ่ายจริงระหว่างทาง เห็นยอดคงเหลือทั้งทริปในที่เดียว</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">โมเมนต์ &amp; แกลเลอรี</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">รูป คลิป โน้ต ผูกกับวันและสถานที่ ดูรวมทั้งทริปได้ในแกลเลอรีเดียว</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">แผนที่ทริป</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">เห็นทุกจุดที่เช็คอินบนแผนที่ ย้อนดูเส้นทางที่เคยไปทั้งทริป</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">AI ช่วยคิด &amp; ช่วยเขียน</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">วางโปรแกรมทัวร์ให้ AI แยกเป็นแผนรายวัน ถามทางระหว่างเที่ยว หรือให้ช่วยร่างเรื่องเล่าจากโมเมนต์จริง</p>
+        </div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">ซิงก์ &amp; ออฟไลน์</h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">ข้อมูลอยู่ครบในเครื่องแม้เน็ตหลุด และซิงก์ขึ้นคลาวด์ให้ทุกเครื่องที่ล็อกอินบัญชีเดียวกัน</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ showPricing }}" hint-placeholder-val="{{ true }}">
+  <section id="pricing" style="padding:clamp(38px,6vw,80px) clamp(20px,5vw,48px);background:#f1e7d4">
+    <div style="max-width:900px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:clamp(24px,4vw,42px)">
+        <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#a54e2c">ราคา</span>
+        <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.6vw,40px);line-height:1.28;margin:8px 0 0">เริ่มฟรี จ่ายเฉพาะเดือนที่ออกเดินทาง</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:18px;align-items:start;max-width:720px;margin:0 auto">
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:24px;padding:26px 24px">
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 4px">ฟรี</h3>
+          <p style="font-size:14.5px;color:#8a7d6f;margin:0 0 16px">วางแผนและบันทึกทริปได้เต็มที่ ตลอดไป</p>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px"><span style="font-family:'Chonburi',serif;font-size:38px;line-height:1">0</span><span style="font-size:15px;color:#8a7d6f">บาท</span></div>
+          <p style="font-size:13.5px;color:#a1927c;margin:0 0 18px">ไม่มีวันหมดอายุ</p>
+          <div style="display:grid;gap:9px;font-size:15px;color:#5c5347;margin-bottom:22px">
+            <span>แผนรายวัน · ที่พัก · งบทริป</span>
+            <span>เช็คอิน รูป คลิป โน้ต</span>
+            <span>เรื่องเล่า &amp; แกลเลอรี</span>
+            <span>ใช้ออฟไลน์ · ล็อกอินแล้วสำรองแผนไว้ไม่ให้หาย</span>
+            <span style="color:#a1927c">รูปเก็บในเครื่องนี้ · ไม่ได้สำรองขึ้นคลาวด์</span>
+          </div>
+          <a href="{{ appUrl }}" style="display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:14px;background:#fff;border:1px solid rgba(43,36,32,.14);color:#2b241f;font-weight:600;font-size:15.5px">เริ่มใช้ฟรี</a>
+        </div>
+        <div style="position:relative;background:#2b241f;border-radius:24px;padding:26px 24px;box-shadow:0 26px 50px -26px rgba(43,36,32,.6)">
+          <span style="position:absolute;top:-11px;left:24px;background:#c05f39;color:#fff;font-weight:600;font-size:12.5px;padding:5px 12px;border-radius:999px">แนะนำ</span>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 4px;color:#f6efe2">พรีเมียม</h3>
+          <p style="font-size:14.5px;color:#a1907a;margin:0 0 16px">เปิดใช้ AI และทำเรื่องเล่าหลังกลับ</p>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px"><span style="font-family:'Chonburi',serif;font-size:38px;line-height:1;color:#f6efe2">{{ priceTrip }}</span><span style="font-size:15px;color:#c9b79b">บาท / 30 วัน</span></div>
+          <p style="font-size:13.5px;color:#a1907a;margin:0 0 18px">จ่ายเฉพาะเดือนที่ไปเที่ยว ไม่ตัดบัตรอัตโนมัติ · เที่ยวบ่อยเลือกรายปี {{ priceYear }} บาท</p>
+          <div style="display:grid;gap:9px;font-size:15px;color:#e6dbc9;margin-bottom:22px">
+            <span>ทุกอย่างในแพ็กฟรี</span>
+            <span>AI แยกโปรแกรมทัวร์เป็นแผนรายวัน</span>
+            <span>AI ช่วยร่างแผนวัน &amp; ตอบระหว่างเที่ยว</span>
+            <span>AI เรียบเรียงเรื่องเล่าจากโมเมนต์</span>
+            <span>รีแคปวิดีโอ &amp; ทำอีบุ๊กจากทริป</span>
+            <span>สำรองรูปขึ้นคลาวด์ &amp; ซิงก์สดข้ามเครื่อง</span>
+            <span style="color:#a1907a">AI ใช้ได้ 60 ครั้ง/แพ็ก (รายปี 100 ครั้ง/เดือน)</span>
+          </div>
+          <a href="{{ appUrl }}" style="display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:14px;background:#c05f39;color:#fff;font-weight:700;font-size:15.5px">อัปเกรดในแอป</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <section id="faq" style="padding:clamp(38px,6vw,80px) clamp(20px,5vw,48px)">
+    <div style="max-width:760px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:clamp(22px,3vw,36px)">
+        <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#a54e2c">คำถามที่พบบ่อย</span>
+        <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.6vw,40px);line-height:1.28;margin:8px 0 0">เรื่องที่มักถามกันก่อนเริ่มใช้</h2>
+      </div>
+      <div style="display:grid;gap:11px">
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">Vela คืออะไร?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">แอปวางแผนทริปรายวันที่บันทึกเรื่องราวไปพร้อมกัน — วางแผนก่อนไป เก็บโมเมนต์ตอนเที่ยว แล้วได้เรื่องเล่าของทริปนั้นเก็บไว้เมื่อกลับมา</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">ต้องโหลดจาก App Store ไหม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">ไม่ต้อง เปิดจากเว็บได้เลย ถ้าอยากใช้เหมือนแอป กด “แชร์ → เพิ่มลงในหน้าจอโฮม” บน iPhone หรือ “ติดตั้งแอป” บน Android แล้วจะได้ไอคอนเปิดเต็มจอ</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">ระหว่างเที่ยวเน็ตไม่มี ใช้ได้ไหม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">ใช้ได้ ทั้งดูแผนและบันทึกโมเมนต์ทำงานออฟไลน์ ข้อมูลเก็บในเครื่องก่อน แล้วซิงก์ขึ้นคลาวด์ให้เองเมื่อกลับมามีเน็ต</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">ข้อมูลทริปของฉันอยู่ที่ไหน?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">อยู่ในเครื่องคุณ และสำรองไว้ในบัญชีของคุณเองบนคลาวด์ ทริปเป็นส่วนตัวโดยค่าเริ่มต้น ดาวน์โหลดไฟล์สำรองเก็บไว้เองได้ทุกเมื่อ</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">ใช้หลายเครื่องพร้อมกันได้ไหม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">ได้ ล็อกอินบัญชีเดียวกันบนมือถือและคอมพิวเตอร์ แผนกับโมเมนต์จะซิงก์ให้อัตโนมัติ</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">จ่ายแล้วต้องต่ออัตโนมัติไหม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">แบบ 30 วันคือจ่ายครั้งเดียว หมดแล้วหมดเลย ไม่ตัดเงินซ้ำ ส่วนแบบรายปีต่ออัตโนมัติ ยกเลิกได้ทุกเมื่อในหน้า “ฉัน” — ใช้ต่อได้จนหมดรอบที่จ่ายไปแล้ว</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">เจอปัญหาหรืออยากถามอะไร ติดต่อยังไง?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">ในแอปไปที่แท็บ “ฉัน” → ช่วยเหลือ &amp; ติดต่อเรา เขียนมาได้เลย หรือส่งอีเมลมาที่ admin@onevela.net — เราตอบกลับทางอีเมลภายใน 1–2 วัน</p>
+        </details>
+      </div>
+      <div style="margin-top:22px;text-align:center;font-size:15px;line-height:1.8;color:#6c5f4f">ยังไม่เจอคำตอบ? ส่งมาที่ <a href="mailto:admin@onevela.net" style="color:#c05f39;font-weight:600">admin@onevela.net</a></div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(20px,4vw,40px) clamp(20px,5vw,48px) clamp(44px,6vw,80px)">
+    <div style="max-width:1000px;margin:0 auto;position:relative;overflow:hidden;background:linear-gradient(150deg,#2b241f,#3d2f24);border-radius:30px;padding:clamp(34px,5vw,58px) clamp(24px,4vw,54px);text-align:center">
+      <div style="position:absolute;top:-90px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(192,95,57,.42),transparent 68%);pointer-events:none"></div>
+      <h2 style="position:relative;font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.8vw,42px);line-height:1.25;color:#f6efe2;margin:0 auto 14px;max-width:600px;text-wrap:pretty">ทริปหน้าจะไปไหน เริ่มวางแผนวันนี้เลย</h2>
+      <p style="position:relative;font-size:16px;line-height:1.75;color:#c9b79b;margin:0 auto 26px;max-width:480px;text-wrap:pretty">สร้างทริปแรกใช้เวลาไม่ถึงนาที ไม่ต้องติดตั้งอะไรก่อน</p>
+      <a href="{{ appUrl }}" style="position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#c05f39;color:#fff;font-weight:700;font-size:17px;padding:16px 34px;min-height:54px;border-radius:16px;box-shadow:0 16px 34px -14px rgba(192,95,57,.9)">เปิด Vela</a>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid rgba(43,36,32,.08);padding:30px clamp(20px,5vw,48px) 40px">
+    <div style="max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px"><img src="logo.png" alt="Vela" width="30" height="30" style="width:30px;height:30px;display:block"><div><div style="font-family:'Chonburi',serif;font-size:17px">Vela</div><div style="font-size:13px;color:#8a7d6f">ทริปหน้าไปไหน</div></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:18px;margin-left:auto;font-size:14px;font-weight:500;color:#6c5f4f">
+        <a href="#features" style="color:inherit">ฟีเจอร์</a>
+        <a href="#pricing" style="color:inherit">ราคา</a>
+        <a href="#faq" style="color:inherit">คำถาม</a>
+        <a href="mailto:admin@onevela.net" style="color:inherit">ติดต่อ</a>
+        <a href="{{ appUrl }}" style="color:inherit">เปิดแอป</a>
+      </div>
+      <div style="flex-basis:100%;font-size:13px;color:#a1927c">© 2026 Vela · onevela.net · admin@onevela.net</div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;appUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;app/&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;launchLabel&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;เปิดแอป&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;showPricing&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;priceTrip&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:99,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;ราคา&quot;},&quot;priceYear&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:790,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;ราคา&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    return {
+      appUrl: p.appUrl ?? 'app/',
+      launchLabel: p.launchLabel ?? 'เปิดแอป',
+      showPricing: p.showPricing ?? true,
+      priceTrip: p.priceTrip ?? 99,
+      priceYear: p.priceYear ?? 790
+    };
+  }
+}
+</script>
+</body>
+</html>
