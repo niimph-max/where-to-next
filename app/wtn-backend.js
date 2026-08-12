@@ -124,9 +124,9 @@ async function boot() {
     },
     async getPremium() {
       if (!this._uid) return null;
-      const { data } = await T(SB.from("profiles").select("premium,premium_until").eq("id", this._uid).maybeSingle(), 15000, "getPremium");
+      const { data } = await T(SB.from("profiles").select("premium,premium_until,plan").eq("id", this._uid).maybeSingle(), 15000, "getPremium");
       if (!data) return { premium: false, until: null };
-      return { premium: data.premium === true, until: data.premium_until ? new Date(data.premium_until).getTime() : null };
+      return { premium: data.premium === true, until: data.premium_until ? new Date(data.premium_until).getTime() : null, plan: data.plan || null };
     },
 
     // ---------- BILLING (Stripe) ----------
