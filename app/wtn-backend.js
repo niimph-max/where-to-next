@@ -130,19 +130,31 @@ async function boot() {
     },
 
     // ---------- BILLING (Stripe) ----------
-    async startCheckout(plan) {
-      if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
-      const { data, error } = await SB.functions.invoke("stripe-checkout", { body: { plan: plan === "year" ? "year" : "trip" } });
-      if (error) throw new Error((error && error.message) || "เปิดหน้าชำระเงินไม่สำเร็จ");
+    // Supabase ห่อ error ของ function เป็น "non-2xx status code" ซึ่งไม่บอกอะไรเลย
+    // → แกะ body จริงออกมาให้ผู้ใช้/เราเห็นสาเหตุ
+    async _invoke(name, body, fallback) {
+      const { data, error } = await SB.functions.invoke(name, { body: body || {} });
+      if (error) {
+        let detail = "";
+        try {
+          const r = error.context;
+          if (r && typeof r.text === "function") {
+            const t = await r.text();
+            try { detail = (JSON.parse(t) || {}).error || t; } catch (e) { detail = t; }
+          }
+        } catch (e) {}
+        throw new Error(detail || error.message || fallback);
+      }
       if (data && data.error) throw new Error(data.error);
       return (data && data.url) || null;
     },
+    async startCheckout(plan) {
+      if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
+      return await this._invoke("stripe-checkout", { plan: plan === "year" ? "year" : "trip" }, "เปิดหน้าชำระเงินไม่สำเร็จ");
+    },
     async billingPortal() {
       if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
-      const { data, error } = await SB.functions.invoke("billing-portal", { body: {} });
-      if (error) throw new Error((error && error.message) || "เปิดหน้าจัดการไม่สำเร็จ");
-      if (data && data.error) throw new Error(data.error);
-      return (data && data.url) || null;
+      return await this._invoke("billing-portal", {}, "เปิดหน้าจัดการไม่สำเร็จ");
     },
 
     // ---------- ADMIN ----------
