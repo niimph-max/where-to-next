@@ -1740,14 +1740,6 @@
             </div>
           </div>
           </sc-if>
-          <sc-if value="{{ showAsUserRow }}" hint-placeholder-val="{{ false }}">
-          <div style="padding:12px 20px 0">
-            <div style="background:#f3ece0;border:1px dashed rgba(43,36,32,.2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px">
-              <div style="flex:1;min-width:0"><div style="font:700 14px 'Anuphan';color:#5c5347">{{ asUserLabel }}</div><div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f;margin-top:1px;text-wrap:pretty">{{ asUserNote }}</div></div>
-              <button onClick="{{ toggleAsUser }}" style="flex:none;min-height:44px;padding:0 14px;border:1px solid rgba(43,36,32,.22);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';border-radius:11px;cursor:pointer">สลับ</button>
-            </div>
-          </div>
-          </sc-if>
           <sc-if value="{{ hasCredits }}" hint-placeholder-val="{{ false }}">
           <div style="padding:14px 20px 0">
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;display:flex;align-items:center;gap:12px">
@@ -2438,9 +2430,32 @@ class Component extends DCLogic {
     });
     return out;
   }
+  _getBase() {
+    if (this._baseMem) return this._baseMem;
+    const o = this._parseJSON(localStorage.getItem('wtn-sync-base'));
+    if (o) this._baseMem = o;
+    return o || null;
+  }
+  _setBase(o) {
+    this._baseMem = o || null;
+    try { localStorage.setItem('wtn-sync-base', JSON.stringify(o)); }
+    catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }   // เต็ม → ทิ้งสำเนาบนดิสก์ ใช้ในแรมพอ
+  }
+  // ประตูเดียวที่โหลด blob เต็มตอน push — ถ้าเพิ่งโหลดไปไม่ถึง 2 นาที ใช้สำเนาในแรมแทน (กัน egress ระเบิด)
+  async _pullBlobGated() {
+    const be = window.WTNBackend;
+    const cached = this._getBase();
+    const gap = Date.now() - (this._lastFullPull || 0);
+    if (cached && gap < 120000) return { data: cached, _at: Number(localStorage.getItem('wtn-cloud-at') || 0) };
+    const bk = await be.pullBackup();
+    this._lastFullPull = Date.now();
+    this._pullN = (this._pullN || 0) + 1;
+    if (bk && bk.data) this._baseMem = bk.data;
+    return bk;
+  }
   _mergeData(remoteData) {
-    try { if (!localStorage.getItem('wtn-base-v2')) { localStorage.removeItem('wtn-sync-base'); localStorage.setItem('wtn-base-v2', '1'); } } catch (e) {} // ล้าง baseline เก่าที่นับรูปค้างผิด
-    const base = this._parseJSON(localStorage.getItem('wtn-sync-base')) || {};
+    try { if (!localStorage.getItem('wtn-base-v2')) { localStorage.removeItem('wtn-sync-base'); this._baseMem = null; localStorage.setItem('wtn-base-v2', '1'); } } catch (e) {} // ล้าง baseline เก่าที่นับรูปค้างผิด
+    const base = this._getBase() || {};
     const local = this._gatherRaw();
     const remote = remoteData || {};
     const lt = this._parseJSON(local['wtn-tombs']) || {}, rt = this._parseJSON(remote['wtn-tombs']) || {};
@@ -2454,7 +2469,7 @@ class Component extends DCLogic {
     return out;
   }
   _writeLocal(map) {
-    const base = this._parseJSON(localStorage.getItem('wtn-sync-base')) || {};
+    const base = this._getBase() || {};
     this._applyingCloud = true;
     try {
       const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
@@ -2468,7 +2483,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend; if (!be || !be._uid) return;
     const at = Date.now();
     await be.pushBackup({ _app: 'where-to-next', _at: at, data });
-    try { localStorage.setItem('wtn-sync-base', JSON.stringify(data)); } catch (e) {}
+    this._setBase(data);
     try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
     this._lastSyncSig = this._sigOf(data); this._synced = true;
   }
@@ -2494,14 +2509,14 @@ class Component extends DCLogic {
         const rAt = be.backupAt ? await be.backupAt() : -1;
         const knownAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
         let base = null;
-        if (rAt > 0 && knownAt && rAt <= knownAt) { try { base = JSON.parse(localStorage.getItem('wtn-sync-base') || 'null'); } catch (e) {} }
-        remote = base ? { data: base, _at: knownAt } : await be.pullBackup();
+        if ((rAt > 0 && knownAt && rAt <= knownAt) || rAt === -1) base = this._getBase();
+        remote = base ? { data: base, _at: knownAt } : await this._pullBlobGated();
       } catch (e) {}
       const rData = (remote && remote.data) || null;
       const merged = this._mergeData(rData);                           // รวมกับของล่าสุดบนคลาวด์ก่อนเสมอ (ไม่ทับทั้งก้อน)
       this._writeLocal(merged);
       const payload = this._filterForPush(merged, rData);              // ตัดรูปใหญ่เฉพาะตอนส่ง (ในเครื่องยังอยู่ครบ)
-      try { localStorage.setItem('wtn-sync-base', JSON.stringify(payload)); } catch (e) {}
+      this._setBase(payload);
       this._lastSyncSig = this._sigOf(merged);
       this.loadFeed && this.loadFeed(); this.loadMoments && this.loadMoments();
       window.dispatchEvent(new Event('photopick-change'));
@@ -2544,7 +2559,7 @@ class Component extends DCLogic {
         toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
         Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
         try { localStorage.setItem('wtn-cloud-at', String(bk._at || Date.now())); } catch (e) {}
-        try { localStorage.setItem('wtn-sync-base', JSON.stringify(bk.data)); } catch (e) {}
+        this._setBase(bk.data);
       } finally { this._applyingCloud = false; }
       this._lastSyncSig = this._sigOf(bk.data); this._synced = true;
       window.dispatchEvent(new Event('photopick-change'));
@@ -2563,7 +2578,7 @@ class Component extends DCLogic {
     const mSig = this._sigOf(merged);
     const changed = mSig !== this._lastSyncSig;
     this._writeLocal(merged);
-    try { localStorage.setItem('wtn-sync-base', JSON.stringify(bk.data)); } catch (e) {}
+    this._setBase(bk.data);
     try { localStorage.setItem('wtn-cloud-at', String(bk._at || Date.now())); } catch (e) {}
     this._lastSyncSig = mSig;
     window.dispatchEvent(new Event('photopick-change'));
@@ -3608,6 +3623,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     try { if (be && be._uid) await be.wipeBackup(); } catch (e) { console.warn('[wtn] wipe cloud', e); }
     this.clearLocalAppData();
+    this._baseMem = null;
     try { localStorage.removeItem('wtn-cloud-at'); localStorage.removeItem('wtn-sync-base'); localStorage.removeItem('wtn-img-map'); } catch (e) {}
     this.setState({ wipeBusy: false });
     try { location.reload(); } catch (e) { this.forceUpdate(); }
@@ -5177,7 +5193,7 @@ class Component extends DCLogic {
   }
   get isGuest() { const a = this.acct; return !(a && (a.name || a.email || a.uid)); }
   gotoSignup() { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ screen: 'onboard', history: [], auth: 'choice', deepLoading: false, deepErr: false }); }
-  get asUser() { try { return localStorage.getItem('wtn-as-user') === '1'; } catch (e) { return false; } }
+  get asUser() { return false; }
   get isAdminReal() { return this._isAdminRaw(); }
   get isPremium() { if (this.isAdmin) return true; try { return localStorage.getItem('wtn-premium') === '1'; } catch (e) { return false; } }
   toggleAsUser() {
@@ -6379,10 +6395,6 @@ class Component extends DCLogic {
         };
       })(),
       isAdmin: this.isAdmin, goAdmin: () => { this.go('admin'); this.loadAdminStats(); }, refreshAdmin: () => this.loadAdminStats(),
-      showAsUserRow: this.isAdminReal, asUser: this.asUser,
-      asUserLabel: this.asUser ? 'กลับเป็นแอดมิน' : 'ดูแบบผู้ใช้ทั่วไป',
-      asUserNote: this.asUser ? 'สิทธิ์แอดมินปิดอยู่ — เห็นเหมือนผู้ใช้จริง' : 'ปิดสิทธิ์แอดมินชั่วคราว ไว้ทดสอบ paywall',
-      toggleAsUser: () => this.toggleAsUser(),
       ...(() => {
         const n = this.legacyImgCount(), tn = this.thumbMissingCount();
         return {
@@ -6490,9 +6502,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14s',
+      appVersion: '2026.08.14w',
       ...(() => {
-        this._appVer = '2026.08.14s';
+        this._appVer = '2026.08.14w';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
