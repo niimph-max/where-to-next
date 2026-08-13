@@ -59,9 +59,8 @@
         setInterval(function () { reg.update().catch(function () {}); }, 60 * 60 * 1000);
       }).catch(function () {});
       // มีบิลด์ใหม่ → ไม่รีโหลดทับงานที่กำลังพิมพ์ ให้ผู้ใช้กดเอง
-      var shown = false;
       navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (shown) return; shown = true;
+        if (window.__wtnUpdBanner) return; window.__wtnUpdBanner = true;
         var b = document.createElement('div');
         b.setAttribute('style', 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:9999;display:flex;align-items:center;gap:10px;background:#2b241f;color:#f6efe2;font:600 14.5px Anuphan,system-ui,sans-serif;padding:11px 12px 11px 16px;border-radius:14px;box-shadow:0 10px 30px rgba(43,36,32,.35);max-width:calc(100vw - 32px)');
         b.innerHTML = '<span>มีเวอร์ชันใหม่พร้อมใช้</span>';
@@ -700,29 +699,6 @@
               <sc-if value="{{ ciFormClosed }}" hint-placeholder-val="{{ true }}">
                 <button onClick="{{ toggleCiForm }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16.5px 'Anuphan';border-radius:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>เช็คอินตรงนี้</button>
               </sc-if>
-              <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
-                <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
-                  <sc-if value="{{ ciGeoLocating }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#8a7d6f"><span style="width:15px;height:15px;border:2px solid #d8ccb8;border-top-color:#c05f39;border-radius:50%;flex:none;animation:wtnSpin .8s linear infinite"></span>กำลังหาตำแหน่ง GPS…</div></sc-if>
-                  <sc-if value="{{ ciGeoOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#edf6ee;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#2f7d47"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2f7d47" stroke-width="2.2" style="flex:none"><path d="M20 6L9 17l-5-5"></path></svg>ได้ตำแหน่งแล้ว {{ ciAccText }}· จะปักหมุดบนแผนที่ให้</div></sc-if>
-                  <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 13.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 13px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
-                  <div style="display:flex;flex-direction:column;gap:6px">
-                    <div style="font:600 13.5px 'Anuphan';color:#8a7d6f">วันและเวลาที่เกิดขึ้นจริง</div>
-                    <input type="datetime-local" value="{{ ciWhenVal }}" onInput="{{ setCiWhen }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15.5px 'Anuphan';color:#2b241f;outline:none">
-                    <sc-if value="{{ ciHasPhotoMeta }}" hint-placeholder-val="{{ false }}"><div style="font:600 12.5px 'Anuphan';color:#6f8f6a">ดึงจากข้อมูลในรูป · {{ ciFromPhoto }}</div></sc-if>
-                  </div>
-                  <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 16px 'Anuphan';color:#2b241f;outline:none">
-                  <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
-                  <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
-                  <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
-                  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
-                    <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
-                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
-                    </sc-for>
-                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="position:relative;width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ ciAddPhotos }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label></sc-if>
-                  </div>
-                  <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
-                </div>
-              </sc-if>
             </div>
           </div>
         </div>
@@ -1155,7 +1131,7 @@
                     <sc-if value="{{ mo.mine }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px;flex:none"><button onClick="{{ mo.edit }}" style="border:none;background:transparent;color:#8a7d6f;font:600 13px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ mo.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></span></sc-if>
                   </div>
                   <sc-if value="{{ mo.viewMode }}" hint-placeholder-val="{{ true }}">
-                    <sc-if value="{{ mo.hasText }}" hint-placeholder-val="{{ true }}"><p style="font:500 17px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;margin:11px 0 0;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere">{{ mo.text }}</p></sc-if>
+                    <sc-if value="{{ mo.hasText }}" hint-placeholder-val="{{ true }}"><p style="font:500 17px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;margin:11px 0 0;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere"><sc-for list="{{ mo.textParts }}" as="tp" hint-placeholder-count="1"><sc-if value="{{ tp.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tp.href }}" target="_blank" rel="noopener noreferrer" style="color:#c05f39;text-decoration:underline;text-underline-offset:2px">{{ tp.t }}</a></sc-if><sc-if value="{{ tp.plain }}" hint-placeholder-val="{{ true }}">{{ tp.t }}</sc-if></sc-for></p></sc-if>
                     <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" loading="lazy" decoding="async" style="height:220px;min-width:96px;background:#efe4d3;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover;cursor:pointer"></sc-for></div></sc-if>
                     <sc-if value="{{ mo.clipShowCard }}" hint-placeholder-val="{{ false }}">
                       <div onClick="{{ mo.clipOpen }}" style="margin-top:12px;border-radius:14px;overflow:hidden;background:#2b241f;cursor:pointer">
@@ -1900,6 +1876,39 @@
     </div>
 
     <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
+        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+          <button onClick="{{ toggleCiForm }}" title="ปิด" style="width:38px;height:38px;flex:none;border:none;background:#efe4d3;color:#2b241f;border-radius:50%;cursor:pointer;font:700 16px 'Anuphan';display:flex;align-items:center;justify-content:center">✕</button>
+          <div style="font:400 19px 'Chonburi',serif;color:#2b241f">บันทึกโมเมนต์</div>
+        </div>
+        <div class="wtn-s" style="flex:1;min-height:0;overflow-y:auto;padding:14px 16px 26px">
+                <div data-ci-form="1" style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                  <sc-if value="{{ ciGeoLocating }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#8a7d6f"><span style="width:15px;height:15px;border:2px solid #d8ccb8;border-top-color:#c05f39;border-radius:50%;flex:none;animation:wtnSpin .8s linear infinite"></span>กำลังหาตำแหน่ง GPS…</div></sc-if>
+                  <sc-if value="{{ ciGeoOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#edf6ee;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#2f7d47"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2f7d47" stroke-width="2.2" style="flex:none"><path d="M20 6L9 17l-5-5"></path></svg>ได้ตำแหน่งแล้ว {{ ciAccText }}· จะปักหมุดบนแผนที่ให้</div></sc-if>
+                  <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 13.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 13px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="font:600 13.5px 'Anuphan';color:#8a7d6f">วันและเวลาที่เกิดขึ้นจริง</div>
+                    <input type="datetime-local" value="{{ ciWhenVal }}" onInput="{{ setCiWhen }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15.5px 'Anuphan';color:#2b241f;outline:none">
+                    <sc-if value="{{ ciHasPhotoMeta }}" hint-placeholder-val="{{ false }}"><div style="font:600 12.5px 'Anuphan';color:#6f8f6a">ดึงจากข้อมูลในรูป · {{ ciFromPhoto }}</div></sc-if>
+                  </div>
+                  <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 16px 'Anuphan';color:#2b241f;outline:none">
+                  <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
+                  <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
+                  <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
+                  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+                    <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
+                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
+                    </sc-for>
+                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="position:relative;width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ ciAddPhotos }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label></sc-if>
+                  </div>
+                  <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
+                </div>
+        </div>
+      </div>
+    </sc-if>
+
+      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" style="position:absolute;right:18px;bottom:146px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>บันทึก</button>
       <button onClick="{{ goAskAi }}" style="position:absolute;right:18px;bottom:84px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
@@ -2101,7 +2110,30 @@ class Component extends DCLogic {
     try { await be.phoneVerify(code); } catch (e) { this.setState({ authBusy: false, authErr: this.authErrMsg(e) }); }
   }
   onFirebaseUser(u) {
-    if (!u) return; // ยังไม่ล็อกอิน — ปล่อยตามเดิม (logout จัดการ local เอง)
+    if (!u) {
+      // เคยล็อกอินไว้ แต่เซสชันหาย/หมดอายุ → เดิมแอปจะเงียบสนิท ซิงก์ไม่ทำงานตลอดกาล
+      // ตอนนี้บอกให้เห็น + กด "ซิงก์เดี๋ยวนี้" เข้าระบบใหม่ได้ทันที
+      const a = this.acct;
+      if (a && (a.uid || a.email)) {
+        this._synced = false;
+        // ลองต่ออายุเงียบๆ ก่อน — ถ้าแค่ access token หมดอายุ กู้เองได้ ไม่ต้องรบกวนผู้ใช้
+        if (!this._refreshTried) {
+          this._refreshTried = true;
+          const be = window.WTNBackend;
+          const sb = be && be._sb;
+          if (sb && sb.auth && sb.auth.refreshSession) {
+            sb.auth.refreshSession().then(r => {
+              const u = r && r.data && r.data.session && r.data.session.user;
+              if (u) { be._uid = u.id; this.setState({ cloud: 'idle', cloudErr: '' }); this.onFirebaseUser({ uid: u.id, email: u.email || '', displayName: (u.user_metadata && (u.user_metadata.name || u.user_metadata.full_name)) || '', providerData: [{ providerId: (u.app_metadata && u.app_metadata.provider) || 'password' }] }); }
+              else this.setState({ cloud: 'error', cloudErr: 'เซสชันหมดอายุ — ไปที่ ฉัน แล้วกด "ซิงก์เดี๋ยวนี้" เพื่อเข้าสู่ระบบอีกครั้ง' });
+            }).catch(() => this.setState({ cloud: 'error', cloudErr: 'เซสชันหมดอายุ — ไปที่ ฉัน แล้วกด "ซิงก์เดี๋ยวนี้" เพื่อเข้าสู่ระบบอีกครั้ง' }));
+            return;
+          }
+        }
+        this.setState({ cloud: 'error', cloudErr: 'เซสชันหมดอายุ — ไปที่ ฉัน แล้วกด "ซิงก์เดี๋ยวนี้" เพื่อเข้าสู่ระบบอีกครั้ง' });
+      }
+      return; // ยังไม่ล็อกอิน — ปล่อยตามเดิม (logout จัดการ local เอง)
+    }
     const pid = (u.providerData && u.providerData[0] && u.providerData[0].providerId) || 'password';
     const prov = pid.indexOf('google') >= 0 ? 'google' : pid.indexOf('facebook') >= 0 ? 'facebook' : pid.indexOf('phone') >= 0 ? 'phone' : 'email';
     const name = u.displayName || (u.email ? u.email.split('@')[0] : 'Nim');
@@ -3608,6 +3640,7 @@ class Component extends DCLogic {
     const located = pos.lat != null;
     if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
     this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '' });
+    if (this._ciFromFab) { this._ciFromFab = false; if (this.state.screen !== 'map') this.go('map'); }  // บันทึกแล้วพาไปดูที่ที่มันไปอยู่
     this.showToast(ei != null
       ? '✓ บันทึกการแก้ไขแล้ว'
       : (located
@@ -5826,16 +5859,56 @@ class Component extends DCLogic {
     }
     const list = [...urls].filter(u => !tmap[u]);
     if (!list.length) return;
+    const saveMap = () => { try { localStorage.setItem('wtn-thumb-map', JSON.stringify(tmap)); } catch (e) {} };
     for (let i = 0; i < list.length; i++) {
-      const im = await this.loadImgForCanvas(list[i]);
-      if (!im) continue;
-      const tb = await this.makeThumbBlob(im);
-      if (!tb) continue;
-      const t = await be.uploadThumbFor(list[i], tb);
-      if (t) tmap[list[i]] = 1;
+      // รูปที่โหลด/ย่อ/อัปไม่ผ่าน (ถูกลบไปแล้ว ไฟล์เสีย ฯลฯ) ต้องทำเครื่องหมายไว้ด้วย
+      // ไม่งั้นกล่อง "ดูแลรูปภาพ" จะเด้งกลับมาให้กดซ้ำไม่รู้จบ
+      try {
+        const im = await this.loadImgForCanvas(list[i]);
+        const tb = im ? await this.makeThumbBlob(im) : null;
+        const t = tb ? await be.uploadThumbFor(list[i], tb) : null;
+        tmap[list[i]] = t ? 1 : 'x';
+      } catch (e) { tmap[list[i]] = 'x'; }
+      saveMap();                                     // บันทึกทีละรูป — หลุดกลางทางก็ไม่เสียของเดิม
       this.setState({ rehostPct: Math.round((i + 1) / list.length * 100) });
     }
-    try { localStorage.setItem('wtn-thumb-map', JSON.stringify(tmap)); } catch (e) {}
+    saveMap();
+    this._thumbN = undefined;
+  }
+  // แยกข้อความเป็นชิ้นๆ เพื่อให้ URL กดออกไปได้จริง (template hole เรนเดอร์ได้แค่ text)
+  _linkify(s) {
+    const out = [];
+    const re = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/g;
+    let last = 0, m;
+    while ((m = re.exec(s || '')) !== null) {
+      if (m.index > last) out.push({ t: s.slice(last, m.index), plain: true, isLink: false });
+      let u = m[0], tail = '';
+      const tm = u.match(/[.,;:!?)\]}]+$/);            // เครื่องหมายวรรคตอนท้ายลิงก์ ไม่ใช่ส่วนของ URL
+      if (tm) { tail = tm[0]; u = u.slice(0, -tail.length); }
+      out.push({ t: u, href: /^www\./i.test(u) ? 'https://' + u : u, isLink: true, plain: false });
+      if (tail) out.push({ t: tail, plain: true, isLink: false });
+      last = m.index + m[0].length;
+    }
+    if (last < (s || '').length) out.push({ t: s.slice(last), plain: true, isLink: false });
+    return out.length ? out : [{ t: s || '', plain: true, isLink: false }];
+  }
+  // เลื่อนหน้าจอไปที่ฟอร์มเช็คอิน (ห้ามใช้ scrollIntoView — งัดเลย์เอาต์ทั้งแอป)
+  revealCiForm() {
+    let n = 0;
+    const tick = () => {
+      const el = document.querySelector('[data-ci-form]');
+      if (!el) { if (n++ < 40) requestAnimationFrame(tick); return; }
+      let sc = el.parentElement;
+      while (sc && sc !== document.body) {
+        const ov = getComputedStyle(sc).overflowY;
+        if ((ov === 'auto' || ov === 'scroll') && sc.scrollHeight > sc.clientHeight + 4) break;
+        sc = sc.parentElement;
+      }
+      if (!sc || sc === document.body) { window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 12); return; }
+      const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop;
+      try { sc.scrollTo({ top: Math.max(0, top - 12), behavior: 'smooth' }); } catch (e) { sc.scrollTop = Math.max(0, top - 12); }
+    };
+    requestAnimationFrame(tick);
   }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
@@ -6509,9 +6582,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.15a',
+      appVersion: '2026.08.15i',
       ...(() => {
-        this._appVer = '2026.08.15a';
+        this._appVer = '2026.08.15i';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
@@ -6885,8 +6958,14 @@ class Component extends DCLogic {
         pubColor: c.published ? '#c05f39' : '#8a7d6f',
         pubLabel: c.published ? 'อยู่บนโมเมนต์' : 'เผยแพร่เป็นโมเมนต์',
         share: () => this.shareMoment({ text: c.note || '', place: c.name || '', id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' }),
-        del: () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
+        del: () => { if (!confirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้')) return; const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
         edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
+      goCheckIn: () => {
+        this._ciFromFab = true;
+        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null,
+          ciGeoStatus: 'locating', ciAcc: null, ciAt: this.dayTs(this.state.day || 0), ciAmt: '', ciCat: null, ciFromPhoto: '' });
+        this.grabCiPos();
+      },
       ciEmpty: (this.checkins[this.ciKey] || []).length === 0,
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
@@ -7143,7 +7222,7 @@ class Component extends DCLogic {
             id: m.id, author: m.authorName || 'nimjourney', time: this.timeAgo(m.at),
             dateStr, timeStr,
             avatar: av, hasAvatar: !!av, noAvatar: !av,
-            text: _body, hasText: !!_body.trim(),
+            text: _body, hasText: !!_body.trim(), textParts: this._linkify(_body),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
             hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
             photos: (() => { const srcs = (m.photos || []).map(p => this.px(p)), ts = (m.photos || []).map(p => this.pxT(p));
@@ -7155,7 +7234,7 @@ class Component extends DCLogic {
             mine: !!m.mine,
             editingThis: meId === m.id, viewMode: meId !== m.id,
             edit: () => this.editMoment(m),
-            del: () => this.deleteMoment(m.id) };
+            del: () => { if (confirm('ลบโมเมนต์นี้? ข้อความและรูปในโมเมนต์นี้จะหายไป กู้คืนไม่ได้')) this.deleteMoment(m.id); } };
         });
         let momentList = momentFeed;
         if (calDay) momentList = momentList.filter(x => x._dk === calDay);
