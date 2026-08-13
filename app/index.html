@@ -36,6 +36,17 @@
 <script>
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', function () {
+      // แอปอยู่ที่ /app/ — ถอน service worker เก่าที่ scope กว้างกว่า (เช่น / จากโครงเดิม)
+      // ไม่งั้นตัวเก่าจะดักหน้าเราแล้วเสิร์ฟบิลด์เดิมจากแคชค้างไปเรื่อยๆ
+      try {
+        var here = new URL('./', location.href).pathname;
+        if (here !== '/') navigator.serviceWorker.getRegistrations().then(function (rs) {
+          rs.forEach(function (r) {
+            var sp = new URL(r.scope).pathname;
+            if (sp !== here && here.indexOf(sp) === 0) r.unregister().catch(function () {});
+          });
+        }).catch(function () {});
+      } catch (e) {}
       navigator.serviceWorker.register('sw.js').then(function (reg) {
         // เจอบิลด์ใหม่ → ให้ตัวใหม่ทำงานทันที รอบเปิดถัดไปได้ของล่าสุด
         reg.addEventListener('updatefound', function () {
@@ -6498,9 +6509,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14z',
+      appVersion: '2026.08.15a',
       ...(() => {
-        this._appVer = '2026.08.14z';
+        this._appVer = '2026.08.15a';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
