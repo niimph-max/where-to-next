@@ -1965,7 +1965,7 @@
 
     </div>
 
-    <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
+    <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
       <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
         <div style="flex:none;display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
@@ -7091,9 +7091,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16i',
+      appVersion: '2026.08.16j',
       ...(() => {
-        this._appVer = '2026.08.16i';
+        this._appVer = '2026.08.16j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
@@ -7467,6 +7467,7 @@ class Component extends DCLogic {
       goMap: () => this.go('map'),
       goAskAi: () => this.go('askAi'), sAskAi: sc === 'askAi',
       days: this.days, sMap: sc === 'map',
+      ciSheetHost: sc === 'trip' || sc === 'map',   // ชีตเช็คอินต้องโผล่ทั้งหน้าทริปและหน้าแผนที่
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
       ciDays: this.days.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
         style: (i === active
