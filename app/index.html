@@ -317,7 +317,12 @@
       <sc-if value="{{ sSupport }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:18px 20px 34px">
           <div style="font-family:'Chonburi',serif;font-size:23px;color:#2b241f;margin-bottom:6px">ติดต่อเรา</div>
-          <div style="font:500 14px/1.65 'Anuphan';color:#8a7d6f;margin-bottom:18px">เจอปัญหา อยากได้ฟีเจอร์ หรือเรื่องการจ่ายเงิน — เขียนมาได้เลย เราตอบกลับทางอีเมลภายใน 1–2 วัน</div>
+          <div style="font:500 14px/1.65 'Anuphan';color:#8a7d6f;margin-bottom:14px">เจอปัญหา อยากได้ฟีเจอร์ หรือเรื่องการจ่ายเงิน — เขียนมาได้เลย เราตอบกลับทางอีเมลภายใน 1–2 วัน</div>
+          <a href="https://www.facebook.com/ourvela" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:11px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px;margin-bottom:18px;text-decoration:none">
+            <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="#c05f39"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.19 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.75 8.44-4.92 8.44-9.94z"></path></svg></span>
+            <span style="flex:1;min-width:0"><span style="display:block;font:600 15px 'Anuphan';color:#2b241f">เพจ Facebook ของ Vela</span><span style="display:block;font:500 12.5px 'Anuphan';color:#8a7d6f">ข่าวฟีเจอร์ใหม่ ทริกการใช้งาน และทักแชทได้</span></span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+          </a>
           <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:9px">เรื่องอะไร</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
             <sc-for list="{{ supKinds }}" as="k" hint-placeholder-count="5"><button onClick="{{ k.on }}" style="{{ k.style }}">{{ k.name }}</button></sc-for>
@@ -6582,9 +6587,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.15i',
+      appVersion: '2026.08.15j',
       ...(() => {
-        this._appVer = '2026.08.15i';
+        this._appVer = '2026.08.15j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
