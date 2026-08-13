@@ -46,6 +46,7 @@ if ('serviceWorker' in navigator) {
       <nav style="display:flex;gap:22px;margin-left:auto;font-weight:600;font-size:14.5px;color:#6c5f4f">
         <a href="#how" style="color:inherit">วิธีใช้</a>
         <a href="#features" style="color:inherit">ฟีเจอร์</a>
+        <a href="#book" style="color:inherit">ทำเป็นเล่ม</a>
         <a href="#pricing" style="color:inherit">ราคา</a>
         <a href="#faq" style="color:inherit">คำถาม</a>
       </nav>
@@ -262,6 +263,26 @@ if ('serviceWorker' in navigator) {
     </div>
   </section>
 
+
+  <section id="book" style="padding:clamp(38px,6vw,80px) clamp(20px,5vw,48px);background:linear-gradient(165deg,#2b241f,#3b2e24)">
+    <div style="max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(28px,4vw,54px);align-items:center">
+      <div>
+        <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#e9b48a">หลังกลับถึงบ้าน</span>
+        <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(25px,3.6vw,40px);line-height:1.28;margin:8px 0 14px;color:#f6efe2;text-wrap:pretty">ทริปที่เพิ่งจบ กลายเป็นหนังสือของคุณ</h2>
+        <p style="font-size:16px;line-height:1.78;color:#c9b79b;margin:0 0 22px;max-width:460px;text-wrap:pretty">รูปกับบันทึกที่เก็บไว้ระหว่างทาง Vela จัดหน้าให้เองเป็นเล่มจริง มีปก สารบัญ แผนที่เส้นทาง และสรุปค่าใช้จ่าย เปิดอ่านแบบพลิกหน้าได้ในแอป หรือบันทึกเป็น PDF เก็บไว้</p>
+        <div style="display:grid;gap:11px;font-size:15.5px;color:#e6dbc9;margin-bottom:26px">
+          <span style="display:flex;gap:10px"><b style="color:#e9b48a;font-weight:600;flex:none">โฟโต้บุ๊ก</b>เล่มแนวนอน รูปเป็นตัวเล่าเรื่อง ไม่ต้องเขียนอะไรเพิ่ม</span>
+          <span style="display:flex;gap:10px"><b style="color:#e9b48a;font-weight:600;flex:none">อีบุ๊ก</b>เล่มตั้ง เอาเรื่องเล่าแต่ละวันมาเรียงเป็นตอน</span>
+        </div>
+        <a href="{{ appUrl }}" style="display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#c05f39;color:#fff;font-weight:700;font-size:16.5px;padding:15px 30px;border-radius:16px">เริ่มเก็บทริปแรก</a>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,26px);align-items:flex-end;justify-content:center;flex-wrap:wrap">
+        <div style="flex:none;width:300px;position:relative;aspect-ratio:210/148;border-radius:2px 7px 7px 2px;overflow:hidden;box-shadow:0 26px 44px -14px rgba(0,0,0,.6),0 5px 12px rgba(0,0,0,.35)"><img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.48),rgba(20,16,13,0) 34%,rgba(20,16,13,.1) 56%,rgba(20,16,13,.92))"></div><div style="position:absolute;left:0;top:0;bottom:0;width:13px;background:linear-gradient(90deg,rgba(20,16,13,.55),rgba(20,16,13,.12) 60%,rgba(255,255,255,.14))"></div><div style="position:absolute;right:0;top:4px;bottom:4px;width:6px;background:repeating-linear-gradient(180deg,#fffaf0 0 2px,#d9cdb8 2px 4px)"></div><div style="position:absolute;left:19px;top:15px;display:flex;align-items:center;gap:5px;font:600 8.5px 'Anuphan';letter-spacing:2px;color:rgba(246,239,226,.9)"><i style="width:5px;height:5px;border-radius:50%;background:#e9b48a;display:block"></i>VELA</div><div style="position:absolute;left:19px;right:15px;bottom:17px;color:#fffaf0"><div style="font:600 8.5px 'Anuphan';letter-spacing:1.7px;color:#e9b48a;margin-bottom:6px">อัลมาตี · 2569</div><div style="font-family:'Chonburi',serif;font-size:25px;line-height:1.22">คาซัคสถาน</div><div style="width:20px;height:1.8px;background:#c05f39;margin:8px 0"></div><div style="font:500 10px 'Anuphan';color:rgba(246,239,226,.8)">บันทึกโดย Nim</div></div></div>
+        <div style="flex:none;width:190px;position:relative;aspect-ratio:148/210;border-radius:2px 7px 7px 2px;overflow:hidden;box-shadow:0 26px 44px -14px rgba(0,0,0,.6),0 5px 12px rgba(0,0,0,.35)"><img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.48),rgba(20,16,13,0) 34%,rgba(20,16,13,.1) 56%,rgba(20,16,13,.92))"></div><div style="position:absolute;left:0;top:0;bottom:0;width:13px;background:linear-gradient(90deg,rgba(20,16,13,.55),rgba(20,16,13,.12) 60%,rgba(255,255,255,.14))"></div><div style="position:absolute;right:0;top:4px;bottom:4px;width:6px;background:repeating-linear-gradient(180deg,#fffaf0 0 2px,#d9cdb8 2px 4px)"></div><div style="position:absolute;left:19px;top:15px;display:flex;align-items:center;gap:5px;font:600 8.5px 'Anuphan';letter-spacing:2px;color:rgba(246,239,226,.9)"><i style="width:5px;height:5px;border-radius:50%;background:#e9b48a;display:block"></i>VELA</div><div style="position:absolute;left:19px;right:15px;bottom:17px;color:#fffaf0"><div style="font:600 8.5px 'Anuphan';letter-spacing:1.7px;color:#e9b48a;margin-bottom:6px">อัลมาตี · 2569</div><div style="font-family:'Chonburi',serif;font-size:20px;line-height:1.22">คาซัคสถาน<br>11 วัน</div><div style="width:20px;height:1.8px;background:#c05f39;margin:8px 0"></div><div style="font:500 10px 'Anuphan';color:rgba(246,239,226,.8)">บันทึกโดย Nim</div></div></div>
+      </div>
+    </div>
+  </section>
+
   <sc-if value="{{ showPricing }}" hint-placeholder-val="{{ true }}">
   <section id="pricing" style="padding:clamp(38px,6vw,80px) clamp(20px,5vw,48px);background:#f1e7d4">
     <div style="max-width:900px;margin:0 auto">
@@ -279,6 +300,7 @@ if ('serviceWorker' in navigator) {
             <span>แผนรายวัน · ที่พัก · งบทริป</span>
             <span>เช็คอิน รูป คลิป โน้ต</span>
             <span>เรื่องเล่า &amp; แกลเลอรี</span>
+            <span>รีแคปวิดีโอสรุปทริป</span>
             <span>ใช้ออฟไลน์ · ล็อกอินแล้วสำรองแผนไว้ไม่ให้หาย</span>
             <span style="color:#a1927c">รูปเก็บในเครื่องนี้ · ไม่ได้สำรองขึ้นคลาวด์</span>
           </div>
@@ -295,7 +317,7 @@ if ('serviceWorker' in navigator) {
             <span>AI แยกโปรแกรมทัวร์เป็นแผนรายวัน</span>
             <span>AI ช่วยร่างแผนวัน &amp; ตอบระหว่างเที่ยว</span>
             <span>AI เรียบเรียงเรื่องเล่าจากโมเมนต์</span>
-            <span>รีแคปวิดีโอ &amp; ทำอีบุ๊กจากทริป</span>
+            <span>รวมเป็นอีบุ๊ก &amp; โฟโต้บุ๊ก · เปิดอ่านแบบพลิกหน้า</span>
             <span>สำรองรูปขึ้นคลาวด์ &amp; ซิงก์สดข้ามเครื่อง</span>
             <span style="color:#a1907a">AI ใช้ได้ 60 ครั้ง/แพ็ก (รายปี 100 ครั้ง/เดือน)</span>
           </div>
@@ -371,6 +393,7 @@ if ('serviceWorker' in navigator) {
       <div style="display:flex;align-items:center;gap:10px"><img src="logo.png" alt="Vela" width="30" height="30" style="width:30px;height:30px;display:block"><div><div style="font-family:'Chonburi',serif;font-size:17px">Vela</div><div style="font-size:13px;color:#8a7d6f">ทริปหน้าไปไหน</div></div></div>
       <div style="display:flex;flex-wrap:wrap;gap:18px;margin-left:auto;font-size:14px;font-weight:500;color:#6c5f4f">
         <a href="#features" style="color:inherit">ฟีเจอร์</a>
+        <a href="#book" style="color:inherit">ทำเป็นเล่ม</a>
         <a href="#pricing" style="color:inherit">ราคา</a>
         <a href="#faq" style="color:inherit">คำถาม</a>
         <a href="mailto:admin@onevela.net" style="color:inherit">ติดต่อ</a>
