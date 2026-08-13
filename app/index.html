@@ -873,7 +873,9 @@
                   <div style="padding:14px 18px 16px;color:#f6efe2"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center"><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapDays }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">วันที่บันทึก</div></div><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapCis }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">เช็คอิน</div></div><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapPhotoCount }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">รูป</div></div></div></div>
                 </div>
                 <button onClick="{{ exportRecap }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg>{{ exportRecapLabel }}</button>
-                <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:18px">คลิปแนวนอน 1280×720 · เล่นจากเช็คอิน+รูปจริงตามเส้นทาง · เซฟลงเครื่องแล้วอัปขึ้น YouTube ได้เลย</div>
+                <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">คลิปแนวนอน 1280×720 · เล่นจากเช็คอิน+รูปจริงตามเส้นทาง · เซฟลงเครื่องแล้วอัปขึ้น YouTube ได้เลย</div>
+                <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
+                <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin:9px 0 18px">เล่มแนวนอนจากรูปทั้งทริป — มีแค่หัวข้อวัน ไม่ต้องเขียนอะไรเพิ่ม</div>
               </sc-if>
               <sc-if value="{{ recapEmpty }}" hint-placeholder-val="{{ true }}">
                 <div style="text-align:center;padding:34px 24px 22px">
@@ -1741,7 +1743,7 @@
             </div>
           </div>
           </sc-if>
-          <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabRecap }}" style="{{ pStyleRecap }}">รีแคป</button></div></div>
+          <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button></div></div>
           <sc-if value="{{ pTrips }}" hint-placeholder-val="{{ true }}">
             <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีทริป<br>สร้างหรือโหลดโปรแกรมทัวร์ที่แท็บ "แผนของฉัน"</div></sc-if>
             <div style="padding:16px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:13px">
@@ -1756,6 +1758,82 @@
               <sc-for list="{{ profileStories }}" as="st" hint-placeholder-count="3">
                 <div onClick="{{ st.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ st.photo }}" alt="" style="width:104px;height:88px;object-fit:cover;flex:none;display:block"><div style="flex:1;padding:11px 12px 11px;min-width:0"><div style="font:500 13px 'Anuphan';color:#c05f39;margin-bottom:3px">{{ st.place }}</div><div style="font:600 15.5px/1.35 'Anuphan';color:#2b241f">{{ st.title }}</div></div></div>
               </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pBooks }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ noShelf }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:38px 24px;text-align:center">
+                <div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M4 5.5A1.5 1.5 0 015.5 4H10v16H5.5A1.5 1.5 0 014 18.5z"/><path d="M14 4h4.5A1.5 1.5 0 0120 5.5v13a1.5 1.5 0 01-1.5 1.5H14z"/></svg></div>
+                <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีเล่มไหนพร้อม</div>
+                <div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เช็คอินหรือเขียนบันทึกในทริปไว้ก่อน<br>แล้วเล่มจะมาโผล่ที่ชั้นนี้เอง</div>
+              </div>
+            </sc-if>
+            <div style="padding:6px 20px 34px">
+              <sc-if value="{{ hasShelfPb }}" hint-placeholder-val="{{ false }}">
+                <div style="padding-top:14px">
+                  <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">โฟโต้บุ๊ก</div>
+                  <div style="font:500 13px 'Anuphan';color:#a1927c;margin-top:3px;margin-bottom:16px">{{ shelfPbNote }}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 12px;align-items:start">
+                    <sc-for list="{{ shelfPb }}" as="b" hint-placeholder-count="3">
+                      <div>
+                        <sc-if value="{{ b.isBook }}" hint-placeholder-val="{{ false }}">
+                          <div onClick="{{ b.open }}" style="position:relative;width:100%;aspect-ratio:210/148;border-radius:1px 4px 4px 1px;overflow:hidden;cursor:pointer;box-shadow:0 7px 16px -5px rgba(43,36,32,.5),0 1px 4px rgba(43,36,32,.28)">
+                            <img src="{{ b.cover }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+                            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.44),rgba(20,16,13,0) 36%,rgba(20,16,13,.1) 58%,rgba(20,16,13,.9))"></div>
+                            <div style="position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(90deg,rgba(20,16,13,.55),rgba(20,16,13,.12) 60%,rgba(255,255,255,.14))"></div>
+                            <div style="position:absolute;right:0;top:2px;bottom:2px;width:3px;background:repeating-linear-gradient(180deg,#fffaf0 0 1.5px,#d9cdb8 1.5px 3px)"></div>
+                            <div style="position:absolute;left:10px;right:8px;bottom:8px;color:#fffaf0">
+                              <div style="font:600 5px 'Anuphan';letter-spacing:1.2px;color:#e9b48a;margin-bottom:3px">{{ b.sub }}</div>
+                              <div style="font-family:'Chonburi',serif;font-size:10px;line-height:1.22">{{ b.title }}</div>
+                              <div style="width:11px;height:1.2px;background:#c05f39;margin:4px 0"></div>
+                              <div style="font:500 5.5px 'Anuphan';color:rgba(246,239,226,.78)">{{ b.when }}</div>
+                            </div>
+                          </div>
+                          <div style="font:600 12.5px 'Anuphan';color:#2b241f;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.title }}</div>
+                          <div style="font:500 11px 'Anuphan';color:#a1927c;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.meta }}</div>
+                          <button onClick="{{ b.card }}" style="width:100%;min-height:44px;margin-top:8px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:transparent;color:#6f6455;font:600 12.5px 'Anuphan';cursor:pointer">การ์ด</button>
+                        </sc-if>
+                        <sc-if value="{{ b.isGhost }}" hint-placeholder-val="{{ true }}">
+                          <div style="width:100%;aspect-ratio:210/148;border-radius:1px 4px 4px 1px;border:1.5px dashed rgba(43,36,32,.16);background:rgba(43,36,32,.025)"></div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ hasShelfEb }}" hint-placeholder-val="{{ false }}">
+                <div style="padding-top:30px;margin-top:10px;border-top:1px solid rgba(43,36,32,.09)">
+                  <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">หนังสือ</div>
+                  <div style="font:500 13px 'Anuphan';color:#a1927c;margin-top:3px;margin-bottom:16px">{{ shelfEbNote }}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 12px;align-items:start">
+                    <sc-for list="{{ shelfEb }}" as="b" hint-placeholder-count="3">
+                      <div>
+                        <sc-if value="{{ b.isBook }}" hint-placeholder-val="{{ false }}">
+                          <div onClick="{{ b.open }}" style="position:relative;width:100%;aspect-ratio:148/210;border-radius:1px 4px 4px 1px;overflow:hidden;cursor:pointer;box-shadow:0 7px 16px -5px rgba(43,36,32,.5),0 1px 4px rgba(43,36,32,.28)">
+                            <img src="{{ b.cover }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+                            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.5),rgba(20,16,13,0) 34%,rgba(20,16,13,.1) 56%,rgba(20,16,13,.92))"></div>
+                            <div style="position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(90deg,rgba(20,16,13,.55),rgba(20,16,13,.12) 60%,rgba(255,255,255,.14))"></div>
+                            <div style="position:absolute;right:0;top:2px;bottom:2px;width:3px;background:repeating-linear-gradient(180deg,#fffaf0 0 1.5px,#d9cdb8 1.5px 3px)"></div>
+                            <div style="position:absolute;left:9px;right:7px;bottom:9px;color:#fffaf0">
+                              <div style="font:600 5px 'Anuphan';letter-spacing:1.2px;color:#e9b48a;margin-bottom:3px">{{ b.sub }}</div>
+                              <div style="font-family:'Chonburi',serif;font-size:11px;line-height:1.24">{{ b.l1 }}</div>
+                              <div style="font-family:'Chonburi',serif;font-size:11px;line-height:1.24">{{ b.l2 }}</div>
+                              <div style="width:11px;height:1.2px;background:#c05f39;margin:5px 0"></div>
+                              <div style="font:500 5.5px 'Anuphan';color:rgba(246,239,226,.78)">{{ b.when }}</div>
+                            </div>
+                          </div>
+                          <div style="font:600 12.5px 'Anuphan';color:#2b241f;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.title }}</div>
+                          <div style="font:500 11px 'Anuphan';color:#a1927c;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.meta }}</div>
+                          <button onClick="{{ b.card }}" style="width:100%;min-height:44px;margin-top:8px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:transparent;color:#6f6455;font:600 12.5px 'Anuphan';cursor:pointer">การ์ด</button>
+                        </sc-if>
+                        <sc-if value="{{ b.isGhost }}" hint-placeholder-val="{{ true }}">
+                          <div style="width:100%;aspect-ratio:148/210;border-radius:1px 4px 4px 1px;border:1.5px dashed rgba(43,36,32,.16);background:rgba(43,36,32,.025)"></div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
             </div>
           </sc-if>
           <sc-if value="{{ pRecap }}" hint-placeholder-val="{{ false }}">
@@ -2011,6 +2089,30 @@
         <a href="{{ ebUrl }}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;text-decoration:none">เปิดเล่ม</a>
       </sc-if>
       <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มจะเปิดในแท็บใหม่ · กด "บันทึกเป็น PDF" ในหน้านั้น</div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ pbOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,16,13,.55);display:flex;align-items:flex-end;justify-content:center;z-index:60">
+    <div style="width:100%;max-width:402px;background:#f6efe2;border-radius:22px 22px 0 0;padding:20px 20px 26px;max-height:88%;overflow:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div>
+        <button onClick="{{ closePbook }}" style="min-width:44px;min-height:44px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ปิด</button>
+      </div>
+      <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px">{{ pbSummary }}</div>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
+      <photo-pick id="{{ pbCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:130px;border-radius:14px;margin-bottom:18px"></photo-pick>
+      <sc-if value="{{ pbBusy }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:4px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ pbBarStyle }}"></div></div>
+        <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ pbBusyLabel }}</div></div>
+      </sc-if>
+      <sc-if value="{{ pbIdle }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
+      </sc-if>
+      <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
+        <a href="{{ pbUrl }}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;text-decoration:none">เปิดเล่ม</a>
+      </sc-if>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>เปิดในแท็บใหม่ แล้วกด "บันทึกเป็น PDF"</div>
     </div>
   </div>
 </sc-if>
@@ -5377,8 +5479,15 @@ class Component extends DCLogic {
     } catch (e) { return 'วันที่ ' + (i + 1); }
   }
   // เล่มผูกกับทริปของเรื่องเล่าที่เปิดอยู่ ไม่ใช่ทริปที่เลือกค้างไว้ในแอป
-  ebStory() { return this.openStory || this.tripStoryExisting || null; }
+  ebStory() {
+    if (this._ebTripOverride) {                                  // เปิดเล่มจากชั้นหนังสือ: ผูกกับทริปนั้น ไม่ใช่ทริปที่เลือกค้างไว้
+      const s = (this.stories || []).find(x => x.tripId === this._ebTripOverride);
+      return s ? this.normStory(s) : null;
+    }
+    return this.openStory || this.tripStoryExisting || null;
+  }
   ebTripId() {
+    if (this._ebTripOverride) return this._ebTripOverride;
     const s = this.ebStory();
     return (s && s.tripId) || this.state.trip;
   }
@@ -5717,7 +5826,248 @@ class Component extends DCLogic {
       '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
       '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5</span></div>' +
-      out.join('') + '</body></html>';
+      out.join('') + this._bookViewer(false, 'eb-' + (D.tripId || D.title)) + '</body></html>';
+  }
+  // ── โฟโต้บุ๊ก (แนวนอน) — รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน ไม่มีคำบรรยาย ──
+  pbShotCount(trip) {
+    const ci = this.checkins || {}, cmap = this.ebChapterMap();
+    const byDay = {};
+    Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
+      const i = +k.split(':')[1];
+      (ci[k] || []).forEach(c => { byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).length); });
+    });
+    Object.keys(cmap.byDay).forEach(k => {
+      const ch = cmap.byDay[k];
+      byDay[+k] = (byDay[+k] || 0) + (ch.cover ? 1 : 0) + ((ch.photos || []).length);
+    });
+    return byDay;
+  }
+  pbEstimate(trip) {
+    const byDay = this.pbShotCount(trip);
+    const ks = Object.keys(byDay).filter(k => byDay[k] > 0);
+    let pages = 2, li = 0;                                   // ปก + หน้าปิดเล่ม
+    ks.forEach(k => {
+      let rest = byDay[k] - 1;                               // รูปแรกเป็นหน้าเปิดวัน
+      pages++;
+      while (rest > 0) { const t = rest === 1 ? 1 : rest === 2 ? 2 : rest === 3 ? 3 : [4, 3, 2][li++ % 3]; rest -= t; pages++; }
+    });
+    return { days: ks.length, photos: ks.reduce((s, k) => s + byDay[k], 0), pages };
+  }
+  async pbGather() {
+    const trip = this.ebTripId();
+    const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
+    const ci = this.checkins || {}, cmap = this.ebChapterMap();
+    const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
+    const days = [];
+    for (let i = 0; i < n; i++) {
+      const list = ci[trip + ':' + i] || [], ch = cmap.byDay[i], shots = [];
+      if (ch) { const cv = await this.resolvePhoto(ch.cover || ''); if (cv) shots.push(cv); }
+      for (const c of list) {
+        for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); if (r) shots.push(r); }
+      }
+      if (ch) { for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); if (r && shots.indexOf(r) < 0) shots.push(r); } }
+      if (!shots.length) continue;
+      const places = [];
+      list.forEach(c => { const nm = (c.name || '').trim(); if (nm && places.indexOf(nm) < 0) places.push(nm); });
+      days.push({ n: i + 1, label: this.ebDayLabel(i), title: (ch && ch.title) || places[0] || 'วันใหม่', places, shots });
+      this.setState({ pbPct: 8 + Math.round((i + 1) / n * 58) });
+    }
+    const cover = await this.resolvePhoto(this.coverOf('wtn-pb-cover-' + trip, '') || this.coverOf('wtn-eb-cover-' + trip, '') || this.coverOf('wtn-cover-' + trip, '') || '')
+      || (days[0] && days[0].shots[0]) || '';
+    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + 543) || ''; } catch (e) { return ''; } })();
+    const ttl = (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
+    return { title: ttl,
+      sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
+      when: this.fmtRange(t.start, t.end) || '', author: this.profile.name || 'นักเดินทาง',
+      cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0) };
+  }
+  pbHtml(D) {
+    const E = s => this._esc(s);
+    const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const page = i => '<section class="pg">' + i + '</section>';
+    const dayKick = d => d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'วันที่ ' + d.n;
+    const out = [];
+    out.push(page((D.cover ? '<img class="bleed" src="' + E(D.cover) + '">' : '<div class="bleed" style="background:linear-gradient(150deg,#8f7b62,#5b4c3d 55%,#2b241f)"></div>') +
+      '<div class="scrim"></div><div class="brand"><i></i>VELA</div>' +
+      '<div class="cov"><div class="k">' + E(D.sub) + '</div><h1>' + E(D.title) + '</h1><div class="rule"></div>' +
+      '<div class="by">' + E(D.when) + (D.author ? ' &nbsp;·&nbsp; ' + E(D.author) : '') + '</div></div>'));
+    let li = 0;
+    D.days.forEach(d => {
+      const rest = d.shots.slice(), hero = rest.shift();
+      const ttl = String(d.title || '').replace(/^\s*วันที่\s*\d+\s*[·:\-]\s*/, '').trim() || d.title;
+      out.push(page('<img class="bleed" src="' + E(hero) + '"><div class="scrim"></div>' +
+        '<div class="op"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>'));
+      const cap = '<div class="cap"><span>' + dayKick(d) + '</span><span>' + E(d.places.slice(0, 2).join('  ·  ')) + '</span></div>';
+      while (rest.length) {
+        const take = rest.length === 1 ? 1 : rest.length === 2 ? 2 : rest.length === 3 ? 3 : [4, 3, 2][li++ % 3];
+        const cls = take === 1 ? 'one' : take === 2 ? 'two' : take === 3 ? 'big3' : 'four';
+        const imgs = rest.splice(0, take).map((u, i) => '<img' + (cls === 'big3' && i === 0 ? ' class="a"' : '') + ' src="' + E(u) + '">').join('');
+        out.push(page('<div class="sheet"><div class="g ' + cls + '">' + imgs + '</div>' + cap + '</div>'));
+      }
+    });
+    out.push(page('<div class="end"><div class="endq">' + D.days.length + ' วัน · ' + D.photos + ' รูป</div>' +
+      '<div class="rule c"></div><div class="endn">ถ่ายไว้ระหว่างทาง แล้วรวมเป็นเล่มนี้เมื่อกลับถึงบ้าน</div>' +
+      '<div class="brand dark"><i></i>VELA</div><div class="endn sm">ทำจากแอป ทริปหน้าไปไหน · onevela.net</div></div>'));
+    return '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(D.title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '@page{size:210mm 148mm;margin:0}' +
+      '*{box-sizing:border-box}' +
+      'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.pg{width:210mm;height:148mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
+      '.pg:last-child{margin-bottom:0}' +
+      '.bleed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}' +
+      '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.42),rgba(20,16,13,0) 38%,rgba(20,16,13,.1) 58%,rgba(20,16,13,.88))}' +
+      '.brand{position:absolute;left:12mm;top:10mm;display:flex;align-items:center;gap:2mm;font-weight:600;font-size:8.5pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
+      '.brand i{width:2mm;height:2mm;border-radius:50%;background:#e9b48a}' +
+      '.brand.dark{position:static;color:#8a7d6f;justify-content:center;margin:6mm 0 2mm}.brand.dark i{background:#c05f39}' +
+      '.cov{position:absolute;left:12mm;right:12mm;bottom:13mm;color:#fffaf0}' +
+      '.cov .k{font-weight:600;font-size:8.5pt;letter-spacing:2px;color:#e9b48a;margin-bottom:3mm}' +
+      '.cov h1{font-family:' + C + ';font-size:30pt;line-height:1.2;margin:0;font-weight:400;max-width:150mm}' +
+      '.cov .by{font-size:10pt;color:rgba(246,239,226,.78);margin-top:2.5mm}' +
+      '.rule{width:14mm;height:.7mm;background:#c05f39;margin:4mm 0}.rule.c{margin:5mm auto}' +
+      '.op{position:absolute;left:12mm;right:12mm;bottom:12mm;color:#fffaf0}' +
+      '.op .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#e9b48a;margin-bottom:2.5mm}' +
+      '.op h3{font-family:' + C + ';font-size:21pt;line-height:1.25;margin:0;font-weight:400;max-width:135mm}' +
+      '.sheet{position:absolute;inset:0;padding:9mm 9mm 8mm;display:flex;flex-direction:column}' +
+      '.g{flex:1;min-height:0;display:grid;gap:3mm;grid-auto-rows:minmax(0,1fr)}' +
+      '.g.one{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
+      '.g.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
+      '.g.big3{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}.g.big3 .a{grid-row:1/3}' +
+      '.g.four{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}' +
+      '.g img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;display:block;background:#efe4d3}' +
+      '.cap{flex:none;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;letter-spacing:1.1px;color:#a99e8e;padding-top:3mm}' +
+      '.cap span:last-child{text-align:right;color:#8a7d6f;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}' +
+      '.end{position:absolute;inset:0;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
+      '.endq{font-family:' + C + ';font-size:17pt;line-height:1.5}' +
+      '.endn{font-size:10pt;color:#6f6455;max-width:110mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:#a99e8e}' +
+      '.bar-print{position:sticky;top:0;z-index:9;display:flex;gap:8px;justify-content:center;padding:12px;background:#2b241f}' +
+      '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
+      '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
+      '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
+      '</style></head><body>' +
+      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · แนวนอน A5</span></div>' +
+      out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title)) + '</body></html>';
+  }
+  // ── โหมดอ่านแบบหนังสือ: กางหน้าคู่ พลิกหน้าได้จริง (ไม่ใช่หน้าเรียงแบบ PDF) ──
+  _bookViewer(landscape, bookKey) {
+    const PW = landscape ? 793.7 : 559.37, PH = landscape ? 559.37 : 793.7;
+    const A = "'Anuphan',sans-serif";
+    const css = 'html,body{height:100%;overflow:hidden}' +
+      '#bkstage{position:fixed;inset:0;z-index:60;background:radial-gradient(130% 95% at 50% -5%,#3e3429,#1d1813 72%);display:flex;flex-direction:column;perspective:2600px}' +
+      '#bkwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;cursor:pointer}' +
+      '#bkbook{position:relative;transform-style:preserve-3d;flex:none}' +
+      '#bkbook .slot{position:absolute;top:0;width:PWpx;height:PHpx;overflow:hidden;background:#fffaf0}' +
+      '#sl{left:0;box-shadow:-16px 16px 44px rgba(0,0,0,.5)}#sr{box-shadow:16px 16px 44px rgba(0,0,0,.5)}' +
+      '#bkbook .pg{margin:0!important;box-shadow:none!important;position:absolute;inset:0;break-after:auto;page-break-after:auto}' +
+      '#fl{position:absolute;top:0;width:PWpx;height:PHpx;transform-style:preserve-3d;transform-origin:left center;z-index:6;display:none}' +
+      '#fl.on{display:block}' +
+      '#fl .face{position:absolute;inset:0;overflow:hidden;background:#fffaf0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 14px 40px rgba(0,0,0,.4)}' +
+      '#fb{transform:rotateY(180deg)}' +
+      '#bkbar{flex:none;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 12px 15px;flex-wrap:wrap}' +
+      '#bkbar button{min-height:44px;min-width:44px;padding:0 15px;border:1px solid rgba(231,221,204,.24);border-radius:12px;background:rgba(255,255,255,.07);color:#e7ddcc;font:600 14px ' + A + ';cursor:pointer}' +
+      '#bkbar button.pr{background:#c05f39;border-color:#c05f39;color:#fff}' +
+      '#bkbar button:disabled{opacity:.3;cursor:default}' +
+      '#bkno{min-width:104px;text-align:center;color:#c9b79b;font:500 13.5px ' + A + '}' +
+      '#bksrc{display:none}' +
+      '#bkback{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:70;min-height:46px;padding:0 20px;border:none;border-radius:14px;background:#2b241f;color:#f6efe2;font:600 15px ' + A + ';cursor:pointer;box-shadow:0 8px 24px rgba(43,36,32,.4)}' +
+      '#bkpg{flex:none;height:3px;background:rgba(231,221,204,.13)}#bkpg i{display:block;height:3px;width:0;background:#c05f39;transition:width .3s ease}' +
+      'body{touch-action:manipulation;-webkit-tap-highlight-color:transparent}#bkstage{user-select:none;-webkit-user-select:none}' +
+      '@media (max-width:560px){.lb{display:none}#bkbar{gap:7px;padding:8px 10px 11px}#bkbar button{padding:0 13px}' +
+      '#bkbar button#bfl,#bkbar button#bpr{min-height:40px;padding:0 12px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
+      '@media print{#bkstage{display:none!important}#bkback{display:none!important}#bksrc{display:block!important}.bar-print{display:none}html,body{overflow:visible}}';
+    const html = '<div id="bksrc"></div>' +
+      '<div id="bkstage"><div id="bkwrap"><div id="bkbook">' +
+      '<div class="slot" id="sl"></div><div class="slot" id="sr"></div>' +
+      '<div id="fl"><div class="face" id="ff"></div><div class="face" id="fb"></div></div>' +
+      '</div></div><div id="bkbar">' +
+      '<button id="bp">&lsaquo;<span class="lb"> ก่อนหน้า</span></button><span id="bkno"></span><button id="bn"><span class="lb">ถัดไป </span>&rsaquo;</button>' +
+      '<button id="bfl">เรียงหน้า</button><button class="pr" id="bpr">บันทึกเป็น PDF</button>' +
+      '</div><div id="bkpg"><i></i></div></div><button id="bkback">กลับไปโหมดหนังสือ</button>';
+    const js = '(function(){' +
+      'var pages=[].slice.call(document.querySelectorAll("section.pg"));' +
+      'if(!pages.length)return;' +
+      'var src=document.getElementById("bksrc");pages.forEach(function(p){src.appendChild(p);});' +
+      'var bar=document.querySelector(".bar-print");if(bar)bar.style.display="none";' +
+      'var stage=document.getElementById("bkstage"),wrap=document.getElementById("bkwrap"),book=document.getElementById("bkbook"),' +
+      'sl=document.getElementById("sl"),sr=document.getElementById("sr"),fl=document.getElementById("fl"),' +
+      'ff=document.getElementById("ff"),fb=document.getElementById("fb"),bp=document.getElementById("bp"),' +
+      'bn=document.getElementById("bn"),no=document.getElementById("bkno"),back=document.getElementById("bkback");' +
+      'var PW=' + PW + ',PH=' + PH + ',spread=false,v=0,busy=false,BK=' + JSON.stringify(String(bookKey || 'book')) + ';' +
+      'function views(){return spread?Math.ceil(pages.length/2):pages.length;}' +
+      'function L(i){return spread?2*i:null;}' +
+      'function R(i){return spread?2*i+1:i;}' +
+      'function ok(i){return i!=null&&i>=0&&i<pages.length;}' +
+      'function put(el,idx){while(el.firstChild)src.appendChild(el.firstChild);if(ok(idx))el.appendChild(pages[idx]);}' +
+      'function layout(){' +
+      'var was=spread;spread=window.innerWidth>(PW*2+90)&&window.innerWidth/Math.max(1,window.innerHeight)>1.12;' +
+      'if(was!==spread){v=spread?Math.floor(v/2):v*2;if(v>views()-1)v=views()-1;if(v<0)v=0;}' +
+      'book.style.width=(spread?PW*2:PW)+"px";book.style.height=PH+"px";' +
+      'sr.style.left=(spread?PW:0)+"px";fl.style.left=(spread?PW:0)+"px";' +
+      'var k=Math.min((window.innerWidth-28)/(spread?PW*2:PW),(wrap.clientHeight-24)/PH,1.4);' +
+      'book.style.transform="scale("+k+")";return was!==spread;}' +
+      'function render(){put(sl,L(v));put(sr,R(v));fl.classList.remove("on");put(ff,null);put(fb,null);' +
+      'no.textContent=spread?((L(v)+1)+(ok(R(v))?"–"+(R(v)+1):"")+" / "+pages.length):((v+1)+" / "+pages.length);' +
+      'bp.disabled=v<=0;bn.disabled=v>=views()-1;' +
+      'var pgi=document.getElementById("bkpg").firstChild;if(pgi)pgi.style.width=((((spread?R(v):v)+1)/pages.length)*100)+"%";' +
+      'try{localStorage.setItem("wtn-book-pos:"+BK,String(spread?L(v):v));}catch(e){}}' +
+      'function anim(dir){if(busy)return;var nv=v+dir;if(nv<0||nv>views()-1)return;busy=true;' +
+      'if(!spread){' +
+      'if(dir>0){put(ff,R(v));put(sr,R(nv));}else{put(ff,R(nv));put(sr,R(v));}put(fb,null);' +
+      'fl.classList.add("on");fl.style.transition="none";ff.style.transition="none";' +
+      'ff.style.opacity=dir>0?"1":"0";fl.style.transform=dir>0?"rotateY(0deg)":"rotateY(-94deg)";' +
+      'requestAnimationFrame(function(){fl.style.transition="transform .44s cubic-bezier(.34,.12,.24,1)";ff.style.transition="opacity .44s ease";' +
+      'fl.style.transform=dir>0?"rotateY(-94deg)":"rotateY(0deg)";ff.style.opacity=dir>0?"0":"1";});' +
+      'setTimeout(function(){fl.style.transition="none";ff.style.transition="none";ff.style.opacity="1";v=nv;render();busy=false;},460);return;}' +
+      'put(ff,dir>0?R(v):R(nv));put(fb,dir>0?L(nv):L(v));' +
+      'if(dir>0){put(sl,L(v));put(sr,R(nv));}else{put(sl,L(nv));put(sr,R(v));}' +
+      'fl.classList.add("on");fl.style.transition="none";fl.style.transform=dir>0?"rotateY(0deg)":"rotateY(-180deg)";' +
+      'requestAnimationFrame(function(){fl.style.transition="transform .66s cubic-bezier(.38,.15,.2,1)";fl.style.transform=dir>0?"rotateY(-180deg)":"rotateY(0deg)";});' +
+      'setTimeout(function(){v=nv;fl.style.transition="none";render();busy=false;},690);}' +
+      'function restore(){pages.forEach(function(p){src.appendChild(p);});}' +
+      'bn.onclick=function(e){e.stopPropagation();anim(1);};bp.onclick=function(e){e.stopPropagation();anim(-1);};' +
+      'document.getElementById("bpr").onclick=function(){restore();setTimeout(function(){window.print();},80);};' +
+      'document.getElementById("bfl").onclick=function(){restore();stage.style.display="none";src.style.display="block";' +
+      'back.style.display="block";document.documentElement.style.overflow="auto";document.body.style.overflow="auto";window.scrollTo(0,0);};' +
+      'back.onclick=function(){src.style.display="none";stage.style.display="flex";back.style.display="none";' +
+      'document.documentElement.style.overflow="hidden";document.body.style.overflow="hidden";layout();render();};' +
+      'window.addEventListener("beforeprint",restore);' +
+      'window.addEventListener("afterprint",function(){if(stage.style.display!=="none")render();});' +
+      'document.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();anim(1);}else if(e.key==="ArrowLeft"){e.preventDefault();anim(-1);}});' +
+      'wrap.addEventListener("click",function(e){var r=wrap.getBoundingClientRect();anim((e.clientX-r.left)>r.width/2?1:-1);});' +
+      'var sx=null;wrap.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;},{passive:true});' +
+      'wrap.addEventListener("touchend",function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>42)anim(dx<0?1:-1);sx=null;},{passive:true});' +
+      'window.addEventListener("resize",function(){if(layout())render();});' +
+      'layout();' +
+      'try{var sp=+(localStorage.getItem("wtn-book-pos:"+BK)||0);if(sp>0&&sp<pages.length)v=spread?Math.floor(sp/2):sp;}catch(e){}' +
+      'render();' +
+      '})();';
+    return '<style>' + css.split('PWpx').join(PW + 'px').split('PHpx').join(PH + 'px') + '</style>' + html +
+      '<scr' + 'ipt>' + js + '</scr' + 'ipt>';
+  }
+  async makePhotobook() {
+    if (this._pbBusy) return;
+    this._pbBusy = true;
+    this.setState({ pbBusy: true, pbPct: 5 });
+    try {
+      const D = await this.pbGather();
+      if (!D.days.length) { this.showToast('ทริปนี้ยังไม่มีรูป'); return; }
+      this.setState({ pbPct: 88 });
+      const html = this.pbHtml(D);
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const w = window.open(url, '_blank');
+      if (!w) { this.setState({ pbUrl: url }); this.showToast('เบราว์เซอร์บล็อกหน้าต่างใหม่ — กดปุ่ม "เปิดเล่ม" อีกที'); }
+      else setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 120000);
+      this.setState({ pbPct: 100, pbOpen: !w });
+    } catch (e) {
+      console.warn('[wtn] photobook', e);
+      this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
+    } finally {
+      this._pbBusy = false;
+      this.setState({ pbBusy: false });
+    }
   }
   async makeEbook() {
     if (this._ebBusy) return;
@@ -6217,6 +6567,150 @@ class Component extends DCLogic {
     } catch (e) {}
     return fallback;
   }
+  // ── ชั้นหนังสือ: ทริปที่มีเนื้อพอทำเล่ม (อีบุ๊กปกตั้ง / โฟโต้บุ๊กปกนอน) ──
+  _shelfSplit(s) {
+    const t = String(s || '').trim();
+    if (t.length <= 12) return [t, ''];
+    const mid = Math.floor(t.length / 2);
+    let cut = -1, best = 1e9;
+    for (let i = 0; i < t.length; i++) if (t[i] === ' ' && Math.abs(i - mid) < best) { best = Math.abs(i - mid); cut = i; }
+    if (cut < 0) return [t, ''];
+    return [t.slice(0, cut).trim(), t.slice(cut + 1).trim()];
+  }
+  shelfBooks() {
+    const out = [];
+    (this.userTrips || []).forEach(t => {
+      const prev = this._ebTripOverride;
+      this._ebTripOverride = t.id;
+      let eb = null, pb = null;
+      try { eb = this.ebEstimate(t.id); pb = this.pbEstimate(t.id); } catch (e) {} finally { this._ebTripOverride = prev; }
+      const ttl = String(t.name || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
+      const yr = (() => { const y = +String(t.start || '').slice(0, 4); return y ? y + 543 : ''; })();
+      const sub = [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · ');
+      const when = this.fmtRange(t.start, t.end) || '';
+      const author = this.profile.name || 'นักเดินทาง';
+      const ls = this._shelfSplit(ttl);
+      const base = { tripId: t.id, title: ttl, l1: ls[0], l2: ls[1], sub, when, author,
+        author2: 'บันทึกโดย ' + author };
+      if (eb && eb.days > 0) out.push({ ...base, kind: 'eb', tall: true, wide: false,
+        cover: this.coverOf('wtn-eb-cover-' + t.id, '') || this.coverOf('wtn-cover-' + t.id, '') || t.cover || 'default-cover.jpg',
+        kindLabel: 'อีบุ๊ก', meta: eb.chapters + ' ตอน · ' + eb.pages + ' หน้า',
+        stats: eb.days + ' วัน · ' + eb.pages + ' หน้า · ' + eb.photos + ' รูป',
+        open: () => this.shelfOpen(t.id, 'eb'), card: () => this.makeShareCard(t.id, 'eb') });
+      if (pb && pb.days > 0 && pb.photos > 2) out.push({ ...base, kind: 'pb', tall: false, wide: true,
+        cover: this.coverOf('wtn-pb-cover-' + t.id, '') || this.coverOf('wtn-cover-' + t.id, '') || t.cover || 'default-cover.jpg',
+        kindLabel: 'โฟโต้บุ๊ก', meta: pb.photos + ' รูป · ' + pb.pages + ' หน้า',
+        stats: pb.days + ' วัน · ' + pb.pages + ' หน้า · ' + pb.photos + ' รูป',
+        open: () => this.shelfOpen(t.id, 'pb'), card: () => this.makeShareCard(t.id, 'pb') });
+    });
+    return out;
+  }
+  async shelfOpen(id, kind) {
+    this._ebTripOverride = id;
+    try { if (kind === 'pb') await this.makePhotobook(); else await this.makeEbook(); }
+    finally { this._ebTripOverride = null; }
+  }
+  // ── การ์ดโพสต์ 1080×1350: ปกเล่มตรงหน้า + คำโปรย (เอาไปลงโพสต์/ยิงแอด) ──
+  async makeShareCard(tripId, kind) {
+    if (this._scBusy) return;
+    this._scBusy = true;
+    this.setState({ scBusy: true });
+    try {
+      const b = this.shelfBooks().find(x => x.tripId === tripId && x.kind === kind);
+      if (!b) { this.showToast('ยังไม่มีเล่มนี้'); return; }
+      try { await document.fonts.ready; } catch (e) {}
+      let img = null;
+      try { img = await this.loadImgForCanvas(await this.resolvePhoto(b.cover) || b.cover); } catch (e) {}
+      const W = 1080, H = 1350, A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const cx = cv.getContext('2d');
+      const rg = cx.createRadialGradient(W / 2, 120, 40, W / 2, 120, W * 1.2);
+      rg.addColorStop(0, '#f1e7d7'); rg.addColorStop(1, '#e2d7c4');
+      cx.fillStyle = rg; cx.fillRect(0, 0, W, H);
+      const sp = (txt, x, y, gap, color, font, center) => {          // ข้อความเว้นระยะตัวอักษร
+        cx.font = font; cx.fillStyle = color;
+        const ch = Array.from(String(txt || ''));
+        const tot = ch.reduce((s, c) => s + cx.measureText(c).width + gap, 0) - gap;
+        let cur = center ? x - tot / 2 : x;
+        ch.forEach(c => { cx.fillText(c, cur, y); cur += cx.measureText(c).width + gap; });
+      };
+      cx.textBaseline = 'alphabetic'; cx.textAlign = 'left';
+      cx.beginPath(); cx.arc(W / 2 - 52, 96, 8, 0, 7); cx.fillStyle = '#c05f39'; cx.fill();
+      sp('VELA', W / 2 + 12, 103, 7, '#a1927c', '600 25px ' + A, true);
+      const tall = kind !== 'pb';
+      const bw = tall ? 470 : 690, bh = Math.round(tall ? bw * 210 / 148 : bw * 148 / 210);
+      const bx = Math.round((W - bw) / 2), by = tall ? 190 : 320;
+      cx.save();
+      cx.shadowColor = 'rgba(43,36,32,.45)'; cx.shadowBlur = 66; cx.shadowOffsetY = 30;
+      cx.fillStyle = '#2b241f'; cx.fillRect(bx, by, bw, bh);
+      cx.restore();
+      cx.save(); cx.beginPath(); cx.rect(bx, by, bw, bh); cx.clip();
+      if (img && img.width) {
+        const r = Math.max(bw / img.width, bh / img.height), dw = img.width * r, dh = img.height * r;
+        cx.drawImage(img, bx + (bw - dw) / 2, by + (bh - dh) / 2, dw, dh);
+      } else {
+        const g = cx.createLinearGradient(bx, by, bx + bw, by + bh);
+        g.addColorStop(0, '#8f7b62'); g.addColorStop(.55, '#5b4c3d'); g.addColorStop(1, '#2b241f');
+        cx.fillStyle = g; cx.fillRect(bx, by, bw, bh);
+      }
+      const sc = cx.createLinearGradient(0, by, 0, by + bh);
+      sc.addColorStop(0, 'rgba(20,16,13,.5)'); sc.addColorStop(.34, 'rgba(20,16,13,0)');
+      sc.addColorStop(.56, 'rgba(20,16,13,.1)'); sc.addColorStop(1, 'rgba(20,16,13,.92)');
+      cx.fillStyle = sc; cx.fillRect(bx, by, bw, bh);
+      const spn = cx.createLinearGradient(bx, 0, bx + 30, 0);          // สันหนังสือ
+      spn.addColorStop(0, 'rgba(20,16,13,.6)'); spn.addColorStop(.6, 'rgba(20,16,13,.12)'); spn.addColorStop(1, 'rgba(255,255,255,.14)');
+      cx.fillStyle = spn; cx.fillRect(bx, by, 30, bh);
+      cx.restore();
+      cx.fillStyle = '#f4ecdd'; cx.fillRect(bx + bw - 11, by + 6, 11, bh - 12);   // ขอบกระดาษ
+      cx.fillStyle = 'rgba(43,36,32,.16)';
+      for (let y = by + 10; y < by + bh - 10; y += 7) cx.fillRect(bx + bw - 11, y, 11, 2);
+      cx.strokeStyle = 'rgba(43,36,32,.18)'; cx.lineWidth = 2; cx.strokeRect(bx + 1, by + 1, bw - 2, bh - 2);
+      cx.beginPath(); cx.arc(bx + 46, by + 44, 6, 0, 7); cx.fillStyle = '#e9b48a'; cx.fill();
+      sp('VELA', bx + 62, by + 50, 5, 'rgba(246,239,226,.9)', '600 19px ' + A);
+      const pl = bx + 42, tsz = tall ? 52 : 46, lh = Math.round((tall ? 52 : 46) * 1.34);
+      const lines = [b.l1, b.l2].filter(Boolean);
+      const B = 42, KH = 22, KG = 15, TG = 17, RH = 5, RG = 21, AH = 25;
+      const total = KH + KG + lines.length * lh + TG + RH + RG + AH;
+      let y = by + bh - B - total;
+      const tg = cx.createLinearGradient(0, y - 40, 0, by + bh);   // ไล่เฉดใต้ปกให้ตัวหนังสืออ่านออกทุกรูป
+      tg.addColorStop(0, 'rgba(20,16,13,0)'); tg.addColorStop(.42, 'rgba(20,16,13,.6)'); tg.addColorStop(1, 'rgba(20,16,13,.92)');
+      cx.save(); cx.beginPath(); cx.rect(bx, by, bw - 11, bh); cx.clip();
+      cx.fillStyle = tg; cx.fillRect(bx, by, bw, bh); cx.restore();
+      sp(b.sub, pl, y + 20, 4, '#e9b48a', '600 21px ' + A);
+      y += KH + KG;
+      cx.font = '400 ' + tsz + 'px ' + C; cx.fillStyle = '#fffaf0';
+      lines.forEach(l => { cx.fillText(l, pl, y + Math.round(tsz * 1.02)); y += lh; });
+      y += TG;
+      cx.fillStyle = '#c05f39'; cx.fillRect(pl, y, 54, RH);
+      y += RH + RG;
+      cx.font = '500 23px ' + A; cx.fillStyle = 'rgba(246,239,226,.82)'; cx.fillText(b.author2, pl, y + 19);
+      const tag = this._shelfSplit(this.shareTagline || 'เที่ยวเสร็จ ได้ความทรงจำเป็นหนังสือ');
+      cx.textAlign = 'center';
+      cx.font = '400 60px ' + C; cx.fillStyle = '#2b241f';
+      cx.fillText(tag[0], W / 2, H - (tag[1] ? 280 : 210));
+      if (tag[1]) cx.fillText(tag[1], W / 2, H - 206);
+      cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 30, H - 172, 60, 5);
+      cx.font = '500 33px ' + A; cx.fillStyle = '#8a7d6f'; cx.fillText(b.stats, W / 2, H - 122);
+      cx.textAlign = 'left';
+      sp('ทริปหน้าไปไหน · onevela.net', W / 2, H - 70, 2, '#c05f39', '600 30px ' + A, true);
+      const blob = await new Promise(r => cv.toBlob(r, 'image/png', .95));
+      if (!blob) { this.showToast('ทำการ์ดไม่สำเร็จ'); return; }
+      const name = 'vela-' + kind + '-' + tripId + '.png';
+      const file = new File([blob], name, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: b.title }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+      setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
+      this.showToast('เซฟการ์ดลงเครื่องแล้ว');
+    } catch (e) {
+      console.warn('[wtn] sharecard', e);
+      this.showToast('ทำการ์ดไม่สำเร็จ — ลองใหม่อีกครั้ง');
+    } finally {
+      this._scBusy = false;
+      this.setState({ scBusy: false });
+    }
+  }
   get beenObj() { try { return JSON.parse(localStorage.getItem('wtn-been') || '{}'); } catch (e) { return {}; } }
   saveBeen(o) { try { localStorage.setItem('wtn-been', JSON.stringify(o)); } catch (e) {} this.scheduleCloudPush && this.scheduleCloudPush(); this.forceUpdate(); }
   toggleBeen(name) { const o = { ...this.beenObj }; if (o[name]) delete o[name]; else o[name] = 1; this.saveBeen(o); }
@@ -6587,9 +7081,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.15j',
+      appVersion: '2026.08.16g',
       ...(() => {
-        this._appVer = '2026.08.15j';
+        this._appVer = '2026.08.16g';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
@@ -6660,7 +7154,24 @@ class Component extends DCLogic {
           ebBusyLabel: pct < 26 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 80 ? 'กำลังให้ AI เกลาสำนวน…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
           ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
           ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
-          runEbook: () => this.makeEbook()
+          runEbook: () => this.makeEbook(),
+          ...(() => {
+            const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
+            return {
+              pbOpen: !!this.state.pbOpen,
+              openPbook: () => this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }),
+              closePbook: () => this.setState({ pbOpen: false }),
+              pbCoverId: 'wtn-pb-cover-' + trip,
+              pbCardNote: pe.photos ? (pe.photos + ' รูป · ' + pe.days + ' วัน — เล่มแนวนอน ประมาณ ' + pe.pages + ' หน้า') : 'ยังไม่มีรูปในทริปนี้',
+              pbSummary: pe.photos ? (pe.photos + ' รูป จาก ' + pe.days + ' วัน — จัดเป็นเล่มแนวนอนประมาณ ' + pe.pages + ' หน้า ไม่ต้องเขียนอะไรเพิ่ม')
+                                   : 'ทริปนี้ยังไม่มีรูป — เช็คอินพร้อมรูประหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม',
+              pbBusy: !!this.state.pbBusy, pbIdle: !this.state.pbBusy,
+              pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
+              pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
+              pbUrl: this.state.pbUrl || '', pbHasUrl: !!this.state.pbUrl,
+              runPbook: () => this.makePhotobook()
+            };
+          })()
         };
       })(),
       multiRef: this.multiRef,
@@ -7554,6 +8065,25 @@ class Component extends DCLogic {
       pStyleTrips: this.state.profileTab==='trips' ? pillOn : pillOff,
       pStyleStories: this.state.profileTab==='stories' ? pillOn : pillOff,
       pStyleBooks: this.state.profileTab==='books' ? pillOn : pillOff,
+      ...(() => {
+        if (this.state.profileTab !== 'books') return { shelfItems: [], noShelf: false };
+        const items = this.shelfBooks();
+        const pb0 = items.filter(x => x.kind === 'pb'), eb0 = items.filter(x => x.kind === 'eb');
+        // เรียงแถวละ 3 — ช่องที่เหลือปล่อยว่างไว้ให้เห็นว่ายังมีที่เติม
+        const pad = (arr, kind) => {
+          const n = arr.length;
+          const total = n === 0 ? 3 : (n % 3 === 0 ? n + 3 : Math.ceil(n / 3) * 3);
+          const out = arr.map(x => ({ ...x, isBook: true, isGhost: false }));
+          for (let i = n; i < total; i++) out.push({ isBook: false, isGhost: true, kind, tripId: 'ghost' + kind + i });
+          return out;
+        };
+        const pb = pad(pb0, 'pb'), eb = pad(eb0, 'eb');
+        return { shelfItems: items, noShelf: items.length === 0,
+          shelfPb: pb, shelfEb: eb, hasShelfPb: pb0.length > 0, hasShelfEb: eb0.length > 0,
+          shelfPbNote: pb0.length + ' เล่ม · รูปเป็นตัวเล่าเรื่อง',
+          shelfEbNote: eb0.length + ' เล่ม · เรื่องเล่าเป็นตัวเล่าเรื่อง',
+          shelfNote: items.length + ' เล่มจาก ' + new Set(items.map(x => x.tripId)).size + ' ทริป' };
+      })(),
       pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
       profileStories: this.stories.slice().sort((a, b) => b.at - a.at).map(s => {
         s = this.normStory(s);
