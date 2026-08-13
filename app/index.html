@@ -4545,16 +4545,8 @@ class Component extends DCLogic {
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
   }
-  async loadMoments(force) {
-    const be = window.WTNBackend;
-    if (!be || !be._uid || navigator.onLine === false) return;
-    // ฟีดสาธารณะก้อนใหญ่ — ดึงเฉพาะตอนผู้ใช้ดูจริง และไม่ถี่กว่า 5 นาที (กัน egress บาน)
-    if (!force && this._momentsAt && Date.now() - this._momentsAt < 300000) return;
-    if (this._momentsBusy) return;
-    this._momentsBusy = true;
-    try { const r = await be.moments(60); this._momentsAt = Date.now(); this.setState({ remoteMoments: r }); }
-    catch (e) { console.warn('[wtn] moments', e); }
-    finally { this._momentsBusy = false; }
+  async loadMoments() {
+    return; // โมเมนต์เป็นส่วนตัว — ปิดฟีดสาธารณะ (อ่านจากเครื่อง/ก้อนสำรองแทน)
   }
   openRemoteChapter(item) {
     const r = item.raw || {};
@@ -6506,9 +6498,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14y',
+      appVersion: '2026.08.14z',
       ...(() => {
-        this._appVer = '2026.08.14y';
+        this._appVer = '2026.08.14z';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
@@ -7204,7 +7196,7 @@ class Component extends DCLogic {
           storyCount: all.length,
           composeNew: () => this.openStoryEdit(null),
           segStories: () => this.setState({ feedSeg: 'stories' }),
-          segMoments: () => { this.setState({ feedSeg: 'moments' }); this.loadMoments(); },
+          segMoments: () => this.setState({ feedSeg: 'moments' }),
           segMedia: () => this.setState({ feedSeg: 'media' }),
           segMap: () => { this._fmapFitted = false; this.setState({ feedSeg: 'map' }); },
           segIsStories: seg === 'stories', segIsMoments: seg === 'moments', segIsMedia: seg === 'media', segIsMap: seg === 'map',
