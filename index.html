@@ -12,6 +12,16 @@
 <meta name="description" content="Vela ช่วยวางแผนทริปรายวัน จดงบ เช็คอินระหว่างเที่ยว แล้วเปลี่ยนทุกอย่างเป็นเรื่องเล่าของคุณ">
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
 <script src="image-slot.js"></script>
+<script>
+// แอปย้ายไป /app/ แล้ว — ถ้ามี service worker ตัวเก่าค้างที่ root ให้ปลดระวางทิ้ง
+// (ไม่งั้นเดสก์ท็อปจะโดนแคชเก่าเสิร์ฟแอปเวอร์ชันเดิมค้างไว้ตลอด)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (rs) {
+    var stale = rs.filter(function (r) { return new URL(r.scope).pathname === '/'; });
+    if (stale.length) navigator.serviceWorker.register('./sw.js').catch(function () {});
+  }).catch(function () {});
+}
+</script>
 <style>
   body { margin:0; background:#f6efe2; -webkit-font-smoothing:antialiased; }
   a { color:#a54e2c; text-decoration:none; }

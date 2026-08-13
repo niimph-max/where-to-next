@@ -2105,7 +2105,6 @@ class Component extends DCLogic {
       this.setTab('plan');
     } else { this.forceUpdate(); }
     this.loadFeed();
-    this.loadMoments();
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
     Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); this.loadCredits(); });
   }
@@ -2518,7 +2517,7 @@ class Component extends DCLogic {
       const payload = this._filterForPush(merged, rData);              // ตัดรูปใหญ่เฉพาะตอนส่ง (ในเครื่องยังอยู่ครบ)
       this._setBase(payload);
       this._lastSyncSig = this._sigOf(merged);
-      this.loadFeed && this.loadFeed(); this.loadMoments && this.loadMoments();
+      this.loadFeed && this.loadFeed();
       window.dispatchEvent(new Event('photopick-change'));
       if (!rData || this._sigOf(payload) !== this._sigOf(rData)) {     // คลาวด์ยังไม่ตรง → ดันขึ้น
         const at = Date.now();
@@ -2583,7 +2582,6 @@ class Component extends DCLogic {
     this._lastSyncSig = mSig;
     window.dispatchEvent(new Event('photopick-change'));
     this.loadFeed && this.loadFeed();
-    this.loadMoments && this.loadMoments();
     this.forceUpdate();
     this.setState({ cloud: 'saved' });
     if (this._sigOf(this._filterForPush(merged, bk.data)) !== this._sigOf(bk.data)) { // เรามีของที่คลาวด์ยังไม่มี → ดันกลับ (มี loop guard กันปิงปองเผาเงิน)
@@ -2680,7 +2678,7 @@ class Component extends DCLogic {
       } finally { this._applyingCloud = false; }
       this._synced = true;
       window.dispatchEvent(new Event('photopick-change'));
-      this.loadFeed && this.loadFeed(); this.loadMoments && this.loadMoments();
+      this.loadFeed && this.loadFeed();
       await this._pushRaw(this.gatherLocal());
       this.setState({ restoreBusy: false });
       this.showToast('✓ กู้คืนข้อมูลแล้ว');
@@ -2689,7 +2687,7 @@ class Component extends DCLogic {
   }
   go(screen) { this.setState(s => ({ history: [...s.history, s.screen], screen, tab: this.tabOf[screen] || s.tab })); }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
-  setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') { this.loadFeed(); this.loadMoments(); } }
+  setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') { this.loadFeed(); } }
   openTrip(id) { this.setState({ trip: id, day: id === 'yamagata' ? 2 : 0 }); this.go('trip'); }
   kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'default-cover.jpg' }; }
   loadKazakh() {
@@ -4547,10 +4545,16 @@ class Component extends DCLogic {
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
   }
-  async loadMoments() {
+  async loadMoments(force) {
     const be = window.WTNBackend;
     if (!be || !be._uid || navigator.onLine === false) return;
-    try { this.setState({ remoteMoments: await be.moments(60) }); } catch (e) { console.warn('[wtn] moments', e); }
+    // ฟีดสาธารณะก้อนใหญ่ — ดึงเฉพาะตอนผู้ใช้ดูจริง และไม่ถี่กว่า 5 นาที (กัน egress บาน)
+    if (!force && this._momentsAt && Date.now() - this._momentsAt < 300000) return;
+    if (this._momentsBusy) return;
+    this._momentsBusy = true;
+    try { const r = await be.moments(60); this._momentsAt = Date.now(); this.setState({ remoteMoments: r }); }
+    catch (e) { console.warn('[wtn] moments', e); }
+    finally { this._momentsBusy = false; }
   }
   openRemoteChapter(item) {
     const r = item.raw || {};
@@ -5112,7 +5116,7 @@ class Component extends DCLogic {
     this._onOff = () => {
       const on = navigator.onLine !== false;
       this.setState({ online: on });
-      if (on) { this.cloudPull(); this.retryPendingPush(); this.loadMoments(); }
+      if (on) { this.cloudPull(); this.retryPendingPush(); }
     };
     window.addEventListener('online', this._onOff);
     window.addEventListener('offline', this._onOff);
@@ -6502,9 +6506,9 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.14x',
+      appVersion: '2026.08.14y',
       ...(() => {
-        this._appVer = '2026.08.14x';
+        this._appVer = '2026.08.14y';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
         const kName = k => (kinds.find(x => x[0] === k) || ['', k])[1];
         const cur = this.state.supKind || 'bug';
