@@ -1958,6 +1958,7 @@
           </button>
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
           <div style="text-align:center;font:500 13px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
+          <div style="text-align:center;font:500 12.5px/1.6 'Anuphan';color:#c3b8a6;margin-top:4px">{{ egLine }}</div>
         </div>
       </sc-if>
 
@@ -2129,6 +2130,17 @@
       <a href="{{ bvUrl }}" target="_blank" rel="noopener" style="flex:none;display:flex;align-items:center;min-height:40px;padding:0 15px;border-radius:20px;background:#c05f39;color:#fff;font:600 14px 'Anuphan';text-decoration:none">บันทึก PDF</a>
     </div>
     <iframe id="wtn-book-frame" src="{{ bvUrl }}" title="เล่ม" style="flex:1;min-height:0;width:100%;border:none;background:#141310;display:block"></iframe>
+  </div>
+</sc-if>
+<sc-if value="{{ cfOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ cfCancel }}" style="position:fixed;inset:0;z-index:9700;background:rgba(20,16,13,.55);display:flex;align-items:center;justify-content:center;padding:22px">
+    <div style="width:100%;max-width:340px;background:#f6efe2;border-radius:20px;padding:22px 20px 18px">
+      <div style="font:500 15.5px/1.7 'Anuphan';color:#2b241f;margin-bottom:18px;text-wrap:pretty">{{ cfMsg }}</div>
+      <div style="display:flex;gap:10px">
+        <button onClick="{{ cfCancel }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#5c5347;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">ยกเลิก</button>
+        <button onClick="{{ cfOk }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">{{ cfOkLabel }}</button>
+      </div>
+    </div>
   </div>
 </sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
@@ -2449,6 +2461,7 @@ class Component extends DCLogic {
       });
       try { localStorage.setItem('wtn-img-map', JSON.stringify(map)); } catch (e) {}
     } finally { this._applyingCloud = false; }
+    this.dedupeCheckins();
     window.dispatchEvent(new Event('photopick-change'));
     this.forceUpdate();
   }
@@ -2485,7 +2498,7 @@ class Component extends DCLogic {
     try {
       const ids = [];
       const all = this.checkins;
-      Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c && c.mid) ids.push(c.mid); }));
+      Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c && c.mid && c.published) ids.push(c.mid); }));   // เฉพาะเช็คอินที่ยัง "เผยแพร่" — ที่ถูกลบไปแล้วต้องคงคำสั่งลบไว้
       this._dropTombs(ids);
     } catch (e) {}
   }
@@ -2606,14 +2619,44 @@ class Component extends DCLogic {
     catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }   // เต็ม → ทิ้งสำเนาบนดิสก์ ใช้ในแรมพอ
   }
   // ประตูเดียวที่โหลด blob เต็มตอน push — ถ้าเพิ่งโหลดไปไม่ถึง 2 นาที ใช้สำเนาในแรมแทน (กัน egress ระเบิด)
+  // ── ตัวคุม egress: นับปริมาณข้อมูลที่คุยกับคลาวด์ + เพดานต่อวัน (เก็บนอกคีย์ wtn- เพื่อไม่ให้ถูกซิงก์) ──
+  _egRead() {
+    let o = {};
+    try { o = JSON.parse(localStorage.getItem('vela-egress')) || {}; } catch (e) {}
+    const d = new Date().toISOString().slice(0, 10), m = d.slice(0, 7);
+    if (o.d !== d) { o.d = d; o.pulls = 0; o.pushes = 0; o.bytes = 0; }
+    if (o.m !== m) { o.m = m; o.mBytes = 0; }
+    return o;
+  }
+  _egBump(kind, bytes) {
+    const o = this._egRead();
+    if (kind === 'pull') o.pulls = (o.pulls || 0) + 1;
+    if (kind === 'push') o.pushes = (o.pushes || 0) + 1;
+    o.bytes = (o.bytes || 0) + (bytes || 0);
+    o.mBytes = (o.mBytes || 0) + (bytes || 0);
+    try { localStorage.setItem('vela-egress', JSON.stringify(o)); } catch (e) {}
+    return o;
+  }
+  EG_PULLS_DAY = 30;          // ดึงก้อนเต็มได้กี่ครั้ง/วัน
+  EG_PUSHES_DAY = 60;         // ดันขึ้นได้กี่ครั้ง/วัน
+  EG_BYTES_DAY = 120e6;       // เพดานข้อมูลรวม/วัน (~120 MB)
+  egCapped(kind) {
+    const o = this._egRead();
+    if ((o.bytes || 0) >= this.EG_BYTES_DAY) return true;
+    if (kind === 'pull') return (o.pulls || 0) >= this.EG_PULLS_DAY;
+    if (kind === 'push') return (o.pushes || 0) >= this.EG_PUSHES_DAY;
+    return false;
+  }
   async _pullBlobGated() {
     const be = window.WTNBackend;
     const cached = this._getBase();
     const gap = Date.now() - (this._lastFullPull || 0);
     if (cached && gap < 120000) return { data: cached, _at: Number(localStorage.getItem('wtn-cloud-at') || 0) };
+    if (cached && this.egCapped('pull')) return { data: cached, _at: Number(localStorage.getItem('wtn-cloud-at') || 0) };   // ชนเพดานวันนี้ — ใช้สำเนาในเครื่อง
     const bk = await be.pullBackup();
     this._lastFullPull = Date.now();
     this._pullN = (this._pullN || 0) + 1;
+    try { this._egBump('pull', JSON.stringify(bk || {}).length); } catch (e) { this._egBump('pull', 0); }
     if (bk && bk.data) this._baseMem = bk.data;
     return bk;
   }
@@ -2642,11 +2685,13 @@ class Component extends DCLogic {
       toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       Object.keys(map).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, map[k]); } catch (e) {} });
     } finally { this._applyingCloud = false; }
+    this.dedupeCheckins();
   }
   async _pushRaw(data) {
     const be = window.WTNBackend; if (!be || !be._uid) return;
     const at = Date.now();
     await be.pushBackup({ _app: 'where-to-next', _at: at, data });
+    try { this._egBump('push', JSON.stringify(data || {}).length); } catch (e) { this._egBump('push', 0); }
     this._setBase(data);
     try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
     this._lastSyncSig = this._sigOf(data); this._synced = true;
@@ -2662,6 +2707,12 @@ class Component extends DCLogic {
       return;
     }
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; }
+    if (this.egCapped('push')) {                                        // ชนเพดานข้อมูลของวันนี้ — พักไว้ก่อน ค่อยดันพรุ่งนี้
+      this._pendingPush = true;
+      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      this.setState({ cloud: 'idle' });
+      return;
+    }
     if (this._pushing) { this._pushAgain = true; return; }
     this._pushing = true; this._pendingPush = false;
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
@@ -2726,6 +2777,7 @@ class Component extends DCLogic {
         this._setBase(bk.data);
       } finally { this._applyingCloud = false; }
       this._lastSyncSig = this._sigOf(bk.data); this._synced = true;
+      this.dedupeCheckins();
       window.dispatchEvent(new Event('photopick-change'));
       this.forceUpdate();
       this.setState({ restoreBusy: false });
@@ -2842,6 +2894,7 @@ class Component extends DCLogic {
         Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
       } finally { this._applyingCloud = false; }
       this._synced = true;
+      this.dedupeCheckins();
       window.dispatchEvent(new Event('photopick-change'));
       this.loadFeed && this.loadFeed();
       await this._pushRaw(this.gatherLocal());
@@ -3621,7 +3674,23 @@ class Component extends DCLogic {
     try { return JSON.parse(localStorage.getItem('wtn-checkins')) || {}; } catch (e) { return {}; }
   }
   saveCheckins(o) {
-    try { const prev = this.checkins || {}; Object.keys(o || {}).forEach(k => { o[k] = this._stampChanged(prev[k], o[k], 'mid'); }); } catch (e) {}
+    o = o || {};
+    try {
+      // 1) ตัดตัวซ้ำ: mid เดียวกันโผล่หลายวัน — เหลือใบที่แก้ล่าสุด
+      const best = {};
+      Object.keys(o).forEach(k => (o[k] || []).forEach(c => {
+        if (!c || !c.mid) return;
+        const b = best[c.mid];
+        if (!b || (c._m || 0) > (b._m || 0)) best[c.mid] = c;
+      }));
+      Object.keys(o).forEach(k => { o[k] = (o[k] || []).filter(c => !c || !c.mid || best[c.mid] === c); });
+      // 2) ประทับเวลาแก้/ใบสั่งลบ คิดรวมทุกวันครั้งเดียว (ย้ายวัน ≠ ลบ)
+      const prev = this.checkins || {};
+      const flat = m => [].concat(...Object.keys(m || {}).map(k => (m || {})[k] || []));
+      const stamped = this._stampChanged(flat(prev), flat(o), 'mid');
+      const byMid = {}; stamped.forEach(c => { if (c && c.mid) byMid[c.mid] = c; });
+      Object.keys(o).forEach(k => { o[k] = (o[k] || []).map(c => (c && c.mid && byMid[c.mid]) ? byMid[c.mid] : c); });
+    } catch (e) {}
     try { localStorage.setItem('wtn-checkins', JSON.stringify(o)); }
     catch (e) { this.rescueSave('wtn-checkins', o, '(เช็คอิน)'); }
   }
@@ -4649,7 +4718,7 @@ class Component extends DCLogic {
     try {
       if (force) { try { localStorage.removeItem('wtn-tombs'); } catch (e) {} this._mTombs = {}; }
       this._sweepCiTombs();   // เช็คอินที่ยังอยู่ = ยกเลิกใบสั่งลบของโมเมนต์คู่มันเสมอ
-      const all = this.checkins, have = {};
+      const all = this.checkins, have = {}, tomb = this._tombs();
       this.moments.forEach(m => { have[m.id] = 1; });
       const add = [];
       Object.keys(all).forEach(k => {
@@ -4657,7 +4726,7 @@ class Component extends DCLogic {
         const t = this.userTrips.find(x => x.id === tripId) || (tripId === 'kazakh' ? this.kzSeed() : {});
         const place = [t.country, t.city].filter(Boolean).join(' · ');
         (all[k] || []).forEach(c => {
-          if (!c || !c.published || !c.mid || have[c.mid]) return;
+          if (!c || !c.published || !c.mid || have[c.mid] || tomb[c.mid]) return;   // มีใบสั่งลบอยู่ = ห้ามสร้างคืน
           have[c.mid] = 1;
           add.push({ id: c.mid, type: 'checkin', text: [c.name, c.note].filter(Boolean).join(' · '), place,
             photos: (c.photos || []).slice(0, 10), tripId, lat: c.lat, lng: c.lng,
@@ -4672,12 +4741,18 @@ class Component extends DCLogic {
       return add.length;
     } catch (e) { return 0; }
   }
+  askConfirm(msg, fn, okLabel) { this.setState({ cfMsg: msg, cfFn: fn, cfOkLabel: okLabel || 'ลบ' }); }
   deleteMoment(id) {
-    this.saveMoments(this.moments.filter(x => x.id !== id));
-    const all = this.checkins; let touched = false;
+    this._addTombs([id]);                  // ออกใบสั่งลบถาวร กันคลาวด์ดันกลับมา
+    if (this._mTombs) this._mTombs[id] = Date.now();
+    const all = this.checkins; let touched = false;    // ปลดเช็คอินคู่ก่อน ไม่งั้นรอบวาดถัดไปจะสร้างโมเมนต์ขึ้นใหม่ทันที
     Object.keys(all).forEach(k => (all[k] || []).forEach(c => { if (c.mid === id) { c.published = false; touched = true; } }));
     if (touched) this.saveCheckins(all);
+    this.saveMoments(this.moments.filter(x => x.id !== id));
     this.setState({ remoteMoments: (this.state.remoteMoments || []).filter(x => x.id !== id) });
+    const be = window.WTNBackend;
+    if (be && be._uid && be.deleteMoment) be.deleteMoment(id).catch(() => {});
+    this.scheduleCloudPush();
   }
   editMoment(m) { this.setState({ momentEdit: m.id, meText: m.text || '', meCat: (m.cat != null ? m.cat : 0), meAt: m.at || Date.now(), mePhotos: [...(m.photos || [])] }); }
   // เพิ่มรูปตอนแก้ไขโมเมนต์ (ย่อรูปเหมือนตอนโพสต์)
@@ -5271,6 +5346,8 @@ class Component extends DCLogic {
       if (this.state.tab && this.state.tab !== 'plan') { this.setTab('plan'); return true; }
       return false;   // อยู่หน้าแรกแล้ว → ให้แอปย่อลง
     };
+    this.dedupeCheckins();
+    setTimeout(() => this.dedupeCheckins(), 4000);   // เผื่อคลาวด์คืนข้อมูลมาหลังเปิดแอป
     this.rebuildCiMoments();
     this.initA2HS();
     try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); } catch (e) {}
@@ -5552,6 +5629,7 @@ class Component extends DCLogic {
   }
   // เช็คอินเก่าอาจถูกเก็บผิดวัน (บั๊กก่อน v16m) — จัดเข้าวันตามเวลาที่บันทึกไว้ แล้วเรียงตามเวลา
   healCheckinDays(tripId) {
+    this.dedupeCheckins();
     const t = (this.userTrips || []).find(x => x.id === tripId) || this.curTripRec() || {};
     if (!tripId || !t.start) return 0;
     const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
@@ -5583,6 +5661,28 @@ class Component extends DCLogic {
     });
     this.saveCheckins(all);
     return moved;
+  }
+  // เช็คอินตัวเดียวกัน (mid ซ้ำ) โผล่สองวัน — เกิดตอนย้ายวันแล้วคลาวด์ดันสำเนาเก่ากลับมา
+  dedupeCheckins() {
+    try {
+      const all = this.checkins, best = {}; let dup = 0;
+      Object.keys(all).forEach(k => (all[k] || []).forEach(c => {
+        if (!c || !c.mid) return;
+        const b = best[c.mid];
+        if (!b || (c._m || 0) > (b._m || 0)) best[c.mid] = c;    // เก็บตัวที่แก้ล่าสุด
+      }));
+      Object.keys(all).forEach(k => {
+        all[k] = (all[k] || []).filter(c => {
+          if (!c || !c.mid) return true;
+          if (best[c.mid] === c) return true;
+          dup++; return false;
+        });
+      });
+      if (!dup) return 0;
+      this.saveCheckins(all);
+      this._dropTombs(Object.keys(best).filter(mid => best[mid].published));   // ตัวที่ยังเผยแพร่อยู่ ห้ามค้างใบสั่งลบ
+      return dup;
+    } catch (e) { return 0; }
   }
   async ebGather() {
     const trip = this.ebTripId();
@@ -6564,6 +6664,7 @@ class Component extends DCLogic {
         });
       } finally { this._applyingCloud = false; }
       this._imgOkCache = {};
+      this.dedupeCheckins();
       window.dispatchEvent(new Event('photopick-change'));
       this.forceUpdate();
       try { this.cloudPush && this.cloudPush(); } catch (e) {}
@@ -7137,7 +7238,7 @@ class Component extends DCLogic {
       ...(() => {
         const n = this.legacyImgCount(), tn = this.thumbMissingCount();
         return {
-          hasLegacyImgs: (n > 0 || tn > 0) && !!(window.WTNBackend && window.WTNBackend._uid),
+          hasLegacyImgs: (n > 0 || tn > 0) && !!(window.WTNBackend && window.WTNBackend._uid) && this.isAdmin,   // เครื่องมือดูแลข้อมูล — โชว์แค่แอดมิน ผู้ใช้ทั่วไปไม่ต้องเห็น
           legacyImgNote: n > 0
             ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
             : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก'),
@@ -7241,7 +7342,12 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16t',
+      appVersion: '2026.08.16za',
+      egLine: (() => {
+        const o = this._egRead();
+        const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
+        return 'ข้อมูลคลาวด์ · วันนี้ ' + mb(o.bytes || 0) + ' (' + ((o.pulls || 0) + (o.pushes || 0)) + ' ครั้ง) · เดือนนี้ ' + mb(o.mBytes || 0);
+      })(),
       ...(() => {
         this._appVer = '2026.08.16j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
@@ -7637,7 +7743,7 @@ class Component extends DCLogic {
         pubColor: c.published ? '#c05f39' : '#8a7d6f',
         pubLabel: c.published ? 'อยู่บนโมเมนต์' : 'เผยแพร่เป็นโมเมนต์',
         share: () => this.shareMoment({ text: c.note || '', place: c.name || '', id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' }),
-        del: () => { if (!confirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้')) return; const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); },
+        del: () => this.askConfirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้', () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); }),
         edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       goCheckIn: () => {
         this._ciFromFab = true;
@@ -7659,6 +7765,9 @@ class Component extends DCLogic {
       retryCiGeo: () => this.grabCiPos(),
       recenterMe: () => this.recenterMe(),
       toast: this.state.toast || '', hasToast: !!this.state.toast,
+      cfOpen: !!this.state.cfMsg, cfMsg: this.state.cfMsg || '', cfOkLabel: this.state.cfOkLabel || 'ลบ',
+      cfCancel: () => this.setState({ cfMsg: '', cfFn: null }),
+      cfOk: () => { const fn = this.state.cfFn; this.setState({ cfMsg: '', cfFn: null }); if (typeof fn === 'function') fn(); },
       bvOpen: !!this.state.bvUrl, bvUrl: this.state.bvUrl || '', bvTitle: this.state.bvTitle || 'เล่ม',
       closeBook: () => this.setState({ bvUrl: '' }),
       lbOpen: !!(this.state.lbList && this.state.lbList.length),
@@ -7915,7 +8024,7 @@ class Component extends DCLogic {
             mine: !!m.mine,
             editingThis: meId === m.id, viewMode: meId !== m.id,
             edit: () => this.editMoment(m),
-            del: () => { if (confirm('ลบโมเมนต์นี้? ข้อความและรูปในโมเมนต์นี้จะหายไป กู้คืนไม่ได้')) this.deleteMoment(m.id); } };
+            del: () => this.askConfirm('ลบโมเมนต์นี้? ข้อความและรูปในโมเมนต์นี้จะหายไป กู้คืนไม่ได้', () => this.deleteMoment(m.id)) };
         });
         let momentList = momentFeed;
         if (calDay) momentList = momentList.filter(x => x._dk === calDay);
