@@ -2091,9 +2091,9 @@
         <button onClick="{{ runEbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:18px">สร้างเล่ม</button>
       </sc-if>
       <sc-if value="{{ ebHasUrl }}" hint-placeholder-val="{{ false }}">
-        <a href="{{ ebUrl }}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;text-decoration:none">เปิดเล่ม</a>
+        <button onClick="{{ showEbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มจะเปิดในแท็บใหม่ · กด "บันทึกเป็น PDF" ในหน้านั้น</div>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">อ่านเล่มได้ในแอปเลย · อยากได้ไฟล์ กด "บันทึก PDF" มุมขวาบน</div>
     </div>
   </div>
 </sc-if>
@@ -2115,10 +2115,20 @@
         <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
       </sc-if>
       <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
-        <a href="{{ pbUrl }}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;text-decoration:none">เปิดเล่ม</a>
+        <button onClick="{{ showPbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>เปิดในแท็บใหม่ แล้วกด "บันทึกเป็น PDF"</div>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>อ่านในแอปได้เลย · กด "บันทึก PDF" ถ้าอยากได้ไฟล์</div>
     </div>
+  </div>
+</sc-if>
+<sc-if value="{{ bvOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:9900;background:#141310;display:flex;flex-direction:column">
+    <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 10px 8px">
+      <button onClick="{{ closeBook }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:rgba(246,239,226,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bvTitle }}</span>
+      <a href="{{ bvUrl }}" target="_blank" rel="noopener" style="flex:none;display:flex;align-items:center;min-height:40px;padding:0 15px;border-radius:20px;background:#c05f39;color:#fff;font:600 14px 'Anuphan';text-decoration:none">บันทึก PDF</a>
+    </div>
+    <iframe id="wtn-book-frame" src="{{ bvUrl }}" title="เล่ม" style="flex:1;min-height:0;width:100%;border:none;background:#141310;display:block"></iframe>
   </div>
 </sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
@@ -6052,14 +6062,15 @@ class Component extends DCLogic {
       '.op .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#e9b48a;margin-bottom:2.5mm}' +
       '.op h3{font-family:' + C + ';font-size:21pt;line-height:1.25;margin:0;font-weight:400;max-width:135mm}' +
       '.sheet{position:absolute;inset:0;padding:9mm 9mm 8mm;display:flex;flex-direction:column}' +
-      '.g{flex:1;min-height:0;display:grid;gap:3mm;grid-auto-rows:minmax(0,1fr)}' +
+      '.g{flex:none;height:124.5mm;display:grid;gap:3mm;grid-auto-rows:minmax(0,1fr)}' +
       '.g.one{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
       '.g.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
       '.g.big3{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}.g.big3 .a{grid-row:1/3}' +
       '.g.four{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}' +
       '.g img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;object-position:center 42%;display:block;background:#efe4d3}' +
-      '.cap{flex:none;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;letter-spacing:1.1px;color:#a99e8e;padding-top:3mm}' +
-      '.cap span:last-child{text-align:right;color:#8a7d6f;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}' +
+      '.cap{flex:none;height:6.5mm;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;line-height:1.2;letter-spacing:1.1px;color:#a99e8e;padding-top:3mm}' +
+      '.cap span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}' +
+      '.cap span:last-child{text-align:right;color:#8a7d6f}' +
       '.end{position:absolute;inset:0;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
       '.endq{font-family:' + C + ';font-size:17pt;line-height:1.5}' +
       '.endn{font-size:10pt;color:#6f6455;max-width:110mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:#a99e8e}' +
@@ -6090,14 +6101,23 @@ class Component extends DCLogic {
       '#bkbar button{min-height:44px;min-width:44px;padding:0 15px;border:1px solid rgba(231,221,204,.24);border-radius:12px;background:rgba(255,255,255,.07);color:#e7ddcc;font:600 14px ' + A + ';cursor:pointer}' +
       '#bkbar button.pr{background:#c05f39;border-color:#c05f39;color:#fff}' +
       '#bkbar button:disabled{opacity:.3;cursor:default}' +
-      '#bkno{min-width:104px;text-align:center;color:#c9b79b;font:500 13.5px ' + A + '}' +
+      '#bkno{min-width:104px;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;color:#c9b79b;font:500 13.5px ' + A + ';cursor:pointer;border-radius:12px;border:1px solid rgba(231,221,204,.18);padding:0 10px}' +
+      '#bkjump{display:none;position:fixed;inset:0;z-index:80;background:rgba(16,13,10,.8);align-items:flex-end;justify-content:center}' +
+      '#bkjump .jw{width:100%;max-width:820px;max-height:78%;background:#2b241f;border-radius:18px 18px 0 0;padding:13px 13px calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}' +
+      '#bkjump .jh{display:flex;align-items:center;justify-content:space-between;color:#e7ddcc;font:600 15px ' + A + '}' +
+      '#bkjump .jx{min-width:44px;min-height:40px;border:none;background:transparent;color:#c9b79b;font:600 14px ' + A + ';cursor:pointer}' +
+      '#bkjg{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;-webkit-overflow-scrolling:touch}' +
+      '.jc{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:54px;padding:7px 9px;border:1px solid rgba(231,221,204,.2);border-radius:11px;background:rgba(255,255,255,.05);color:#e7ddcc;cursor:pointer;text-align:left;overflow:hidden;font-family:' + A + '}' +
+      '.jc b{font:700 15px ' + A + '}' +
+      '.jc i{font:500 10.5px ' + A + ';font-style:normal;color:#a99e8e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}' +
+      '.jc.on{background:#c05f39;border-color:#c05f39;color:#fff}.jc.on i{color:rgba(255,255,255,.85)}' +
       '#bksrc{display:none}' +
       '#bkback{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:70;min-height:46px;padding:0 20px;border:none;border-radius:14px;background:#2b241f;color:#f6efe2;font:600 15px ' + A + ';cursor:pointer;box-shadow:0 8px 24px rgba(43,36,32,.4)}' +
       '#bkpg{flex:none;height:3px;background:rgba(231,221,204,.13)}#bkpg i{display:block;height:3px;width:0;background:#c05f39;transition:width .3s ease}' +
       'body{touch-action:manipulation;-webkit-tap-highlight-color:transparent}#bkstage{user-select:none;-webkit-user-select:none}' +
       '@media (max-width:560px){.lb{display:none}#bkbar{gap:7px;padding:8px 10px 11px}#bkbar button{padding:0 13px}' +
       '#bkbar button#bfl,#bkbar button#bpr{min-height:40px;padding:0 12px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
-      '@media print{#bkstage{display:none!important}#bkback{display:none!important}#bksrc{display:block!important}.bar-print{display:none}html,body{overflow:visible}}';
+      '@media print{#bkstage{display:none!important}#bkjump{display:none!important}#bkback{display:none!important}#bksrc{display:block!important}.bar-print{display:none}html,body{overflow:visible}}';
     const html = '<div id="bksrc"></div>' +
       '<div id="bkstage"><div id="bkwrap"><div id="bkbook">' +
       '<div class="slot" id="sl"></div><div class="slot" id="sr"></div>' +
@@ -6105,7 +6125,9 @@ class Component extends DCLogic {
       '</div></div><div id="bkbar">' +
       '<button id="bp">&lsaquo;<span class="lb"> ก่อนหน้า</span></button><span id="bkno"></span><button id="bn"><span class="lb">ถัดไป </span>&rsaquo;</button>' +
       '<button id="bfl">เรียงหน้า</button><button class="pr" id="bpr">บันทึกเป็น PDF</button>' +
-      '</div><div id="bkpg"><i></i></div></div><button id="bkback">กลับไปโหมดหนังสือ</button>';
+      '</div><div id="bkpg"><i></i></div></div>' +
+      '<div id="bkjump"><div class="jw"><div class="jh"><span>ไปที่หน้า</span><button class="jx" id="bkjx">ปิด</button></div><div id="bkjg"></div></div></div>' +
+      '<button id="bkback">กลับไปโหมดหนังสือ</button>';
     const js = '(function(){' +
       'var pages=[].slice.call(document.querySelectorAll("section.pg"));' +
       'if(!pages.length)return;' +
@@ -6148,6 +6170,20 @@ class Component extends DCLogic {
       'setTimeout(function(){v=nv;fl.style.transition="none";render();busy=false;},690);}' +
       'function restore(){pages.forEach(function(p){src.appendChild(p);});}' +
       'bn.onclick=function(e){e.stopPropagation();anim(1);};bp.onclick=function(e){e.stopPropagation();anim(-1);};' +
+      'var jump=document.getElementById("bkjump"),jg=document.getElementById("bkjg"),jbuilt=false;' +
+      'function jlabel(p){var e=p.querySelector(".cap span");if(e&&e.textContent.trim())return e.textContent.trim();' +
+      'var h=p.querySelector(".cov h1,.op h3,.endq");return h?h.textContent.trim().slice(0,20):"";}' +
+      'function jbuild(){jbuilt=true;pages.forEach(function(p,i){var b=document.createElement("button");b.className="jc";' +
+      'var n=document.createElement("b");n.textContent=String(i+1);var l=document.createElement("i");l.textContent=jlabel(p);' +
+      'b.appendChild(n);b.appendChild(l);b.onclick=function(ev){ev.stopPropagation();jgo(i);};jg.appendChild(b);});}' +
+      'function jmark(){[].slice.call(jg.children).forEach(function(b,i){var cur=spread?(i===L(v)||i===R(v)):(i===v);b.className=cur?"jc on":"jc";' +
+      'if(cur)try{jg.scrollTop=Math.max(0,b.offsetTop-jg.clientHeight/2);}catch(e){}});}' +
+      'function jopen(){if(!jbuilt)jbuild();jmark();jump.style.display="flex";}' +
+      'function jclose(){jump.style.display="none";}' +
+      'function jgo(i){if(busy)return;v=spread?Math.floor(i/2):i;if(v>views()-1)v=views()-1;if(v<0)v=0;render();jclose();}' +
+      'no.onclick=function(e){e.stopPropagation();if(jump.style.display==="flex")jclose();else jopen();};' +
+      'document.getElementById("bkjx").onclick=function(e){e.stopPropagation();jclose();};' +
+      'jump.onclick=function(e){if(e.target===jump)jclose();};' +
       'document.getElementById("bpr").onclick=function(){restore();setTimeout(function(){window.print();},80);};' +
       'document.getElementById("bfl").onclick=function(){restore();stage.style.display="none";src.style.display="block";' +
       'back.style.display="block";document.documentElement.style.overflow="auto";document.body.style.overflow="auto";window.scrollTo(0,0);};' +
@@ -6155,7 +6191,7 @@ class Component extends DCLogic {
       'document.documentElement.style.overflow="hidden";document.body.style.overflow="hidden";layout();render();};' +
       'window.addEventListener("beforeprint",restore);' +
       'window.addEventListener("afterprint",function(){if(stage.style.display!=="none")render();});' +
-      'document.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();anim(1);}else if(e.key==="ArrowLeft"){e.preventDefault();anim(-1);}});' +
+      'document.addEventListener("keydown",function(e){if(e.key==="Escape"){jclose();return;}if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();anim(1);}else if(e.key==="ArrowLeft"){e.preventDefault();anim(-1);}});' +
       'wrap.addEventListener("click",function(e){var r=wrap.getBoundingClientRect();anim((e.clientX-r.left)>r.width/2?1:-1);});' +
       'var sx=null;wrap.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;},{passive:true});' +
       'wrap.addEventListener("touchend",function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>42)anim(dx<0?1:-1);sx=null;},{passive:true});' +
@@ -6178,10 +6214,7 @@ class Component extends DCLogic {
       this.setState({ pbPct: 88 });
       const html = this.pbHtml(D);
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      const w = window.open(url, '_blank');
-      if (!w) { this.setState({ pbUrl: url }); this.showToast('เบราว์เซอร์บล็อกหน้าต่างใหม่ — กดปุ่ม "เปิดเล่ม" อีกที'); }
-      else setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 120000);
-      this.setState({ pbPct: 100, pbOpen: !w });
+      this.setState({ pbPct: 100, pbUrl: url, pbOpen: true, bvUrl: url, bvTitle: (D.title || 'โฟโต้บุ๊ก') });
     } catch (e) {
       console.warn('[wtn] photobook', e);
       this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -6207,10 +6240,7 @@ class Component extends DCLogic {
       this.setState({ ebPct: 92 });
       const html = this.ebHtml(D, map);
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      const w = window.open(url, '_blank');
-      if (!w) { this.setState({ ebUrl: url }); this.showToast('เบราว์เซอร์บล็อกหน้าต่างใหม่ — กดปุ่ม "เปิดเล่ม" อีกที'); }
-      else setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 120000);
-      this.setState({ ebPct: 100, ebOpen: false });
+      this.setState({ ebPct: 100, ebUrl: url, ebOpen: true, bvUrl: url, bvTitle: (D.title || 'เล่ม') });
     } catch (e) {
       console.warn('[wtn] ebook', e);
       this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -7211,7 +7241,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16q',
+      appVersion: '2026.08.16t',
       ...(() => {
         this._appVer = '2026.08.16j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
@@ -7283,6 +7313,7 @@ class Component extends DCLogic {
           ebBarStyle: 'width:' + pct + '%;height:6px;background:#c05f39;transition:width .3s',
           ebBusyLabel: pct < 26 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 80 ? 'กำลังให้ AI เกลาสำนวน…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
           ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
+          showEbBook: () => this.setState({ bvUrl: this.state.ebUrl || '', bvTitle: 'เล่ม' }),
           ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
           runEbook: () => this.makeEbook(),
           ...(() => {
@@ -7299,6 +7330,7 @@ class Component extends DCLogic {
               pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
               pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
               pbUrl: this.state.pbUrl || '', pbHasUrl: !!this.state.pbUrl,
+              showPbBook: () => this.setState({ bvUrl: this.state.pbUrl || '', bvTitle: 'โฟโต้บุ๊ก' }),
               runPbook: () => this.makePhotobook()
             };
           })()
@@ -7627,6 +7659,8 @@ class Component extends DCLogic {
       retryCiGeo: () => this.grabCiPos(),
       recenterMe: () => this.recenterMe(),
       toast: this.state.toast || '', hasToast: !!this.state.toast,
+      bvOpen: !!this.state.bvUrl, bvUrl: this.state.bvUrl || '', bvTitle: this.state.bvTitle || 'เล่ม',
+      closeBook: () => this.setState({ bvUrl: '' }),
       lbOpen: !!(this.state.lbList && this.state.lbList.length),
       lbSrc: (this.state.lbList || [])[this.state.lbIdx || 0] || '',
       lbLabel: (this.state.lbList || []).length > 1 ? ((this.state.lbIdx || 0) + 1) + ' / ' + this.state.lbList.length : '',
