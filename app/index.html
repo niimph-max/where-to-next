@@ -6692,13 +6692,18 @@ class Component extends DCLogic {
       cx.fillStyle = '#c05f39'; cx.fillRect(pl, y, 54, RH);
       y += RH + RG;
       cx.font = '500 23px ' + A; cx.fillStyle = 'rgba(246,239,226,.82)'; cx.fillText(b.author2, pl, y + 19);
-      const tag = this._shelfSplit(this.shareTagline || 'เที่ยวเสร็จ ได้ความทรงจำเป็นหนังสือ');
-      cx.textAlign = 'center';
-      cx.font = '400 60px ' + C; cx.fillStyle = '#2b241f';
-      cx.fillText(tag[0], W / 2, H - (tag[1] ? 280 : 210));
-      if (tag[1]) cx.fillText(tag[1], W / 2, H - 206);
+      const tagL = this._shelfSplit(this.shareTagline || 'เที่ยวเสร็จ ได้ความทรงจำเป็นหนังสือ').filter(Boolean);
+      const maxTW = W - 190;                                        // กันตัวหนังสือชิดขอบการ์ด
+      cx.textAlign = 'center'; cx.textBaseline = 'alphabetic';
+      let tsz2 = 60; cx.font = '400 ' + tsz2 + 'px ' + C;
+      while (tsz2 > 34 && tagL.some(l => cx.measureText(l).width > maxTW)) { tsz2 -= 2; cx.font = '400 ' + tsz2 + 'px ' + C; }
+      cx.fillStyle = '#2b241f';
+      const tagY = H - (tagL.length > 1 ? 280 : 210), tagLH = Math.round(tsz2 * 1.24);
+      tagL.forEach((l, i) => cx.fillText(l, W / 2, tagY + i * tagLH));
       cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 30, H - 172, 60, 5);
-      cx.font = '500 33px ' + A; cx.fillStyle = '#8a7d6f'; cx.fillText(b.stats, W / 2, H - 122);
+      let ssz = 33; cx.font = '500 ' + ssz + 'px ' + A;
+      while (ssz > 22 && cx.measureText(b.stats).width > maxTW) { ssz -= 1; cx.font = '500 ' + ssz + 'px ' + A; }
+      cx.fillStyle = '#8a7d6f'; cx.fillText(b.stats, W / 2, H - 122);
       cx.textAlign = 'left';
       sp('ทริปหน้าไปไหน · onevela.net', W / 2, H - 70, 2, '#c05f39', '600 30px ' + A, true);
       const blob = await new Promise(r => cv.toBlob(r, 'image/png', .95));
@@ -7089,7 +7094,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16k',
+      appVersion: '2026.08.16l',
       ...(() => {
         this._appVer = '2026.08.16j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
