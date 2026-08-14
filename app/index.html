@@ -6057,11 +6057,11 @@ class Component extends DCLogic {
   _shotMeta(u) {
     return new Promise(res => {
       let done = false;
-      const fin = r => { if (!done) { done = true; res({ u, r }); } };
+      const fin = (r, w) => { if (!done) { done = true; res({ u, r, w: w || 0 }); } };
       const im = new Image();
-      im.onload = () => fin((im.naturalWidth || 4) / (im.naturalHeight || 3));
-      im.onerror = () => fin(1.4);
-      setTimeout(() => fin(1.4), 2500);
+      im.onload = () => fin((im.naturalWidth || 4) / (im.naturalHeight || 3), im.naturalWidth || 0);
+      im.onerror = () => fin(1.4, 0);
+      setTimeout(() => fin(1.4, 0), 2500);
       im.src = u;
     });
   }
@@ -6113,14 +6113,20 @@ class Component extends DCLogic {
     const port = s => s && s.r < 0.95;
     D.days.forEach(d => {
       const rest = d.shots.slice();
-      // หน้าเปิดวันเป็นหน้าเต็ม (แนวนอน) → เลือกรูปแนวนอนก่อน ไม่ให้รูปตั้งถูกครอบหัว
-      let hi = rest.findIndex(s => s.r >= 1.15);
-      if (hi < 0) hi = 0;
-      const hero = rest.splice(hi, 1)[0];
       const ttl = String(d.title || '').replace(/^\s*วันที่\s*\d+\s*[·:\-]\s*/, '').trim() || d.title;
-      out.push(page('<img class="bleed" src="' + E(hero.u) + '"><div class="scrim"></div>' +
-        '<div class="op"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>'));
       const cap = '<div class="cap"><span>' + dayKick(d) + '</span><span>' + E(d.places.slice(0, 2).join('  ·  ')) + '</span></div>';
+      // หน้าเต็ม A5 ต้องกว้าง ≥ 1400 px ถูกจะสั่งพิมพ์ไม่นุ่ม — ไม่มีก็เปิดวันด้วยหน้าสองรูปแทน
+      let hi = rest.findIndex(s => s.r >= 1.15 && (s.w || 0) >= 1400);
+      const hero = hi >= 0 ? rest.splice(hi, 1)[0] : null;
+      if (hero) {
+        out.push(page('<img class="bleed" src="' + E(hero.u) + '"><div class="scrim"></div>' +
+          '<div class="op"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>'));
+      } else {
+        const grp = rest.splice(0, Math.min(2, rest.length));
+        const imgs = grp.map(s => '<img src="' + E(s.u) + '">').join('');
+        out.push(page('<div class="sheet dayo"><div class="dayh"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>' +
+          '<div class="g ' + (grp.length === 1 ? 'one' : 'two') + '">' + imgs + '</div>' + cap + '</div>'));
+      }
       while (rest.length) {
         let take, cls;
         if (rest.length === 1) { take = 1; cls = 'one'; }
@@ -6162,6 +6168,10 @@ class Component extends DCLogic {
       '.op .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#e9b48a;margin-bottom:2.5mm}' +
       '.op h3{font-family:' + C + ';font-size:21pt;line-height:1.25;margin:0;font-weight:400;max-width:135mm}' +
       '.sheet{position:absolute;inset:0;padding:9mm 9mm 8mm;display:flex;flex-direction:column}' +
+      '.sheet.dayo .g{height:104mm}' +
+      '.dayh{flex:none;height:20.5mm;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4mm}' +
+      '.dayh .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#c05f39}' +
+      '.dayh h3{font-family:' + C + ';font-size:19pt;line-height:1.25;margin:2mm 0 0;font-weight:400;color:#2b241f}' +
       '.g{flex:none;height:124.5mm;display:grid;gap:3mm;grid-auto-rows:minmax(0,1fr)}' +
       '.g.one{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
       '.g.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
@@ -7342,7 +7352,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16za',
+      appVersion: '2026.08.16zb',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
