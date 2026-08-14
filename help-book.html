@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>คู่มือ Vela · ทำโฟโต้บุ๊กและอีบุ๊กจากทริป</title>
+<meta name="description" content="วิธีรวมทริปเป็นหนังสือใน Vela — โฟโต้บุ๊กกับอีบุ๊กต่างกันอย่างไร ทำยังไง และเคล็ดลับใส่รูปให้เล่มออกมาสวย ไม่ถูกครอบ">
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#f6efe2; -webkit-font-smoothing:antialiased; }
+  a { color:#a54e2c; text-decoration:none; }
+  a:hover { color:#c05f39; }
+  details summary::-webkit-details-marker { display:none; }
+  details[open] .vl-plus { transform:rotate(45deg); }
+</style>
+</helmet>
+
+<div style="font-family:'Anuphan',system-ui,sans-serif;color:#2b241f;background:#f6efe2;overflow-x:hidden">
+
+  <header style="position:sticky;top:0;z-index:20;background:rgba(246,239,226,.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(43,36,32,.07)">
+    <div style="max-width:860px;margin:0 auto;padding:12px clamp(18px,4vw,32px);display:flex;align-items:center;gap:12px">
+      <a href="index.html" style="display:flex;align-items:center;gap:9px;min-height:44px"><img src="logo.png" alt="Vela" width="32" height="32" style="width:32px;height:32px;display:block"><span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">Vela</span></a>
+      <a href="help.html" style="font-weight:600;font-size:14px;color:#a1927c;min-height:44px;display:inline-flex;align-items:center">← ศูนย์ช่วยเหลือ</a>
+      <a href="app/" style="margin-left:auto;flex:none;background:#c05f39;color:#fff;font-weight:600;font-size:14.5px;padding:10px 18px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center">เปิดแอป</a>
+    </div>
+  </header>
+
+  <section style="padding:clamp(30px,6vw,58px) clamp(20px,5vw,32px) clamp(14px,3vw,24px)">
+    <div style="max-width:760px;margin:0 auto">
+      <div style="font-weight:600;font-size:13px;letter-spacing:.4px;color:#a54e2c;margin-bottom:9px"><a href="help.html" style="color:inherit">ศูนย์ช่วยเหลือ</a> · หลังกลับจากทริป</div>
+      <h1 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(29px,5vw,44px);line-height:1.22;margin:0 0 16px;text-wrap:pretty">ทำทริปให้เป็นหนังสือ</h1>
+      <p style="font-size:clamp(15.5px,1.6vw,18px);line-height:1.78;color:#6c5f4f;margin:0 0 20px;text-wrap:pretty">เมื่อทริปจบ Vela จะเอารูปกับโน้ตที่คุณจดไว้มาจัดหน้าเป็นเล่มจริง — มีปก สารบัญ แผนที่เส้นทาง และหน้าสรุปค่าใช้จ่าย เปิดพลิกอ่านได้ในแอป หรือกดบันทึกเป็น PDF เก็บไว้/ส่งไปสั่งพิมพ์</p>
+      <div style="display:flex;flex-wrap:wrap;gap:9px">
+        <span style="display:inline-flex;align-items:center;gap:7px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);font-weight:600;font-size:13.5px;color:#5c5347;padding:8px 14px;border-radius:999px">ฟีเจอร์พรีเมียม</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);font-weight:600;font-size:13.5px;color:#5c5347;padding:8px 14px;border-radius:999px">2 แบบให้เลือก</span>
+        <span style="display:inline-flex;align-items:center;gap:7px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);font-weight:600;font-size:13.5px;color:#5c5347;padding:8px 14px;border-radius:999px">บันทึกเป็น PDF ได้</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(24px,4vw,40px) clamp(20px,5vw,32px);background:#f1e7d4">
+    <div style="max-width:760px;margin:0 auto">
+      <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(23px,3.4vw,32px);line-height:1.3;margin:0 0 6px">เลือกก่อน: เล่มไหนเหมาะกับทริปนี้</h2>
+      <p style="font-size:15px;line-height:1.7;color:#8a7d6f;margin:0 0 18px">ทำทั้งสองแบบจากทริปเดียวก็ได้ ข้อมูลชุดเดียวกัน</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;justify-content:center;margin-bottom:16px">
+            <div style="width:100%;max-width:250px;aspect-ratio:210/148;position:relative;border-radius:2px 7px 7px 2px;overflow:hidden;box-shadow:0 20px 34px -14px rgba(90,60,35,.48)">
+              <img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.4),rgba(20,16,13,0) 40%,rgba(20,16,13,.86))"></div>
+              <div style="position:absolute;left:0;top:0;bottom:0;width:11px;background:linear-gradient(90deg,rgba(20,16,13,.5),rgba(20,16,13,.1) 60%,rgba(255,255,255,.13))"></div>
+              <div style="position:absolute;left:17px;right:14px;bottom:14px;color:#fffaf0"><div style="font:600 7.5px 'Anuphan';letter-spacing:1.6px;color:#e9b48a;margin-bottom:4px">อัลมาตี · 2569</div><div style="font-family:'Chonburi',serif;font-size:17px;line-height:1.2">คาซัคสถาน</div></div>
+            </div>
+          </div>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 7px">โฟโต้บุ๊ก — รูปเล่าเรื่อง</h3>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 12px">เล่มแนวนอน A5 รูปเป็นพระเอก แต่ละวันเปิดด้วยภาพเต็มหน้า แล้วต่อด้วยหน้ารวมรูป 2–4 ใบ มีแค่ชื่อวันกับชื่อสถานที่กำกับ</p>
+          <div style="font-size:14.5px;line-height:1.7;color:#8a7d6f">เหมาะกับทริปที่ถ่ายรูปเยอะแต่ไม่ได้เขียนอะไรมาก</div>
+        </div>
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;justify-content:center;margin-bottom:16px">
+            <div style="width:100%;max-width:170px;aspect-ratio:148/210;position:relative;border-radius:2px 7px 7px 2px;overflow:hidden;box-shadow:0 20px 34px -14px rgba(90,60,35,.48)">
+              <img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.46),rgba(20,16,13,0) 36%,rgba(20,16,13,.9))"></div>
+              <div style="position:absolute;left:0;top:0;bottom:0;width:9px;background:linear-gradient(90deg,rgba(20,16,13,.5),rgba(20,16,13,.1) 60%,rgba(255,255,255,.13))"></div>
+              <div style="position:absolute;left:15px;right:12px;bottom:13px;color:#fffaf0"><div style="font:600 7px 'Anuphan';letter-spacing:1.5px;color:#e9b48a;margin-bottom:3px">อัลมาตี · 2569</div><div style="font-family:'Chonburi',serif;font-size:14px;line-height:1.2">คาซัคสถาน<br>11 วัน</div></div>
+            </div>
+          </div>
+          <h3 style="font-size:19px;font-weight:700;margin:0 0 7px">อีบุ๊ก — ตัวหนังสือเล่าเรื่อง</h3>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 12px">เล่มตั้ง A5 แบ่งเป็นตอนตามวัน มีเรื่องเล่า โน้ตของแต่ละเช็คอิน เวลาและชื่อสถานที่ พร้อมรูปแทรกระหว่างย่อหน้า</p>
+          <div style="font-size:14.5px;line-height:1.7;color:#8a7d6f">เหมาะกับทริปที่จดโน้ตไว้เยอะ หรือเขียนเรื่องเล่าไว้แล้ว</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(30px,5vw,52px) clamp(20px,5vw,32px)">
+    <div style="max-width:760px;margin:0 auto">
+      <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(23px,3.4vw,32px);line-height:1.3;margin:0 0 20px">ทำทีละขั้น</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px">
+            <span style="width:32px;height:32px;border-radius:11px;background:#c05f39;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none">1</span>
+            <h3 style="font-size:18px;font-weight:700;margin:0">เปิดทริป แล้วไปแท็บ “สรุปทริป”</h3>
+          </div>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 16px">อยู่ในแถบปุ่มใต้รูปปกทริป เลื่อนไปทางขวาสุด — ในนั้นจะเห็นปุ่มทำโฟโต้บุ๊กกับอีบุ๊ก พร้อมบอกว่าทริปนี้มีกี่รูป กี่เช็คอิน และเล่มจะได้ประมาณกี่หน้า</p>
+          <div style="display:flex;justify-content:center">
+            <div style="width:186px;flex:none;background:#2b241f;border-radius:26px;padding:7px;box-shadow:0 14px 26px -14px rgba(90,60,35,.5)">
+              <div style="height:300px;box-sizing:border-box;border-radius:20px;overflow:hidden;background:#f6efe2;display:flex;flex-direction:column;padding:13px;gap:9px">
+                <div style="display:flex;gap:5px;overflow:hidden">
+                  <span style="flex:none;background:#efe4d3;color:#6f6558;font:600 8px 'Anuphan';padding:5px 9px;border-radius:12px">ภาพรวม</span>
+                  <span style="flex:none;background:#efe4d3;color:#6f6558;font:600 8px 'Anuphan';padding:5px 9px;border-radius:12px">โมเมนต์</span>
+                  <span style="position:relative;flex:none;background:#c05f39;color:#fff;font:700 8px 'Anuphan';padding:5px 9px;border-radius:12px">สรุปทริป<span style="position:absolute;left:-4px;top:-4px;right:-4px;bottom:-4px;border:2.5px solid #c05f39;border-radius:16px;box-shadow:0 0 0 4px rgba(192,95,57,.16)"></span></span>
+                </div>
+                <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:12px;padding:10px">
+                  <div style="font:600 8px 'Anuphan';color:#8a7d6f;margin-bottom:6px">ทริปนี้เก็บไว้</div>
+                  <div style="display:flex;gap:10px;font:700 12px 'Anuphan';color:#2b241f"><span>11 วัน</span><span>·</span><span>38 เช็คอิน</span></div>
+                  <div style="font:600 9px 'Anuphan';color:#c05f39;margin-top:4px">142 รูป</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;background:#2b241f;border-radius:12px;padding:10px 11px">
+                  <span style="width:22px;height:30px;border-radius:2px 5px 5px 2px;background:linear-gradient(135deg,#c9b79b,#8a7358);flex:none"></span>
+                  <div style="flex:1"><div style="font:700 9.5px 'Anuphan';color:#f6efe2">ทำโฟโต้บุ๊ก</div><div style="font:500 8px 'Anuphan';color:#c9b79b">ประมาณ 46 หน้า</div></div>
+                  <span style="font:700 8px 'Anuphan';color:#e9b48a">เริ่ม</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:12px;padding:10px 11px">
+                  <span style="width:22px;height:30px;border-radius:2px 5px 5px 2px;background:linear-gradient(135deg,#e0d2b8,#b9a184);flex:none"></span>
+                  <div style="flex:1"><div style="font:700 9.5px 'Anuphan';color:#2b241f">ทำอีบุ๊ก</div><div style="font:500 8px 'Anuphan';color:#8a7d6f">ประมาณ 88 หน้า</div></div>
+                  <span style="font:700 8px 'Anuphan';color:#c05f39">เริ่ม</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px">
+            <span style="width:32px;height:32px;border-radius:11px;background:#c05f39;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none">2</span>
+            <h3 style="font-size:18px;font-weight:700;margin:0">เลือกปกเอง (แนะนำ)</h3>
+          </div>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 16px">แตะกรอบปกแล้วกด <b style="font-weight:700">เปลี่ยนปก</b> เลือกรูปที่อยากให้เป็นหน้าแรกของเล่ม ถ้าไม่เลือก แอปจะหยิบรูปแนวนอนใบแรกที่เจอมาให้ — ใช้ได้ แต่เลือกเองสวยกว่าแน่นอน</p>
+          <div style="display:flex;justify-content:center">
+            <div style="width:186px;flex:none;background:#2b241f;border-radius:26px;padding:7px;box-shadow:0 14px 26px -14px rgba(90,60,35,.5)">
+              <div style="height:300px;box-sizing:border-box;border-radius:20px;overflow:hidden;background:#f6efe2;display:flex;flex-direction:column;justify-content:center;padding:13px;gap:10px">
+                <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 10px 22px -10px rgba(43,36,32,.5)">
+                  <img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+                  <span style="position:absolute;right:6px;bottom:6px;background:rgba(43,36,32,.72);color:#f6efe2;font:600 8px 'Anuphan';padding:3px 8px;border-radius:11px">เปลี่ยนปก</span>
+                </div>
+                <div style="font:600 9px 'Anuphan';color:#8a7d6f">ชื่อเล่ม</div>
+                <div style="height:26px;border-radius:8px;border:1px solid rgba(43,36,32,.14);background:#fff;display:flex;align-items:center;padding:0 9px;font:600 10px 'Anuphan';color:#2b241f">คาซัคสถาน หน้าร้อน</div>
+                <div style="font:600 9px 'Anuphan';color:#8a7d6f">คำโปรย</div>
+                <div style="height:26px;border-radius:8px;border:1px solid rgba(43,36,32,.14);background:#fff;display:flex;align-items:center;padding:0 9px;font:500 9.5px 'Anuphan';color:#8a7d6f">11 วัน 10 คืน · อัลมาตี</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px">
+            <span style="width:32px;height:32px;border-radius:11px;background:#c05f39;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none">3</span>
+            <h3 style="font-size:18px;font-weight:700;margin:0">กดทำเล่ม แล้วรอจัดหน้า</h3>
+          </div>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 16px">แอปจะรวบรวมรูป วัดสัดส่วนทุกใบ แล้วจัดหน้าให้เอง ทริปที่รูปเยอะอาจใช้เวลาสักครู่ — อย่าปิดหน้าจอระหว่างนี้ พอเสร็จเล่มจะเปิดขึ้นมาให้พลิกอ่านทันที</p>
+          <div style="display:flex;justify-content:center">
+            <div style="width:186px;flex:none;background:#2b241f;border-radius:26px;padding:7px;box-shadow:0 14px 26px -14px rgba(90,60,35,.5)">
+              <div style="height:300px;box-sizing:border-box;border-radius:20px;overflow:hidden;background:#2b241f;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:12px">
+                <span style="width:44px;height:56px;border-radius:3px 8px 8px 3px;background:linear-gradient(135deg,#c9b79b,#8a7358);box-shadow:0 10px 20px -8px rgba(0,0,0,.6)"></span>
+                <div style="font-family:'Chonburi',serif;font-size:13px;color:#f6efe2;text-align:center">กำลังจัดหน้า…</div>
+                <div style="width:100%;height:4px;border-radius:99px;background:rgba(233,180,138,.2);overflow:hidden"><span style="display:block;width:72%;height:4px;background:#c05f39"></span></div>
+                <div style="font:500 8.5px 'Anuphan';color:#c9b79b;text-align:center">รวบรวมรูปแล้ว 104 ใบ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:22px;padding:20px 20px 22px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:6px">
+            <span style="width:32px;height:32px;border-radius:11px;background:#c05f39;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;flex:none">4</span>
+            <h3 style="font-size:18px;font-weight:700;margin:0">พลิกอ่าน หรือบันทึกเป็น PDF</h3>
+          </div>
+          <p style="font-size:15px;line-height:1.7;color:#6c5f4f;margin:0 0 16px">แตะขวา-ซ้ายเพื่อพลิกหน้า กด <b style="font-weight:700">เรียงหน้า</b> เพื่อดูทุกหน้าต่อกัน หรือ <b style="font-weight:700">บันทึกเป็น PDF</b> เพื่อเก็บไฟล์ไว้/ส่งให้ร้านพิมพ์ (โฟโต้บุ๊ก = A5 แนวนอน · อีบุ๊ก = A5 แนวตั้ง) เล่มที่ทำแล้วจะไปอยู่ในชั้นหนังสือที่แท็บ “ฉัน”</p>
+          <div style="display:flex;justify-content:center">
+            <div style="width:186px;flex:none;background:#2b241f;border-radius:26px;padding:7px;box-shadow:0 14px 26px -14px rgba(90,60,35,.5)">
+              <div style="height:300px;box-sizing:border-box;border-radius:20px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#3e3429,#1d1813 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;gap:11px">
+                <div style="display:flex;width:100%;aspect-ratio:210/148;border-radius:2px;overflow:hidden;box-shadow:0 16px 30px -12px rgba(0,0,0,.7)">
+                  <div style="flex:1;position:relative;background:#e7dcc7"><img src="default-cover.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block"></div>
+                  <div style="width:8px;flex:none;background:linear-gradient(90deg,rgba(43,36,32,.3),rgba(43,36,32,.04) 50%,rgba(43,36,32,.26))"></div>
+                  <div style="flex:1;background:#fffaf0;padding:9px 10px;display:flex;flex-direction:column;gap:4px">
+                    <div style="font:600 5.5px 'Anuphan';letter-spacing:1.2px;color:#c05f39">วันที่ 03</div>
+                    <div style="font-family:'Chonburi',serif;font-size:8px;color:#2b241f">เดินเมืองเก่า</div>
+                    <div style="height:2px;background:rgba(43,36,32,.1);border-radius:9px"></div>
+                    <div style="height:2px;background:rgba(43,36,32,.1);border-radius:9px"></div>
+                    <div style="height:2px;width:70%;background:rgba(43,36,32,.1);border-radius:9px"></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <span style="flex:none;width:20px;height:20px;border-radius:6px;border:1px solid rgba(231,221,204,.24);color:#e7ddcc;font:700 9px 'Anuphan';display:flex;align-items:center;justify-content:center">‹</span>
+                  <span style="flex:none;white-space:nowrap;font:500 8px 'Anuphan';color:#c9b79b">8 / 46</span>
+                  <span style="flex:none;width:20px;height:20px;border-radius:6px;border:1px solid rgba(231,221,204,.24);color:#e7ddcc;font:700 9px 'Anuphan';display:flex;align-items:center;justify-content:center">›</span>
+                  <span style="flex:none;white-space:nowrap;background:#c05f39;color:#fff;font:700 8px 'Anuphan';padding:6px 9px;border-radius:8px">บันทึก PDF</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(28px,5vw,54px) clamp(20px,5vw,32px);background:linear-gradient(165deg,#2b241f,#3b2e24)">
+    <div style="max-width:760px;margin:0 auto">
+      <span style="font-weight:600;font-size:13.5px;letter-spacing:.4px;color:#e9b48a">เคล็ดลับ</span>
+      <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(23px,3.4vw,32px);line-height:1.3;margin:8px 0 8px;color:#f6efe2;text-wrap:pretty">ใส่รูปแบบไหน เล่มออกมาสวย</h2>
+      <p style="font-size:15.5px;line-height:1.75;color:#c9b79b;margin:0 0 22px;max-width:520px;text-wrap:pretty">Vela ไม่ครอบรูปให้เสียสัดส่วนแล้ว — รูปตั้งจะถูกจัดกลางหน้า รูปนอนขยายเต็มความกว้าง แต่ยังมีบางอย่างที่ช่วยให้เล่มดูดีขึ้นได้อีกเยอะ</p>
+
+      <div style="display:grid;gap:12px">
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">1</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">ใบแรกของโมเมนต์คือใบที่ถูกใช้ใหญ่สุด</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">เวลาเลือกรูปหลายใบ ให้ใบที่เล่าเรื่องนั้นได้ดีที่สุดมาก่อน เพราะเล่มจะเอาใบแรกไปวางเป็นภาพนำของบล็อกนั้น (และอาจถูกใช้เป็นภาพเปิดวัน)</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">2</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">ให้มีรูปแนวนอนวันละใบสองใบ</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">หน้าเปิดวันกับปกเป็นภาพเต็มหน้าแนวนอน — ถ้าวันนั้นมีแต่รูปตั้ง หน้าเต็มจะต้องครอบภาพเยอะกว่าปกติ มีรูปนอนสักใบไว้ก็ช่วยได้มาก</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">3</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">รูปป้าย เมนู ตัวหนังสือ ให้เผื่อขอบไว้</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">ถ่ายให้มีที่ว่างรอบตัวหนังสือหน่อย อ่านง่ายกว่าเวลาย่อลงในเล่ม และถ้าถูกวางในช่องเล็กก็ยังเห็นครบ</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">4</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">เวลาในโมเมนต์ต้องตรง เล่มจึงเรียงถูก</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">เล่มจัดวันและลำดับตามช่อง “วันและเวลาที่เกิดขึ้นจริง” ถ้าจดย้อนหลังให้กดปุ่มปฏิทินบนรูปเพื่อดึงเวลาจากรูปมาใส่ — เรื่องจะไม่สลับวันกัน</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">5</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">รูปซ้ำๆ ใส่ใบเดียวพอ</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">โฟโต้บุ๊กใช้รูปได้ถึง 6 ใบต่อโมเมนต์ อีบุ๊กใช้ 3 ใบแรก — เลือกใบที่ต่างกันจริงๆ ดีกว่าใส่มุมเดิมสามสี่ใบ เพราะหน้ารวมรูปจะดูซ้ำ</p>
+          </div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(246,239,226,.06);border:1px solid rgba(233,180,138,.16);border-radius:16px;padding:16px 18px">
+          <span style="flex:none;width:30px;height:30px;border-radius:10px;background:rgba(233,180,138,.18);color:#e9b48a;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">6</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:16.5px;color:#f6efe2;margin-bottom:4px">โน้ตสั้น–ยาว ทำให้หน้าไม่เหมือนกัน</div>
+            <p style="font-size:15px;line-height:1.72;color:#c9b79b;margin:0">โน้ตสั้น (ไม่เกิน ~230 ตัวอักษร) จะได้รูปวางคู่ข้อความ โน้ตยาวจะได้รูปเต็มความกว้างแล้วข้อความไหลต่อ — เขียนสลับสั้นยาวบ้าง เล่มจะมีจังหวะน่าอ่าน</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(28px,5vw,54px) clamp(20px,5vw,32px);background:#f1e7d4">
+    <div style="max-width:760px;margin:0 auto">
+      <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(22px,3.2vw,30px);line-height:1.3;margin:0 0 16px">คำถามที่มักเจอ</h2>
+      <div style="display:grid;gap:10px">
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 19px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;min-height:30px">แก้เล่มที่ทำแล้วได้ไหม<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:19px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:10px 0 0">เล่มไม่ได้แก้ทีละหน้า แต่สร้างใหม่ได้ไม่จำกัด — ไปแก้ต้นทาง (โน้ต รูป ชื่อวัน ปก) แล้วกดทำเล่มอีกครั้ง จะได้เล่มใหม่ตามข้อมูลล่าสุด</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 19px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;min-height:30px">มีรูปที่ไม่อยากให้อยู่ในเล่ม<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:19px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:10px 0 0">ลบรูปนั้นออกจากโมเมนต์ก่อน (แก้ไขโมเมนต์ → กดกากบาทบนรูป) แล้วทำเล่มใหม่ เล่มดึงจากโมเมนต์โดยตรง ไม่มีที่คัดรูปแยก</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 19px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;min-height:30px">ทำไมบางวันไม่มีในเล่ม<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:19px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:10px 0 0">วันที่ไม่มีโมเมนต์และไม่มีเรื่องเล่าจะถูกข้ามไป เพื่อไม่ให้เล่มมีหน้าว่าง — ถ้าอยากให้วันนั้นอยู่ในเล่ม เพิ่มโน้ตหรือรูปสักอย่างในวันนั้นก่อน</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 19px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;min-height:30px">เอาไปสั่งพิมพ์เป็นเล่มจริงได้ไหม<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:19px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:10px 0 0">ได้ กดบันทึกเป็น PDF แล้วส่งไฟล์ให้ร้าน ขนาดหน้าเป็น A5 มาตรฐาน (โฟโต้บุ๊กแนวนอน · อีบุ๊กแนวตั้ง) ถ้าร้านขอเผื่อขอบตัดตก แจ้งร้านว่าเป็นไฟล์ขนาดจริงไม่มีเบรีด</p>
+        </details>
+        <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:15px 19px">
+          <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;min-height:30px">เล่มที่ทำแล้วเก็บไว้ที่ไหน<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:19px;transition:transform .2s">+</span></summary>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:10px 0 0">อยู่ในชั้นหนังสือที่แท็บ “ฉัน” → ปุ่มหนังสือ กดเปิดอ่านใหม่ได้ทุกเมื่อ เล่มอยู่ในแอปของคุณ ไม่ได้เผยแพร่ให้คนอื่นเห็น</p>
+        </details>
+      </div>
+      <div style="margin-top:22px;font-size:15px;line-height:1.8;color:#6c5f4f">คำถามอื่นดูที่ <a href="help.html" style="font-weight:600">ศูนย์ช่วยเหลือ</a> หรือเขียนมาที่ <a href="mailto:admin@onevela.net" style="font-weight:600">admin@onevela.net</a></div>
+    </div>
+  </section>
+
+  <section style="padding:clamp(22px,4vw,40px) clamp(20px,5vw,32px) clamp(40px,6vw,66px)">
+    <div style="max-width:760px;margin:0 auto;background:linear-gradient(150deg,#2b241f,#3d2f24);border-radius:26px;padding:clamp(28px,4vw,44px) clamp(22px,4vw,40px);text-align:center">
+      <h2 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(22px,3.4vw,32px);line-height:1.28;color:#f6efe2;margin:0 auto 12px;max-width:460px;text-wrap:pretty">ทริปที่ผ่านมาลองทำเป็นเล่มดู</h2>
+      <p style="font-size:15.5px;line-height:1.75;color:#c9b79b;margin:0 auto 22px;max-width:420px">ข้อมูลที่จดไว้แล้วก็พอ ไม่ต้องเพิ่มอะไรใหม่</p>
+      <a href="app/" style="display:inline-flex;align-items:center;justify-content:center;background:#c05f39;color:#fff;font-weight:700;font-size:16.5px;padding:15px 30px;min-height:52px;border-radius:16px">เปิด Vela</a>
+    </div>
+  </section>
+
+  <footer style="border-top:1px solid rgba(43,36,32,.08);padding:26px clamp(20px,5vw,32px) 38px">
+    <div style="max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;gap:16px;align-items:center">
+      <div style="display:flex;align-items:center;gap:10px"><img src="logo.png" alt="Vela" width="28" height="28" style="width:28px;height:28px;display:block"><div><div style="font-family:'Chonburi',serif;font-size:16px">Vela</div><div style="font-size:12.5px;color:#8a7d6f">ทริปหน้าไปไหน</div></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;margin-left:auto;font-size:14px;font-weight:500;color:#6c5f4f">
+        <a href="index.html" style="color:inherit">หน้าแรก</a>
+        <a href="help.html" style="color:inherit">ศูนย์ช่วยเหลือ</a>
+        <a href="help-checkin.html" style="color:inherit">เช็คอินและโมเมนต์</a>
+        <a href="app/" style="color:inherit">เปิดแอป</a>
+      </div>
+      <div style="flex-basis:100%;font-size:12.5px;color:#a1927c">© 2026 Vela · onevela.net · admin@onevela.net</div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
