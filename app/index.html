@@ -3627,6 +3627,18 @@ class Component extends DCLogic {
     d.setHours(12, 0, 0, 0);
     return d.getTime();
   }
+  // วันที่เท่าไหร่ของทริปนี้ ตามเวลาที่ผู้ใช้ระบุ (null = ไม่ตกในช่วงทริป)
+  dayIndexForTs(ts) {
+    const t = this.curTripRec();
+    if (!t || !t.start || !ts) return null;
+    const st = new Date(t.start + 'T00:00:00');
+    if (isNaN(st)) return null;
+    const d = new Date(ts); if (isNaN(d)) return null;
+    d.setHours(0, 0, 0, 0);
+    const i = Math.round((d.getTime() - st.getTime()) / 86400000);
+    const n = (this.days || []).length || 1;
+    return (i >= 0 && i < n) ? i : null;
+  }
   curTripRec() { const id = this.state.trip; return this.userTrips.find(x => x.id === id) || (id === 'kazakh' ? this.kzSeed() : {}); }
   ciMoment(c, on) {
     const t = this.curTripRec();
@@ -3725,33 +3737,42 @@ class Component extends DCLogic {
   saveCi() {
     const name = (this.state.ciName || '').trim();
     if (!name) return;
-    const all = this.checkins, k = this.ciKey, list = all[k] || [];
+    const all = this.checkins;
     const pos = this.state.ciPos || {};
     const ei = this.state.ciEditIdx;
     const cts = this.state.ciAt || this.dayTs(this.state.day);
     const tLabel = new Date(cts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-    if (ei != null && list[ei]) {
-      list[ei] = { ...list[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
+    // เวลาที่ระบุอาจไม่ใช่วันที่เปิดอยู่ (แก้เวลาเอง / ดึงจากรูป) → ลงวันที่ตรงกับเวลานั้น
+    const oldK = this.ciKey;
+    const di = this.dayIndexForTs(cts);
+    const dayIdx = (di == null) ? this.state.day : di;
+    const k = this.state.trip + ':' + dayIdx;
+    let saved = null;
+    if (ei != null && (all[oldK] || [])[ei]) {
+      const oldList = all[oldK] || [];
+      saved = { ...oldList[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
+      if (k === oldK) { oldList[ei] = saved; all[oldK] = oldList; }
+      else {
+        oldList.splice(ei, 1); all[oldK] = oldList;
+        const nl = all[k] || []; nl.push(saved); all[k] = nl;
+      }
     } else {
-      list.push({
+      saved = {
         t: tLabel,
         at: cts,
         name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 10),
         lat: pos.lat, lng: pos.lng,
-        mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() });
+        mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() };
+      const nl = all[k] || []; nl.push(saved); all[k] = nl;
     }
-    all[k] = list;
+    (all[k] || []).sort((a, b) => (a.at || 0) - (b.at || 0));
     this.saveCheckins(all);
-    if (ei == null) {
-      const c = list[list.length - 1];
-      const m = this.ciMoment(c, true);
-      this.upsertLocalMoment(m);
-    }
+    if (ei == null && saved) this.upsertLocalMoment(this.ciMoment(saved, true));
     const amt = Number(this.state.ciAmt);
     if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name, cts);
     const located = pos.lat != null;
     if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
-    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '' });
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '', day: dayIdx });
     if (this._ciFromFab) { this._ciFromFab = false; if (this.state.screen !== 'map') this.go('map'); }  // บันทึกแล้วพาไปดูที่ที่มันไปอยู่
     this.showToast(ei != null
       ? '✓ บันทึกการแก้ไขแล้ว'
@@ -7094,7 +7115,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16l',
+      appVersion: '2026.08.16m',
       ...(() => {
         this._appVer = '2026.08.16j';
         const kinds = [['bug', 'เจอบั๊ก'], ['question', 'คำถาม'], ['billing', 'การจ่ายเงิน'], ['idea', 'เสนอฟีเจอร์'], ['other', 'อื่นๆ']];
