@@ -23,12 +23,13 @@
 <meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vela">
-<meta property="og:title" content="Vela — วางแผนทริป & เล่าเรื่องเดินทาง">
+<meta property="og:url" content="https://onevela.net/app/">
+<meta property="og:title" content="Vela — วางแผนทริป &amp; เล่าเรื่องเดินทาง">
 <meta property="og:description" content="วางแผนรายวัน จดงบ เที่ยว แล้วเปลี่ยนเป็นเรื่องเล่า">
-<meta property="og:image" content="og-image.png">
+<meta property="og:image" content="https://onevela.net/app/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vela — วางแผนทริป & เล่าเรื่องเดินทาง">
-<meta name="twitter:image" content="og-image.png">
+<meta name="twitter:title" content="Vela — วางแผนทริป &amp; เล่าเรื่องเดินทาง">
+<meta name="twitter:image" content="https://onevela.net/app/og-image.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f6efe2">
 <meta name="color-scheme" content="light">
@@ -1131,8 +1132,10 @@
                     <div style="flex:1;min-width:0">
                       <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span style="font:700 15px 'Anuphan';color:#2b241f">{{ mo.dateStr }}</span><span style="font:500 14px 'Anuphan';color:#a99e8e">· {{ mo.timeStr }}</span><sc-if value="{{ mo.hasCat }}" hint-placeholder-val="{{ true }}"><span style="{{ mo.catStyle }}"><span style="{{ mo.catDotEl }}"></span>{{ mo.catName }}</span></sc-if></div>
                       <sc-if value="{{ mo.hasPlace }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;align-items:center;gap:4px;font:600 13.5px 'Anuphan';color:#c05f39;margin-top:3px"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/></svg>{{ mo.place }}</div></sc-if>
+                      <sc-if value="{{ mo.hasWx }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;align-items:center;gap:4px;font:600 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px;margin-left:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg>{{ mo.wxStr }}</div></sc-if>
                       <sc-if value="{{ mo.hasCoord }}" hint-placeholder-val="{{ false }}"><a href="{{ mo.mapUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font:600 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px;text-decoration:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>{{ mo.coordStr }}</a></sc-if>
                     </div>
+                    <button onClick="{{ mo.share }}" title="แชร์เป็นรูปการ์ด" style="display:inline-flex;align-items:center;gap:5px;flex:none;border:1px solid rgba(43,36,32,.14);background:#fffaf0;color:#5c5347;font:600 13px 'Anuphan';padding:7px 11px;border-radius:10px;cursor:pointer;min-height:36px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4L8 8M12 4l4 4"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>แชร์</button>
                     <sc-if value="{{ mo.mine }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px;flex:none"><button onClick="{{ mo.edit }}" style="border:none;background:transparent;color:#8a7d6f;font:600 13px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ mo.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></span></sc-if>
                   </div>
                   <sc-if value="{{ mo.viewMode }}" hint-placeholder-val="{{ true }}">
@@ -3722,7 +3725,7 @@ class Component extends DCLogic {
   ciMoment(c, on) {
     const t = this.curTripRec();
     const place = [t.country, t.city].filter(Boolean).join(' · ');
-    return { id: c.mid, type: 'checkin', text: [c.name, c.note].filter(Boolean).join(' · '), place,
+    return { id: c.mid, type: 'checkin', name: c.name || '', text: [c.name, c.note].filter(Boolean).join(' · '), place,
       photos: (c.photos || []).slice(0, 10), tripId: this.state.trip, lat: c.lat, lng: c.lng,
       at: c.at || Date.now(), published: on, cat: 0,
       authorName: this.myName, authorAvatar: this.myAvatar };
@@ -4518,6 +4521,14 @@ class Component extends DCLogic {
       cat: this.state.mpCat || 0, pos,
       authorName: this.myName, authorAvatar: this.myAvatar };
     this.upsertLocalMoment(m);
+    // เช็คอินจาก GPS สด: แปลงพิกัดเป็นชื่อสถานที่ + ดึงภูมิอากาศตอนนั้น (ไม่ต้องรอ — เติมทีหลังได้)
+    if (pos) Promise.all([m.place ? m.place : this.placeName(pos.lat, pos.lng), this.weatherAt(pos.lat, pos.lng, at)])
+      .then(([name, wx]) => {
+        if (!name && !wx) return;
+        this.saveMoments(this.moments.map(x => x.id === id
+          ? { ...x, place: name || x.place || '', wx: wx || x.wx || null, _m: Date.now() } : x));
+        this.forceUpdate();
+      });
     this.setState({ mpText: '', mpPhotos: [], mpCat: 0, mpAt: null, mpWhenOpen: false, mpPos: null, mpPlace: '', mpFromPhoto: false, mpPhotoNote: '', mpNoGps: 0 });
     this.showToast(backdated ? ('✓ บันทึกไว้ที่ ' + this.whenLabel(at)) : (pos ? '✓ บันทึกแล้ว · ปักพิกัดที่นี่' : '✓ บันทึกแล้ว'));
   }
@@ -4588,13 +4599,102 @@ class Component extends DCLogic {
     }
   }
   clearPhotoMeta() { this.setState({ mpFromPhoto: false, mpPhotoNote: '', mpPos: null, mpPlace: '', mpAt: null }); }
+  // แคชชื่อสถานที่ตามพิกัดปัดเศษ ~100 ม. — อยู่แถวเดิมไม่ต้องยิงถามซ้ำ
+  _pnKey(lat, lng) { return Number(lat).toFixed(3) + ',' + Number(lng).toFixed(3); }
+  get _pnCache() { try { return JSON.parse(localStorage.getItem('wtn-place-cache')) || {}; } catch (e) { return {}; } }
+  _pnPut(k, v) { try { const c = this._pnCache; c[k] = v; localStorage.setItem('wtn-place-cache', JSON.stringify(c)); } catch (e) {} }
   async placeName(lat, lng) {
+    if (lat == null || lng == null) return '';
+    const k = this._pnKey(lat, lng);
+    const cached = this._pnCache[k];
+    if (cached !== undefined) return cached || '';
+    if (navigator.onLine === false) return '';
     try {
       const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=th&lat=' + lat + '&lon=' + lng);
       const j = await r.json();
       const a = j.address || {};
-      return [a.suburb || a.village || a.town || a.city || a.county, a.country].filter(Boolean).join(' · ') || (j.name || '');
+      const name = [a.suburb || a.village || a.town || a.city || a.county, a.country].filter(Boolean).join(' · ') || (j.name || '');
+      this._pnPut(k, name);
+      return name;
     } catch (e) { return ''; }
+  }
+  // ── ภูมิอากาศตอนนั้น (Open-Meteo, ไม่ต้องใช้คีย์) — เก็บติดโมเมนต์ไว้เลย เปิดออฟไลน์ก็ยังเห็น ──
+  wxLabel(code) {
+    const c = Number(code);
+    if (c === 0) return 'แดดจัด';
+    if (c === 1 || c === 2) return 'แดดสลับเมฆ';
+    if (c === 3) return 'เมฆมาก';
+    if (c === 45 || c === 48) return 'หมอก';
+    if (c >= 51 && c <= 57) return 'ฝนปรอย';
+    if (c >= 61 && c <= 65) return 'ฝนตก';
+    if (c === 66 || c === 67) return 'ฝนเยือกแข็ง';
+    if (c >= 71 && c <= 77) return 'หิมะ';
+    if (c >= 80 && c <= 82) return 'ฝนซู่';
+    if (c === 85 || c === 86) return 'หิมะซู่';
+    if (c >= 95) return 'ฝนฟ้าคะนอง';
+    return '';
+  }
+  _wxKey(lat, lng, ts) {
+    const d = new Date(ts || Date.now());
+    const p = n => String(n).padStart(2, '0');
+    return Number(lat).toFixed(2) + ',' + Number(lng).toFixed(2) + '@' +
+      d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours());
+  }
+  get _wxCache() { try { return JSON.parse(localStorage.getItem('wtn-wx-cache')) || {}; } catch (e) { return {}; } }
+  _wxPut(k, v) { try { const c = this._wxCache; c[k] = v; localStorage.setItem('wtn-wx-cache', JSON.stringify(c)); } catch (e) {} }
+  async weatherAt(lat, lng, ts) {
+    if (lat == null || lng == null) return null;
+    const d = new Date(ts || Date.now());
+    if (isNaN(d)) return null;
+    const k = this._wxKey(lat, lng, ts);
+    const cached = this._wxCache[k];
+    if (cached !== undefined) return cached || null;
+    if (navigator.onLine === false) return null;
+    const p = n => String(n).padStart(2, '0');
+    const ymd = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+    const hourKey = ymd + 'T' + p(d.getHours()) + ':00';
+    const days = (Date.now() - d.getTime()) / 86400000;
+    const hosts = days > 80 ? ['https://archive-api.open-meteo.com/v1/archive']
+      : ['https://api.open-meteo.com/v1/forecast', 'https://archive-api.open-meteo.com/v1/archive'];
+    for (const host of hosts) {
+      try {
+        const r = await fetch(host + '?latitude=' + lat + '&longitude=' + lng +
+          '&hourly=temperature_2m,weather_code&start_date=' + ymd + '&end_date=' + ymd + '&timezone=auto');
+        const j = await r.json();
+        const times = (j.hourly || {}).time || [];
+        let i = times.indexOf(hourKey);
+        if (i === -1) i = times.length ? Math.min(d.getHours(), times.length - 1) : -1;
+        const t = i >= 0 ? (j.hourly.temperature_2m || [])[i] : null;
+        if (t == null) continue;
+        const wx = { t: Math.round(t), code: Number((j.hourly.weather_code || [])[i]) };
+        this._wxPut(k, wx);
+        return wx;
+      } catch (e) {}
+    }
+    return null;
+  }
+  // เติมชื่อสถานที่ + ภูมิอากาศให้โมเมนต์เก่าที่มีแต่พิกัด — ทีละอัน เว้นจังหวะตามกติกา Nominatim (1 req/วินาที)
+  async backfillPlaces() {
+    if (this._bfRun || navigator.onLine === false) return;
+    this._bfRun = true;
+    try {
+      for (let n = 0; n < 12; n++) {
+        const need = x => (x.pos || x.lat != null) && (!(x.place || '').trim() || !x.wx) && !(this._bfSkip || {})[x.id];
+        const m = this.moments.find(need);
+        if (!m) break;
+        const lat = m.pos ? m.pos.lat : m.lat, lng = m.pos ? m.pos.lng : m.lng;
+        const fresh = this._pnCache[this._pnKey(lat, lng)] === undefined;
+        const name = (m.place || '').trim() || await this.placeName(lat, lng);
+        const wx = m.wx || await this.weatherAt(lat, lng, m.at);
+        if (name || wx) {
+          this.saveMoments(this.moments.map(x => x.id === m.id
+            ? { ...x, place: name || x.place || '', wx: wx || x.wx || null, _m: Date.now() } : x));
+          this.forceUpdate();
+        }
+        if (!name || !wx) this._bfSkip = { ...(this._bfSkip || {}), [m.id]: 1 };   // ยังไม่ได้ครบ → ไว้ลองรอบหน้า
+        if (fresh) await new Promise(r => setTimeout(r, 1200));
+      }
+    } finally { this._bfRun = false; }
   }
   exifOf(file) {
     return new Promise(resolve => {
@@ -4799,6 +4899,113 @@ class Component extends DCLogic {
     this.setState({ remoteMoments: (this.state.remoteMoments || []).map(x => x.id === id ? { ...x, likes: Math.max(0, (x.likes || 0) + bump) } : x) });
     const be = window.WTNBackend;
     if (be && be._uid) be.toggleMomentLike(id).catch(() => {});
+  }
+  // ── การ์ดรูปจากโมเมนต์ 1080×1350 (แชร์ลง IG/Threads/TikTok/FB/X ได้เป็นรูป ไม่ใช่ลิงก์) ──
+  async makeMomentCard(m) {
+    if (this._mcBusy) return;
+    this._mcBusy = true;
+    this.setState({ mcBusy: true });
+    try {
+      try { await document.fonts.ready; } catch (e) {}
+      const W = 1080, H = 1350, M = 72, A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const cx = cv.getContext('2d');
+      cx.textAlign = 'left'; cx.textBaseline = 'alphabetic';
+      const rg = cx.createRadialGradient(W / 2, 120, 40, W / 2, 120, W * 1.2);
+      rg.addColorStop(0, '#f6efe2'); rg.addColorStop(1, '#e6dbc8');
+      cx.fillStyle = rg; cx.fillRect(0, 0, W, H);
+      const sp = (txt, midX, y, gap, color, font) => {           // ตัวอักษรเว้นระยะ จัดกลาง
+        cx.font = font; cx.fillStyle = color;
+        const ch = Array.from(String(txt || ''));
+        const tot = ch.reduce((s, c) => s + cx.measureText(c).width + gap, 0) - gap;
+        let cur = Math.round(midX - tot / 2);
+        ch.forEach(c => { cx.fillText(c, cur, y); cur += cx.measureText(c).width + gap; });
+      };
+      cx.beginPath(); cx.arc(W / 2 - 52, 92, 8, 0, 7); cx.fillStyle = '#c05f39'; cx.fill();
+      sp('VELA', W / 2 + 20, 99, 7, '#a1927c', '600 25px ' + A);
+      let img = null;
+      const first = (m.photos || [])[0];
+      if (first) { try { img = await this.loadImgForCanvas(await this.resolvePhoto(first) || this.px(first)); } catch (e) {} }
+      const note = String(m.text || '').replace(/\s*\n+\s*/g, ' ').trim();
+      const place0 = String(m.place || '').trim();
+      const title = String(m.title || '').replace(/\s*\n+\s*/g, ' ').trim();
+      // จองที่ให้ข้อความก่อน แล้วค่อยให้รูปกินที่ที่เหลือ — ข้อความคือของสำคัญบนการ์ดนี้
+      const bx = M, by = 148, bw = W - M * 2, BOT = H - 160, CAP_LH = 54;
+      let capLines = [];
+      if (img && note) {
+        cx.font = '400 38px ' + C;
+        capLines = this._cvClamp(cx, note, bw - 40, 3);
+      }
+      const below = 62 + (place0 ? 52 : 0) + capLines.length * CAP_LH + 8;
+      const bh = img ? Math.max(430, Math.min(820, BOT - by - below)) : 862;
+      cx.save();
+      cx.shadowColor = 'rgba(43,36,32,.3)'; cx.shadowBlur = 46; cx.shadowOffsetY = 20;
+      cx.fillStyle = '#2b241f'; cx.fillRect(bx, by, bw, bh);
+      cx.restore();
+      cx.save(); cx.beginPath(); cx.rect(bx, by, bw, bh); cx.clip();
+      if (img && img.width) {
+        const r = Math.max(bw / img.width, bh / img.height), dw = img.width * r, dh = img.height * r;
+        cx.drawImage(img, bx + (bw - dw) / 2, by + (bh - dh) / 2, dw, dh);
+        const g = cx.createLinearGradient(0, by, 0, by + bh);
+        g.addColorStop(0, 'rgba(20,16,13,.12)'); g.addColorStop(.55, 'rgba(20,16,13,0)'); g.addColorStop(1, 'rgba(20,16,13,.55)');
+        cx.fillStyle = g; cx.fillRect(bx, by, bw, bh);
+      } else {                                                   // ไม่มีรูป → เอาข้อความขึ้นเป็นพระเอกบนพื้นเข้ม
+        const g = cx.createLinearGradient(bx, by, bx + bw, by + bh);
+        g.addColorStop(0, '#6f5c48'); g.addColorStop(.6, '#3c3128'); g.addColorStop(1, '#221c17');
+        cx.fillStyle = g; cx.fillRect(bx, by, bw, bh);
+        cx.fillStyle = '#fffaf0'; cx.font = '400 56px ' + C;
+        const ls = this._cvClamp(cx, note || 'บันทึกไว้ในทริป', bw - 130, 5);
+        let ty = by + bh / 2 - (ls.length - 1) * 37;
+        ls.forEach(l => { this._cvCtr(cx, l, bx + bw / 2, ty); ty += 74; });
+      }
+      if (img && title) {                                        // มีชื่อโมเมนต์ → พาดหัวลงบนรูปเลย
+        cx.font = '400 44px ' + C;
+        const tl = this._cvClamp(cx, title, bw - 120, 2);
+        const blockH = tl.length * 58 + 24;
+        const g2 = cx.createLinearGradient(0, by + bh - blockH - 110, 0, by + bh);
+        g2.addColorStop(0, 'rgba(20,16,13,0)'); g2.addColorStop(1, 'rgba(20,16,13,.78)');
+        cx.fillStyle = g2; cx.fillRect(bx, by + bh - blockH - 110, bw, blockH + 110);
+        let ty = by + bh - 44 - (tl.length - 1) * 58;
+        cx.fillStyle = '#fffaf0';
+        tl.forEach(l => { this._cvCtr(cx, l, bx + bw / 2, ty); ty += 58; });
+      }
+      cx.restore();
+      cx.strokeStyle = 'rgba(43,36,32,.16)'; cx.lineWidth = 2; cx.strokeRect(bx + 1, by + 1, bw - 2, bh - 2);
+      let y = by + bh + 62;
+      const when = (() => {
+        const d = new Date(m.at || Date.now());
+        if (isNaN(d)) return '';
+        return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' +
+          d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+      })();
+      const wx = m.wx && m.wx.t != null ? (m.wx.t + '°C' + (this.wxLabel(m.wx.code) ? ' · ' + this.wxLabel(m.wx.code) : '')) : '';
+      const meta = [when, wx].filter(Boolean).join('  ·  ');
+      if (meta) { cx.font = '500 27px ' + A; cx.fillStyle = '#8a7d6f'; this._cvCtr(cx, meta, W / 2, y); y += 50; }
+      if (place0) { cx.font = '600 34px ' + A; cx.fillStyle = '#c05f39'; this._cvCtr(cx, place0, W / 2, y); y += 52; }
+      if (capLines.length) {                                     // มีรูปแล้ว ข้อความมาเป็นคำบรรยายใต้ภาพ
+        cx.font = '400 38px ' + C; cx.fillStyle = '#2b241f';
+        capLines.forEach(l => { this._cvCtr(cx, l, W / 2, y); y += CAP_LH; });
+      }
+      cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 30, H - 118, 60, 5);
+      sp('ทริปหน้าไปไหน · onevela.net', W / 2, H - 58, 2, '#c05f39', '600 30px ' + A);
+      const blob = await new Promise(r => cv.toBlob(r, 'image/png', .95));
+      if (!blob) { this.showToast('ทำการ์ดไม่สำเร็จ'); return; }
+      const name = 'vela-moment-' + (m.id || Date.now()) + '.png';
+      const file = new File([blob], name, { type: 'image/png' });
+      const caption = [note, place, 'บันทึกด้วย Vela · onevela.net'].filter(Boolean).join('\n');
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], text: caption }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+      setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
+      this.showToast('เซฟรูปการ์ดลงเครื่องแล้ว — เอาไปลง IG/TikTok ได้เลย');
+    } catch (e) {
+      console.warn('[wtn] momentcard', e);
+      this.shareMoment(m);                                       // ทำรูปไม่ได้ → กลับไปแชร์ลิงก์แบบเดิม
+    } finally {
+      this._mcBusy = false;
+      this.setState({ mcBusy: false });
+    }
   }
   shareMoment(m) {
     const who = m.author || 'nimjourney';
@@ -5349,6 +5556,7 @@ class Component extends DCLogic {
     this.dedupeCheckins();
     setTimeout(() => this.dedupeCheckins(), 4000);   // เผื่อคลาวด์คืนข้อมูลมาหลังเปิดแอป
     this.rebuildCiMoments();
+    setTimeout(() => this.backfillPlaces(), 2500);   // เติมชื่อสถานที่ + ภูมิอากาศให้บันทึกเก่า
     this.initA2HS();
     try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); } catch (e) {}
     try { const q = new URLSearchParams(location.search); if (q.get('paid')) { this.showToast('ขอบคุณ! กำลังยืนยันการชำระเงิน…'); let n = 0; const t = setInterval(() => { this.syncPremium(); if (++n >= 8) clearInterval(t); }, 2500); history.replaceState(null, '', location.pathname); } } catch (e) {}
@@ -5794,8 +6002,8 @@ class Component extends DCLogic {
       const q = px(p);
       g.beginPath(); g.arc(q.x, q.y, 13, 0, 7); g.fillStyle = '#c05f39'; g.fill();
       g.lineWidth = 3; g.strokeStyle = '#fffaf0'; g.stroke();
-      g.fillStyle = '#fff'; g.font = "700 14px 'Anuphan', sans-serif"; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.fillText(String(i + 1), q.x, q.y + 1);
+      g.fillStyle = '#fff'; g.font = "700 14px 'Anuphan', sans-serif"; g.textAlign = 'left'; g.textBaseline = 'middle';
+      this._cvCtr(g, String(i + 1), q.x, q.y + 1);
     });
     g.textAlign = 'left'; g.textBaseline = 'alphabetic';
     return { url: cv.toDataURL('image/jpeg', 0.9), stops: stops.slice(0, 8).map((s, i) => ({ no: i + 1, name: s.n })) };
@@ -6690,9 +6898,23 @@ class Component extends DCLogic {
   _cvWrap(cx, text, maxW, maxLines) {
     const words = String(text || '').split(/(\s+)/);
     const lines = []; let cur = '';
+    // ไทยไม่มีเว้นวรรคระหว่างคำ และ canvas ไม่มีตัวตัดคำ — ใช้กติกาพยางค์แบบง่ายกันตัดกลางคำ:
+    // ห้ามขึ้นบรรทัดใหม่ด้วยสระ/วรรณยุกต์/ๆ ฯ และห้ามตัดหลังพยัญชนะที่มีวรรณยุกต์กำกับ
+    // (เช่น "กาแฟร้|อน" → ยก "ร้" ไปขึ้นบรรทัดใหม่พร้อมกัน)
+    const NOSTART = /[\u0E30-\u0E3A\u0E46-\u0E4E\u0E2F]/;
+    const MARK = /[\u0E47-\u0E4E]/;
     const pushChar = ch => {
       if (cx.measureText(cur + ch).width <= maxW || !cur) { cur += ch; return; }
-      lines.push(cur); cur = ch.trim() ? ch : '';
+      let carry = '';
+      if (NOSTART.test(ch) || MARK.test(cur[cur.length - 1] || '')) {
+        let i = cur.length - 1;
+        while (i > 0 && NOSTART.test(cur[i])) i--;
+        carry = cur.slice(i); cur = cur.slice(0, i);
+      }
+      // สระหน้า (เ แ โ ใ ไ) ต้องไปกับพยัญชนะตัวถัดไป ห้ามค้างท้ายบรรทัด
+      while (cur.length > 1 && /[\u0E40-\u0E44]/.test(cur[cur.length - 1])) { carry = cur[cur.length - 1] + carry; cur = cur.slice(0, -1); }
+      if (cur.trim()) lines.push(cur);
+      cur = carry + (ch.trim() ? ch : '');
     };
     words.forEach(w => {
       if (cx.measureText(cur + w).width <= maxW) { cur += w; return; }
@@ -6774,6 +6996,25 @@ class Component extends DCLogic {
       this.setState({ recExport: false });
     }
   }
+  // วาดข้อความให้อยู่กลางด้วยการวัดความกว้างเอง — Safari บนมือถือไม่ยอมรับ
+  // cx.textAlign='center' กับฟอนต์ไทยที่โหลดมา ข้อความจะเลื่อนไปขวาแล้วตกขอบ
+  _cvCtr(cx, t, midX, y) {
+    const s = String(t == null ? '' : t);
+    if (!s) return;
+    cx.fillText(s, Math.round(midX - cx.measureText(s).width / 2), y);
+  }
+  // ตัดบรรทัดแบบใส่ … ให้รู้ว่ายังมีต่อ (ต้องตั้ง cx.font ไว้ก่อนเรียก)
+  _cvClamp(cx, text, maxW, maxLines) {
+    const s = String(text || '').trim();
+    if (!s) return [];
+    const ls = this._cvWrap(cx, s, maxW, maxLines).slice(0, maxLines || 3);
+    const shown = ls.join(' ').replace(/\s+/g, ' ').trim();
+    if (shown.length >= s.replace(/\s+/g, ' ').trim().length) return ls;
+    let last = ls[ls.length - 1] || '';
+    while (last.length > 1 && cx.measureText(last + '…').width > maxW) last = last.slice(0, -1);
+    ls[ls.length - 1] = last.replace(/\s+$/, '') + '…';
+    return ls;
+  }
   drawRecapFrame(cx, W, H, ms, S) {
     const ease = x => x < 0 ? 0 : x > 1 ? 1 : x;
     cx.fillStyle = '#14100d'; cx.fillRect(0, 0, W, H);
@@ -6786,12 +7027,11 @@ class Component extends DCLogic {
       const p = ms / S.INTRO;
       if (S.cover) { cx.globalAlpha = 0.85; this._cvCover(cx, S.cover, W, H, 1.06 + p * 0.06); cx.globalAlpha = 1; }
       cx.fillStyle = 'rgba(20,16,13,.45)'; cx.fillRect(0, 0, W, H);
-      cx.textAlign = 'center';
-      cx.fillStyle = '#fff'; cx.font = "64px 'Chonburi', serif";
-      this._cvWrap(cx, S.title, W - 200, 2).forEach((l, i) => cx.fillText(l, W / 2, H / 2 - 6 + i * 76));
-      cx.fillStyle = '#e9b48a'; cx.font = "600 30px 'Anuphan', sans-serif";
-      cx.fillText(S.sub, W / 2, H / 2 + 76);
       cx.textAlign = 'left';
+      cx.fillStyle = '#fff'; cx.font = "64px 'Chonburi', serif";
+      this._cvWrap(cx, S.title, W - 200, 2).forEach((l, i) => this._cvCtr(cx, l, W / 2, H / 2 - 6 + i * 76));
+      cx.fillStyle = '#e9b48a'; cx.font = "600 30px 'Anuphan', sans-serif";
+      this._cvCtr(cx, S.sub, W / 2, H / 2 + 76);
       return;
     }
     const after = ms - S.INTRO;
@@ -6816,13 +7056,13 @@ class Component extends DCLogic {
     const p = (after - S.slides.length * S.PER) / S.OUTRO;   // ปิดท้าย
     if (S.cover) { cx.globalAlpha = 0.5; this._cvCover(cx, S.cover, W, H, 1.05 + p * 0.05); cx.globalAlpha = 1; }
     cx.fillStyle = 'rgba(20,16,13,.62)'; cx.fillRect(0, 0, W, H);
-    cx.textAlign = 'center';
+    cx.textAlign = 'left';
     cx.fillStyle = '#fff'; cx.font = "54px 'Chonburi', serif";
-    cx.fillText(S.title, W / 2, H / 2 - 30);
+    this._cvCtr(cx, S.title, W / 2, H / 2 - 30);
     cx.fillStyle = '#e9b48a'; cx.font = "600 28px 'Anuphan', sans-serif";
-    cx.fillText(S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, H / 2 + 26);
+    this._cvCtr(cx, S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, H / 2 + 26);
     cx.fillStyle = 'rgba(246,239,226,.6)'; cx.font = "500 24px 'Anuphan', sans-serif";
-    cx.fillText('บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, H / 2 + 86);
+    this._cvCtr(cx, 'บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, H / 2 + 86);
     cx.textAlign = 'left';
   }
   coverOf(slotId, fallback) {
@@ -6952,16 +7192,19 @@ class Component extends DCLogic {
       cx.font = '500 23px ' + A; cx.fillStyle = 'rgba(246,239,226,.82)'; cx.fillText(b.author2, pl, y + 19);
       const tagL = this._shelfSplit(this.shareTagline || 'เที่ยวเสร็จ ได้ความทรงจำเป็นหนังสือ').filter(Boolean);
       const maxTW = W - 190;                                        // กันตัวหนังสือชิดขอบการ์ด
-      cx.textAlign = 'center'; cx.textBaseline = 'alphabetic';
+      // จัดกลางด้วยการวัดความกว้างเอง — บางเบราว์เซอร์ (Safari บนมือถือ) ไม่ยอมรับ
+      // cx.textAlign='center' ตอนใช้ฟอนต์ไทยที่โหลดมา ทำให้ข้อความเลื่อนไปทางขวาแล้วตกขอบ
+      cx.textAlign = 'left'; cx.textBaseline = 'alphabetic';
+      const ctr = (t, y) => cx.fillText(t, Math.round((W - cx.measureText(t).width) / 2), y);
       let tsz2 = 60; cx.font = '400 ' + tsz2 + 'px ' + C;
       while (tsz2 > 34 && tagL.some(l => cx.measureText(l).width > maxTW)) { tsz2 -= 2; cx.font = '400 ' + tsz2 + 'px ' + C; }
       cx.fillStyle = '#2b241f';
       const tagY = H - (tagL.length > 1 ? 280 : 210), tagLH = Math.round(tsz2 * 1.24);
-      tagL.forEach((l, i) => cx.fillText(l, W / 2, tagY + i * tagLH));
+      tagL.forEach((l, i) => ctr(l, tagY + i * tagLH));
       cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 30, H - 172, 60, 5);
       let ssz = 33; cx.font = '500 ' + ssz + 'px ' + A;
       while (ssz > 22 && cx.measureText(b.stats).width > maxTW) { ssz -= 1; cx.font = '500 ' + ssz + 'px ' + A; }
-      cx.fillStyle = '#8a7d6f'; cx.fillText(b.stats, W / 2, H - 122);
+      cx.fillStyle = '#8a7d6f'; ctr(b.stats, H - 122);
       cx.textAlign = 'left';
       sp('ทริปหน้าไปไหน · onevela.net', W / 2, H - 70, 2, '#c05f39', '600 30px ' + A, true);
       const blob = await new Promise(r => cv.toBlob(r, 'image/png', .95));
@@ -7352,7 +7595,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16zb',
+      appVersion: '2026.08.16zj',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -7752,7 +7995,12 @@ class Component extends DCLogic {
         pubKnob: c.published ? 'right:3px' : 'left:3px',
         pubColor: c.published ? '#c05f39' : '#8a7d6f',
         pubLabel: c.published ? 'อยู่บนโมเมนต์' : 'เผยแพร่เป็นโมเมนต์',
-        share: () => this.shareMoment({ text: c.note || '', place: c.name || '', id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' }),
+        share: () => {
+          const mm = this.moments.find(x => x.id === c.mid) || {};   // ชื่อสถานที่/ภูมิอากาศที่เติมไว้ในโมเมนต์
+          this.makeMomentCard({ text: c.note || '', place: (mm.place || '').trim(), title: c.name || '',
+            photos: c.photos || [], at: c.at || mm.at, wx: mm.wx || null,
+            id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' });
+        },
         del: () => this.askConfirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้', () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); }),
         edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       goCheckIn: () => {
@@ -8024,7 +8272,19 @@ class Component extends DCLogic {
             avatar: av, hasAvatar: !!av, noAvatar: !av,
             text: _body, hasText: !!_body.trim(), textParts: this._linkify(_body),
             place: m.place || '', hasPlace: !!(m.place || '').trim(),
-            hasCoord: !!_pos, coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
+            // มีชื่อสถานที่แล้วไม่ต้องโชว์ตัวเลขพิกัด — เก็บไว้เป็นตัวสำรองเวลาแปลงชื่อไม่ได้
+            hasCoord: !!_pos && !(m.place || '').trim(), coordStr: _pos ? (_pos.lat.toFixed(4) + ', ' + _pos.lng.toFixed(4)) : '', mapUrl: _pos ? ('https://www.google.com/maps?q=' + _pos.lat + ',' + _pos.lng) : '',
+            share: () => {
+              const raw = String(m.text || '');
+              let title = m.name || '', body = raw;
+              if (!title && m.type === 'checkin' && raw.indexOf(' · ') > 0) {   // เช็คอินเก่าเก็บชื่อรวมในข้อความ
+                const i = raw.indexOf(' · '); title = raw.slice(0, i); body = raw.slice(i + 3);
+              }
+              this.makeMomentCard({ title, text: body, place: m.place || '', photos: m.photos || [],
+                at: m.at, wx: m.wx || null, id: m.id });
+            },
+            hasWx: !!(m.wx && m.wx.t != null),
+            wxStr: m.wx && m.wx.t != null ? (m.wx.t + '°C' + (this.wxLabel(m.wx.code) ? ' · ' + this.wxLabel(m.wx.code) : '')) : '',
             photos: (() => { const srcs = (m.photos || []).map(p => this.px(p)), ts = (m.photos || []).map(p => this.pxT(p));
               return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
             hasPhotos: (m.photos || []).length > 0,
