@@ -869,7 +869,7 @@
             <div>
               <sc-if value="{{ hasRecap }}" hint-placeholder-val="{{ false }}">
                 <div style="border-radius:20px;overflow:hidden;background:#26201b;margin-bottom:14px">
-                  <div style="position:relative;height:210px;background:#1a1613">
+                  <div style="{{ recapPrevStyle }}">
                     <sc-if value="{{ recapPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ recapPhoto }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if>
                     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,22,19,0) 45%,rgba(26,22,19,.85))"></div>
                     <div style="position:absolute;left:16px;right:16px;bottom:14px"><div style="font:600 13px 'Anuphan';color:#e9b48a">{{ recapCaptionDay }}</div><div style="font-family:'Chonburi',serif;font-size:20px;color:#fff">{{ recapCaption }}</div></div>
@@ -877,8 +877,19 @@
                   </div>
                   <div style="padding:14px 18px 16px;color:#f6efe2"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center"><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapDays }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">วันที่บันทึก</div></div><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapCis }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">เช็คอิน</div></div><div><div style="font-family:'Chonburi',serif;font-size:24px;color:#e9b48a">{{ recapPhotoCount }}</div><div style="font:500 12px 'Anuphan';color:#c9b79b">รูป</div></div></div></div>
                 </div>
+                <sc-if value="{{ recapMultiPart }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:3px;margin-bottom:9px">
+                    <sc-for list="{{ recapPartRows }}" as="p" hint-placeholder-count="3">
+                      <button onClick="{{ p.pick }}" style="{{ p.style }}"><span style="font:600 13.5px 'Anuphan'">{{ p.label }}</span><span style="font:500 11.5px 'Anuphan';opacity:.78">{{ p.sub }}</span></button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <div style="display:flex;gap:8px;margin-bottom:9px">
+                  <button onClick="{{ setRecapLand }}" style="{{ recapLandStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect></svg>แนวนอน</button>
+                  <button onClick="{{ setRecapPort }}" style="{{ recapPortStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="2"></rect></svg>แนวตั้ง</button>
+                </div>
                 <button onClick="{{ exportRecap }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg>{{ exportRecapLabel }}</button>
-                <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">คลิปแนวนอน 1280×720 · เล่นจากเช็คอิน+รูปจริงตามเส้นทาง · เซฟลงเครื่องแล้วอัปขึ้น YouTube ได้เลย</div>
+                <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">{{ recapSizeNote }}</div>
                 <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><sc-if value="{{ notPremium }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:flex;align-items:center;gap:5px;background:rgba(192,95,57,.1);border-radius:999px;padding:5px 10px;font:600 11.5px 'Anuphan';color:#c05f39"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>พรีเมียม</span></sc-if><sc-if value="{{ isPremium }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></sc-if></button>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin:9px 0 18px">เล่มแนวนอนจากรูปทั้งทริป — มีแค่หัวข้อวัน ไม่ต้องเขียนอะไรเพิ่ม</div>
               </sc-if>
@@ -6947,13 +6958,67 @@ class Component extends DCLogic {
     const w = im.width * r, h = im.height * r;
     cx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
   }
+  // ทริปยาวเกินโควตา: เลือกกระจายทั่วทั้งทริป (คงช่วงแรก/ช่วงท้ายไว้เสมอ)
+  _recapPick(all, cap) {
+    const max = cap || this.recapCap();
+    if (all.length <= max) return all.slice();
+    const out = [];
+    for (let i = 0; i < max; i++) out.push(all[Math.round(i * (all.length - 1) / (max - 1))]);
+    return out;
+  }
+  // แบ่งทริปยาวเป็น “ตอน” — พยายามตัดที่ขอบวัน แต่ยอมตัดกลางวันถ้าจำเป็น
+  // เพื่อให้รูปครบทุกใบ และไม่มีตอนสั้นกุด
+  recapParts() {
+    const all = this._recapSlides || [];
+    const cap = this.recapCap();
+    if (!all.length) return [];
+    if (all.length <= cap) return [this._recapPart(all, 0, 1)];
+    const nParts = Math.ceil(all.length / cap);
+    const target = Math.ceil(all.length / nParts);
+    const slack = Math.round(target * 0.35);
+    const chunks = [];
+    let cur = [];
+    for (let i = 0; i < all.length; i++) {
+      cur.push(all[i]);
+      const left = all.length - (i + 1);
+      if (!left) break;
+      const newDayNext = all[i + 1].day !== all[i].day;
+      if (cur.length >= cap || (newDayNext && cur.length >= target - slack)) { chunks.push(cur); cur = []; }
+    }
+    if (cur.length) {
+      const last = chunks[chunks.length - 1];
+      if (last && cur.length < Math.max(3, target * 0.4) && last.length + cur.length <= cap) chunks[chunks.length - 1] = last.concat(cur);
+      else chunks.push(cur);
+    }
+    return chunks.map((c, i) => this._recapPart(c, i, chunks.length));
+  }
+  _recapPart(items, i, n) {
+    const tags = [];
+    items.forEach(s => { if (s.day && tags[tags.length - 1] !== s.day) tags.push(s.day); });
+    const a = tags[0] || '', b = tags[tags.length - 1] || '';
+    return { idx: i, items, n: items.length, label: n > 1 ? 'ตอนที่ ' + (i + 1) : 'ทั้งทริป', range: a === b ? a : a + ' – ' + b };
+  }
+  recapCap() { return this.recapOrient() === 'port' ? 30 : 90; }   // แนวตั้งต้อง <90 วิ เพื่อลง Reels/Stories — แนวนอนยาวได้
+  recapOrient() {
+    if (this.state.recapOrient) return this.state.recapOrient;
+    try { return localStorage.getItem('wtn-recap-orient') === 'port' ? 'port' : 'land'; } catch (e) { return 'land'; }
+  }
+  setRecapOrient(v) {
+    try { localStorage.setItem('wtn-recap-orient', v); } catch (e) {}
+    this.setState({ recapOrient: v });
+  }
   async exportRecapVideo() {
     if (this._recExporting) return;
-    const slides = (this._recapSlides || []).slice(0, 60);
+    const port = this.recapOrient() === 'port';
+    const parts = this.recapParts();
+    const pi = Math.min(this.state.recapPart || 0, Math.max(0, parts.length - 1));
+    const part = parts[pi] || { items: [], label: '', range: '' };
+    const slides = part.items;
     if (!slides.length) { this.showToast('ยังไม่มีรูปสำหรับทำคลิป'); return; }
     const cvTest = document.createElement('canvas');
     if (!window.MediaRecorder || !cvTest.captureStream) { this.showToast('เครื่องนี้ยังทำคลิปไม่ได้ — ลองบนเบราว์เซอร์รุ่นใหม่กว่า'); return; }
-    const W = 1280, H = 720, PER = 2600, INTRO = 2800, OUTRO = 3000;
+    const W = port ? 1080 : 1280, H = port ? 1920 : 720;
+    const PER = 2600, INTRO = 2800, OUTRO = 3000;
     this._recExporting = true;
     this.setState({ recExport: true, recExportPct: 0 });
     try {
@@ -6971,7 +7036,10 @@ class Component extends DCLogic {
       if (!okN) this.showToast('โหลดรูปในทริปไม่ได้ — ลองไปที่ ฉัน › ย้ายรูปขึ้นคลาวด์ใหม่');
       const t = this.curTripRec() || {};
       const title = this.tripInfo.title || t.name || 'ทริปของฉัน';
-      const sub = [this.fmtRange(t.start, t.end), [t.country, t.city].filter(Boolean).join(' · ')].filter(Boolean).join('  ·  ');
+      const multi = parts.length > 1;
+      const sub = multi
+        ? part.label + ' · ' + part.range
+        : [this.fmtRange(t.start, t.end), [t.country, t.city].filter(Boolean).join(' · ')].filter(Boolean).join('  ·  ');
       const stats = this.recapStatsCache || null;
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       const cx = cv.getContext('2d');
@@ -7002,7 +7070,7 @@ class Component extends DCLogic {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap.' + ext;
+      a.download = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap' + (multi ? '-ตอน' + (pi + 1) : '') + (port ? '-vertical' : '') + '.' + ext;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 60000);
       this.setState({ recExportPct: 100 });
@@ -7036,21 +7104,23 @@ class Component extends DCLogic {
   }
   drawRecapFrame(cx, W, H, ms, S) {
     const ease = x => x < 0 ? 0 : x > 1 ? 1 : x;
+    const k = Math.min(W, H) / 720;                      // สเกลตัวอักษรตามขนาดเฟรม (แนวนอน 1 / แนวตั้ง 1.5)
     cx.fillStyle = '#14100d'; cx.fillRect(0, 0, W, H);
+    const sy = W > H ? 0.45 : 0.58;
     const shade = () => {
-      const g = cx.createLinearGradient(0, H * 0.45, 0, H);
+      const g = cx.createLinearGradient(0, H * sy, 0, H);
       g.addColorStop(0, 'rgba(20,16,13,0)'); g.addColorStop(1, 'rgba(20,16,13,.9)');
-      cx.fillStyle = g; cx.fillRect(0, H * 0.45, W, H * 0.55);
+      cx.fillStyle = g; cx.fillRect(0, H * sy, W, H * (1 - sy));
     };
     if (ms < S.INTRO) {                                   // ปกเปิด
       const p = ms / S.INTRO;
       if (S.cover) { cx.globalAlpha = 0.85; this._cvCover(cx, S.cover, W, H, 1.06 + p * 0.06); cx.globalAlpha = 1; }
       cx.fillStyle = 'rgba(20,16,13,.45)'; cx.fillRect(0, 0, W, H);
       cx.textAlign = 'left';
-      cx.fillStyle = '#fff'; cx.font = "64px 'Chonburi', serif";
-      this._cvWrap(cx, S.title, W - 200, 2).forEach((l, i) => this._cvCtr(cx, l, W / 2, H / 2 - 6 + i * 76));
-      cx.fillStyle = '#e9b48a'; cx.font = "600 30px 'Anuphan', sans-serif";
-      this._cvCtr(cx, S.sub, W / 2, H / 2 + 76);
+      cx.fillStyle = '#fff'; cx.font = (64 * k) + "px 'Chonburi', serif";
+      this._cvWrap(cx, S.title, W - 200 * k, 2).forEach((l, i) => this._cvCtr(cx, l, W / 2, H / 2 - 6 * k + i * 76 * k));
+      cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (30 * k) + "px 'Anuphan', sans-serif";
+      this._cvCtr(cx, S.sub, W / 2, H / 2 + 76 * k);
       return;
     }
     const after = ms - S.INTRO;
@@ -7063,25 +7133,25 @@ class Component extends DCLogic {
       shade();
       const fade = ease(p / 0.12) * ease((1 - p) / 0.1);
       cx.globalAlpha = 0.35 + 0.65 * fade;
-      cx.fillStyle = '#e9b48a'; cx.font = "600 26px 'Anuphan', sans-serif";
-      cx.fillText(sl.day || '', 72, H - 132);
-      cx.fillStyle = '#fff'; cx.font = "46px 'Chonburi', serif";
-      this._cvWrap(cx, sl.cap || '', W - 160, 2).forEach((l, k) => cx.fillText(l, 72, H - 78 + k * 56));
+      cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (26 * k) + "px 'Anuphan', sans-serif";
+      cx.fillText(sl.day || '', 72 * k, H - 132 * k);
+      cx.fillStyle = '#fff'; cx.font = (46 * k) + "px 'Chonburi', serif";
+      this._cvWrap(cx, sl.cap || '', W - 160 * k, 2).forEach((l, n) => cx.fillText(l, 72 * k, H - 78 * k + n * 56 * k));
       cx.globalAlpha = 1;
-      cx.fillStyle = 'rgba(246,239,226,.25)'; cx.fillRect(0, H - 6, W, 6);
-      cx.fillStyle = '#c05f39'; cx.fillRect(0, H - 6, W * ((i + p) / S.slides.length), 6);
+      cx.fillStyle = 'rgba(246,239,226,.25)'; cx.fillRect(0, H - 6 * k, W, 6 * k);
+      cx.fillStyle = '#c05f39'; cx.fillRect(0, H - 6 * k, W * ((i + p) / S.slides.length), 6 * k);
       return;
     }
     const p = (after - S.slides.length * S.PER) / S.OUTRO;   // ปิดท้าย
     if (S.cover) { cx.globalAlpha = 0.5; this._cvCover(cx, S.cover, W, H, 1.05 + p * 0.05); cx.globalAlpha = 1; }
     cx.fillStyle = 'rgba(20,16,13,.62)'; cx.fillRect(0, 0, W, H);
     cx.textAlign = 'left';
-    cx.fillStyle = '#fff'; cx.font = "54px 'Chonburi', serif";
-    this._cvCtr(cx, S.title, W / 2, H / 2 - 30);
-    cx.fillStyle = '#e9b48a'; cx.font = "600 28px 'Anuphan', sans-serif";
-    this._cvCtr(cx, S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, H / 2 + 26);
-    cx.fillStyle = 'rgba(246,239,226,.6)'; cx.font = "500 24px 'Anuphan', sans-serif";
-    this._cvCtr(cx, 'บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, H / 2 + 86);
+    cx.fillStyle = '#fff'; cx.font = (54 * k) + "px 'Chonburi', serif";
+    this._cvCtr(cx, S.title, W / 2, H / 2 - 30 * k);
+    cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (28 * k) + "px 'Anuphan', sans-serif";
+    this._cvCtr(cx, S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, H / 2 + 26 * k);
+    cx.fillStyle = 'rgba(246,239,226,.6)'; cx.font = '500 ' + (24 * k) + "px 'Anuphan', sans-serif";
+    this._cvCtr(cx, 'บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, H / 2 + 86 * k);
     cx.textAlign = 'left';
   }
   coverOf(slotId, fallback) {
@@ -7614,7 +7684,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16zn',
+      appVersion: '2026.08.16zr',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -8586,7 +8656,32 @@ class Component extends DCLogic {
           recapPhoto: this.px(cur.img || '') || this.coverOf('wtn-cover-' + this.state.trip, ''), recapCaption: cur.cap || '', recapCaptionDay: cur.day || '',
           recapPlayLabel: this.state.recapPlaying ? '⏸ หยุด' : '▶ เล่นรีแคป',
           exportRecap: () => this.exportRecapVideo(),
-          exportRecapLabel: 'บันทึกเป็นวิดีโอแนวนอน (' + slides.length + ' ช่วง · ~' + Math.round((2.8 + slides.length * 2.6 + 3) ) + ' วิ)',
+          ...(() => {
+            const port = this.recapOrient() === 'port';
+            const parts = this.recapParts();
+            const pi = Math.min(this.state.recapPart || 0, Math.max(0, parts.length - 1));
+            const cur = parts[pi] || { n: 0 };
+            const seg = on => (on ? 'background:#2b241f;color:#f6efe2;border:1px solid #2b241f;' : 'background:#fffaf0;color:#7c7264;border:1px solid rgba(43,36,32,.16);')
+              + "flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer";
+            const chip = on => (on ? 'background:#c05f39;color:#fff;border:1px solid #c05f39;' : 'background:#fffaf0;color:#5c5347;border:1px solid rgba(43,36,32,.16);')
+              + "flex:none;min-height:46px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:6px 13px;border-radius:12px;cursor:pointer;text-align:left";
+            return {
+              exportRecapLabel: 'บันทึกเป็นวิดีโอ' + (port ? 'แนวตั้ง' : 'แนวนอน') + ' (' + cur.n + ' รูป · ~' + Math.round(2.8 + cur.n * 2.6 + 3) + ' วิ)',
+              recapMultiPart: parts.length > 1,
+              recapPartRows: parts.map(p => ({
+                label: p.label, sub: p.range + ' · ' + p.n + ' รูป',
+                style: chip(p.idx === pi), pick: () => this.setState({ recapPart: p.idx }),
+              })),
+              setRecapLand: () => this.setRecapOrient('land'),
+              setRecapPort: () => this.setRecapOrient('port'),
+              recapLandStyle: seg(!port), recapPortStyle: seg(port),
+              recapPrevStyle: 'position:relative;height:' + (port ? 320 : 210) + 'px;background:#1a1613',
+              recapSizeNote: (port
+                ? 'คลิปแนวตั้ง 1080×1920 · พอดีกับ Reels / TikTok / Stories'
+                : 'คลิปแนวนอน 1280×720 · พอดีกับ YouTube / โพสต์เฟซบุ๊ก')
+                + (parts.length > 1 ? ' · ทริปนี้ยาว แบ่งเป็น ' + parts.length + ' ตอน ทำทีละตอน' : ''),
+            };
+          })(),
           toggleRecapPlay: () => {
             if (this.state.recapPlaying) {
               clearInterval(this._recapTimer);
