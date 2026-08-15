@@ -4926,6 +4926,12 @@ class Component extends DCLogic {
       let img = null;
       const first = (m.photos || [])[0];
       if (first) { try { img = await this.loadImgForCanvas(await this.resolvePhoto(first) || this.px(first)); } catch (e) {} }
+      // รูปข้ามโดเมนที่อ่านพิกเซลไม่ได้จะทำให้ canvas เป็น tainted แล้ว toBlob พัง → เช็คก่อน ถ้าไม่ได้ก็ทำการ์ดแบบไม่มีรูป
+      if (img) {
+        try { const p = document.createElement('canvas'); p.width = p.height = 1;
+          const pc = p.getContext('2d'); pc.drawImage(img, 0, 0, 1, 1); pc.getImageData(0, 0, 1, 1);
+        } catch (e) { img = null; }
+      }
       const note = String(m.text || '').replace(/\s*\n+\s*/g, ' ').trim();
       const place0 = String(m.place || '').trim();
       const title = String(m.title || '').replace(/\s*\n+\s*/g, ' ').trim();
@@ -4988,19 +4994,26 @@ class Component extends DCLogic {
       }
       cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 30, H - 118, 60, 5);
       sp('ทริปหน้าไปไหน · onevela.net', W / 2, H - 58, 2, '#c05f39', '600 30px ' + A);
-      const blob = await new Promise(r => cv.toBlob(r, 'image/png', .95));
-      if (!blob) { this.showToast('ทำการ์ดไม่สำเร็จ'); return; }
+      let blob = null;
+      try { blob = await new Promise(r => cv.toBlob(r, 'image/png', .95)); } catch (e) { blob = null; }
+      if (!blob) { try { const u = cv.toDataURL('image/png'); blob = await (await fetch(u)).blob(); } catch (e) {} }
+      if (!blob) { this.showToast('ทำรูปการ์ดไม่ได้บนเครื่องนี้ — แชร์เป็นลิงก์ให้แทน'); this.shareMoment(m); return; }
       const name = 'vela-moment-' + (m.id || Date.now()) + '.png';
-      const file = new File([blob], name, { type: 'image/png' });
+      let file = null;
+      try { file = new File([blob], name, { type: 'image/png' }); } catch (e) {}
       const caption = [note, place, 'บันทึกด้วย Vela · onevela.net'].filter(Boolean).join('\n');
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], text: caption }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      if (file && navigator.share) {                              // บางเครื่องไม่มี canShare แต่แชร์ไฟล์ได้
+        try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
       }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
       setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
       this.showToast('เซฟรูปการ์ดลงเครื่องแล้ว — เอาไปลง IG/TikTok ได้เลย');
     } catch (e) {
       console.warn('[wtn] momentcard', e);
+      this.showToast('ทำการ์ดไม่สำเร็จ (' + ((e && (e.name || e.message)) || 'ไม่ทราบสาเหตุ') + ') — แชร์เป็นลิงก์ให้แทน');
       this.shareMoment(m);                                       // ทำรูปไม่ได้ → กลับไปแชร์ลิงก์แบบเดิม
     } finally {
       this._mcBusy = false;
@@ -7595,7 +7608,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16zj',
+      appVersion: '2026.08.16zk',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
