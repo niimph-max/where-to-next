@@ -702,6 +702,10 @@
                   <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 13px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 16px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
                   <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 16.5px/1.7 'IBM Plex Sans Thai Looped','Anuphan',sans-serif;color:#4a4239;margin-top:8px;text-wrap:pretty">{{ ci.note }}</div></sc-if>
                   <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" style="width:92px;height:92px;object-fit:cover;border-radius:12px;flex:none;cursor:pointer"></sc-for></div></sc-if>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:11px">
+                    <button onClick="{{ ci.toggleBook }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.bookStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h6"></path></svg>หนังสือ</button>
+                    <button onClick="{{ ci.togglePb }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.pbStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>โฟโต้บุ๊ก</button>
+                  </div>
                   <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
                     <span onClick="{{ ci.togglePub }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer"><span style="width:40px;height:23px;border-radius:13px;position:relative;flex:none;{{ ci.pubTrack }}"><span style="position:absolute;top:3px;{{ ci.pubKnob }};width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span><span style="font:600 13.5px 'Anuphan';color:{{ ci.pubColor }}">{{ ci.pubLabel }}</span></span>
                     <span style="flex:1"></span>
@@ -2040,6 +2044,14 @@
                       <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
                     <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="position:relative;width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ ciAddPhotos }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label></sc-if>
+                  </div>
+                  <div style="border-top:1px solid rgba(43,36,32,.08);padding-top:13px">
+                    <div style="font:600 14px 'Anuphan';color:#5c5347;margin-bottom:3px">เอาโมเมนต์นี้ไปไว้ที่ไหน</div>
+                    <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;margin-bottom:10px">เลือกได้ทั้งสองอย่าง หรือไม่เลือกก็ได้ — อยู่ในไทม์ไลน์วันนี้เหมือนเดิม · หนังสือจะจัดรูปของโมเมนต์นี้ให้อยู่หน้าเดียวกัน เกิน 4 รูปจะเริ่มเล็ก</div>
+                    <div style="display:flex;gap:9px;flex-wrap:wrap">
+                      <button onClick="{{ ciToggleBook }}" style="flex:1;min-width:140px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;cursor:pointer;font:600 14.5px 'Anuphan';{{ ciBookStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h6"></path></svg>ลงในหนังสือ <span style="font-weight:500;opacity:.75">(ไม่เกิน 4 รูป)</span></button>
+                      <button onClick="{{ ciTogglePb }}" style="flex:1;min-width:140px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;cursor:pointer;font:600 14.5px 'Anuphan';{{ ciPbStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>ลงในโฟโต้บุ๊ก</button>
+                    </div>
                   </div>
                   <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
                 </div>
@@ -3941,6 +3953,7 @@ class Component extends DCLogic {
         t: tLabel,
         at: cts,
         name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 10),
+        inBook: this.state.ciUseBook !== false, inPb: this.state.ciUsePb !== false,
         lat: pos.lat, lng: pos.lng,
         mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() };
       const nl = all[k] || []; nl.push(saved); all[k] = nl;
@@ -3952,7 +3965,7 @@ class Component extends DCLogic {
     if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name, cts);
     const located = pos.lat != null;
     if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
-    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '', day: dayIdx });
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '', ciUseBook: true, ciUsePb: true, day: dayIdx });
     if (this._ciFromFab) { this._ciFromFab = false; if (this.state.screen !== 'map') this.go('map'); }  // บันทึกแล้วพาไปดูที่ที่มันไปอยู่
     this.showToast(ei != null
       ? '✓ บันทึกการแก้ไขแล้ว'
@@ -4899,6 +4912,18 @@ class Component extends DCLogic {
       if (!isNaN(d)) at = d.getTime();
     }
     return (at || lat != null) ? { at, lat, lng } : null;
+  }
+  // โมเมนต์นี้ผู้ใช้ให้ไปอยู่ในหนังสือ / โฟโต้บุ๊กไหม (ข้อมูลเก่าที่ยังไม่ได้เลือก: โน้ตยาวพอ → เข้าเล่ม, รูปมี → เข้าโฟโต้บุ๊ก)
+  ciWantsBook(c) { return c && c.inBook != null ? !!c.inBook : ((c && (c.note || '').trim().length >= 40)); }
+  ciWantsPb(c) { return c && c.inPb != null ? !!c.inPb : !!(c && (c.photos || []).length); }
+  setCiUse(k, idx, field, on) {
+    const all = this.checkins, list = all[k] || [], c = list[idx];
+    if (!c) return;
+    c[field] = !!on; c._m = Date.now();
+    all[k] = list; this.saveCheckins(all);
+    this.showToast(on ? (field === 'inBook' ? '✓ จะอยู่ในหนังสือ' : '✓ จะอยู่ในโฟโต้บุ๊ก')
+      : (field === 'inBook' ? 'เอาออกจากหนังสือแล้ว' : 'เอาออกจากโฟโต้บุ๊กแล้ว'));
+    this.forceUpdate();
   }
   publishCheckin(k, idx, on) {
     const all = this.checkins, list = all[k] || [], c = list[idx];
@@ -6018,18 +6043,14 @@ class Component extends DCLogic {
       const items = [];
       for (const c of list) {
         const ph = [];
-        for (const p of (c.photos || []).slice(0, 3)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
+        if (!this.ciWantsBook(c)) continue;                     // ผู้ใช้ไม่ได้เลือกให้ลงหนังสือ
+        for (const p of (c.photos || []).slice(0, 10)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
         items.push({ t: c.t || '', name: c.name || '', note: c.note || '', photos: ph });
       }
       const story = ch ? { title: ch.title || '', paras: this._htmlParas(ch.html), photos: [], cover: '' } : null;
       if (ch) {
         story.cover = await this.resolvePhoto(ch.cover || '') || '';
-        for (const p of (ch.photos || []).slice(0, 2)) { const r = await this.resolvePhoto(p); if (r) story.photos.push(r); }
-        // ยืมรูปที่สองของเช็คอินมาแทรกในเนื้อเรื่อง — หน้าจะไม่เป็นกำแพงตัวหนังสือ
-        for (const it of items) {
-          if (story.photos.length >= 2) break;
-          if (it.photos.length >= 2) story.photos.push(it.photos.splice(1, 1)[0]);
-        }
+        for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); if (r) story.photos.push(r); }
       }
       days.push({ n: i + 1, label: this.ebDayLabel(i), items, story,
         title: (ch && ch.title) || (items[0] || {}).name || 'วันใหม่' });
@@ -6039,7 +6060,7 @@ class Component extends DCLogic {
       const paras = this._htmlParas(c.html);
       if (!paras.length) continue;
       const st = { title: c.title || 'ตอนหนึ่ง', paras, photos: [], cover: await this.resolvePhoto(c.cover || '') || '' };
-      for (const p of (c.photos || []).slice(0, 2)) { const r = await this.resolvePhoto(p); if (r) st.photos.push(r); }
+      for (const p of (c.photos || [])) { const r = await this.resolvePhoto(p); if (r) st.photos.push(r); }
       days.push({ n: 0, label: '', items: [], story: st, title: st.title });
     }
     days.forEach((d, i) => { d.n = i + 1; });                 // เลขตอนเรียงต่อเนื่องตามสารบัญ
@@ -6154,30 +6175,100 @@ class Component extends DCLogic {
     return out;
   }
   // แตกเช็คอินเป็นบล็อก พร้อมความสูงโดยประมาณ (มม.) เพื่อจัดหน้าไม่ให้ล้น
-  _ebBlocks(it) {
+  // แผงรูปของชุดเดียวกัน — แถวละ 1–2 ใบ สูงเท่ากัน กว้างรวมเต็มหน้าเสมอ (ครอปเบาๆ ตามสัดส่วนจริง)
+  _ebPhotoRows(list, gid) {
+    const ph = (list || []).filter(Boolean).map(o => (typeof o === 'string' ? { u: o, cap: '' } : o)).filter(o => o.u);
+    const bs = [];
+    if (!ph.length) return bs;
+    const W = 120, GAP = 4, BUDGET = 148, HMAX = 96;
+    const rows = [];
+    for (let i = 0; i < ph.length; i += 2) rows.push(i === ph.length - 1 ? [ph[i]] : [ph[i], ph[i + 1]]);
+    // ความสูงตามธรรมชาติของแต่ละแถว (กว้างรวมพอดีหน้า)
+    const nat = rows.map(us => Math.min(HMAX, (W - GAP * (us.length - 1)) / us.reduce((a, o) => a + this._ebR(o.u), 0)));
+    const lo = Math.min.apply(null, nat);
+    let hs = nat.map(h => Math.min(h, lo * 1.6));               // ไม่ให้แถวไหนใหญ่กว่าเพื่อนในชุดเดียวกันเกินไป
+    const tot = hs.reduce((a, h) => a + h + 6, 0);
+    if (tot > BUDGET) { const k = BUDGET / tot; hs = hs.map(h => Math.max(30, h * k)); }   // ทั้งชุดพยายามอยู่หน้าเดียว
+    rows.forEach((us, ri) => {
+      const h = Math.round(hs[ri] * 10) / 10;
+      const cap = us.some(o => o.cap);
+      const figs = us.map(o => {
+        const w = Math.round(h * this._ebR(o.u) * 10) / 10;
+        return '<figure style="--w:' + w + 'mm;--h2:' + h + 'mm"><span class="im"><img src="' + this._esc(o.u) + '"></span>' +
+          (o.cap ? '<figcaption>' + this._esc(o.cap) + '</figcaption>' : '') + '</figure>';
+      }).join('');
+      bs.push({ h: h + 6 + (cap ? 5 : 0), grp: gid, html: '<div class="prow">' + figs + '</div>' });
+    });
+    return bs;
+  }
+  // โมเมนต์ที่มีรูปหลายใบ = ได้หน้าของตัวเอง 1 หน้า · รูปทุกใบอยู่ในกริดที่เต็มหน้าพอดี
+  _ebMomentPage(it) {
+    const E = s => this._esc(s);
+    const ph = (it.photos || []).filter(Boolean);
+    const note = (it.note || '').trim();
+    const W = 120, GAP = 4, ROWGAP = 5;
+    let txH = 0, txHtml = '';
+    if (it.t || it.name || note) {
+      txH = 11 + (note ? Math.ceil(note.length / 58) * 6.4 + 5 : 0);
+      txHtml = '<div class="tx wide">' + ((it.t || it.name) ? '<div class="kick3">' + E(it.t || '') + (it.name ? ' · ' + E(it.name) : '') + '</div>' : '') +
+        (note ? '<p>' + E(note) + '</p>' : '') + '</div>';
+    }
+    const avail = this.EB_PAGE_H - txH - 2;
+    const packs = { 2: [[1, 1], [2]], 3: [[1, 2], [2, 1], [3]], 4: [[2, 2], [1, 3], [1, 1, 2]],
+      5: [[2, 3], [1, 2, 2], [2, 2, 1]], 6: [[2, 2, 2], [3, 3], [1, 2, 3]] };
+    let cands = packs[ph.length];
+    if (!cands) { const r = []; for (let i = 0; i < ph.length; i += 2) r.push(Math.min(2, ph.length - i)); cands = [r]; }
+    const rowsOf = pack => { const r = []; let i = 0; pack.forEach(k => { r.push(ph.slice(i, i + k)); i += k; }); return r; };
+    const natH = us => (W - GAP * (us.length - 1)) / us.reduce((a, u) => a + this._ebR(u), 0);
+    // เลือกการจัดที่ "เต็มหน้า" ที่สุด — สูงเกินก็ย่อลงให้พอดี ดีกว่าปล่อยที่ว่าง
+    let best = null;
+    cands.forEach(pack => {
+      const rows = rowsOf(pack);
+      const hs = rows.map(natH);
+      const gaps = ROWGAP * (rows.length - 1);
+      const tot = hs.reduce((a, h) => a + h, 0) + gaps;
+      const k = tot > avail ? (avail - gaps) / (tot - gaps) : 1;
+      const minH = Math.min.apply(null, hs) * k;
+      if (minH < 34 && cands.length > 1) return;                // ย่อแล้วรูปเล็กเกินไป — ข้าม
+      const score = (tot >= avail ? 1000 - (tot - avail) : (tot / avail) * 100);
+      if (!best || score > best.score) best = { rows: rows, hs: hs.map(h => h * k), score: score };
+    });
+    if (!best) {
+      const rows = rowsOf(cands[0]), hs = rows.map(natH), gaps = ROWGAP * (rows.length - 1);
+      const tot = hs.reduce((a, h) => a + h, 0) + gaps;
+      const k = tot > avail ? (avail - gaps) / (tot - gaps) : 1;
+      best = { rows: rows, hs: hs.map(h => h * k) };
+    }
+    const hs = best.hs;
+    const grid = best.rows.map((us, ri) => {
+      const h = Math.round(hs[ri] * 10) / 10;
+      return '<div class="prow">' + us.map(u => '<figure style="--w:' + (Math.round(h * this._ebR(u) * 10) / 10) + 'mm;--h2:' + h + 'mm">' +
+        '<span class="im"><img src="' + E(u) + '"></span></figure>').join('') + '</div>';
+    }).join('');
+    return txHtml + '<div class="plate">' + grid + '</div>';
+  }
+  _ebBlocks(it, gid) {
     const E = s => this._esc(s);
     const head = '<div class="kick3">' + E(it.t) + (it.name ? ' · ' + E(it.name) : '') + '</div>';
     const note = (it.note || '').trim();
+    const ph = (it.photos || []).filter(Boolean);
     const bs = [];
     const LINE = 6.4, SIDE_CPL = 30, FULL_CPL = 58;
-    if (it.photos[0] && note.length <= 230) {                 // โน้ตสั้น — รูปคู่ข้อความเหมือนเดิม
-      const im = this._ebImg(it.photos[0], 52, 68);
+    if (ph.length && note.length <= 230) {                    // โน้ตสั้น–กลาง — รูปแรกคู่ข้อความ ที่เหลือต่อท้ายชุดเดียวกัน
+      const im = this._ebImg(ph[0], 52, 68);
       const h = Math.max(im.h, 9 + Math.ceil(note.length / SIDE_CPL) * LINE) + 9;
-      bs.push({ h, html: '<div class="row"><div class="ph">' + im.html + '</div>' +
+      bs.push({ h, grp: gid, html: '<div class="row"><div class="ph">' + im.html + '</div>' +
         '<div class="tx">' + head + (note ? '<p>' + E(note) + '</p>' : '') + '</div></div>' });
-      if (it.photos[1]) { const i2 = this._ebImg(it.photos[1], 120, 44); bs.push({ h: i2.h + 7, html: '<div class="phwide">' + i2.html + '</div>' }); }
+      this._ebPhotoRows(ph.slice(1), gid).forEach(b => bs.push(b));
       return bs;
     }
-    if (it.photos[0]) {                                        // โน้ตยาว — รูปเต็มความกว้าง แล้วข้อความไหลต่อ
-      const im = this._ebImg(it.photos[0], 120, 78);
-      bs.push({ h: im.h + 7, html: '<div class="phwide">' + im.html + '</div>' });
-    }
-    const parts = this._ebChunk(note, 1200);
-    if (!parts.length) { bs.push({ h: 14, html: '<div class="tx wide">' + head + '</div>' }); return bs; }
-    parts.forEach((p, i) => {
+    const parts = this._ebChunk(note, 1200);                   // ข้อความก่อน แล้วรูปทั้งชุดตามมาด้วยกัน
+    if (!parts.length) bs.push({ h: 14, grp: gid, html: '<div class="tx wide">' + head + '</div>' });
+    else parts.forEach((p, i) => {
       const h = (i ? 0 : 9) + Math.ceil(p.length / FULL_CPL) * LINE + 8;
-      bs.push({ h, html: '<div class="tx wide">' + (i ? '' : head) + '<p>' + E(p) + '</p></div>' });
+      bs.push({ h, grp: gid, html: '<div class="tx wide">' + (i ? '' : head) + '<p>' + E(p) + '</p></div>' });
     });
+    this._ebPhotoRows(ph, gid).forEach(b => bs.push(b));
     return bs;
   }
   // พื้นที่บล็อกจริงต่อหน้า (มม.): 210 − pad บน 16 − หัวข้อ .rh ~13 − ฟุตเตอร์ ~17
@@ -6189,7 +6280,7 @@ class Component extends DCLogic {
     let w = Math.min(maxW, maxH * r), h = w / r;
     if (h < 24 && r > 2.4) { h = 24; w = Math.min(maxW, h * r); }
     return { h: Math.round(h * 10) / 10,
-      html: '<img src="' + this._esc(u) + '" style="width:' + (Math.round(w * 10) / 10) + 'mm;height:' + (Math.round(h * 10) / 10) + 'mm">' };
+      html: '<img class="pim" src="' + this._esc(u) + '" style="--w:' + (Math.round(w * 10) / 10) + 'mm;--h2:' + (Math.round(h * 10) / 10) + 'mm">' };
   }
   async _ebMeasure(D) {
     const set = [];
@@ -6229,44 +6320,78 @@ class Component extends DCLogic {
     out.push(page('<div class="pad"><h2>สารบัญ</h2><div class="rule"></div><div class="toc">' + toc + '</div>' +
       '<div class="statline">' + D.stats.chapters + ' ตอน · ' + D.stats.days + ' วัน · ' + D.stats.cis + ' เช็คอิน · ' + D.stats.photos + ' รูป</div></div>' + foot(no++)));
     D.days.forEach(d => {
-      let hero = (d.story && d.story.cover) ? [d.story.cover]
-        : ((d.story && d.story.photos[0]) ? d.story.photos : ((d.items.find(i => i.photos.length) || {}).photos || []));
-      if (!(d.story && d.story.cover)) {                        // ไม่ได้เลือกปกตอนเอง → เอารูปแนวนอนขึ้นก่อน ไม่ให้ครอบหัว
-        const all = [].concat(hero, d.items.reduce((a, i) => a.concat(i.photos || []), []));
-        const land = all.find(u => this._ebR(u) >= 1.15);
-        if (land) hero = [land].concat(all.filter(u => u !== land));
-      }
-      out.push(page('<div class="dayhead">' + (hero[0] ? '<img class="dayimg" src="' + E(hero[0]) + '">' : '<div class="dayimg"></div>') +
+      const heroU = (d.story && (d.story.cover || (d.story.photos || [])[0])) || '';   // ปกเรื่องเล่าเท่านั้น ไม่ดึงรูปจากโมเมนต์มาใช้
+      // โมเมนต์ที่เขียนรายละเอียดไว้ → เข้าเนื้อเล่ม · โมเมนต์สั้นๆ (เก็บไว้ให้รีแคป/โฟโต้บุ๊ก) → ไปหน้าภาพท้ายวัน
+      d.rich = d.items.slice();                                 // เลือกไว้แล้วตอนบันทึกโมเมนต์
+      out.push(page('<div class="dayhead' + (heroU ? '' : ' nohero') + '">' + (heroU ? '<img class="dayimg" src="' + E(heroU) + '">' : '') +
         '<div class="daytx"><div class="kick2">' + (d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'ตอนที่ ' + d.n) + '</div>' +
         '<h3>' + E(d.title) + '</h3><div class="rule"></div>' +
-        ((d.intro || lead(d)) ? '<p class="intro">' + E(d.intro || lead(d)) + '</p>' : '') +
+        (d.intro ? '<p class="intro">' + E(d.intro) + '</p>' : '') +
         '<div class="daystat">' + (d.story ? '<b>เรื่องเล่า</b> &nbsp;·&nbsp; ' : '') + '<b>' + d.items.length + '</b> เช็คอิน &nbsp;·&nbsp; <b>' +
         d.items.reduce((s, i) => s + i.photos.length, 0) + '</b> รูป</div></div></div>'));
-      // เนื้อเรื่องเล่ามาก่อน — ต่อด้วยโมเมนต์ของวันนั้น
-      const seq = [];
+      // เรื่องเล่าขึ้นก่อน (ไม่แทรกรูประหว่างย่อหน้า) → รูปของเรื่องเล่าถ้ามี → สมุดระหว่างวัน
+      const units = [];
+      const pushFlow = b => { const u = units[units.length - 1]; if (u && u.k === 'f') u.items.push(b); else units.push({ k: 'f', items: [b] }); };
       if (d.story) {
-        const photos = (d.story.photos || []).filter(u => u !== hero[0]);
-        let ppi = 0;
         d.story.paras.forEach((p, pi) => {
           this._ebChunk(p, 1200).forEach(part => {
-            seq.push({ h: Math.ceil(part.length / 52) * 6.9 + 5, html: '<p class="story' + (pi === 0 ? ' lead' : '') + '">' + E(part) + '</p>' });
+            pushFlow({ h: Math.ceil(part.length / 52) * 6.9 + 5, html: '<p class="story' + (pi === 0 ? ' lead' : '') + '">' + E(part) + '</p>' });
           });
-          if (photos[ppi] && (pi === 1 || (pi > 1 && pi % 3 === 1))) {          // แทรกรูประหว่างย่อหน้า
-            const im = this._ebImg(photos[ppi], 120, 78);
-            seq.push({ h: im.h + 7, html: '<div class="phwide">' + im.html + '</div>' });
-            ppi++;
-          }
         });
-        while (photos[ppi]) { const im = this._ebImg(photos[ppi], 120, 78); seq.push({ h: im.h + 7, html: '<div class="phwide">' + im.html + '</div>' }); ppi++; }
-        if (d.items.length) seq.push({ h: 16, html: '<div class="sect">จากสมุดระหว่างวัน</div>' });
+        if (d.rich.length) pushFlow({ h: 16, html: '<div class="sect">จากสมุดระหว่างวัน</div>' });
       }
-      d.items.forEach(it => this._ebBlocks(it).forEach(b => seq.push(b)));
-      let blocks = [], hUsed = 0;
-      seq.forEach(b => {
-        if (hUsed + b.h > this.EB_PAGE_H && blocks.length) { out.push(page(pad(d, blocks.join(''), no++))); blocks = []; hUsed = 0; }
-        blocks.push(b.html); hUsed += b.h;
+      d.rich.forEach((it, ii) => {
+        const ph = (it.photos || []).filter(Boolean);
+        const note = (it.note || '').trim();
+        if (ph.length <= 1) { this._ebBlocks(it, 'm' + d.n + '-' + ii).forEach(pushFlow); return; }
+        const chunks = [];
+        for (let p = 0; p < ph.length; p += 6) chunks.push(ph.slice(p, p + 6));
+        if (note.length > 520) {                                // โน้ตยาวมาก — ข้อความไหลก่อน แล้วรูปทั้งชุดได้หน้าของตัวเอง
+          this._ebBlocks({ t: it.t, name: it.name, note: note, photos: [] }, 'm' + d.n + '-' + ii).forEach(pushFlow);
+          chunks.forEach((cs, ci2) => units.push({ k: 'p', html: this._ebMomentPage({ t: ci2 ? '' : it.t, name: ci2 ? '' : it.name, note: '', photos: cs }) }));
+        } else {
+          chunks.forEach((cs, ci2) => units.push({ k: 'p',
+            html: this._ebMomentPage({ t: ci2 ? '' : it.t, name: ci2 ? '' : it.name, note: ci2 ? '' : note, photos: cs }) }));
+        }
       });
-      if (blocks.length) out.push(page(pad(d, blocks.join(''), no++)));
+      const plate = (d.story ? (d.story.photos || []) : []).filter(u => u && u !== heroU).map(u => ({ u: u, cap: '' }));
+      if (plate.length) {                                       // เฉพาะรูปของเรื่องเล่า → หน้าภาพท้ายวัน (โมเมนต์สั้นๆ ไม่เอาเข้าเล่ม)
+        pushFlow({ h: 16, grp: 'sp' + d.n, html: '<div class="sect">ภาพจากวันนี้</div>' });
+        this._ebPhotoRows(plate, 'sp' + d.n).forEach(pushFlow);
+      }
+      let blocks = [], hUsed = 0;
+      const flush = () => { if (blocks.length) { out.push(page(pad(d, blocks.join(''), no++))); blocks = []; hUsed = 0; } };
+      const place = items => {
+        const gs = [];
+        for (let i = 0; i < items.length;) {
+          const g = items[i].grp;
+          let j = i, tot = 0;
+          if (g) { while (j < items.length && items[j].grp === g) { tot += items[j].h; j++; } }
+          else { tot = items[i].h; j = i + 1; }
+          gs.push({ items: items.slice(i, j), h: tot, movable: !!g && g.charAt(0) === 'm' });
+          i = j;
+        }
+        while (gs.length) {
+          let gi = 0;
+          const left = this.EB_PAGE_H - hUsed;
+          if (gs[0].h > left && blocks.length) {
+            let alt = -1;                                      // ที่ว่างเหลือเยอะ → ดึงชุดถัดไปที่ลงพอดีขึ้นมาเติม
+            for (let k = 1; k < Math.min(gs.length, 4); k++) if (gs[k].movable && gs[k].h <= left) { alt = k; break; }
+            if (alt > 0 && left >= 30) gi = alt;
+            else if (gs[0].h <= this.EB_PAGE_H) flush();
+          }
+          gs.splice(gi, 1)[0].items.forEach(b => {
+            if (hUsed + b.h > this.EB_PAGE_H && blocks.length) flush();
+            blocks.push(b.html); hUsed += b.h;
+          });
+        }
+      };
+      units.forEach(u => {
+        if (u.k === 'f') { place(u.items); return; }
+        flush();                                               // หน้าโมเมนต์ = หน้าของตัวเอง ไม่ปนกับใคร
+        out.push(page(pad(d, u.html, no++)));
+      });
+      flush();
     });
     if (map) {
       out.push(page('<div class="pad"><h2>เส้นทางทั้งหมด</h2><div class="rule"></div>' +
@@ -6293,7 +6418,7 @@ class Component extends DCLogic {
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:148mm;height:210mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
       '.pg:last-child{margin-bottom:0}' +
-      '.bleed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%}' +
+      '.bleed{position:absolute;left:0;top:0;width:148mm;height:210mm;object-fit:cover;object-position:center 38%}' +
       '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.5),rgba(20,16,13,0) 34%,rgba(20,16,13,.12) 55%,rgba(20,16,13,.9))}' +
       '.brand{position:absolute;left:14mm;top:12mm;display:flex;align-items:center;gap:2mm;font-weight:600;font-size:9pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
       '.brand i{width:2mm;height:2mm;border-radius:50%;background:#e9b48a}' +
@@ -6316,7 +6441,8 @@ class Component extends DCLogic {
       '.sect{font-size:8.5pt;letter-spacing:2px;color:#c05f39;font-weight:600;border-top:.3mm solid rgba(43,36,32,.12);padding-top:4mm;margin:2mm 0 6mm}' +
       '.statline{position:absolute;left:14mm;right:14mm;bottom:12mm;border-top:.3mm solid rgba(43,36,32,.12);padding-top:3mm;font-size:8.5pt;color:#a99e8e}' +
       '.dayhead{position:absolute;inset:0;display:flex;flex-direction:column}' +
-      '.dayimg{height:100mm;width:100%;object-fit:cover;background:linear-gradient(135deg,#c9b79b,#a08d72);display:block}' +
+      '.dayimg{height:100mm;width:148mm;object-fit:cover;background:linear-gradient(135deg,#c9b79b,#a08d72);display:block}' +
+      '.dayhead.nohero .daytx{padding-top:34mm}' +
       '.daytx{padding:11mm 14mm;flex:1;display:flex;flex-direction:column}' +
       '.kick2{font-weight:600;font-size:8.5pt;letter-spacing:2px;color:#c05f39;margin-bottom:3mm}' +
       '.intro{font-size:10.5pt;line-height:1.85;color:#5c5347;margin:0;max-width:92mm}' +
@@ -6325,6 +6451,13 @@ class Component extends DCLogic {
       '.row{display:flex;gap:6mm;margin-bottom:8mm;align-items:flex-start}' +
       '.ph{flex:none}.ph img{display:block;object-fit:contain;background:#f1e7d4}' +
       '.phwide{margin-bottom:7mm;display:flex;justify-content:center}.phwide img{object-fit:contain;background:#f1e7d4}' +
+      '.pim{width:calc(var(--w)*var(--k,1));height:calc(var(--h2)*var(--k,1));object-fit:contain;background:#f1e7d4;display:block}' +
+      '.prow{display:flex;gap:4mm;justify-content:center;align-items:flex-start;margin-bottom:5mm}' +
+      '.plate .prow:last-child{margin-bottom:0}' +
+      '.prow figure{margin:0;flex:none;width:calc(var(--w)*var(--k,1))}' +
+      '.prow .im{display:block;width:100%;height:calc(var(--h2)*var(--k,1));overflow:hidden;background:#e7dcc7}' +
+      '.prow figure img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.prow figcaption{font-size:7.5pt;letter-spacing:.6px;color:#a99e8e;margin-top:1.6mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
       '.tx{flex:1;min-width:0}.tx.wide{margin-bottom:7mm}' +
       '.kick3{font-weight:600;font-size:8.5pt;letter-spacing:1.2px;color:#c05f39;margin-bottom:2mm}' +
       '.tx p{font-size:10pt;line-height:1.8;margin:0;color:#453c33}' +
@@ -6353,7 +6486,7 @@ class Component extends DCLogic {
     const byDay = {};
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
       const i = +k.split(':')[1];
-      (ci[k] || []).forEach(c => { byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).length); });
+      (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).length); });
     });
     Object.keys(cmap.byDay).forEach(k => {
       const ch = cmap.byDay[k];
@@ -6395,6 +6528,7 @@ class Component extends DCLogic {
       const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], urls = [];
       if (ch) { const cv = await this.resolvePhoto(ch.cover || ''); if (cv) urls.push(cv); }
       for (const c of list) {
+        if (!this.ciWantsPb(c)) continue;
         for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); if (r) urls.push(r); }
       }
       if (ch) { for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); if (r && urls.indexOf(r) < 0) urls.push(r); } }
@@ -6473,7 +6607,7 @@ class Component extends DCLogic {
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:210mm;height:148mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
       '.pg:last-child{margin-bottom:0}' +
-      '.bleed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%}' +
+      '.bleed{position:absolute;left:0;top:0;width:210mm;height:148mm;object-fit:cover;object-position:center 38%}' +
       '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.42),rgba(20,16,13,0) 38%,rgba(20,16,13,.1) 58%,rgba(20,16,13,.88))}' +
       '.brand{position:absolute;left:12mm;top:10mm;display:flex;align-items:center;gap:2mm;font-weight:600;font-size:8.5pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
       '.brand i{width:2mm;height:2mm;border-radius:50%;background:#e9b48a}' +
@@ -6545,7 +6679,7 @@ class Component extends DCLogic {
       '#bkpg{flex:none;height:3px;background:rgba(231,221,204,.13)}#bkpg i{display:block;height:3px;width:0;background:#c05f39;transition:width .3s ease}' +
       'body{touch-action:manipulation;-webkit-tap-highlight-color:transparent}#bkstage{user-select:none;-webkit-user-select:none}' +
       '@media (max-width:560px){.lb{display:none}#bkbar{gap:7px;padding:8px 10px 11px}#bkbar button{padding:0 13px}' +
-      '#bkbar button#bfl,#bkbar button#bpr{min-height:40px;padding:0 12px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
+      '#bkbar button#bfl,#bkbar button#bpr,#bkbar button#bkm,#bkbar button#bkk{min-height:40px;padding:0 11px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
       '@media print{#bkstage{display:none!important}#bkjump{display:none!important}#bkback{display:none!important}#bksrc{display:block!important}.bar-print{display:none}html,body{overflow:visible}}';
     const html = '<div id="bksrc"></div>' +
       '<div id="bkstage"><div id="bkwrap"><div id="bkbook">' +
@@ -6553,6 +6687,7 @@ class Component extends DCLogic {
       '<div id="fl"><div class="face" id="ff"></div><div class="face" id="fb"></div></div>' +
       '</div></div><div id="bkbar">' +
       '<button id="bp">&lsaquo;<span class="lb"> ก่อนหน้า</span></button><span id="bkno"></span><button id="bn"><span class="lb">ถัดไป </span>&rsaquo;</button>' +
+      '<button id="bkm" title="รูปเล็กลงในหน้านี้">รูป −</button><button id="bkk" title="รูปใหญ่ขึ้นในหน้านี้">รูป +</button>' +
       '<button id="bfl">เรียงหน้า</button><button class="pr" id="bpr">บันทึกเป็น PDF</button>' +
       '</div><div id="bkpg"><i></i></div></div>' +
       '<div id="bkjump"><div class="jw"><div class="jh"><span>ไปที่หน้า</span><button class="jx" id="bkjx">ปิด</button></div><div id="bkjg"></div></div></div>' +
@@ -6613,6 +6748,14 @@ class Component extends DCLogic {
       'no.onclick=function(e){e.stopPropagation();if(jump.style.display==="flex")jclose();else jopen();};' +
       'document.getElementById("bkjx").onclick=function(e){e.stopPropagation();jclose();};' +
       'jump.onclick=function(e){if(e.target===jump)jclose();};' +
+      'var KS={};try{KS=JSON.parse(localStorage.getItem("wtn-bk-k:"+BK)||"{}")||{};}catch(e){}' +
+      'function applyK(){pages.forEach(function(p,i){p.style.setProperty("--k",KS[i]||1);});}' +
+      'function bump(dir){var i=spread?R(v):v;if(!ok(i))return;var k=(KS[i]||1)+dir*0.12;' +
+      'k=Math.max(.76,Math.min(1.4,Math.round(k*100)/100));if(k===1)delete KS[i];else KS[i]=k;applyK();' +
+      'try{localStorage.setItem("wtn-bk-k:"+BK,JSON.stringify(KS));}catch(e){}}' +
+      'document.getElementById("bkm").onclick=function(e){e.stopPropagation();bump(-1);};' +
+      'document.getElementById("bkk").onclick=function(e){e.stopPropagation();bump(1);};' +
+      'applyK();' +
       'document.getElementById("bpr").onclick=function(){restore();setTimeout(function(){window.print();},80);};' +
       'document.getElementById("bfl").onclick=function(){restore();stage.style.display="none";src.style.display="block";' +
       'back.style.display="block";document.documentElement.style.overflow="auto";document.body.style.overflow="auto";window.scrollTo(0,0);};' +
@@ -6703,7 +6846,8 @@ class Component extends DCLogic {
         if (list.length) put(16);
       }
       list.forEach(c => {
-        const ph = (c.photos || []).slice(0, 3);
+        if (!this.ciWantsBook(c)) return;
+        const ph = (c.photos || []).slice(0, 10);
         photos += ph.length;
         // ยังไม่ได้วัดรูปจริงตอนนี้ → ใช้สัดส่วนกลาง ตัวเลขหน้าจึงเป็นค่าประมาณ
         this._ebBlocks({ t: c.t || '', name: c.name || '', note: c.note || '', photos: ph.map(u => (this._ebRatio && this._ebRatio.has(u)) ? u : '~est') }).forEach(b => put(b.h));
@@ -7811,7 +7955,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.17e',
+      appVersion: '2026.08.16e',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -8206,6 +8350,11 @@ class Component extends DCLogic {
         photos: (() => { const srcs = (c.photos || []).map(p => this.px(p)), ts = (c.photos || []).map(p => this.pxT(p));
           return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
         hasPhotos: (c.photos || []).length > 0,
+        // ผู้ใช้เลือกเองว่าโมเมนต์นี้ไปโผล่ที่ไหน
+        bookStyle: this.ciWantsBook(c) ? 'background:#c05f39;color:#fff;border:1px solid #c05f39' : 'background:transparent;color:#8a7d6f;border:1px solid rgba(43,36,32,.16)',
+        pbStyle: this.ciWantsPb(c) ? 'background:#2b241f;color:#f6efe2;border:1px solid #2b241f' : 'background:transparent;color:#8a7d6f;border:1px solid rgba(43,36,32,.16)',
+        toggleBook: () => this.setCiUse(this.ciKey, idx, 'inBook', !this.ciWantsBook(c)),
+        togglePb: () => this.setCiUse(this.ciKey, idx, 'inPb', !this.ciWantsPb(c)),
         togglePub: () => this.publishCheckin(this.ciKey, idx, !c.published),
         pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8',
         pubKnob: c.published ? 'right:3px' : 'left:3px',
@@ -8218,18 +8367,23 @@ class Component extends DCLogic {
             id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' });
         },
         del: () => this.askConfirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้', () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); }),
-        edit: () => this.setState({ ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
+        edit: () => this.setState({ ciUseBook: this.ciWantsBook(c), ciUsePb: this.ciWantsPb(c), ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       goCheckIn: () => {
         this._ciFromFab = true;
-        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null,
+        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciUseBook: true, ciUsePb: true,
           ciGeoStatus: 'locating', ciAcc: null, ciAt: this.dayTs(this.state.day || 0), ciAmt: '', ciCat: null, ciFromPhoto: '' });
         this.grabCiPos();
       },
+      ciUseBook: this.state.ciUseBook !== false, ciUsePb: this.state.ciUsePb !== false,
+      ciBookStyle: (this.state.ciUseBook !== false) ? 'background:#c05f39;color:#fff;border:1px solid #c05f39' : 'background:#fffaf0;color:#8a7d6f;border:1px solid rgba(43,36,32,.16)',
+      ciPbStyle: (this.state.ciUsePb !== false) ? 'background:#2b241f;color:#f6efe2;border:1px solid #2b241f' : 'background:#fffaf0;color:#8a7d6f;border:1px solid rgba(43,36,32,.16)',
+      ciToggleBook: () => this.setState(st => ({ ciUseBook: st.ciUseBook === false })),
+      ciTogglePb: () => this.setState(st => ({ ciUsePb: st.ciUsePb === false })),
       ciEmpty: (this.checkins[this.ciKey] || []).length === 0,
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
         const opening = !this.state.ciFormOpen;
-        this.setState({ ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.dayTs(this.state.day) : null, ciFromPhoto: '' });
+        this.setState({ ciUseBook: true, ciUsePb: true, ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.dayTs(this.state.day) : null, ciFromPhoto: '' });
         if (opening) this.grabCiPos();
       },
       ciGeoLocating: this.state.ciGeoStatus === 'locating',
