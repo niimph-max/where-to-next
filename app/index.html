@@ -148,6 +148,9 @@
   .wtn-embed-ic{color:#e9b48a}
   .wtn-read .wtn-embed-yt{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:16/9;background:#1a1613;margin:16px 0}
   .wtn-read .wtn-embed-yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .wtn-read .wtn-yt-short{aspect-ratio:9/16;max-width:290px;margin:16px auto}
+  .wtn-read a{color:#c05f39!important;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+  .wtn-read a:hover{color:#8a3f24!important}
   @media print{
     body[data-wtn-print="overview"]{background:#fff!important}
     body[data-wtn-print="overview"] *{visibility:hidden!important}
@@ -668,7 +671,7 @@
                 <div style="flex:1;min-width:0"><div style="font:600 15.5px 'Anuphan';color:#2b241f">{{ affilLabel }}</div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f">{{ affilSub }}</div></div>
                 <span style="background:#2b241f;color:#f6efe2;font:600 14px 'Anuphan';padding:9px 14px;border-radius:12px;flex:none">หาลิงก์</span>
               </div>
-              <div style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;margin-top:9px">จองผ่านลิงก์นี้ nimjourney อาจได้ค่าแนะนำเล็กน้อย โดยคุณไม่จ่ายเพิ่ม</div>
+              <div style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;margin-top:9px">จองผ่านลิงก์นี้ Vela อาจได้ค่าแนะนำเล็กน้อย โดยคุณไม่จ่ายเพิ่ม</div>
             </div>
           </sc-if>
           <button onClick="{{ saveStop }}" style="width:100%;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';padding:15px;border-radius:14px;margin-top:16px;cursor:pointer">บันทึกลงวันนี้</button>
@@ -1327,7 +1330,7 @@
           <div style="text-align:center;margin-bottom:16px">
             <sc-if value="{{ seMetaView }}" hint-placeholder-val="{{ true }}">
               <div style="font:600 14px 'Anuphan';color:#c05f39;margin-bottom:4px">{{ seCategory }}</div>
-              <div style="font-family:'Chonburi',serif;font-size:25px;line-height:1.3;color:#2b241f;text-wrap:pretty">{{ seTitle }}</div>
+              <div style="font-family:'Chonburi',serif;font-size:25px;line-height:1.3;color:#2b241f;text-wrap:pretty">{{ stoTitle }}</div>
             </sc-if>
             <sc-if value="{{ seMetaEdit }}" hint-placeholder-val="{{ false }}">
               <input value="{{ smCategory }}" onInput="{{ setSmCategory }}" placeholder="หมวด เช่น บันทึกการเดินทาง" style="width:100%;box-sizing:border-box;text-align:center;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 10px;font:600 14px 'Anuphan';color:#c05f39;outline:none;margin-bottom:8px">
@@ -1761,7 +1764,7 @@
             </div>
           </div>
           </sc-if>
-          <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button></div></div>
+          <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button><button onClick="{{ pTabRecap }}" style="{{ pStyleRecap }}">รีแคป</button></div></div>
           <sc-if value="{{ pTrips }}" hint-placeholder-val="{{ true }}">
             <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีทริป<br>สร้างหรือโหลดโปรแกรมทัวร์ที่แท็บ "แผนของฉัน"</div></sc-if>
             <div style="padding:16px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:13px">
@@ -1776,6 +1779,33 @@
               <sc-for list="{{ profileStories }}" as="st" hint-placeholder-count="3">
                 <div onClick="{{ st.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ st.photo }}" alt="" style="width:104px;height:88px;object-fit:cover;flex:none;display:block"><div style="flex:1;padding:11px 12px 11px;min-width:0"><div style="font:500 13px 'Anuphan';color:#c05f39;margin-bottom:3px">{{ st.place }}</div><div style="font:600 15.5px/1.35 'Anuphan';color:#2b241f">{{ st.title }}</div></div></div>
               </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pRecap }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:14px 20px 30px">
+              <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:14px;text-wrap:pretty">รีแคปไม่ได้เก็บเป็นไฟล์ไว้ — สร้างสดจากรูปเช็คอินของแต่ละทริป กดเข้าไปเลือกตอน/แนวภาพ แล้วบันทึกเป็นวิดีโอได้เลย</div>
+              <sc-if value="{{ noRecapShelf }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;padding:34px 24px">
+                  <div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 9.5v5l4-2.5z"></path></svg></div>
+                  <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีรูปให้ทำรีแคป</div>
+                  <div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เก็บรูปไว้ในโมเมนต์ของแต่ละวัน<br>แล้วทริปนั้นจะโผล่มาที่นี่เอง</div>
+                </div>
+              </sc-if>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+                <sc-for list="{{ recapShelf }}" as="r" hint-placeholder-count="6">
+                  <div onClick="{{ r.open }}" style="position:relative;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:#1a1613;cursor:pointer;box-shadow:0 8px 18px -10px rgba(43,36,32,.6)">
+                    <img src="{{ r.imgA }}" alt="" style="{{ r.styleA }}">
+                    <img src="{{ r.imgB }}" alt="" style="{{ r.styleB }}">
+                    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,22,19,.05) 38%,rgba(26,22,19,.9))"></div>
+                    <div style="position:absolute;top:7px;right:7px;display:flex;align-items:center;gap:3px;background:rgba(26,22,19,.72);border-radius:6px;padding:2px 6px;font:600 10px 'Anuphan';color:#e9b48a">{{ r.epLabel }}</div>
+                    <div style="position:absolute;left:0;right:0;bottom:0;padding:8px 8px 9px">
+                      <div style="font:600 12px/1.25 'Anuphan';color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ r.title }}</div>
+                      <div style="font:500 10.5px 'Anuphan';color:#c9b79b;margin-top:2px">{{ r.photos }} รูป · {{ r.days }} วัน</div>
+                    </div>
+                    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(192,95,57,.92);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l11-6.5z"></path></svg></div>
+                  </div>
+                </sc-for>
+              </div>
             </div>
           </sc-if>
           <sc-if value="{{ pBooks }}" hint-placeholder-val="{{ false }}">
@@ -2017,7 +2047,7 @@
       </div>
     </sc-if>
 
-      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" style="position:absolute;right:18px;bottom:146px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>บันทึก</button>
+      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" style="position:absolute;right:18px;bottom:146px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>โมเมนต์</button>
       <button onClick="{{ goAskAi }}" style="position:absolute;right:18px;bottom:84px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
@@ -3218,6 +3248,57 @@ class Component extends DCLogic {
     this.showToast('✓ เพิ่ม “' + p.name + '” ลง ' + ((days[dayIdx].city || ('วันที่ ' + (dayIdx + 1)))) + ' · ' + ((t && t.name) || 'ทริป'));
   }
   editStop(origin, si, s) { this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', seTime: s.t || '', seTitle: s.title || '', seNote: s.note || '' }); }
+  ytInfo(u) {
+    const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    return m ? { id: m[1], short: /\/shorts\//.test(String(u)) } : null;
+  }
+  enrichRead(el) {
+    if (!el) return;
+    el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => {
+      const id = sp.getAttribute('data-yt');
+      const w = document.createElement('div');
+      w.className = 'wtn-embed-yt';
+      w.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '" allowfullscreen loading="lazy"></iframe>';
+      sp.replaceWith(w);
+    });
+    const rx = /https?:\/\/[^\s<>()"']+/g;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    const todo = []; let n;
+    while ((n = walker.nextNode())) {
+      if (!n.nodeValue) continue;
+      if (n.parentElement && n.parentElement.closest('a,.wtn-embed,figcaption')) continue;
+      rx.lastIndex = 0;
+      if (rx.test(n.nodeValue)) todo.push(n);
+    }
+    todo.forEach(node => {
+      const txt = node.nodeValue; const frag = document.createDocumentFragment();
+      let last = 0, m; rx.lastIndex = 0;
+      while ((m = rx.exec(txt))) {
+        if (m.index > last) frag.appendChild(document.createTextNode(txt.slice(last, m.index)));
+        const url = m[0].replace(/[.,;:!?)\]]+$/, '');
+        const a = document.createElement('a');
+        a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        let label = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+        if (label.length > 44) label = label.slice(0, 42) + '…';
+        a.textContent = label;
+        frag.appendChild(a);
+        last = m.index + url.length; rx.lastIndex = last;
+      }
+      if (last < txt.length) frag.appendChild(document.createTextNode(txt.slice(last)));
+      node.replaceWith(frag);
+    });
+    el.querySelectorAll('p,div,li').forEach(p => {
+      const as = p.querySelectorAll('a');
+      if (as.length !== 1) return;
+      if ((p.textContent || '').trim() !== (as[0].textContent || '').trim()) return;
+      const y = this.ytInfo(as[0].getAttribute('href'));
+      if (!y) return;
+      const w = document.createElement('div');
+      w.className = 'wtn-embed-yt' + (y.short ? ' wtn-yt-short' : '');
+      w.innerHTML = '<iframe src="https://www.youtube.com/embed/' + y.id + '" allowfullscreen loading="lazy"></iframe>';
+      p.replaceWith(w);
+    });
+  }
   cancelStopEdit() { this.setState({ stopEdit: null }); }
   saveStopEdit() {
     const se = this.state.stopEdit; if (!se) return;
@@ -6983,7 +7064,7 @@ class Component extends DCLogic {
       const left = all.length - (i + 1);
       if (!left) break;
       const newDayNext = all[i + 1].day !== all[i].day;
-      if (cur.length >= cap || (newDayNext && cur.length >= target - slack)) { chunks.push(cur); cur = []; }
+      if (cur.length >= target || (newDayNext && cur.length >= target - slack)) { chunks.push(cur); cur = []; }
     }
     if (cur.length) {
       const last = chunks[chunks.length - 1];
@@ -6997,6 +7078,52 @@ class Component extends DCLogic {
     items.forEach(s => { if (s.day && tags[tags.length - 1] !== s.day) tags.push(s.day); });
     const a = tags[0] || '', b = tags[tags.length - 1] || '';
     return { idx: i, items, n: items.length, label: n > 1 ? 'ตอนที่ ' + (i + 1) : 'ทั้งทริป', range: a === b ? a : a + ' – ' + b };
+  }
+  // ชั้น "รีแคป" ในหน้าฉัน — ดึงจากรูปเช็คอินของทุกทริป (ไม่มีไฟล์เก็บไว้ สร้างสดตอนกด)
+  recapShelf() {
+    const ck = this.checkins || {};
+    const cap = this.recapCap();
+    const out = [];
+    (this.userTrips || []).forEach(t => {
+      const photos = []; let cis = 0, dayKeys = 0;
+      Object.keys(ck).forEach(k => {
+        if (k.indexOf(t.id + ':') !== 0) return;
+        const list = ck[k] || []; if (!list.length) return;
+        dayKeys++;
+        list.forEach(c => { cis++; (c.photos || []).forEach(p => photos.push(p)); });
+      });
+      if (!photos.length) return;
+      const n = photos.length;
+      const eps = Math.max(1, Math.ceil(n / cap));
+      const per = Math.ceil(n / eps);
+      const secs = Math.round(2.8 + per * 2.6 + 3);
+      const cover = this.coverOf('wtn-cover-' + t.id, '') || t.cover || 'default-cover.jpg';
+      const at = i => this.px(photos[i] || '') || cover;
+      out.push({
+        tripId: t.id, title: String(t.name || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, ''),
+        when: this.fmtRange(t.start, t.end) || '',
+        days: dayKeys, photos: n, eps,
+        ...(() => {
+          // สุ่มรูปทั้งทริป (คงที่ต่อทริป ไม่กระพริบ) — รูปแรกๆ มักไม่ใช่รูปสวย
+          let sd = 7; for (let i = 0; i < t.id.length; i++) sd = ((sd << 5) - sd + t.id.charCodeAt(i)) >>> 0;
+          const rnd = i => { let x = (sd + i * 1103515245 + 12345) >>> 0; x ^= x >>> 15; return (x * 2246822507) >>> 0; };
+          const pool = photos.map((p, i) => ({ p, r: rnd(i) })).sort((a, b) => a.r - b.r)
+            .slice(0, 12).map(o => this.px(o.p)).filter(Boolean);   // อ่านจาก IDB แค่ 12 ใบพอ
+          const src = pool.length ? pool : [cover];
+          const base = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 1s ease;opacity:';
+          const k = (this.state.recapTick || 0) + out.length;
+          const cur = ((k % src.length) + src.length) % src.length;
+          const prev = (cur - 1 + src.length) % src.length;
+          const even = cur % 2 === 0;
+          return { imgA: src[even ? cur : prev], imgB: src[even ? prev : cur],
+            styleA: base + (even ? '1' : '0'), styleB: base + (even ? '0' : '1') };
+        })(),
+        cover: this.px(cover) || cover, epLabel: eps > 1 ? eps + ' ตอน · ' + (this.recapOrient() === 'port' ? 'ตั้ง' : 'นอน') : '~' + secs + ' วิ',
+        note: (this.recapOrient() === 'port' ? 'แนวตั้ง 1080×1920' : 'แนวนอน 1280×720') + ' · ตอนละ ~' + secs + ' วิ',
+        open: () => { this.setState({ trip: t.id, day: 0, sum: 'recap', recapPart: 0, recapIdx: 0 }); this.go('summary'); },
+      });
+    });
+    return out;
   }
   recapCap() { return this.recapOrient() === 'port' ? 30 : 90; }   // แนวตั้งต้อง <90 วิ เพื่อลง Reels/Stories — แนวนอนยาวได้
   recapOrient() {
@@ -7684,7 +7811,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16zr',
+      appVersion: '2026.08.17e',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -8721,6 +8848,16 @@ class Component extends DCLogic {
       pTrips: this.state.profileTab==='trips', pStories: this.state.profileTab==='stories', pBooks: this.state.profileTab==='books', pRecap: this.state.profileTab==='recap',
       pTabTrips: () => this.setState({profileTab:'trips'}), pTabStories: () => this.setState({profileTab:'stories'}), pTabBooks: () => this.setState({profileTab:'books'}), pTabRecap: () => this.setState({profileTab:'recap'}),
       pStyleTrips: this.state.profileTab==='trips' ? pillOn : pillOff,
+      pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
+      ...(() => {
+        if (this.state.profileTab !== 'recap' || this.state.screen !== 'profile') {
+          if (this._rsTimer) { clearInterval(this._rsTimer); this._rsTimer = null; }
+          return { recapShelf: [], noRecapShelf: false };
+        }
+        if (!this._rsTimer) this._rsTimer = setInterval(() => this.setState(s => ({ recapTick: (s.recapTick || 0) + 1 })), 2400);
+        const items = this.recapShelf();
+        return { recapShelf: items, noRecapShelf: items.length === 0 };
+      })(),
       pStyleStories: this.state.profileTab==='stories' ? pillOn : pillOff,
       pStyleBooks: this.state.profileTab==='books' ? pillOn : pillOff,
       ...(() => {
@@ -8806,7 +8943,7 @@ class Component extends DCLogic {
                 smSubtitle: os.subtitle || '', smTags: [...(os.tags || [])], tagDraft: '' });
             }
           },
-          seTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: this.profile.name || os.author || 'Nim',
+          stoTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: this.profile.name || os.author || 'Nim',
           seAvatar: this.coverOf('wtn-avatar', null), seHasAvatar: !!this.coverOf('wtn-avatar', null),
           smTitle: this.state.smTitle ?? '', smCategory: this.state.smCategory ?? '', smSubtitle: this.state.smSubtitle ?? '',
           setSmTitle: e => this.setState({ smTitle: e.target.value }),
@@ -8893,7 +9030,7 @@ class Component extends DCLogic {
           previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this.chHtml(), photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
           crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: this.profile.name || os.author || 'Nim',
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
-          chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; el.querySelectorAll('.wtn-embed[data-yt]').forEach(sp => { const id = sp.getAttribute('data-yt'); const w = document.createElement('div'); w.className = 'wtn-embed-yt'; w.innerHTML = '<iframe src=\"https://www.youtube.com/embed/' + id + '\" allowfullscreen></iframe>'; sp.replaceWith(w); }); } },
+          chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; this.enrichRead(el); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
           crPhotos: (() => { const srcs = ((oc || {}).photos || []).map(p => this.px(p));
