@@ -4828,7 +4828,7 @@ class Component extends DCLogic {
         (all[k] || []).forEach(c => {
           if (!c || !c.published || !c.mid || have[c.mid] || tomb[c.mid]) return;   // มีใบสั่งลบอยู่ = ห้ามสร้างคืน
           have[c.mid] = 1;
-          add.push({ id: c.mid, type: 'checkin', text: [c.name, c.note].filter(Boolean).join(' · '), place,
+          add.push({ id: c.mid, type: 'checkin', name: c.name || '', text: [c.name, c.note].filter(Boolean).join(' · '), place,
             photos: (c.photos || []).slice(0, 10), tripId, lat: c.lat, lng: c.lng,
             at: c.at || Date.now(), published: true, cat: 0, likes: 0,
             authorName: this.myName, authorAvatar: this.myAvatar, _m: Date.now() });
@@ -5001,7 +5001,7 @@ class Component extends DCLogic {
       const name = 'vela-moment-' + (m.id || Date.now()) + '.png';
       let file = null;
       try { file = new File([blob], name, { type: 'image/png' }); } catch (e) {}
-      const caption = [note, place, 'บันทึกด้วย Vela · onevela.net'].filter(Boolean).join('\n');
+      const caption = [title, note, place0, 'บันทึกด้วย Vela · onevela.net'].filter(Boolean).join('\n');
       if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], text: caption }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
       }
@@ -7608,7 +7608,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16zk',
+      appVersion: '2026.08.16zl',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
