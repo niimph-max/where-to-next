@@ -514,7 +514,8 @@
                   </sc-if>
                   <sc-if value="{{ s.editingThis }}" hint-placeholder-val="{{ false }}">
                     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px"><sc-for list="{{ stopKindChips }}" as="k" hint-placeholder-count="6"><button onClick="{{ k.on }}" style="{{ k.style }}">{{ k.label }}</button></sc-for></div>
-                    <input value="{{ seTime }}" onInput="{{ setSeTime }}" placeholder="เวลา เช่น 09:00" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 11px;font:500 15px 'Anuphan';color:#2b241f;outline:none;margin-bottom:7px">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px"><sc-for list="{{ sePeriodChips }}" as="pc" hint-placeholder-count="5"><button onClick="{{ pc.on }}" style="{{ pc.style }}">{{ pc.label }}</button></sc-for></div>
+                    <input type="time" value="{{ seTime }}" onInput="{{ setSeTime }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 11px;font:500 15px 'Anuphan';color:#2b241f;outline:none;margin-bottom:7px">
                     <input value="{{ seTitle }}" onInput="{{ setSeTitle }}" placeholder="ชื่อกิจกรรม" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 11px;font:500 15px 'Anuphan';color:#2b241f;outline:none;margin-bottom:7px">
                     <textarea value="{{ seNote }}" onInput="{{ setSeNote }}" placeholder="รายละเอียด (ไม่บังคับ)" rows="2" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 11px;font:500 14.5px/1.5 'IBM Plex Sans Thai Looped',sans-serif;color:#4a4239;outline:none;resize:vertical;margin-bottom:8px"></textarea>
                     <div style="display:flex;gap:8px"><button onClick="{{ cancelStopEdit }}" style="flex:1;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 14.5px 'Anuphan';padding:8px;border-radius:10px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveStopEdit }}" style="flex:1.4;border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';padding:8px;border-radius:10px;cursor:pointer">บันทึก</button></div>
@@ -522,9 +523,21 @@
                 </div>
               </div>
             </sc-for>
-            <div style="display:flex;gap:12px;margin-bottom:14px"><div style="width:46px;flex:none;display:flex;justify-content:center"><span style="width:10px;height:10px;border-radius:50%;border:2px dashed #c9baa4;margin-top:3px"></span></div><button onClick="{{ openAdd }}" style="flex:1;background:transparent;border:1.5px dashed rgba(43,36,32,.2);border-radius:15px;padding:12px;font:600 15px 'Anuphan';color:#a1927c;cursor:pointer">+ เพิ่มกิจกรรม</button></div>
+            <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:20px 17px;margin-bottom:14px;text-align:center">
+                <div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f;margin-bottom:5px">วันนี้ยังว่างอยู่</div>
+                <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:15px;text-wrap:pretty">ให้ AI ร่างตารางทั้งวันให้ก่อน แล้วค่อยแก้ตามใจ</div>
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <button onClick="{{ goAi }}" style="width:100%;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 16.5px 'Anuphan';cursor:pointer;box-shadow:0 8px 20px -8px rgba(192,95,57,.7)"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>ให้ AI ช่วยจัดวันนี้</button>
+                  <button onClick="{{ openAdd }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">+ เพิ่มกิจกรรมเอง</button>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dayNotEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:12px;margin-bottom:14px"><div style="width:46px;flex:none;display:flex;justify-content:center"><span style="width:10px;height:10px;border-radius:50%;border:2px dashed #c9baa4;margin-top:3px"></span></div><button onClick="{{ openAdd }}" style="flex:1;background:transparent;border:1.5px dashed rgba(43,36,32,.2);border-radius:15px;padding:12px;font:600 15px 'Anuphan';color:#a1927c;cursor:pointer">+ เพิ่มกิจกรรม</button></div>
+            </sc-if>
           </div>
-          <div style="padding:2px 20px 30px">
+          <div style="padding:2px 20px 210px">
             <sc-if value="{{ stayView }}" hint-placeholder-val="{{ true }}">
               <button onClick="{{ openStayEdit }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:15px;padding:14px 15px;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7" style="flex:none"><path d="M4 9h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 9V7a2 2 0 0 1 2-2h5v4"/></svg><div style="flex:1"><div style="font:500 12px 'Anuphan';color:#a1907a">ที่พักคืนนี้</div><div style="font:600 15.5px 'Anuphan';color:#f6efe2">{{ cur.stayName }}</div><div style="font:500 14px 'Anuphan';color:#c9b79b">{{ cur.stayMeta }}</div></div><span style="flex:none;display:inline-flex;align-items:center;gap:4px;font:600 13.5px 'Anuphan';color:#e9b48a"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L18 10l-4-4L4 16z"/></svg>แก้ไข</span></button>
             </sc-if>
@@ -654,15 +667,23 @@
       <!-- ========== ADD STOP ========== -->
       <sc-if value="{{ sAddStop }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:18px 20px 30px">
-          <div style="font:500 14.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">เพิ่มกิจกรรมลงวันที่เลือกไว้</div>
+          <div style="font:500 14.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">เพิ่มกิจกรรมลง {{ addDayLabel }}</div>
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:10px">เลือกหมวด</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
             <sc-for list="{{ addChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.on }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px">
             <div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:5px">ชื่อกิจกรรม</div><input value="{{ addTitle }}" onInput="{{ onAddTitle }}" placeholder="เช่น กระเช้าขึ้นเขา" style="width:100%;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:13px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:5px">ช่วงเวลา</div><input value="{{ addTime }}" onInput="{{ onAddTime }}" placeholder="เช่น เช้า / 09:00" style="width:100%;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:13px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:5px">โน้ต (ถ้ามี)</div><input onInput="{{ onAddNote }}" placeholder="รายละเอียดเพิ่มเติม" style="width:100%;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:13px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div>
+              <div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ช่วงเวลา</div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"><sc-for list="{{ periodChips }}" as="pc" hint-placeholder-count="5"><button onClick="{{ pc.on }}" style="{{ pc.style }}">{{ pc.label }}</button></sc-for></div>
+              <div style="display:flex;align-items:center;gap:9px">
+                <input type="time" value="{{ addTime }}" onInput="{{ onAddTime }}" style="flex:1;min-width:0;box-sizing:border-box;min-height:48px;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:12px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
+                <sc-if value="{{ addHasTime }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearAddTime }}" style="flex:none;min-height:48px;padding:0 15px;border:1px solid rgba(43,36,32,.14);background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">ล้างเวลา</button></sc-if>
+              </div>
+              <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-top:7px;text-wrap:pretty">{{ addWhenNote }}</div>
+            </div>
+            <div><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:5px">โน้ต (ถ้ามี)</div><input value="{{ addNote }}" onInput="{{ onAddNote }}" placeholder="รายละเอียดเพิ่มเติม" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:12px;padding:13px 14px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
           <sc-if value="{{ showAffil }}" hint-placeholder-val="{{ true }}">
             <div onClick="{{ affilGo }}" style="margin-top:16px;background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:14px;padding:14px 15px;cursor:pointer">
@@ -674,7 +695,10 @@
               <div style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;margin-top:9px">จองผ่านลิงก์นี้ Vela อาจได้ค่าแนะนำเล็กน้อย โดยคุณไม่จ่ายเพิ่ม</div>
             </div>
           </sc-if>
-          <button onClick="{{ saveStop }}" style="width:100%;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';padding:15px;border-radius:14px;margin-top:16px;cursor:pointer">บันทึกลงวันนี้</button>
+          <div style="display:flex;gap:9px;margin-top:16px">
+            <button onClick="{{ saveStopMore }}" style="flex:1;min-height:54px;border:1px solid rgba(43,36,32,.18);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">บันทึก + เพิ่มต่อ</button>
+            <button onClick="{{ saveStop }}" style="flex:1.35;min-height:54px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;padding:0 10px">{{ saveStopLabel }}</button>
+          </div>
         </div>
       </sc-if>
 
@@ -2016,6 +2040,35 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ sPbFrame }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:16px 20px 40px">
+          <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม</div>
+          <div style="font:600 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:8px">ธีมเล่ม</div>
+          <div style="display:flex;gap:8px;margin-bottom:22px"><sc-for list="{{ pbThemeChips }}" as="tc" hint-placeholder-count="3"><button onClick="{{ tc.on }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for></div>
+          <div style="display:flex;flex-direction:column;gap:20px">
+            <sc-for list="{{ pbPages }}" as="pg" hint-placeholder-count="4">
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px">
+                  <span style="flex:1;min-width:0;font:600 13.5px 'Anuphan';color:#c05f39">{{ pg.label }}</span>
+                  <span style="flex:none;font:500 12.5px 'Anuphan';color:#a1927c">{{ pg.meta }}</span>
+                  <button onClick="{{ pg.up }}" aria-label="ย้ายหน้านี้ขึ้น" style="{{ pg.upStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 15l-6-6-6 6"/></svg></button>
+                  <button onClick="{{ pg.down }}" aria-label="ย้ายหน้านี้ลง" style="{{ pg.downStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></button>
+                </div>
+                <div style="{{ pg.pageStyle }}">
+                  <div style="{{ pg.innerStyle }}">
+                    <div style="{{ pg.gridStyle }}">
+                      <sc-for list="{{ pg.slots }}" as="sl" hint-placeholder-count="2">
+                        <button onClick="{{ sl.on }}" style="{{ sl.slotStyle }}"><img src="{{ sl.u }}" alt="" style="{{ sl.imgStyle }}"><span style="{{ sl.dotStyle }}"></span></button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <button onClick="{{ pbFrDone }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างเล่มด้วยกรอบนี้</button>
+        </div>
+      </sc-if>
     </div>
 
     <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
@@ -2174,7 +2227,10 @@
         <div style="margin-top:4px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ pbBarStyle }}"></div></div>
         <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ pbBusyLabel }}</div></div>
       </sc-if>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">ธีมเล่ม</div>
+      <div style="display:flex;gap:8px;margin-bottom:18px"><sc-for list="{{ pbThemeChips }}" as="tc" hint-placeholder-count="3"><button onClick="{{ tc.on }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for></div>
       <sc-if value="{{ pbIdle }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openPbFrame }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 6v12M15 6v12" opacity=".45"/></svg>{{ pbFrameBtnLabel }}</button>
         <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
       </sc-if>
       <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
@@ -2205,6 +2261,33 @@
     </div>
   </div>
 </sc-if>
+<sc-if value="{{ frOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:9850;background:rgba(14,12,10,.96);display:flex;flex-direction:column">
+    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 8px">
+      <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:#e7ddcc">{{ frTitle }}</span>
+      <button onClick="{{ frReset }}" style="flex:none;min-height:40px;padding:0 14px;border:1px solid rgba(231,221,204,.24);background:transparent;color:#c9b79b;font:600 13.5px 'Anuphan';border-radius:11px;cursor:pointer">รีเซ็ต</button>
+    </div>
+    <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px 18px">
+      <div onPointerDown="{{ frDown }}" onPointerMove="{{ frMove }}" onPointerUp="{{ frUp }}" onPointerCancel="{{ frUp }}" style="{{ frBoxStyle }}"><img src="{{ frSrc }}" alt="" draggable="false" style="{{ frImgStyle }}"></div>
+    </div>
+    <div style="flex:none;padding:2px 20px calc(18px + env(safe-area-inset-bottom))">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px">
+        <button onClick="{{ frMovePrev }}" style="{{ frPrevStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <span style="flex:1;min-width:0;text-align:center;font:600 13px 'Anuphan';color:#c9b79b">{{ frPosLabel }}</span>
+        <button onClick="{{ frMoveNext }}" style="{{ frNextStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div style="font:600 12.5px 'Anuphan';color:#a89d8b;margin-bottom:7px">กรอบของรูปนี้ในเล่ม</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px"><sc-for list="{{ frSizeChips }}" as="zc" hint-placeholder-count="5"><button onClick="{{ zc.on }}" style="{{ zc.style }}">{{ zc.label }}</button></sc-for></div>
+      <div style="font:500 13px 'Anuphan';color:#a89d8b;text-align:center;margin-bottom:10px">ลากรูปเพื่อเลือกส่วนที่อยากให้เห็น</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <span style="flex:none;font:600 12.5px 'Anuphan';color:#a89d8b">ซูม</span>
+        <input type="range" min="100" max="250" step="5" value="{{ frZoom }}" onInput="{{ frSetZoom }}" style="flex:1;min-width:0;accent-color:#c05f39">
+        <span style="flex:none;width:46px;text-align:right;font:600 12.5px 'Anuphan';color:#e7ddcc">{{ frZoomLabel }}</span>
+      </div>
+      <button onClick="{{ frClose }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">เสร็จ</button>
+    </div>
+  </div>
+</sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:9500;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 20px;border-radius:22px;box-shadow:0 10px 26px -8px rgba(43,36,32,.6);max-width:86vw;text-align:center;animation:wtnToast .28s ease">{{ toast }}</div>
 </sc-if>
@@ -2216,11 +2299,11 @@ class Component extends DCLogic {
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
     tab: (() => { try { const t = localStorage.getItem('wtn-home-tab'); return ['today', 'stories', 'plan', 'me'].indexOf(t) !== -1 ? t : 'plan'; } catch (e) { return 'plan'; } })(),
-    history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
+    history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addPeriod: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { today: 'today', plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
-  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
+  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['today','myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -3091,6 +3174,71 @@ class Component extends DCLogic {
     return out;
   }
 
+  // ---------- ช่วงเวลาของกิจกรรม: { period, time } ----------
+  PERIODS = ['เช้า', 'สาย', 'บ่าย', 'เย็น', 'ค่ำ'];
+  normHHMM(v) {
+    const m = String(v == null ? '' : v).match(/(\d{1,2})[:.](\d{2})/);
+    if (!m) return '';
+    const h = Math.min(23, +m[1]), mi = Math.min(59, +m[2]);
+    return ('0' + h).slice(-2) + ':' + ('0' + mi).slice(-2);
+  }
+  periodOfTime(hhmm) {
+    const t = this.normHHMM(hhmm); if (!t) return '';
+    const h = +t.slice(0, 2);
+    if (h < 9) return 'เช้า';
+    if (h < 12) return 'สาย';
+    if (h < 16) return 'บ่าย';
+    if (h < 19) return 'เย็น';
+    return 'ค่ำ';
+  }
+  normPeriod(p) { p = String(p == null ? '' : p).trim(); return this.PERIODS.indexOf(p) !== -1 ? p : ''; }
+  // อ่าน free text เก่า → { period, time } (ใช้ทั้งตอน migrate และตอนแสดงข้อมูล seed)
+  parseLegacyT(t) {
+    const s = String(t == null ? '' : t);
+    const time = this.normHHMM(s);
+    let period = '';
+    const tests = [[/เช้าตรู่|เช้า/, 'เช้า'], [/สาย/, 'สาย'], [/เที่ยง|บ่าย/, 'บ่าย'], [/เย็น/, 'เย็น'], [/ค่ำ|กลางคืน|ดึก/, 'ค่ำ']];
+    for (const [re, p] of tests) { if (re.test(s)) { period = p; break; } }
+    if (!period) period = this.periodOfTime(time);
+    return { period, time };
+  }
+  stopWhen(s) {
+    s = s || {};
+    if (s.period != null || s.time != null) {
+      const time = this.normHHMM(s.time);
+      return { period: this.normPeriod(s.period) || this.periodOfTime(time), time };
+    }
+    return this.parseLegacyT(s.t);
+  }
+  stopTLabel(s) {
+    s = s || {};
+    if (s.period == null && s.time == null) return String(s.t || '').trim() || 'ไม่ระบุเวลา';
+    const w = this.stopWhen(s);
+    return w.time || w.period || 'ไม่ระบุเวลา';
+  }
+  stopRank(s) {
+    const w = this.stopWhen(s);
+    const pi = this.PERIODS.indexOf(w.period);
+    const m = w.time ? [+w.time.slice(0, 2), +w.time.slice(3, 5)] : null;
+    return (pi < 0 ? 9 : pi) * 10000 + (m ? m[0] * 60 + m[1] : 9999);
+  }
+  mkWhen(period, time) {
+    const t = this.normHHMM(time), p = this.normPeriod(period) || this.periodOfTime(t);
+    return { t: t || p || '', period: p, time: t };
+  }
+  // ย้ายข้อมูลเก่า: free text → period/time ครั้งเดียว
+  migrateStopTimes() {
+    try {
+      if (localStorage.getItem('wtn-mig-period')) return;
+      const all = this.itineraries; let touched = false;
+      Object.keys(all).forEach(id => (all[id] || []).forEach(d => (d.stops || []).forEach(s => {
+        if (s && s.period == null && s.time == null) { const w = this.parseLegacyT(s.t); s.period = w.period; s.time = w.time; touched = true; }
+      })));
+      if (touched) localStorage.setItem('wtn-itinerary', JSON.stringify(all));
+      localStorage.setItem('wtn-mig-period', '1');
+    } catch (e) {}
+  }
+
   get days() {
     return this.baseDaysFor(this.state.trip);
   }
@@ -3252,14 +3400,28 @@ class Component extends DCLogic {
     const p = this.state.addPick; if (!p) return;
     const days = this.baseDaysFor(tid).map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[dayIdx]) return;
-    days[dayIdx].stops.push({ t: '', kind: this.catKind(p.cat), title: p.name, note: p.note || '' });
+    days[dayIdx].stops.push({ t: '', period: '', time: '', kind: this.catKind(p.cat), title: p.name, note: p.note || '' });
     this.saveItinerary(tid, days);
     if (p.key) this.setState(s => ({ destAdded: { ...(s.destAdded || {}), [p.key]: true } }));
     this.setState({ addPick: null, addPickTrip: null });
     const t = this.userTrips.find(x => x.id === tid);
     this.showToast('✓ เพิ่ม “' + p.name + '” ลง ' + ((days[dayIdx].city || ('วันที่ ' + (dayIdx + 1)))) + ' · ' + ((t && t.name) || 'ทริป'));
   }
-  editStop(origin, si, s) { this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', seTime: s.t || '', seTitle: s.title || '', seNote: s.note || '' }); }
+  // เพิ่มกิจกรรมลงวันที่เลือกไว้ — เขียนลงแผนจริง (ไม่หายตอนรีโหลด)
+  addStopNow(keepOpen) {
+    const title = (this.state.addTitle || '').trim();
+    if (!title) { this.showToast('ใส่ชื่อกิจกรรมก่อนนะ'); return; }
+    const i = this.state.day;
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    if (!days[i]) return;
+    days[i].stops.push({ ...this.mkWhen(this.state.addPeriod, this.state.addTime), kind: this.state.addKind, title, note: (this.state.addNote || '').trim() });
+    this.saveItinerary(this.state.trip, days);
+    this.setState({ addTitle: '', addTime: '', addPeriod: '', addNote: '' });
+    const d = days[i];
+    if (keepOpen) { this.showToast('✓ เพิ่ม “' + title + '” ลงวันที่ ' + (d.n || (i + 1)) + ' แล้ว'); this.forceUpdate(); }
+    else { this.forceUpdate(); this.back(); }
+  }
+  editStop(origin, si, s) { const w = this.stopWhen(s); this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', sePeriod: w.period, seTime: w.time, seTitle: s.title || '', seNote: s.note || '' }); }
   ytInfo(u) {
     const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
     return m ? { id: m[1], short: /\/shorts\//.test(String(u)) } : null;
@@ -3314,7 +3476,7 @@ class Component extends DCLogic {
   cancelStopEdit() { this.setState({ stopEdit: null }); }
   saveStopEdit() {
     const se = this.state.stopEdit; if (!se) return;
-    const patch = { t: (this.state.seTime || '').trim(), kind: (this.state.seKind || '').trim(), title: (this.state.seTitle || '').trim(), note: (this.state.seNote || '').trim() };
+    const patch = { ...this.mkWhen(this.state.sePeriod, this.state.seTime), kind: (this.state.seKind || '').trim(), title: (this.state.seTitle || '').trim(), note: (this.state.seNote || '').trim() };
     const i = this.state.day;
     if (se.origin === 'base') {
       const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
@@ -3657,7 +3819,10 @@ class Component extends DCLogic {
     this.setState({ impBusy: true, impErr: '' });
     const prompt = 'คุณคือตัวช่วยแยกโปรแกรมทัวร์เป็นแผนรายวันของแอปท่องเที่ยว\n' +
       'อ่านโปรแกรมทัวร์ต่อไปนี้ (ข้อความ/รูป/PDF) แล้วตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอก JSON และห้ามใส่ ```\n' +
-      'โครงสร้าง: {"name":"ชื่อทริปสั้นๆ","country":"ประเทศ","city":"เมืองหลัก","days":[{"city":"หัวข้อสั้นของวัน","summary":"สรุปวันสั้นๆ","stops":[{"t":"เวลา/ช่วง","kind":"ประเภทสั้นๆ เช่น เที่ยวบิน/ที่เที่ยว/กิน/เดินทาง/ที่พัก","title":"กิจกรรม","note":"รายละเอียดสั้น"}],"stayName":"ที่พักคืนนั้น","stayMeta":"เมือง/โน้ต"}]}\n' +
+      'โครงสร้าง: {"name":"ชื่อทริปสั้นๆ","country":"ประเทศ","city":"เมืองหลัก","days":[{"city":"หัวข้อสั้นของวัน","summary":"สรุปวันสั้นๆ","stops":[{"period":"เช้า|สาย|บ่าย|เย็น|ค่ำ หรือ \'\'","time":"HH:MM แบบ 24 ชม. หรือ \'\'","kind":"ประเภทสั้นๆ เช่น เที่ยวบิน/ที่เที่ยว/กิน/เดินทาง/ที่พัก","title":"กิจกรรม","note":"รายละเอียดสั้น"}],"stayName":"ที่พักคืนนั้น","stayMeta":"เมือง/โน้ต"}]}\n' +
+      'กฎเวลา (สำคัญมาก): ห้ามเดาหรือแต่งเวลาเองเด็ดขาด — ใส่ time เฉพาะตอนที่โปรแกรมระบุเวลาไว้จริง\n' +
+      'ถ้าโปรแกรมบอกแค่ช่วง (เช้า/บ่าย/เย็น) ให้ใส่ period อย่างเดียว time เป็น \'\' · ถ้าไม่มีข้อมูลเลยให้ทั้ง period และ time เป็น \'\'\n' +
+      'เรียง stops ตามลำดับที่เกิดจริงในวัน\n' +
       'ใช้ภาษาไทย จำนวน days ให้ตรงกับโปรแกรมจริง ช่องที่ไม่มีข้อมูลใส่ "" ' +
       (text ? ('\n\nข้อความโปรแกรม:\n' + text) : '');
     try {
@@ -3671,7 +3836,7 @@ class Component extends DCLogic {
         if (start && !isNaN(start)) { const dt = new Date(start.getTime() + i * 86400000); date = dt.getDate() + ' ' + M[dt.getMonth()]; }
         return { n: String(i + 1), date, tag: 'วันที่ ' + (i + 1) + (date !== 'วัน ' + (i + 1) ? ' · ' + date : ''),
           city: (d.city || '').trim() || 'วันที่ ' + (i + 1), summary: (d.summary || '').trim(),
-          stops: (d.stops || []).map(s => ({ t: (s.t || '').trim(), kind: (s.kind || '').trim(), title: (s.title || '').trim(), note: (s.note || '').trim() })),
+          stops: (d.stops || []).map(s => ({ ...this.mkWhen(this.normPeriod(s.period) || this.parseLegacyT(s.t).period, s.time || s.t), kind: (s.kind || '').trim(), title: (s.title || '').trim(), note: (s.note || '').trim() })),
           stayName: (d.stayName || '').trim() || 'ยังไม่ได้เลือกที่พัก', stayMeta: (d.stayMeta || '').trim() };
       });
       if (!days.length) throw new Error('แยกวันไม่สำเร็จ ลองวางข้อความให้ชัดขึ้น หรือแนบรูปโปรแกรม');
@@ -3754,7 +3919,8 @@ class Component extends DCLogic {
   }
   dayContext() {
     const dd = this.days, d = dd[this.state.day] || {};
-    const stops = (d.stops || []).map(s => s.t + ' ' + s.kind + ': ' + s.title).join('\n');
+    const stops = (d.stops || []).slice().sort((a, b) => this.stopRank(a) - this.stopRank(b))
+      .map(s => this.stopTLabel(s) + ' ' + (s.kind || '') + ': ' + (s.title || '')).join('\n');
     const ti = this.tripInfo;
     return 'ทริป ' + (ti.title || '') + ' (' + dd.length + ' วัน) ' + (d.tag || '') + ' — ' + (d.city || '') +
       '\nแผนเดิมของวันนี้:\n' + stops + '\nที่พักคืนนี้: ' + (d.stayName || '-');
@@ -6480,7 +6646,213 @@ class Component extends DCLogic {
       '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5</span></div>' +
       out.join('') + this._bookViewer(false, 'eb-' + (D.tripId || D.title)) + '</body></html>';
   }
-  // ── โฟโต้บุ๊ก (แนวนอน) — รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน ไม่มีคำบรรยาย ──
+  // ── โฟโต้บุ๊ก: จุดโฟกัสรูปต่อใบ (แก้ปัญหารูปโดนครอบตัดหัว/ตัดคน) ──
+  get pbFocals() { try { return JSON.parse(localStorage.getItem('wtn-pb-focal')) || {}; } catch (e) { return {}; } }
+  pbFocalOf(ref) {
+    const v = this.pbFocals[String(ref || '')];
+    if (!Array.isArray(v)) return { x: 50, y: 42, z: 1, set: false };
+    return { x: +v[0] || 0, y: +v[1] || 0, z: Math.max(1, +v[2] || 1), set: true };
+  }
+  get pbOrders() { try { return JSON.parse(localStorage.getItem('wtn-pb-order')) || {}; } catch (e) { return {}; } }
+  pbOrderOf(dayIdx) { const t = this.pbOrders[this.ebTripId()] || {}; const v = t[dayIdx]; return Array.isArray(v) ? v : null; }
+  savePbOrder(dayIdx, refs) {
+    try {
+      const all = this.pbOrders, tid = this.ebTripId();
+      all[tid] = all[tid] || {}; all[tid][dayIdx] = refs;
+      localStorage.setItem('wtn-pb-order', JSON.stringify(all));
+    } catch (e) {}
+  }
+  // สลับลำดับรูปภายในวันเดียวกัน (ลำดับนี้คือลำดับที่รูปไหลลงหน้า)
+  pbMoveShot(ref, dir) {
+    const D = this._pbData; if (!D || !ref) return;
+    const d = (D.days || []).find(dd => (dd.shots || []).some(s => s.ref === ref)); if (!d) return;
+    const arr = d.shots.slice();
+    const i = arr.findIndex(s => s.ref === ref), j = i + dir;
+    if (i < 0 || j < 0 || j >= arr.length) return;
+    arr[i] = arr[j]; arr[j] = d.shots[i];
+    d.shots = arr; d.pinned = true;
+    this.savePbOrder(d.n - 1, arr.map(s => s.ref));
+    this.forceUpdate();
+  }
+  // สลับหน้าทั้งหน้า (รูปทุกใบในหน้าไปพร้อมกัน) ภายในวันเดียวกัน
+  pbMovePage(refs, dir) {
+    const D = this._pbData; if (!D || !refs || !refs.length) return;
+    const has = (arr, r) => arr.indexOf(r) >= 0;
+    const d = (D.days || []).find(dd => (dd.shots || []).some(s => has(refs, s.ref))); if (!d) return;
+    const plan = this.pbPlan(D).filter(p => p.day === d && p.shots && p.shots.length);
+    const i = plan.findIndex(p => p.shots.some(s => has(refs, s.ref)));
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= plan.length) return;
+    const order = plan.slice(); const t = order[i]; order[i] = order[j]; order[j] = t;
+    const map = {}; d.shots.forEach(s => { map[s.ref] = s; });
+    const flat = order.reduce((a, p) => a.concat(p.shots.map(s => s.ref)), []);
+    const next = flat.map(r => map[r]).filter(Boolean);
+    d.shots.forEach(s => { if (flat.indexOf(s.ref) < 0) next.push(s); });
+    d.shots = next; d.pinned = true;
+    this.savePbOrder(d.n - 1, next.map(s => s.ref));
+    this.forceUpdate();
+  }
+  pbShotPos(ref) {
+    const D = this._pbData; if (!D || !ref) return null;
+    const d = (D.days || []).find(dd => (dd.shots || []).some(s => s.ref === ref)); if (!d) return null;
+    return { i: d.shots.findIndex(s => s.ref === ref), n: d.shots.length, day: d.n };
+  }
+  get pbSizes() { try { return JSON.parse(localStorage.getItem('wtn-pb-size')) || {}; } catch (e) { return {}; } }
+  pbSizeOf(ref) { const v = this.pbSizes[String(ref || '')]; return ['bleed', 'one', 'tall', 'small'].indexOf(v) !== -1 ? v : ''; }
+  setPbSize(ref, v) {
+    if (!ref) return;
+    const all = this.pbSizes;
+    if (!v) delete all[String(ref)]; else all[String(ref)] = v;
+    try { localStorage.setItem('wtn-pb-size', JSON.stringify(all)); } catch (e) {}
+    this.forceUpdate();
+  }
+  pbSizeLabels = { '': 'อัตโนมัติ', bleed: 'เต็มหน้าไม่มีขอบ', one: 'เดี่ยวมีขอบ', tall: 'ครึ่งหน้าแนวตั้ง', small: 'ช่องเล็ก' };
+  savePbFocal(ref, f) {
+    if (!ref) return;
+    const all = this.pbFocals;
+    if (!f) delete all[String(ref)];
+    else all[String(ref)] = [Math.round(f.x), Math.round(f.y), Math.round(f.z * 100) / 100];
+    try { localStorage.setItem('wtn-pb-focal', JSON.stringify(all)); } catch (e) {}
+  }
+  // สไตล์รูปหนึ่งใบ: ครอบกลางช่องเสมอ แล้วเลื่อน/ซูมตามที่ผู้ใช้ปรับ
+  pbImgStyle(shot) {
+    const f = this.pbFocalOf(shot && shot.ref);
+    const pos = f.x + '% ' + f.y + '%';
+    return 'object-position:' + pos + (f.z > 1.001 ? (';transform:scale(' + f.z + ');transform-origin:' + pos) : '');
+  }
+  pbThemes = {
+    cream: { label: 'ครีม', pg: '#fffaf0', end: '#f6efe2', ink: '#2b241f', sub: '#8a7d6f', faint: '#a99e8e', ph: '#efe4d3', desk: '#e7ddcc', line: 'rgba(43,36,32,.1)' },
+    white: { label: 'ขาว', pg: '#ffffff', end: '#f7f6f4', ink: '#1b1b19', sub: '#6f6f69', faint: '#a5a59e', ph: '#eeedea', desk: '#dcdbd5', line: 'rgba(27,27,25,.1)' },
+    dark: { label: 'เทาเข้ม', pg: '#1d1a16', end: '#171512', ink: '#f2ead9', sub: '#a89d8b', faint: '#7d7365', ph: '#2a2621', desk: '#0e0d0b', line: 'rgba(242,234,217,.12)' }
+  };
+  get pbThemeKey() { try { const k = (JSON.parse(localStorage.getItem('wtn-pb-theme')) || {})[this.ebTripId()]; return this.pbThemes[k] ? k : 'cream'; } catch (e) { return 'cream'; } }
+  setPbTheme(k) {
+    try { const all = JSON.parse(localStorage.getItem('wtn-pb-theme')) || {}; all[this.ebTripId()] = k; localStorage.setItem('wtn-pb-theme', JSON.stringify(all)); } catch (e) {}
+    this.forceUpdate();
+  }
+  // สัดส่วนช่องรูปจริงบนหน้า A5 แนวนอน (มม.) — ใช้ทั้งตอน render และตอนให้ผู้ใช้ปรับกรอบ
+  pbSlotAspect(cls, i, dayo) {
+    const g = dayo ? 104 : 124.5, W = 192;
+    if (cls === 'bleed') return 210 / 148;
+    if (cls === 'two' || cls === 'tall1') return ((W - 3) / 2) / g;
+    if (cls === 'small1') return ((W - 3) / 2) / ((g - 3) / 2);
+    if (cls === 'four') return ((W - 3) / 2) / ((g - 3) / 2);
+    if (cls === 'big3') return i === 0 ? (189 * 1.6 / 2.6) / g : (189 / 2.6) / ((g - 3) / 2);
+    return W / g;
+  }
+  // แผนหน้าเล่ม — แยกออกจากการ render เพื่อให้หน้า "ปรับกรอบรูป" เห็นช่องจริงตรงกัน
+  pbPlan(D) {
+    const pages = [{ kind: 'cover' }];
+    let li = 0;
+    const port = s => s && s.r < 0.95;
+    const sz = s => this.pbSizeOf(s && s.ref);
+    (D.days || []).forEach(d => {
+      const rest = d.shots.slice();
+      const wide = s => s && s.r >= 1.15 && (s.w || 0) >= 1400;
+      let hi = -1;
+      if (!d.pinned) {
+        hi = rest.findIndex(s => sz(s) === 'bleed');
+        if (hi < 0) hi = rest.findIndex(s => !sz(s) && wide(s));
+      } else if (rest.length && (sz(rest[0]) === 'bleed' || (!sz(rest[0]) && wide(rest[0])))) hi = 0;
+      const hero = hi >= 0 ? rest.splice(hi, 1)[0] : null;
+      let hdr = false;
+      if (hero) pages.push({ kind: 'hero', day: d, shots: [hero], cls: 'bleed' });
+      else {
+        const lim = rest.findIndex(s => sz(s));
+        if (lim === 0) hdr = true;   // รูปแรกผู้ใช้กำหนดกรอบเอง → ยกหัวข้อวันไปไว้บนหน้าแรกของวันแทน
+        else {
+          const grp = rest.splice(0, Math.min(2, lim < 0 ? rest.length : lim));
+          pages.push({ kind: 'dayopen', day: d, shots: grp, cls: grp.length === 1 ? 'one' : 'two', dayo: true });
+        }
+      }
+      const push = p => { if (hdr && p.cls !== 'bleed') { p.kind = 'dayopen'; p.dayo = true; hdr = false; } pages.push(p); };
+      while (rest.length) {
+        const k = sz(rest[0]);
+        if (k === 'bleed') { push({ kind: 'hero', day: d, shots: [rest.shift()], cls: 'bleed' }); continue; }
+        if (k === 'one') { push({ kind: 'grid', day: d, shots: [rest.shift()], cls: 'one' }); continue; }
+        if (k === 'tall') {
+          const grp = [rest.shift()];
+          const j = rest.findIndex(x => sz(x) === 'tall');
+          if (j >= 0) grp.push(rest.splice(j, 1)[0]);
+          else if (rest.length && !sz(rest[0])) grp.push(rest.shift());
+          push({ kind: 'grid', day: d, shots: grp, cls: grp.length === 2 ? 'two' : 'tall1' });
+          continue;
+        }
+        if (k === 'small') {
+          const grp = [rest.shift()];
+          while (grp.length < 4 && rest.length && (sz(rest[0]) === 'small' || !sz(rest[0]))) grp.push(rest.shift());
+          push({ kind: 'grid', day: d, shots: grp, cls: grp.length >= 4 ? 'four' : grp.length === 3 ? 'big3' : grp.length === 2 ? 'two' : 'small1' });
+          continue;
+        }
+        const lim0 = rest.findIndex(s => sz(s));
+        const n = lim0 < 0 ? rest.length : lim0;
+        let take, cls;
+        if (n === 1) { take = 1; cls = 'one'; }
+        else if (port(rest[0]) && port(rest[1])) { take = 2; cls = 'two'; }
+        else if (n === 2) { take = 2; cls = 'two'; }
+        else if (n === 3) { take = 3; cls = 'big3'; }
+        else { take = [4, 3, 2][li++ % 3]; cls = take === 4 ? 'four' : take === 3 ? 'big3' : 'two'; }
+        take = Math.min(take, n);
+        if (take === 3) cls = 'big3'; else if (take === 2) cls = 'two'; else if (take === 1) cls = 'one';
+        const grp = rest.splice(0, take);
+        if (cls === 'big3') grp.sort((a, b) => a.r - b.r);
+        push({ kind: 'grid', day: d, shots: grp, cls });
+      }
+    });
+    pages.push({ kind: 'end' });
+    return pages;
+  }
+  // ── หน้า "ปรับกรอบรูป": ช่องรูปจริงทุกช่องในเล่ม เรียงตามหน้า ──
+  pbFrameSlots() {
+    const D = this._pbData; if (!D || !D.days) return [];
+    const out = [];
+    this.pbPlan(D).forEach((p, pi) => {
+      if (!p.shots || !p.shots.length) return;
+      p.shots.forEach((s, i) => out.push({
+        page: pi + 1, ref: s.ref, u: s.u, cls: p.cls, hero: p.kind === 'hero', dayo: !!p.dayo,
+        aspect: this.pbSlotAspect(p.cls, i, !!p.dayo),
+        day: p.day ? ('วันที่ ' + p.day.n) : '', dn: p.day ? p.day.n : null,
+        slotName: p.kind === 'hero' ? 'รูปเต็มหน้า' : (p.shots.length > 1 ? ('ช่องที่ ' + (i + 1) + ' จาก ' + p.shots.length) : 'รูปเดียวเต็มหน้า')
+      }));
+    });
+    return out;
+  }
+  async openPbFrame() {
+    if (this._pbFrBusy) return;
+    this._pbFrBusy = true;
+    this.setState({ pbBusy: true, pbPct: 5, pbFrLoading: true });
+    try {
+      this._pbData = await this.pbGather();
+      if (!this._pbData.days.length) { this.showToast('ทริปนี้ยังไม่มีรูปที่เลือกไว้สำหรับโฟโต้บุ๊ก'); return; }
+      this.setState({ pbOpen: false });
+      this.go('pbFrame');
+    } catch (e) { console.warn('[wtn] pbFrame', e); this.showToast('เปิดไม่สำเร็จ ลองอีกครั้ง'); }
+    finally { this._pbFrBusy = false; this.setState({ pbBusy: false, pbPct: 0, pbFrLoading: false }); }
+  }
+  openFrEdit(i) {
+    const sl = this.pbFrameSlots()[i]; if (!sl) return;
+    const f = this.pbFocalOf(sl.ref);
+    this.setState({ pbFr: { ref: sl.ref, u: sl.u, x: f.x, y: f.y, z: f.z } });
+  }
+  frSave() {
+    const fr = this.state.pbFr; if (!fr || !fr.ref) return;
+    const plain = Math.abs(fr.x - 50) < 0.6 && Math.abs(fr.y - 42) < 0.6 && fr.z < 1.01;
+    this.savePbFocal(fr.ref, plain ? null : fr);
+  }
+  frDown(e) {
+    const fr = this.state.pbFr; if (!fr) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    this._frD = { x0: e.clientX, y0: e.clientY, fx: fr.x, fy: fr.y, w: r.width || 1, h: r.height || 1 };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
+  }
+  frMove(e) {
+    const d = this._frD; if (!d) return;
+    const cl = v => Math.max(0, Math.min(100, v));
+    const nx = cl(d.fx - (e.clientX - d.x0) / d.w * 110);
+    const ny = cl(d.fy - (e.clientY - d.y0) / d.h * 110);
+    this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: nx, y: ny } } : {}));
+  }
+  frUp() { if (!this._frD) return; this._frD = null; this.frSave(); }
   pbShotCount(trip) {
     const ci = this.checkins || {}, cmap = this.ebChapterMap();
     const byDay = {};
@@ -6525,18 +6897,30 @@ class Component extends DCLogic {
     const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
     const days = [];
     for (let i = 0; i < n; i++) {
-      const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], urls = [];
-      if (ch) { const cv = await this.resolvePhoto(ch.cover || ''); if (cv) urls.push(cv); }
+      const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], items = [], seen = {};
+      const push = (u, ref) => { if (u && !seen[u]) { seen[u] = 1; items.push({ u, ref: ref || u }); } };
+      if (ch) { const cv = await this.resolvePhoto(ch.cover || ''); push(cv, ch.cover); }
       for (const c of list) {
         if (!this.ciWantsPb(c)) continue;
-        for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); if (r) urls.push(r); }
+        for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); push(r, p); }
       }
-      if (ch) { for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); if (r && urls.indexOf(r) < 0) urls.push(r); } }
-      if (!urls.length) continue;
-      const shots = await Promise.all(urls.map(u => this._shotMeta(u)));
+      if (ch) { for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); push(r, p); } }
+      if (!items.length) continue;
+      const shots = await Promise.all(items.map(it => this._shotMeta(it.u).then(m => ({ ...m, ref: it.ref }))));
+      const ord = this.pbOrderOf(i);
+      if (ord && ord.length) {
+        const pos = {}; ord.forEach((r, k) => { pos[r] = k; });
+        shots.sort((a, b) => {
+          const pa = pos[a.ref], pb = pos[b.ref];
+          if (pa == null && pb == null) return 0;
+          if (pa == null) return 1;
+          if (pb == null) return -1;
+          return pa - pb;
+        });
+      }
       const places = [];
       list.forEach(c => { const nm = (c.name || '').trim(); if (nm && places.indexOf(nm) < 0) places.push(nm); });
-      days.push({ n: i + 1, label: this.ebDayLabel(i), title: (ch && ch.title) || places[0] || 'วันใหม่', places, shots });
+      days.push({ n: i + 1, label: this.ebDayLabel(i), title: (ch && ch.title) || places[0] || 'วันใหม่', places, shots, pinned: !!(ord && ord.length) });
       this.setState({ pbPct: 8 + Math.round((i + 1) / n * 58) });
     }
     // ปกเล่มแนวนอน: ถ้าไม่ได้เลือกปกเอง ให้หยิบรูปแนวนอนใบแรกที่เจอ (รูปตั้งจะถูกครอบหนัก)
@@ -6555,6 +6939,8 @@ class Component extends DCLogic {
   pbHtml(D) {
     const E = s => this._esc(s);
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const T = this.pbThemes[this.pbThemeKey] || this.pbThemes.cream;
+    const dark = this.pbThemeKey === 'dark';
     const page = i => '<section class="pg">' + i + '</section>';
     const dayKick = d => d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'วันที่ ' + d.n;
     const out = [];
@@ -6562,36 +6948,22 @@ class Component extends DCLogic {
       '<div class="scrim"></div><div class="brand"><i></i>VELA</div>' +
       '<div class="cov"><div class="k">' + E(D.sub) + '</div><h1>' + E(D.title) + '</h1><div class="rule"></div>' +
       '<div class="by">' + E(D.when) + (D.author ? ' &nbsp;·&nbsp; ' + E(D.author) : '') + '</div></div>'));
-    let li = 0;
-    const port = s => s && s.r < 0.95;
-    D.days.forEach(d => {
-      const rest = d.shots.slice();
+    const IM = (s, cls) => '<img' + (cls ? ' class="' + cls + '"' : '') + ' src="' + E(s.u) + '" style="' + this.pbImgStyle(s) + '">';
+    const wm = this.isPremium ? '' : '<div class="wm">สร้างด้วย Vela · onevela.net</div>';
+    this.pbPlan(D).forEach(p => {
+      if (p.kind === 'cover' || p.kind === 'end') return;
+      const d = p.day;
       const ttl = String(d.title || '').replace(/^\s*วันที่\s*\d+\s*[·:\-]\s*/, '').trim() || d.title;
       const cap = '<div class="cap"><span>' + dayKick(d) + '</span><span>' + E(d.places.slice(0, 2).join('  ·  ')) + '</span></div>';
-      // หน้าเต็ม A5 ต้องกว้าง ≥ 1400 px ถูกจะสั่งพิมพ์ไม่นุ่ม — ไม่มีก็เปิดวันด้วยหน้าสองรูปแทน
-      let hi = rest.findIndex(s => s.r >= 1.15 && (s.w || 0) >= 1400);
-      const hero = hi >= 0 ? rest.splice(hi, 1)[0] : null;
-      if (hero) {
-        out.push(page('<img class="bleed" src="' + E(hero.u) + '"><div class="scrim"></div>' +
+      if (p.kind === 'hero') {
+        out.push(page(IM(p.shots[0], 'bleed') + '<div class="scrim"></div>' +
           '<div class="op"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>'));
-      } else {
-        const grp = rest.splice(0, Math.min(2, rest.length));
-        const imgs = grp.map(s => '<img src="' + E(s.u) + '">').join('');
+      } else if (p.kind === 'dayopen') {
         out.push(page('<div class="sheet dayo"><div class="dayh"><div class="k">' + dayKick(d) + '</div><h3>' + E(ttl) + '</h3></div>' +
-          '<div class="g ' + (grp.length === 1 ? 'one' : 'two') + '">' + imgs + '</div>' + cap + '</div>'));
-      }
-      while (rest.length) {
-        let take, cls;
-        if (rest.length === 1) { take = 1; cls = 'one'; }
-        else if (port(rest[0]) && port(rest[1])) { take = 2; cls = 'two'; }   // รูปตั้งสองใบ = ช่องตั้งสองช่อง พอดีเป๊ะ
-        else if (rest.length === 2) { take = 2; cls = 'two'; }
-        else if (rest.length === 3) { take = 3; cls = 'big3'; }
-        else { take = [4, 3, 2][li++ % 3]; cls = take === 4 ? 'four' : take === 3 ? 'big3' : 'two'; }
-        const grp = rest.splice(0, take);
-        // ช่องใหญ่ของเลย์เอาต์ big3 เป็นช่องตั้ง → ยกรูปที่ตั้งสุดขึ้นมาไว้ช่องนั้น
-        if (cls === 'big3') grp.sort((a, b) => a.r - b.r);
-        const imgs = grp.map((s, i) => '<img' + (cls === 'big3' && i === 0 ? ' class="a"' : '') + ' src="' + E(s.u) + '">').join('');
-        out.push(page('<div class="sheet"><div class="g ' + cls + '">' + imgs + '</div>' + cap + '</div>'));
+          '<div class="g ' + p.cls + '">' + p.shots.map(s => IM(s)).join('') + '</div>' + cap + wm + '</div>'));
+      } else {
+        out.push(page('<div class="sheet"><div class="g ' + p.cls + '">' +
+          p.shots.map((s, i) => IM(s, p.cls === 'big3' && i === 0 ? 'a' : '')).join('') + '</div>' + cap + wm + '</div>'));
       }
     });
     out.push(page('<div class="end"><div class="endq">' + D.days.length + ' วัน · ' + D.photos + ' รูป</div>' +
@@ -6604,8 +6976,8 @@ class Component extends DCLogic {
       '<style>' +
       '@page{size:210mm 148mm;margin:0}' +
       '*{box-sizing:border-box}' +
-      'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-      '.pg{width:210mm;height:148mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
+      'body{margin:0;background:' + T.desk + ';font-family:' + A + ';color:' + T.ink + ';-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.pg{width:210mm;height:148mm;background:' + T.pg + ';position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(20,16,13,.22);page-break-after:always;break-after:page}' +
       '.pg:last-child{margin-bottom:0}' +
       '.bleed{position:absolute;left:0;top:0;width:210mm;height:148mm;object-fit:cover;object-position:center 38%}' +
       '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.42),rgba(20,16,13,0) 38%,rgba(20,16,13,.1) 58%,rgba(20,16,13,.88))}' +
@@ -6624,23 +6996,27 @@ class Component extends DCLogic {
       '.sheet.dayo .g{height:104mm}' +
       '.dayh{flex:none;height:20.5mm;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4mm}' +
       '.dayh .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#c05f39}' +
-      '.dayh h3{font-family:' + C + ';font-size:19pt;line-height:1.25;margin:2mm 0 0;font-weight:400;color:#2b241f}' +
+      '.dayh h3{font-family:' + C + ';font-size:19pt;line-height:1.25;margin:2mm 0 0;font-weight:400;color:' + T.ink + '}' +
       '.g{flex:none;height:124.5mm;display:grid;gap:3mm;grid-auto-rows:minmax(0,1fr)}' +
       '.g.one{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
       '.g.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}' +
       '.g.big3{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}.g.big3 .a{grid-row:1/3}' +
       '.g.four{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}' +
-      '.g img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;object-position:center 42%;display:block;background:#efe4d3}' +
-      '.cap{flex:none;height:6.5mm;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;line-height:1.2;letter-spacing:1.1px;color:#a99e8e;padding-top:3mm}' +
+      '.g.tall1{grid-template-columns:minmax(0,94.5mm);grid-template-rows:minmax(0,1fr);justify-content:center}' +
+      '.g.small1{grid-template-columns:minmax(0,94.5mm);grid-template-rows:minmax(0,60.75mm);justify-content:center;align-content:center}' +
+      '.g img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;object-position:center 42%;display:block;background:' + T.ph + '}' +
+      '.cap{flex:none;height:6.5mm;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;line-height:1.2;letter-spacing:1.1px;color:' + T.faint + ';padding-top:3mm}' +
+      '.wm{position:absolute;right:9mm;bottom:2.9mm;font-size:9pt;letter-spacing:.6px;color:' + T.sub + ';opacity:1}' +
       '.cap span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}' +
-      '.cap span:last-child{text-align:right;color:#8a7d6f}' +
-      '.end{position:absolute;inset:0;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
+      '.cap span:last-child{text-align:right;color:' + T.sub + '}' +
+      '.end{position:absolute;inset:0;background:' + T.end + ';display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
       '.endq{font-family:' + C + ';font-size:17pt;line-height:1.5}' +
-      '.endn{font-size:10pt;color:#6f6455;max-width:110mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:#a99e8e}' +
+      '.endn{font-size:10pt;color:' + T.sub + ';max-width:110mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:' + T.faint + '}' +
+      '.brand.dark{color:' + T.sub + '}' +
       '.bar-print{position:sticky;top:0;z-index:9;display:flex;gap:8px;justify-content:center;padding:12px;background:#2b241f}' +
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
-      '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
+      '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
       '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · แนวนอน A5</span></div>' +
       out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title)) + '</body></html>';
@@ -6679,7 +7055,7 @@ class Component extends DCLogic {
       '#bkpg{flex:none;height:3px;background:rgba(231,221,204,.13)}#bkpg i{display:block;height:3px;width:0;background:#c05f39;transition:width .3s ease}' +
       'body{touch-action:manipulation;-webkit-tap-highlight-color:transparent}#bkstage{user-select:none;-webkit-user-select:none}' +
       '@media (max-width:560px){.lb{display:none}#bkbar{gap:7px;padding:8px 10px 11px}#bkbar button{padding:0 13px}' +
-      '#bkbar button#bfl,#bkbar button#bpr,#bkbar button#bkm,#bkbar button#bkk{min-height:40px;padding:0 11px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
+      '#bkbar button#bfl,#bkbar button#bpr{min-height:40px;padding:0 11px;font-size:12.5px}#bkno{min-width:78px;font-size:12.5px}}' +
       '@media print{#bkstage{display:none!important}#bkjump{display:none!important}#bkback{display:none!important}#bksrc{display:block!important}.bar-print{display:none}html,body{overflow:visible}}';
     const html = '<div id="bksrc"></div>' +
       '<div id="bkstage"><div id="bkwrap"><div id="bkbook">' +
@@ -6687,7 +7063,6 @@ class Component extends DCLogic {
       '<div id="fl"><div class="face" id="ff"></div><div class="face" id="fb"></div></div>' +
       '</div></div><div id="bkbar">' +
       '<button id="bp">&lsaquo;<span class="lb"> ก่อนหน้า</span></button><span id="bkno"></span><button id="bn"><span class="lb">ถัดไป </span>&rsaquo;</button>' +
-      '<button id="bkm" title="รูปเล็กลงในหน้านี้">รูป −</button><button id="bkk" title="รูปใหญ่ขึ้นในหน้านี้">รูป +</button>' +
       '<button id="bfl">เรียงหน้า</button><button class="pr" id="bpr">บันทึกเป็น PDF</button>' +
       '</div><div id="bkpg"><i></i></div></div>' +
       '<div id="bkjump"><div class="jw"><div class="jh"><span>ไปที่หน้า</span><button class="jx" id="bkjx">ปิด</button></div><div id="bkjg"></div></div></div>' +
@@ -6753,8 +7128,6 @@ class Component extends DCLogic {
       'function bump(dir){var i=spread?R(v):v;if(!ok(i))return;var k=(KS[i]||1)+dir*0.12;' +
       'k=Math.max(.76,Math.min(1.4,Math.round(k*100)/100));if(k===1)delete KS[i];else KS[i]=k;applyK();' +
       'try{localStorage.setItem("wtn-bk-k:"+BK,JSON.stringify(KS));}catch(e){}}' +
-      'document.getElementById("bkm").onclick=function(e){e.stopPropagation();bump(-1);};' +
-      'document.getElementById("bkk").onclick=function(e){e.stopPropagation();bump(1);};' +
       'applyK();' +
       'document.getElementById("bpr").onclick=function(){restore();setTimeout(function(){window.print();},80);};' +
       'document.getElementById("bfl").onclick=function(){restore();stage.style.display="none";src.style.display="block";' +
@@ -6776,7 +7149,6 @@ class Component extends DCLogic {
       '<scr' + 'ipt>' + js + '</scr' + 'ipt>';
   }
   async makePhotobook() {
-    if (!this.isPremium) { this.setState({ pbOpen: false, ebOpen: false }); this.go('premium'); return; }
     if (this._pbBusy) return;
     this._pbBusy = true;
     this.setState({ pbBusy: true, pbPct: 5 });
@@ -7799,8 +8171,9 @@ class Component extends DCLogic {
     const baseDay = this.days[active] || this.days[0];
     const curMerged = { ...baseDay, stops: [...baseDay.stops, ...curExtra] };
     const seSel = this.state.stopEdit || null;
-    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, hasNote: !!(s.note || '').trim(), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.delStop(origin, si) }; };
+    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, t: this.stopTLabel(s), _rank: this.stopRank(s), hasNote: !!(s.note || '').trim(), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.delStop(origin, si) }; };
     const stopItems = (baseDay.stops || []).map((s, si) => mkStop(s, 'base', si)).concat((curExtra || []).map((s, si) => mkStop(s, 'added', si)));
+    stopItems.sort((a, b) => a._rank - b._rank);
     const curWithStops = { ...curMerged, stops: stopItems };
     const _rawCity = baseDay.city || '', _rawSum = baseDay.summary || '';
     const dayCityVal = ['ยังไม่มีชื่อวัน'].includes(_rawCity) ? '' : _rawCity;
@@ -7809,6 +8182,18 @@ class Component extends DCLogic {
     const chipOn = "background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
     const chipOff = "background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
     const addChips = kinds.map(k => ({ label: k, on: () => this.setState({ addKind: k }), style: this.state.addKind === k ? chipOn : chipOff }));
+    if (!this._migT) { this._migT = 1; this.migrateStopTimes(); }
+    const addTimeVal = this.normHHMM(this.state.addTime);
+    const addPeriodSel = this.normPeriod(this.state.addPeriod);
+    const periodChips = this.PERIODS.map(p => ({ label: p, on: () => this.setState({ addPeriod: this.normPeriod(this.state.addPeriod) === p ? '' : p }), style: addPeriodSel === p ? chipOn : chipOff }));
+    const addDayRec = this.days[active] || {};
+    const addDayLabel = 'วันที่ ' + (addDayRec.n || (active + 1)) + (addDayRec.date ? ' (' + addDayRec.date + ')' : '');
+    const addWhenNote = (() => {
+      const p = addPeriodSel || this.periodOfTime(addTimeVal);
+      if (addTimeVal) return 'จะบันทึกเป็น ' + addTimeVal + (p ? ' · ช่วง' + p : '');
+      if (p) return 'จะบันทึกเป็นช่วง' + p + ' — เวลาเจาะจงใส่หรือไม่ใส่ก็ได้';
+      return 'ไม่เลือกก็ได้ — จะขึ้นเป็น “ไม่ระบุเวลา” เรียงไว้ท้ายวัน';
+    })();
     const coverOn = "flex:1;text-align:center;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverOff = "flex:1;text-align:center;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverChips = [1,2,3,4].map((n,i) => ({ n, on: () => this.setState({ coverIdx: i }), style: this.state.coverIdx === i ? coverOn : coverOff }));
@@ -7955,7 +8340,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16e',
+      appVersion: '2026.08.16p',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -8048,6 +8433,86 @@ class Component extends DCLogic {
               pbBusy: !!this.state.pbBusy, pbIdle: !this.state.pbBusy,
               pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
               pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
+              ...(() => {
+                const tk = this.pbThemeKey;
+                const chipOnT = "flex:1;min-height:44px;background:#2b241f;color:#f6efe2;font:600 14px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
+                const chipOffT = "flex:1;min-height:44px;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
+                const slots = sc === 'pbFrame' ? this.pbFrameSlots() : [];
+                const imgSty = (s, extra) => {
+                  const fo = this.pbFocalOf(s.ref), pos = fo.x + '% ' + fo.y + '%';
+                  return 'width:100%;height:100%;display:block;object-fit:cover;object-position:' + pos +
+                    (fo.z > 1.001 ? (';transform:scale(' + fo.z + ');transform-origin:' + pos) : '') + (extra || '');
+                };
+                const fr = this.state.pbFr || null;
+                const frSlot = fr ? (slots.find(x => x.ref === fr.ref) || null) : null;
+                const frPos = fr ? (fr.x + '% ' + fr.y + '%') : '';
+                const frSize = fr ? this.pbSizeOf(fr.ref) : '';
+                const zOn = "min-height:40px;padding:0 13px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';border-radius:11px;border:none;cursor:pointer";
+                const zOff = "min-height:40px;padding:0 13px;background:rgba(231,221,204,.1);color:#c9b79b;font:600 13.5px 'Anuphan';border-radius:11px;border:1px solid rgba(231,221,204,.2);cursor:pointer";
+                return {
+                  pbThemeChips: Object.keys(this.pbThemes).map(k => ({ label: this.pbThemes[k].label, on: () => this.setPbTheme(k), style: tk === k ? chipOnT : chipOffT })),
+                  openPbFrame: () => this.openPbFrame(),
+                  pbFrameBtnLabel: this.state.pbFrLoading ? 'กำลังเปิดรูป…' : 'ปรับกรอบรูปในเล่ม',
+                  sPbFrame: sc === 'pbFrame',
+                  pbPages: (() => {
+                    const T = this.pbThemes[tk], cols = { one: 'minmax(0,1fr)', two: 'minmax(0,1fr) minmax(0,1fr)', four: 'minmax(0,1fr) minmax(0,1fr)', big3: 'minmax(0,1.6fr) minmax(0,1fr)', tall1: 'minmax(0,49%)', small1: 'minmax(0,49%)' };
+                    const rows = { four: 'minmax(0,1fr) minmax(0,1fr)', big3: 'minmax(0,1fr) minmax(0,1fr)', small1: 'minmax(0,49%)' };
+                    const centre = { tall1: ';justify-content:center', small1: ';justify-content:center;align-content:center' };
+                    const groups = []; let gi = 0;
+                    slots.forEach(s => {
+                      const last = groups[groups.length - 1];
+                      if (last && last.page === s.page) last.items.push({ s, i: gi++ });
+                      else groups.push({ page: s.page, day: s.day, dn: s.dn, cls: s.cls, hero: s.hero, dayo: s.dayo, items: [{ s, i: gi++ }] });
+                    });
+                    const navP = on => 'flex:none;width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:11px;border:1px solid rgba(43,36,32,.14);background:#fffaf0;color:#8a7d6f;cursor:' + (on ? 'pointer' : 'default') + ';opacity:' + (on ? '1' : '.28');
+                    return groups.map((g, gk) => ({
+                      label: 'หน้า ' + g.page + (g.day ? ' · ' + g.day : ''),
+                      meta: g.hero ? 'รูปเต็มหน้า' : (g.items.length + ' รูป'),
+                      upStyle: navP(gk > 0 && groups[gk - 1].dn === g.dn),
+                      downStyle: navP(gk < groups.length - 1 && groups[gk + 1].dn === g.dn),
+                      up: () => this.pbMovePage(g.items.map(x => x.s.ref), -1),
+                      down: () => this.pbMovePage(g.items.map(x => x.s.ref), 1),
+                      pageStyle: 'position:relative;width:100%;aspect-ratio:210/148;background:' + T.pg + ';border:1px solid rgba(43,36,32,.12);border-radius:12px;overflow:hidden',
+                      innerStyle: g.hero ? 'position:absolute;inset:0' : ('position:absolute;inset:0;display:flex;flex-direction:column;padding:' + (g.dayo ? '15% 4.3% 8%' : '6% 4.3% 8%')),
+                      gridStyle: 'flex:1;min-height:0;height:100%;display:grid;gap:1.5%;grid-auto-rows:minmax(0,1fr);grid-template-columns:' + (cols[g.cls] || 'minmax(0,1fr)') + (rows[g.cls] ? (';grid-template-rows:' + rows[g.cls]) : '') + (centre[g.cls] || ''),
+                      slots: g.items.map((it, k) => {
+                        const fo = this.pbFocalOf(it.s.ref);
+                        return { u: it.s.u,
+                          slotStyle: 'position:relative;padding:0;border:none;overflow:hidden;min-width:0;min-height:0;border-radius:3px;background:' + T.ph + ';cursor:pointer' + (g.cls === 'big3' && k === 0 ? ';grid-row:1/3' : ''),
+                          imgStyle: imgSty(it.s, ';pointer-events:none'),
+                          dotStyle: 'position:absolute;right:5px;bottom:5px;width:9px;height:9px;border-radius:50%;pointer-events:none;box-shadow:0 0 0 1.5px rgba(255,255,255,.85);background:' + (fo.set ? '#c05f39' : 'rgba(43,36,32,.32)'),
+                          on: () => this.openFrEdit(it.i) };
+                      })
+                    }));
+                  })(),
+                  pbFrDone: () => { this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }); this.back(); this.makePhotobook(); },
+                  frOpen: !!fr,
+                  frTitle: frSlot ? ('หน้า ' + frSlot.page + ' · ' + frSlot.slotName) : 'ปรับกรอบรูป',
+                  frSrc: (frSlot && frSlot.u) || (fr && fr.u) || '',
+                  frBoxStyle: 'position:relative;overflow:hidden;border-radius:9px;background:#191714;touch-action:none;cursor:grab;width:100%;max-width:360px;max-height:100%;aspect-ratio:' + (frSlot ? frSlot.aspect.toFixed(3) : '1.4'),
+                  frImgStyle: fr ? ('width:100%;height:100%;display:block;object-fit:cover;pointer-events:none;user-select:none;-webkit-user-drag:none;object-position:' + frPos + (fr.z > 1.001 ? (';transform:scale(' + fr.z + ');transform-origin:' + frPos) : '')) : '',
+                  ...(() => {
+                    const p = fr ? this.pbShotPos(fr.ref) : null;
+                    const nav = on => 'flex:none;width:46px;min-height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;cursor:' + (on ? 'pointer' : 'default') + ';border:1px solid rgba(231,221,204,.22);background:rgba(231,221,204,.08);color:#e7ddcc;opacity:' + (on ? '1' : '.3');
+                    return {
+                      frPosLabel: p ? ('ลำดับที่ ' + (p.i + 1) + ' จาก ' + p.n + ' · วันที่ ' + p.day) : 'ลำดับในวัน',
+                      frPrevStyle: nav(!!p && p.i > 0), frNextStyle: nav(!!p && p.i < p.n - 1),
+                      frMovePrev: () => { if (fr) this.pbMoveShot(fr.ref, -1); },
+                      frMoveNext: () => { if (fr) this.pbMoveShot(fr.ref, 1); }
+                    };
+                  })(),
+                  frSizeChips: ['', 'bleed', 'one', 'tall', 'small'].map(k => ({
+                    label: this.pbSizeLabels[k], style: frSize === k ? zOn : zOff,
+                    on: () => { if (fr) this.setPbSize(fr.ref, k); }
+                  })),
+                  frZoom: fr ? Math.round(fr.z * 100) : 100,
+                  frZoomLabel: (fr ? Math.round(fr.z * 100) : 100) + '%',
+                  frSetZoom: e => { const z = Math.max(1, (+e.target.value || 100) / 100); this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, z } } : {}), () => this.frSave()); },
+                  frReset: () => { if (fr) { this.savePbFocal(fr.ref, null); this.setPbSize(fr.ref, ''); } this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: 50, y: 42, z: 1 } } : {})); },
+                  frClose: () => { this.frSave(); this.setState({ pbFr: null }); },
+                  frDown: e => this.frDown(e), frMove: e => this.frMove(e), frUp: () => this.frUp()
+                };
+              })(),
               pbUrl: this.state.pbUrl || '', pbHasUrl: !!this.state.pbUrl,
               showPbBook: () => this.setState({ bvUrl: this.state.pbUrl || '', bvTitle: 'โฟโต้บุ๊ก' }),
               runPbook: () => this.makePhotobook()
@@ -8487,6 +8952,7 @@ class Component extends DCLogic {
       })(),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
+      dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
       notEditing: !this.state.editing,
       stayView: !this.state.stayEdit, stayEditing: !!this.state.stayEdit,
       openStayEdit: () => { const d = this.days[active] || {}; const nm = d.stayName || '', mt = d.stayMeta || ''; this.setState({ stayEdit: true, stayNameDraft: /ยังไม่ได้เลือก/.test(nm) ? '' : nm, stayMetaDraft: /เพิ่มได้ในโหมด/.test(mt) ? '' : mt.replace(/\s*·?\s*คืนที่\s*\d+\s*$/, ''), stayInDraft: d.stayIn || this.tripDayIso(active), stayOutDraft: d.stayOut || this.tripDayIso(active + 1) }); },
@@ -8509,6 +8975,8 @@ class Component extends DCLogic {
       setDaySummary: e => this.patchDay(this.state.day, { summary: e.target.value }),
       stopKindChips: kinds.map(k => ({ label: k, on: () => this.setState({ seKind: k }), style: (this.state.seKind === k ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#6f6558;') + "font:600 13px 'Anuphan';padding:6px 11px;border-radius:14px;border:none;cursor:pointer" })),
       seTime: this.state.seTime ?? '', setSeTime: e => this.setState({ seTime: e.target.value }),
+      sePeriodChips: this.PERIODS.map(p => ({ label: p, on: () => this.setState({ sePeriod: this.normPeriod(this.state.sePeriod) === p ? '' : p }),
+        style: (this.normPeriod(this.state.sePeriod) === p ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#6f6558;') + "font:600 13px 'Anuphan';padding:7px 12px;border-radius:16px;border:none;cursor:pointer" })),
       seTitle: this.state.seTitle ?? '', setSeTitle: e => this.setState({ seTitle: e.target.value }),
       seNote: this.state.seNote ?? '', setSeNote: e => this.setState({ seNote: e.target.value }),
       saveStopEdit: () => this.saveStopEdit(), cancelStopEdit: () => this.cancelStopEdit(),
@@ -8567,13 +9035,17 @@ class Component extends DCLogic {
       aiBusy: !!this.state.aiBusy, aiErr: this.state.aiErr || '',
       aiAnswer: this.state.aiAnswer || '', hasAiAnswer: !!this.state.aiAnswer,
       aiLastQ: this.state.aiLastQ || '',
-      addTitle: this.state.addTitle, addTime: this.state.addTime,
+      addTitle: this.state.addTitle, addTime: addTimeVal, addNote: this.state.addNote ?? '',
+      periodChips, addWhenNote, addDayLabel, addHasTime: !!addTimeVal,
+      saveStopLabel: 'บันทึกลง' + addDayLabel,
+      clearAddTime: () => this.setState({ addTime: '' }),
       onAddTitle: (e) => this.setState({ addTitle: e.target.value }),
       onAddTime: (e) => this.setState({ addTime: e.target.value }),
       onAddNote: (e) => this.setState({ addNote: e.target.value }),
       affilGo: () => this.openAffiliate(),
       openAdd: () => this.go('addStop'), sAddStop: sc === 'addStop',
-      saveStop: () => { const key = this.state.trip + ':' + this.state.day; const arr = (this.state.added[key] || []).concat([{ t: this.state.addTime || '—', kind: this.state.addKind, title: this.state.addTitle || 'กิจกรรมใหม่', note: this.state.addNote || '' }]); this.setState({ added: { ...this.state.added, [key]: arr }, addTitle: '', addTime: '', addNote: '' }); this.back(); },
+      saveStop: () => this.addStopNow(false),
+      saveStopMore: () => this.addStopNow(true),
       nowKicker: nowK, nowTitle: nowT, nowSub: nowS, showNow: nowCard.show,
       trips: this.trips, noTrips: this.trips.length === 0,
       ...(() => {
