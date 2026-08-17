@@ -7989,7 +7989,12 @@ class Component extends DCLogic {
     if (!slides.length) { this.showToast('ยังไม่มีรูปสำหรับทำคลิป'); return; }
     const cvTest = document.createElement('canvas');
     if (!window.MediaRecorder || !cvTest.captureStream) { this.showToast('เครื่องนี้ยังทำคลิปไม่ได้ — ลองบนเบราว์เซอร์รุ่นใหม่กว่า'); return; }
-    const W = port ? 1080 : 1280, H = port ? 1920 : 720;
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+      || (/Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg/.test(navigator.userAgent));
+    // iPhone อัด 1080×1920 ต่อเนื่องเกือบนาทีแล้วตัวเข้ารหัสตามไม่ทัน → ใช้ 720p (Reels/TikTok ยังรับสบาย)
+    const W = iOS ? (port ? 720 : 1280) : (port ? 1080 : 1280);
+    const H = iOS ? (port ? 1280 : 720) : (port ? 1920 : 720);
     const PER = this.RECAP_PER, INTRO = this.RECAP_INTRO, OUTRO = this.RECAP_OUTRO, END = this.recapEndMs();
     this._recExporting = true;
     this.setState({ recExport: true, recExportPct: 0 });
@@ -8001,12 +8006,28 @@ class Component extends DCLogic {
       const cover = await load(this.coverOf('wtn-cover-' + this.state.trip, '') || 'default-cover.jpg');
       const imgs = [], useSlides = [];
       let skipped = 0;
+      const BW = Math.round(W * 1.12), BH = Math.round(H * 1.12);       // เผื่อระยะซูมช้าๆ ตอนเล่น
+      const bake = im => {
+        const c = document.createElement('canvas'); c.width = BW; c.height = BH;
+        const g = c.getContext('2d', { alpha: false });
+        g.fillStyle = '#14100d'; g.fillRect(0, 0, BW, BH);
+        const r = Math.max(BW / im.naturalWidth, BH / im.naturalHeight);
+        const w = im.naturalWidth * r, h = im.naturalHeight * r;
+        g.drawImage(im, (BW - w) / 2, (BH - h) / 2, w, h);
+        c.naturalWidth = BW; c.naturalHeight = BH;                      // ให้ผ่านการเช็คแบบเดียวกับรูป
+        return c;
+      };
       for (let i = 0; i < slides.length; i++) {
         const im = await load(slides[i].img || '');
         const ok = !!(im && im.naturalWidth && im.naturalHeight);       // รูปที่ถูกเพิก URL แล้วยังไม่ใช่ null แต่วาดไม่ออก
-        if (ok) { imgs.push(im); useSlides.push(slides[i]); } else skipped++;
+        if (ok) {
+          let b = null;
+          try { b = bake(im); } catch (e) { b = null; }
+          if (b) { imgs.push(b); useSlides.push(slides[i]); } else skipped++;
+        } else skipped++;
         this.setState({ recExportPct: Math.round((i + 1) / slides.length * 20) });
       }
+      const coverBaked = (() => { try { return cover && cover.naturalWidth ? bake(cover) : null; } catch (e) { return null; } })();
       if (!imgs.length) {
         this.showToast('โหลดรูปในทริปไม่ได้ — ลองไปที่ ฉัน › ย้ายรูปขึ้นคลาวด์ใหม่');
         return;
@@ -8022,17 +8043,30 @@ class Component extends DCLogic {
       const stats = this.recapStatsCache || null;
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       cv.setAttribute('aria-hidden', 'true');
-      cv.style.cssText = 'position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none;z-index:-1';
-      document.body.appendChild(cv);
-      this._recCanvas = cv;
+      const stage = document.createElement('div');
+      stage.style.cssText = 'position:fixed;inset:0;z-index:9998;background:#14100d;display:flex;align-items:center;'
+        + 'justify-content:center;padding:18px 18px 46px;box-sizing:border-box;touch-action:none';
+      cv.style.cssText = 'max-width:100%;max-height:100%;width:auto;height:auto;border-radius:14px;'
+        + 'box-shadow:0 18px 50px rgba(0,0,0,.5);' + (port ? 'aspect-ratio:9/16' : 'aspect-ratio:16/9');
+      const tag = document.createElement('div');
+      tag.style.cssText = 'position:fixed;left:0;right:0;bottom:16px;text-align:center;color:#e2d6c0;'
+        + "font:600 13.5px 'Anuphan',system-ui";
+      tag.textContent = 'กำลังทำคลิป… อย่าปิดจอหรือสลับแอป';
+      stage.appendChild(cv); stage.appendChild(tag);
+      document.body.appendChild(stage);
+      this._recCanvas = stage;
       const cx = cv.getContext('2d', { alpha: false, desynchronized: false });
       let vTrack = null, manualFrames = false;
       let stream;
+      // iOS/Safari: requestFrame() ไม่น่าเชื่อถือ — สตรีมหยุดดึงเฟรมกลางคลิปแล้วไฟล์ค้างภาพ
       try {
-        stream = cv.captureStream(0);                        // 0 = เราสั่งเฟรมเอง ไม่ให้เบราว์เซอร์ตัดสินใจ
-        vTrack = stream.getVideoTracks()[0];
-        manualFrames = !!(vTrack && typeof vTrack.requestFrame === 'function');
-        if (!manualFrames) { stream.getTracks().forEach(t => t.stop()); stream = cv.captureStream(30); vTrack = stream.getVideoTracks()[0]; }
+        if (iOS) { stream = cv.captureStream(30); vTrack = stream.getVideoTracks()[0]; manualFrames = false; }
+        else {
+          stream = cv.captureStream(0);                      // 0 = เราสั่งเฟรมเอง ไม่ให้เบราว์เซอร์ตัดสินใจ
+          vTrack = stream.getVideoTracks()[0];
+          manualFrames = !!(vTrack && typeof vTrack.requestFrame === 'function');
+          if (!manualFrames) { stream.getTracks().forEach(t => t.stop()); stream = cv.captureStream(30); vTrack = stream.getVideoTracks()[0]; }
+        }
       } catch (e) { stream = cv.captureStream(30); vTrack = stream.getVideoTracks()[0]; manualFrames = false; }
       // ไม่ใส่เพลง (เลี่ยงลิขสิทธิ์) แต่ต้องมี audio track เงียบในไฟล์ — ไม่งั้นบางแพลตฟอร์มอัปไม่ผ่าน/แสดงผลเพี้ยน
       try {
@@ -8051,12 +8085,12 @@ class Component extends DCLogic {
         ? ['video/mp4;codecs=h264,mp4a.40.2', 'video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']
         : ['video/mp4;codecs=h264', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
       const mime = types.find(x => { try { return MediaRecorder.isTypeSupported(x); } catch (e) { return false; } }) || '';
-      const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 6000000, audioBitsPerSecond: 64000 } : {});
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: iOS ? 3200000 : 6000000, audioBitsPerSecond: 64000 } : {});
       const chunks = [];
       rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
       const stopped = new Promise(res => { rec.onstop = res; });
       const total = INTRO + useSlides.length * PER + OUTRO + END;
-      rec.start();
+      rec.start(1000);
       const t0 = performance.now(); let frame = 0, lastDraw = -1;
       await new Promise(res => {
         let done = false, rafId = 0, toId = 0;
@@ -8067,7 +8101,7 @@ class Component extends DCLogic {
           if (ms >= total) { finish(); return; }
           if (ms - lastDraw < 28) return;                    // ~30fps พอ ไม่วาดถี่เกินจำเป็น
           lastDraw = ms;
-          this.drawRecapFrame(cx, W, H, ms, { cover, imgs, slides: useSlides, INTRO, PER, OUTRO, END, title, sub, wm: !this.isPremium });
+          this.drawRecapFrame(cx, W, H, ms, { cover: coverBaked || cover, imgs, slides: useSlides, INTRO, PER, OUTRO, END, title, sub, wm: !this.isPremium });
           if (manualFrames) { try { vTrack.requestFrame(); } catch (e) {} }
           if (++frame % 8 === 0) this.setState({ recExportPct: 20 + Math.round(ms / total * 78) });
         };
@@ -8754,7 +8788,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.18h',
+      appVersion: '2026.08.18k',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
