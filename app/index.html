@@ -975,15 +975,9 @@
                 </sc-if>
                 <button onClick="{{ exportRecap }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg>{{ exportRecapLabel }}</button>
                 <sc-if value="{{ recReadyOn }}" hint-placeholder-val="{{ false }}">
-                  <div style="background:#fff4ec;border:1px solid rgba(192,95,57,.24);border-radius:14px;padding:12px 13px;margin-bottom:10px">
-                    <div style="font:600 13px 'Anuphan';color:#c05f39;margin-bottom:8px">คลิปพร้อมแล้ว — ถ้าไฟล์ยังไม่เด้ง แตะปุ่มนี้</div>
-                    <div style="display:flex;gap:8px">
-                      <a href="{{ recReadyUrl }}" download="{{ recReadyName }}" style="flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';text-decoration:none">{{ recReadyLabel }}</a>
-                      <sc-if value="{{ recCanShare }}" hint-placeholder-val="{{ false }}">
-                        <button onClick="{{ shareRecapFile }}" style="flex:none;min-height:44px;padding:0 15px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">แชร์</button>
-                      </sc-if>
-                    </div>
-                  </div>
+                  <sc-if value="{{ recCanShare }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ shareRecapFile }}" style="width:100%;min-height:44px;margin-bottom:10px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">แชร์คลิปที่เพิ่งทำ</button>
+                  </sc-if>
                 </sc-if>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">{{ recapSizeNote }}</div>
                 <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
@@ -8127,7 +8121,7 @@ class Component extends DCLogic {
       try { if (this._recBlobUrl) URL.revokeObjectURL(this._recBlobUrl); } catch (e) {}
       this._recBlob = blob; this._recBlobUrl = url; this._recBlobName = name;
       this.setState({ recExportPct: 100, recReady: { url, name, size: this.fmtBytes(blob.size), ext } });
-      this.showToast('✓ คลิปพร้อมแล้ว · แตะปุ่มบันทึกด้านล่างถ้าไฟล์ยังไม่เด้ง');
+      // ไม่ต้อง toast — กล่อง "คลิปพร้อมแล้ว" ที่มีปุ่มบันทึกโผล่อยู่ตรงหน้าแล้ว
     } catch (e) {
       console.warn('[wtn] export recap', e);
       this.showToast('ทำคลิปไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -8788,7 +8782,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.18k',
+      appVersion: '2026.08.18n',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -9949,7 +9943,7 @@ class Component extends DCLogic {
             const chip = on => (on ? 'background:#c05f39;color:#fff;border:1px solid #c05f39;' : 'background:#fffaf0;color:#5c5347;border:1px solid rgba(43,36,32,.16);')
               + "flex:none;min-height:46px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:6px 13px;border-radius:12px;cursor:pointer;text-align:left";
             return {
-              exportRecapLabel: 'บันทึกเป็นวิดีโอ' + (port ? 'แนวตั้ง' : 'แนวนอน') + ' (' + cur.n + ' รูป · ~' + this.recapSecs(cur.n) + ' วิ)',
+              exportRecapLabel: 'สร้างคลิป' + (port ? 'แนวตั้ง' : 'แนวนอน') + ' (' + cur.n + ' รูป · ~' + this.recapSecs(cur.n) + ' วิ)',
               recapMultiPart: parts.length > 1,
               recapPartRows: parts.map(p => ({
                 label: p.label, sub: p.range + ' · ' + p.n + ' รูป',
