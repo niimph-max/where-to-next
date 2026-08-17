@@ -452,7 +452,7 @@
                 <button onClick="{{ importProgramFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';padding:11px 20px;border-radius:13px;cursor:pointer;opacity:{{ impBtnOpacity }}">{{ impBtnLabel }}</button>
               </div>
               <sc-if value="{{ impHasErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 14px/1.5 'Anuphan';color:#b23b2a">{{ impErr }}</div></sc-if>
-              <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">ต้องเชื่อม API key ที่แท็บ "ฉัน" ก่อน · AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้</div>
+              <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้</div>
             </div>
           </sc-if>
         </div>
@@ -659,7 +659,7 @@
               <p style="font:500 16px/1.75 'Anuphan';color:#413931;margin:0;white-space:pre-wrap">{{ aiAnswer }}</p>
             </div>
           </sc-if>
-          <sc-if value="{{ notConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-top:4px">ยังไม่ได้เชื่อม AI — วาง API key ที่แท็บ "ฉัน" ก่อน แล้วกลับมาถามได้เลย</div></sc-if>
+          <sc-if value="{{ notConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fff4ec;border:1px solid rgba(192,95,57,.22);border-radius:14px;padding:13px 15px;margin-top:4px"><div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;text-wrap:pretty">{{ aiPremiumMsg }}</div><button onClick="{{ goPremium }}" style="margin-top:10px;min-height:42px;padding:0 16px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 14px 'Anuphan';cursor:pointer">ดูแพ็กพรีเมียม</button></div></sc-if>
           <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">ข้อมูลจาก AI · โปรดตรวจสอบอีกครั้งก่อนใช้จริง</div>
         </div>
       </sc-if>
@@ -884,7 +884,7 @@
                   <div style="text-align:center;padding:26px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:14px;margin-bottom:16px">ยังไม่มีตอน<br>กด “บันทึกเรื่องวันนี้” ในแต่ละวันจากหน้าทริป แล้วตอนจะมารวมที่นี่</div>
                 </sc-if>
                 <button onClick="{{ manageBook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:12px">จัดการบันทึกเรื่องเล่า · เพิ่ม / แก้ตอน</button>
-                <button onClick="{{ openEbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#c9b79b">{{ ebCardNote }}</div></div><sc-if value="{{ notPremium }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:flex;align-items:center;gap:5px;background:rgba(233,180,138,.16);border-radius:999px;padding:5px 10px;font:600 11.5px 'Anuphan';color:#e9b48a"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>พรีเมียม</span></sc-if><sc-if value="{{ isPremium }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></sc-if></button>
+                <button onClick="{{ openEbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#c9b79b">{{ ebCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
               </div>
             </sc-if>
             <sc-if value="{{ bookNo }}" hint-placeholder-val="{{ true }}">
@@ -919,9 +919,68 @@
                   <button onClick="{{ setRecapLand }}" style="{{ recapLandStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect></svg>แนวนอน</button>
                   <button onClick="{{ setRecapPort }}" style="{{ recapPortStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="2"></rect></svg>แนวตั้ง</button>
                 </div>
+                <sc-if value="{{ recapHasShots }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:11px 12px 12px;margin-bottom:9px">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px">
+                      <div style="font:600 13px 'Anuphan';color:#2b241f">รูปที่จะอยู่ในคลิปนี้</div>
+                      <sc-if value="{{ recapIsCustom }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ recapResetPick }}" style="flex:none;min-height:28px;padding:0 10px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#8a7d6f;font:600 11.5px 'Anuphan';border-radius:999px;cursor:pointer">ให้ระบบเลือกใหม่</button>
+                      </sc-if>
+                    </div>
+                    <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+                      <sc-for list="{{ recapShotRows }}" as="sh" hint-placeholder-count="8">
+                        <button onClick="{{ sh.on }}" style="{{ sh.wrap }}">
+                          <img src="{{ sh.src }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                          <span style="{{ sh.badge }}">{{ sh.no }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <sc-for list="{{ recapShotRows }}" as="sh" hint-placeholder-count="0">
+                      <sc-if value="{{ sh.selected }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;gap:6px;margin-top:8px">
+                          <button onClick="{{ sh.moveL }}" style="flex:1;min-height:40px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 14px 'Anuphan';border-radius:11px;cursor:pointer">◀ เลื่อนซ้าย</button>
+                          <button onClick="{{ sh.moveR }}" style="flex:1;min-height:40px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 14px 'Anuphan';border-radius:11px;cursor:pointer">เลื่อนขวา ▶</button>
+                          <button onClick="{{ sh.del }}" style="flex:none;min-height:40px;padding:0 14px;border:1px solid rgba(192,95,57,.35);background:#fff4ec;color:#c05f39;font:600 14px 'Anuphan';border-radius:11px;cursor:pointer">เอาออก</button>
+                        </div>
+                      </sc-if>
+                    </sc-for>
+                    <div style="font:500 12px/1.55 'Anuphan';color:#a99e8e;margin-top:7px;text-wrap:pretty">{{ recapShotNote }}</div>
+                    <button onClick="{{ toggleRecapAdd }}" style="width:100%;min-height:40px;margin-top:9px;border:1px dashed rgba(43,36,32,.22);background:transparent;color:#8a7d6f;font:600 13.5px 'Anuphan';border-radius:11px;cursor:pointer">{{ recapAddLabel }}</button>
+                    <sc-if value="{{ recapAddOn }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:9px">
+                        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-height:250px;overflow-y:auto">
+                          <sc-for list="{{ recapAllRows }}" as="ph" hint-placeholder-count="15">
+                            <button onClick="{{ ph.on }}" style="{{ ph.wrap }}">
+                              <img src="{{ ph.src }}" alt="" style="{{ ph.imgStyle }}">
+                            </button>
+                          </sc-for>
+                        </div>
+                        <div style="font:500 12px/1.55 'Anuphan';color:#a99e8e;margin-top:7px;text-wrap:pretty">{{ recapAddNote }}</div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ recapEditHintOn }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:10px;background:#fff4ec;border:1px solid rgba(192,95,57,.22);border-radius:12px;padding:11px 12px">
+                        <div style="font:600 13px 'Anuphan';color:#c05f39;margin-bottom:4px">เลือกรูปเองได้ตอนเป็นพรีเมียม</div>
+                        <div style="font:500 12.5px/1.65 'Anuphan';color:#8a7d6f;text-wrap:pretty">พรีเมียมเลือกได้ว่าจะเอารูปไหน เรียงลำดับเอง และทำคลิปยาวเท่าไหร่ก็ได้ · ตอนนี้ระบบเลือกให้ 45–60 วิ โดยเน้นรูปที่คุณติ๊กไว้</div>
+                        <button onClick="{{ goPremium }}" style="margin-top:9px;min-height:40px;padding:0 16px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูแพ็กพรีเมียม</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
                 <button onClick="{{ exportRecap }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg>{{ exportRecapLabel }}</button>
+                <sc-if value="{{ recReadyOn }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#fff4ec;border:1px solid rgba(192,95,57,.24);border-radius:14px;padding:12px 13px;margin-bottom:10px">
+                    <div style="font:600 13px 'Anuphan';color:#c05f39;margin-bottom:8px">คลิปพร้อมแล้ว — ถ้าไฟล์ยังไม่เด้ง แตะปุ่มนี้</div>
+                    <div style="display:flex;gap:8px">
+                      <a href="{{ recReadyUrl }}" download="{{ recReadyName }}" style="flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';text-decoration:none">{{ recReadyLabel }}</a>
+                      <sc-if value="{{ recCanShare }}" hint-placeholder-val="{{ false }}">
+                        <button onClick="{{ shareRecapFile }}" style="flex:none;min-height:44px;padding:0 15px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">แชร์</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-if>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">{{ recapSizeNote }}</div>
-                <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><sc-if value="{{ notPremium }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:flex;align-items:center;gap:5px;background:rgba(192,95,57,.1);border-radius:999px;padding:5px 10px;font:600 11.5px 'Anuphan';color:#c05f39"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>พรีเมียม</span></sc-if><sc-if value="{{ isPremium }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></sc-if></button>
+                <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin:9px 0 18px">เล่มแนวนอนจากรูปทั้งทริป — มีแค่หัวข้อวัน ไม่ต้องเขียนอะไรเพิ่ม</div>
               </sc-if>
               <sc-if value="{{ recapEmpty }}" hint-placeholder-val="{{ true }}">
@@ -942,7 +1001,7 @@
                   <textarea value="{{ artPrompt }}" onInput="{{ setArtPrompt }}" placeholder="บอก AI ว่าอยากได้บทความแบบไหน" style="width:100%;box-sizing:border-box;min-height:132px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px;font:500 15.5px/1.7 'IBM Plex Sans Thai Looped',sans-serif;color:#2f2a24;outline:none;resize:vertical;margin-bottom:6px"></textarea>
                   <div style="font:500 13px/1.5 'Anuphan';color:#b3a897;margin-bottom:12px">ปรับโทน สไตล์นักเขียน ความยาว หรือสั่งละเอียดในแบบของคุณเองได้เลย</div>
                 </sc-if>
-                <sc-if value="{{ artNotConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:13px;padding:11px 13px;font:500 14px/1.5 'Anuphan';color:#8a5a3c;margin-bottom:12px">ยังไม่ได้เชื่อม AI — ไปที่แท็บ “ฉัน” เพื่อเชื่อม API key ก่อน</div></sc-if>
+                <sc-if value="{{ artNotConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:13px;padding:11px 13px;margin-bottom:12px"><div style="font:500 14px/1.55 'Anuphan';color:#8a5a3c;text-wrap:pretty">{{ aiPremiumMsg }}</div><button onClick="{{ goPremium }}" style="margin-top:9px;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูแพ็กพรีเมียม</button></div></sc-if>
                 <button onClick="{{ genArt }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;opacity:{{ artGenOpacity }}">✦ สร้างบทความจากโมเมนต์ทั้งทริป</button>
                 <sc-if value="{{ artBusy }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:22px;font:500 15px 'Anuphan';color:#a1927c">✦ AI กำลังเรียบเรียง…</div></sc-if>
                 <sc-if value="{{ artHasErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border:1px solid rgba(192,86,58,.25);border-radius:13px;padding:12px 14px;font:500 14.5px/1.6 'Anuphan';color:#b3402a;margin-top:12px">{{ artErr }}</div></sc-if>
@@ -1847,8 +1906,8 @@
             <div style="padding:6px 20px 34px">
               <sc-if value="{{ notPremium }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:14px;background:#2b241f;border-radius:16px;padding:16px 17px">
-                  <div style="font-family:'Chonburi',serif;font-size:17px;color:#f6efe2;margin-bottom:6px">รวมเป็นเล่มได้ตอนเป็นพรีเมียม</div>
-                  <div style="font:500 13.5px/1.7 'Anuphan';color:#c9b79b;margin-bottom:13px">ปกด้านล่างคือเล่มที่รอคุณอยู่แล้ว — เปิดอ่านแบบพลิกหน้า บันทึกเป็น PDF และทำการ์ดอวดเล่มได้ไม่จำกัด</div>
+                  <div style="font-family:'Chonburi',serif;font-size:17px;color:#f6efe2;margin-bottom:6px">ทำเล่มได้เลย ไม่ต้องจ่าย</div>
+                  <div style="font:500 13.5px/1.7 'Anuphan';color:#c9b79b;margin-bottom:13px">ทั้งหนังสือและโฟโต้บุ๊กเปิดให้ครบ — อ่านแบบพลิกหน้า บันทึกเป็น PDF ได้เต็มเล่ม · ไฟล์ที่โหลดออกจะมีบรรทัดเล็กๆ “สร้างด้วย Vela” มุมล่าง พรีเมียมเอาออกให้ + ได้ความละเอียดสำหรับสั่งพิมพ์</div>
                   <button onClick="{{ goPremium }}" style="width:100%;min-height:46px;border:none;border-radius:13px;background:#c05f39;color:#fff;font:600 15px 'Anuphan';cursor:pointer">ดูแพ็กเกจ · Trip Pass ฿99</button>
                 </div>
               </sc-if>
@@ -2022,7 +2081,24 @@
                   <button onClick="{{ rehostImgs }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ rehostLabel }}</button>
                 </div>
               </sc-if>
-              <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ</div>
+              <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ — เลือกได้ว่าจะรวมรูปไปด้วยหรือไม่</div>
+              <sc-if value="{{ bkOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:14px;padding:13px 14px;margin-bottom:11px">
+                  <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:9px">จะสำรองแบบไหน</div>
+                  <button onClick="{{ doBackupText }}" style="width:100%;min-height:52px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;cursor:pointer;text-align:left;padding:9px 13px;margin-bottom:8px">
+                    <div style="font:600 14.5px 'Anuphan';color:#2b241f">เฉพาะข้อความ · ไฟล์เล็ก</div>
+                    <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">แผน เช็คอิน โน้ต งบ เรื่องเล่า — เปิดในเครื่องใหม่ช่องรูปจะว่าง</div>
+                  </button>
+                  <button onClick="{{ doBackupPhotos }}" style="width:100%;min-height:52px;border:1px solid rgba(192,95,57,.35);background:#fff4ec;border-radius:12px;cursor:pointer;text-align:left;padding:9px 13px">
+                    <div style="font:600 14.5px 'Anuphan';color:#c05f39">รวมรูป · ย้ายเครื่องได้ครบ</div>
+                    <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ bkPhotoNote }}</div>
+                  </button>
+                  <button onClick="{{ bkClose }}" style="width:100%;min-height:40px;margin-top:8px;border:none;background:transparent;color:#8a7d6f;font:600 13.5px 'Anuphan';cursor:pointer">ยกเลิก</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ bkBusy }}" hint-placeholder-val="{{ false }}">
+                <div style="font:600 13.5px 'Anuphan';color:#c05f39;margin-bottom:11px">กำลังรวมไฟล์สำรอง… อย่าปิดหน้าจอ</div>
+              </sc-if>
               <div style="display:flex;gap:9px">
                 <button onClick="{{ doBackup }}" style="flex:1;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดาวน์โหลดไฟล์สำรอง</button>
                 <label style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center">นำเข้าไฟล์สำรอง<input type="file" accept="application/json,.json" onChange="{{ doRestore }}" style="display:none"></label>
@@ -2037,6 +2113,81 @@
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
           <div style="text-align:center;font:500 13px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
           <div style="text-align:center;font:500 12.5px/1.6 'Anuphan';color:#c3b8a6;margin-top:4px">{{ egLine }}</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ sEbPhotos }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:16px 20px 40px">
+          <sc-if value="{{ ebChList }}" hint-placeholder-val="{{ true }}">
+            <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">{{ ebChIntro }}</div>
+            <sc-if value="{{ ebChEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:22px 18px;text-align:center;font:500 14.5px/1.7 'Anuphan';color:#a99e8e">ทริปนี้ยังไม่มีบทเรื่องเล่า — เขียนตอนแรกก่อน แล้วกลับมาวางรูปได้</div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ ebChRows }}" as="cr" hint-placeholder-count="4">
+                <button onClick="{{ cr.on }}" style="{{ cr.style }}">
+                  <div style="font:700 15.5px 'Anuphan';color:#2b241f;margin-bottom:3px">{{ cr.title }}</div>
+                  <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ cr.meta }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ebChDetail }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+              <button onClick="{{ ebChBack }}" style="flex:none;min-height:38px;padding:0 13px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 13.5px 'Anuphan';border-radius:10px;cursor:pointer">← ทุกบท</button>
+              <span style="flex:1;min-width:0;font:700 15.5px 'Anuphan';color:#2b241f">{{ ebChTitle }}</span>
+            </div>
+            <div style="font:500 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:14px">{{ ebChMeta }}</div>
+            <sc-if value="{{ ebNoParas }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:16px;font:500 14px/1.7 'Anuphan';color:#a99e8e;margin-bottom:12px">บทนี้ยังไม่มีเนื้อเรื่อง — วางรูปได้ แต่จะไปอยู่ต้นบททั้งหมด</div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ ebBlocks }}" as="bk" hint-placeholder-count="5">
+                <div>
+                  <sc-if value="{{ bk.isPara }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:#fff;border:1px solid rgba(43,36,32,.09);border-radius:13px;padding:12px 14px;font:500 14.5px/1.85 'IBM Plex Sans Thai Looped',sans-serif;color:#413931;text-wrap:pretty">{{ bk.text }}</div>
+                  </sc-if>
+                  <sc-if value="{{ bk.isImg }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.24);border-radius:14px;padding:11px">
+                      <div style="display:flex;gap:11px;margin-bottom:9px">
+                        <span style="flex:none;width:80px;height:100px;border-radius:9px;overflow:hidden;background:#efe4d3;display:block"><img src="{{ bk.src }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></span>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+                          <div style="font:500 12px 'Anuphan';color:#a1927c">{{ bk.from }}</div>
+                          <input value="{{ bk.cap }}" onInput="{{ bk.setCap }}" placeholder="คำบรรยายใต้รูป (ไม่ใส่ก็ได้)" style="width:100%;box-sizing:border-box;min-height:38px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:0 11px;font:500 13.5px 'Anuphan';color:#2b241f">
+                          <div style="display:flex;gap:6px">
+                            <button onClick="{{ bk.frame }}" style="flex:1;min-height:34px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#8a7d6f;border-radius:9px;cursor:pointer;font:600 12px 'Anuphan'">ปรับกรอบ</button>
+                            <button onClick="{{ bk.del }}" style="flex:none;min-height:34px;padding:0 13px;border:1px solid rgba(192,95,57,.35);background:#fff4ec;color:#c05f39;border-radius:9px;cursor:pointer;font:600 12px 'Anuphan'">เอาออก</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="display:flex;gap:6px">
+                        <sc-for list="{{ bk.sizes }}" as="sz" hint-placeholder-count="3">
+                          <button onClick="{{ sz.on }}" style="{{ sz.style }}">{{ sz.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ bk.isAdd }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ bk.on }}" style="{{ bk.openStyle }}">{{ bk.label }}</button>
+                    <sc-if value="{{ bk.picking }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:8px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:13px;padding:10px">
+                        <sc-if value="{{ bk.poolEmpty }}" hint-placeholder-val="{{ false }}">
+                          <div style="font:500 13px 'Anuphan';color:#a99e8e;text-align:center;padding:10px">วันนี้ยังไม่มีรูปในโมเมนต์</div>
+                        </sc-if>
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:220px;overflow-y:auto">
+                          <sc-for list="{{ bk.pool }}" as="pp" hint-placeholder-count="8">
+                            <button onClick="{{ pp.on }}" style="{{ pp.wrap }}"><img src="{{ pp.src }}" alt="" style="{{ pp.imgStyle }}"></button>
+                          </sc-for>
+                        </div>
+                        <div style="font:500 11.5px/1.5 'Anuphan';color:#a99e8e;margin-top:7px">แตะรูปเพื่อวางตรงนี้ · รูปที่มีกรอบสีดินเผาคือวางไว้แล้ว</div>
+                      </div>
+                    </sc-if>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{ ebChReset }}" style="width:100%;min-height:44px;margin-top:16px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#8a7d6f;font:600 14px 'Anuphan';border-radius:12px;cursor:pointer">เอารูปที่วางไว้ออกหมด</button>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -2192,19 +2343,24 @@
         <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">ทำเป็นอีบุ๊ก</div>
         <button onClick="{{ closeEbook }}" style="min-width:44px;min-height:44px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ปิด</button>
       </div>
-      <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px">{{ ebSummary }}</div>
+      <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:7px">{{ ebSummary }}</div>
+      <div style="font:600 13px/1.6 'Anuphan';color:#2b241f;margin-bottom:16px">{{ ebPhotoLine }}
+        <sc-if value="{{ ebPhotoWarn }}" hint-placeholder-val="{{ false }}">
+          <div style="font:500 12px/1.55 'Anuphan';color:#a99e8e;margin-top:3px;text-wrap:pretty">{{ ebPhotoHint }}</div>
+        </sc-if>
+      </div>
       <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
       <photo-pick id="{{ ebCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:150px;border-radius:14px;margin-bottom:18px"></photo-pick>
-      <button onClick="{{ toggleEbAi }}" style="{{ ebAiStyle }}">
-        <div style="flex:1;min-width:0;text-align:left"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ให้ AI เกลาสำนวน</div><div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">เขียนย่อหน้าเปิดแต่ละวันจากบันทึกจริง · ใช้เครดิต</div></div>
-        <span style="{{ ebAiDot }}"></span>
-      </button>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin:0 0 8px">คุณภาพไฟล์</div>
+      <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pbQualityChips }}" as="qc" hint-placeholder-count="2"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e">{{ pbQualityNote }}</div>
       <sc-if value="{{ ebBusy }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:16px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ ebBarStyle }}"></div></div>
         <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ ebBusyLabel }}</div></div>
       </sc-if>
       <sc-if value="{{ ebIdle }}" hint-placeholder-val="{{ true }}">
-        <button onClick="{{ runEbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:18px">สร้างเล่ม</button>
+        <button onClick="{{ openEbPhotos }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:18px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 14l4.5-4 4 3.5L15 10l6 5"/></svg>จัดรูปในเล่ม</button>
+        <button onClick="{{ runEbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer;margin-top:9px">สร้างเล่ม</button>
       </sc-if>
       <sc-if value="{{ ebHasUrl }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ showEbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
@@ -2229,6 +2385,9 @@
       </sc-if>
       <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">ธีมเล่ม</div>
       <div style="display:flex;gap:8px;margin-bottom:18px"><sc-for list="{{ pbThemeChips }}" as="tc" hint-placeholder-count="3"><button onClick="{{ tc.on }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for></div>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">คุณภาพไฟล์</div>
+      <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pbQualityChips }}" as="qc" hint-placeholder-count="2"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:10px">{{ pbQualityNote }}</div>
       <sc-if value="{{ pbIdle }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ openPbFrame }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 6v12M15 6v12" opacity=".45"/></svg>{{ pbFrameBtnLabel }}</button>
         <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
@@ -2271,13 +2430,15 @@
       <div onPointerDown="{{ frDown }}" onPointerMove="{{ frMove }}" onPointerUp="{{ frUp }}" onPointerCancel="{{ frUp }}" style="{{ frBoxStyle }}"><img src="{{ frSrc }}" alt="" draggable="false" style="{{ frImgStyle }}"></div>
     </div>
     <div style="flex:none;padding:2px 20px calc(18px + env(safe-area-inset-bottom))">
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px" hidden="{{ frHideNav }}">
         <button onClick="{{ frMovePrev }}" style="{{ frPrevStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6"/></svg></button>
         <span style="flex:1;min-width:0;text-align:center;font:600 13px 'Anuphan';color:#c9b79b">{{ frPosLabel }}</span>
         <button onClick="{{ frMoveNext }}" style="{{ frNextStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
-      <div style="font:600 12.5px 'Anuphan';color:#a89d8b;margin-bottom:7px">กรอบของรูปนี้ในเล่ม</div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px"><sc-for list="{{ frSizeChips }}" as="zc" hint-placeholder-count="5"><button onClick="{{ zc.on }}" style="{{ zc.style }}">{{ zc.label }}</button></sc-for></div>
+      <sc-if value="{{ frPbTools }}" hint-placeholder-val="{{ false }}">
+        <div style="font:600 12.5px 'Anuphan';color:#a89d8b;margin-bottom:7px">กรอบของรูปนี้ในเล่ม</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px"><sc-for list="{{ frSizeChips }}" as="zc" hint-placeholder-count="5"><button onClick="{{ zc.on }}" style="{{ zc.style }}">{{ zc.label }}</button></sc-for></div>
+      </sc-if>
       <div style="font:500 13px 'Anuphan';color:#a89d8b;text-align:center;margin-bottom:10px">ลากรูปเพื่อเลือกส่วนที่อยากให้เห็น</div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
         <span style="flex:none;font:600 12.5px 'Anuphan';color:#a89d8b">ซูม</span>
@@ -2302,8 +2463,8 @@ class Component extends DCLogic {
     history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addPeriod: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { today: 'today', plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
-  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', ebPhotos:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
+  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', ebPhotos:'จัดรูปในเล่ม', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
   roots = ['today','myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -2427,6 +2588,7 @@ class Component extends DCLogic {
       this.setTab('plan');
     } else { this.forceUpdate(); }
     this.loadFeed();
+    this.migrateEbPhotoCfg();
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
     Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); this.loadCredits(); });
   }
@@ -2737,8 +2899,14 @@ class Component extends DCLogic {
     try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
     return data;
   }
+  // เพดานก้อนที่ดันขึ้นคลาวด์ — ฟรี 500 KB, พรีเมียม 850 KB (ตกลง 17 ส.ค.)
+  // ตัดเฉพาะ "ตอนส่ง": ข้อมูลในเครื่องยังครบ และค่าเดิมบนคลาวด์ไม่ถูกลบทับ
+  SYNC_MAX_FREE = 500000;
+  SYNC_MAX_PREMIUM = 850000;
+  syncMax() { return this.isPremium ? this.SYNC_MAX_PREMIUM : this.SYNC_MAX_FREE; }
   _filterForPush(map, remoteData) {
-    const IMG_MAX = 380000, TOTAL_MAX = 850000;
+    const TOTAL_MAX = this.syncMax();
+    const IMG_MAX = Math.min(380000, TOTAL_MAX);
     let imgTotal = 0; const out = {}; const remote = remoteData || {};
     const keys = Object.keys(map).sort((a, b) => (/avatar|wtn-cover/.test(a) ? -1 : 0) - (/avatar|wtn-cover/.test(b) ? -1 : 0));
     keys.forEach(k => {
@@ -3762,46 +3930,9 @@ class Component extends DCLogic {
     this._toastT = setTimeout(() => this.setState({ toast: '' }), 3200);
   }
   async askLLMParts(promptText, files) {
-    files = files || [];
-    const be = window.WTNBackend;
-    if (this.isPremium && !this.aiKey && be && be.aiComplete) {
-      if (files.length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
-      return await this.aiViaVela(be, promptText);
-    }
-    const key = this.aiKey, p = this.aiProvider;
-    if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
-    files = files || [];
-    const imgs = files.filter(f => /^data:image\//.test(f));
-    const pdfs = files.filter(f => /^data:application\/pdf/.test(f));
-    const b64 = du => du.split(',')[1] || '';
-    const mimeOf = du => (du.match(/^data:([^;]+)/) || [])[1] || 'image/jpeg';
-    if (p === 'claude') {
-      const content = [{ type: 'text', text: promptText }];
-      imgs.forEach(du => content.push({ type: 'image', source: { type: 'base64', media_type: mimeOf(du), data: b64(du) } }));
-      pdfs.forEach(du => content.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64(du) } }));
-      const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2600, messages: [{ role: 'user', content }] }) });
-      const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก Claude ไม่สำเร็จ');
-      return d.content.map(x => x.text || '').join('');
-    }
-    if (p === 'openai') {
-      const content = [{ type: 'text', text: promptText }];
-      imgs.forEach(du => content.push({ type: 'image_url', image_url: { url: du } }));
-      const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + key },
-        body: JSON.stringify({ model: 'gpt-4o', max_tokens: 2600, messages: [{ role: 'user', content }] }) });
-      const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก OpenAI ไม่สำเร็จ');
-      return d.choices[0].message.content;
-    }
-    const parts = [{ text: promptText }];
-    imgs.forEach(du => parts.push({ inline_data: { mime_type: mimeOf(du), data: b64(du) } }));
-    pdfs.forEach(du => parts.push({ inline_data: { mime_type: 'application/pdf', data: b64(du) } }));
-    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + encodeURIComponent(key), {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts }] }) });
-    const d = await r.json(); if (!r.ok) throw new Error((d.error && d.error.message) || 'เรียก Gemini ไม่สำเร็จ');
-    return d.candidates[0].content.parts.map(x => x.text || '').join('');
+    if (!this.aiAvailable()) throw new Error(this.AI_PREMIUM_MSG);
+    if ((files || []).length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
+    return await this.aiViaVela(window.WTNBackend, promptText);
   }
   addImpFiles(ev) {
     const files = Array.from(ev.target.files || []); ev.target.value = '';
@@ -3814,8 +3945,7 @@ class Component extends DCLogic {
     const text = (this.state.impText || '').trim();
     const files = this.state.impFiles || [];
     if (!text && !files.length) { this.setState({ impErr: 'วางข้อความ หรือแนบไฟล์โปรแกรมก่อน' }); return; }
-    if (!this.isPremium) { this.go('premium'); return; }
-    if (!this.aiKey) { this.setState({ impErr: 'ยังไม่ได้เชื่อม API key — ไปเชื่อมที่แท็บ "ฉัน" ก่อน' }); return; }
+    if (!this.aiGate()) return;
     this.setState({ impBusy: true, impErr: '' });
     const prompt = 'คุณคือตัวช่วยแยกโปรแกรมทัวร์เป็นแผนรายวันของแอปท่องเที่ยว\n' +
       'อ่านโปรแกรมทัวร์ต่อไปนี้ (ข้อความ/รูป/PDF) แล้วตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอก JSON และห้ามใส่ ```\n' +
@@ -3871,51 +4001,15 @@ class Component extends DCLogic {
       this.setState({ screen: 'feed', tab: 'stories', history: [], openStoryId: null, openChapterId: null, remoteOpen: null, deepLoading: false, deepErr: false });
     }
   }
-  get aiKey() {
-    try { return localStorage.getItem('wtn-ai-key') || ''; } catch (e) { return ''; }
-  }
-  get aiProvider() {
-    const k = this.aiKey;
-    if (k.startsWith('sk-ant-')) return 'claude';
-    if (k.startsWith('AIza')) return 'gemini';
-    if (k.startsWith('sk-')) return 'openai';
-    return k ? 'gemini' : '';
-  }
+  // AI เป็นของพรีเมียมเท่านั้น (ตกลง 17 ส.ค.) — เลิกรับ API key ของผู้ใช้เอง (BYOK)
+  // เหตุผลที่ตัด BYOK: คีย์อยู่ในเครื่องผู้ใช้แล้วเรียก provider ตรงจากเบราว์เซอร์ = คีย์รั่วได้
+  // และเราคุมพรอมป์ต์/คุณภาพไม่ได้ · ทางเดียวคือ AI ของ Vela ผ่าน Edge Function ที่คุมโควตาได้
+  aiAvailable() { const be = window.WTNBackend; return !!(this.isPremium && be && be.aiComplete); }
+  aiGate() { if (this.aiAvailable()) return true; this.go('premium'); return false; }
+  AI_PREMIUM_MSG = 'ผู้ช่วย AI เป็นฟีเจอร์ของพรีเมียม — เปิดใช้แล้วให้ AI ช่วยจัดวัน เรียบเรียงเรื่องเล่า และแยกโปรแกรมทัวร์ได้เลย';
   async askLLM(prompt) {
-    const be = window.WTNBackend;
-    // พรีเมียม + ไม่ได้ใส่คีย์เอง → ใช้ AI กลางผ่าน Cloud Function
-    if (this.isPremium && !this.aiKey && be && be.aiComplete) {
-      return await this.aiViaVela(be, prompt);
-    }
-    const key = this.aiKey, p = this.aiProvider;
-    if (!key) throw new Error('ยังไม่ได้เชื่อม API key');
-    if (p === 'claude') {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-api-key': key,
-          'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 1200,
-          messages: [{ role: 'user', content: prompt }] }) });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก Claude ไม่สำเร็จ');
-      return d.content[0].text;
-    }
-    if (p === 'openai') {
-      const r = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + key },
-        body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 1200,
-          messages: [{ role: 'user', content: prompt }] }) });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก OpenAI ไม่สำเร็จ');
-      return d.choices[0].message.content;
-    }
-    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=' + encodeURIComponent(key), {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
-    const d = await r.json();
-    if (!r.ok) throw new Error(d.error && d.error.message || 'เรียก Gemini ไม่สำเร็จ');
-    return d.candidates[0].content.parts.map(x => x.text || '').join('');
+    if (!this.aiAvailable()) throw new Error(this.AI_PREMIUM_MSG);
+    return await this.aiViaVela(window.WTNBackend, prompt);
   }
   dayContext() {
     const dd = this.days, d = dd[this.state.day] || {};
@@ -4200,7 +4294,7 @@ class Component extends DCLogic {
     if (!this.isPremium) { this.go('premium'); return; }
     city = (city || '').trim(); if (!city) return;
     const key = this.exploreKey(city, cat);
-    if (!this.aiKey) { this.setState({ expQuery: city, expBusyKey: null, expErr: 'no-key', expErrKey: key }); return; }
+    if (!this.aiAvailable()) { this.setState({ expQuery: city, expBusyKey: null, expErr: 'no-key', expErrKey: key }); return; }
     const cache = this.exploreCache;
     if (cache[key] && Array.isArray(cache[key].items)) { this.setState({ expQuery: city, expErr: '', expErrKey: null, expBusyKey: null }); return; }
     this.setState({ expQuery: city, expBusyKey: key, expErr: '', expErrKey: null });
@@ -5514,29 +5608,73 @@ class Component extends DCLogic {
       this.setState({ cloud: 'error', cloudErr: (e && (e.code || e.message)) || String(e) });
     } finally { this._syncing = false; this.setState({ syncBusy: false }); }
   }
-  exportBackup() {
+  async exportBackup(withPhotos) {
+    if (this.state.bkBusy) return;
+    this.setState({ bkBusy: true, bkOpen: false });
     const data = { _app: 'where-to-next', _at: Date.now(), data: {} };
     try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data.data[k] = localStorage.getItem(k); } } catch (e) {}
     try {
+      if (withPhotos) {
+        // เก็บตัวรูปจริงจาก IndexedDB ลงไฟล์ด้วย — คีย์ idb:pNN ที่ถูกอ้างถึงจริงเท่านั้น
+        const refs = new Set();
+        Object.keys(data.data).forEach(k => { const m = String(data.data[k] || '').match(/idb:p\d+/g); if (m) m.forEach(r => refs.add(r)); });
+        const photos = {};
+        for (const r of refs) { const d = await this.idbGet(r.slice(4)); if (d) photos[r] = d; }
+        data.photos = photos;
+        data._photoCount = Object.keys(photos).length;
+      }
       const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
       const url = URL.createObjectURL(blob), a = document.createElement('a');
-      a.href = url; a.download = 'wheretonext-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.href = url;
+      a.download = 'wheretonext-backup-' + new Date().toISOString().slice(0, 10) + (withPhotos ? '-รวมรูป' : '') + '.json';
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
-    } catch (e) { alert('สำรองไม่สำเร็จ'); }
+      this.showToast(withPhotos
+        ? '✓ สำรองแล้ว · รวมรูป ' + (data._photoCount || 0) + ' ใบ (' + this.fmtBytes(blob.size) + ')'
+        : '✓ สำรองแล้ว · เฉพาะข้อความ (' + this.fmtBytes(blob.size) + ')');
+    } catch (e) {
+      console.warn('[wtn] backup', e);
+      alert(withPhotos ? 'สำรองไม่สำเร็จ — รูปอาจเยอะเกินกว่าที่เครื่องจะรวมเป็นไฟล์เดียวได้ ลองเลือก “เฉพาะข้อความ”' : 'สำรองไม่สำเร็จ');
+    } finally { this.setState({ bkBusy: false }); }
+  }
+  // นับรูปที่จะติดไปในไฟล์ ไว้โชว์ให้ตัดสินใจก่อนกด
+  async countBackupPhotos() {
+    const refs = new Set();
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !(/^wtn-/.test(k) || k.indexOf('photopick:') === 0)) continue;
+        const m = String(localStorage.getItem(k) || '').match(/idb:p\d+/g);
+        if (m) m.forEach(r => refs.add(r));
+      }
+    } catch (e) {}
+    this.setState({ bkPhotoN: refs.size });
   }
   importBackup(ev) {
     const f = (ev.target.files || [])[0]; ev.target.value = '';
     if (!f) return;
     const rd = new FileReader();
     rd.onload = () => {
-      let d; try { const o = JSON.parse(rd.result); d = (o && o.data) ? o.data : o; } catch (e) { alert('ไฟล์สำรองไม่ถูกต้อง'); return; }
+      let d, obj; try { obj = JSON.parse(rd.result); d = (obj && obj.data) ? obj.data : obj; } catch (e) { alert('ไฟล์สำรองไม่ถูกต้อง'); return; }
       if (!d || typeof d !== 'object') { alert('ไฟล์สำรองไม่ถูกต้อง'); return; }
       if (!confirm('กู้ข้อมูลจากไฟล์นี้? ข้อมูลปัจจุบันที่ชื่อซ้ำจะถูกทับ')) return;
       Object.keys(d).forEach(k => { if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) { try { localStorage.setItem(k, d[k]); } catch (e) {} } });
-      alert('กู้ข้อมูลสำเร็จ'); location.reload();
+      const ph = (obj && obj.photos) || null;                    // ไฟล์รุ่นใหม่มีตัวรูปมาด้วย → ใส่กลับ IndexedDB
+      if (ph && typeof ph === 'object') {
+        const keys = Object.keys(ph);
+        (async () => {
+          let ok = 0;
+          for (const r of keys) { try { await this.idbPut(r.slice(4), ph[r]); ok++; } catch (e) {} }
+          alert('กู้ข้อมูลสำเร็จ · คืนรูป ' + ok + ' ใบ');
+          location.reload();
+        })();
+        return;
+      }
+      alert('กู้ข้อมูลสำเร็จ' + (this._bkHadRefs(d) ? '\n\nหมายเหตุ: ไฟล์นี้ไม่มีตัวรูปมาด้วย (สำรองแบบเฉพาะข้อความ) ถ้าเปิดในเครื่องใหม่ช่องรูปจะว่าง' : ''));
+      location.reload();
     };
     rd.readAsText(f);
   }
+  _bkHadRefs(d) { try { return Object.keys(d).some(k => /idb:p\d+/.test(String(d[k] || ''))); } catch (e) { return false; } }
   checkinDayCount() {
     const s = this.openStory; if (!s) return 0;
     let n = 0;
@@ -6015,7 +6153,8 @@ class Component extends DCLogic {
       if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
       return t;
     } catch (e) {
-      if (e && e.code === 'no-credits') {
+      if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); }
+      else if (e && e.code === 'no-credits') {
         this.setState({ aiCredits: 0 });
         this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
       }
@@ -6201,22 +6340,30 @@ class Component extends DCLogic {
     const ci = this.checkins || {};
     const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
     const cmap = this.ebChapterMap();
+    const EQ = this.pbQualities[this.pbQuality];
     const days = [];
     for (let i = 0; i < n; i++) {
       const list = (ci[trip + ':' + i] || []).filter(c => (c.name || c.note)).slice().sort((a, b) => (a.at || 0) - (b.at || 0));
       const ch = cmap.byDay[i];
       if (!list.length && !ch) continue;
       const items = [];
+      const placed = {}; if (ch) this.ebInserts(ch.id).forEach(x => { placed[x.ref] = 1; });
       for (const c of list) {
-        const ph = [];
         if (!this.ciWantsBook(c)) continue;                     // ผู้ใช้ไม่ได้เลือกให้ลงหนังสือ
-        for (const p of (c.photos || []).slice(0, 10)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
-        items.push({ t: c.t || '', name: c.name || '', note: c.note || '', photos: ph });
+        const ph = [];                                          // รูปที่วางในเรื่องแล้ว ไม่ต้องโผล่ซ้ำในส่วนโมเมนต์
+        for (const p of (c.photos || []).filter(p => !placed[p]).slice(0, 10)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
+        items.push({ t: c.t || '', name: c.name || '', note: c.note || '', photos: await this.shrinkList(ph, EQ) });
       }
-      const story = ch ? { title: ch.title || '', paras: this._htmlParas(ch.html), photos: [], cover: '' } : null;
+      const story = ch ? { title: ch.title || '', paras: this._htmlParas(ch.html), photos: [], cover: '', inserts: [] } : null;
       if (ch) {
         story.cover = await this.resolvePhoto(ch.cover || '') || '';
         for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); if (r) story.photos.push(r); }
+        story.photos = await this.shrinkList(story.photos, EQ);
+        for (const x of this.ebInserts(ch.id)) {
+          const r = await this.resolvePhoto(x.ref);
+          if (!r) continue;
+          story.inserts.push({ u: (await this.shrinkList([r], EQ))[0] || r, cap: x.cap || '', size: x.size || 'half', after: x.after });
+        }
       }
       days.push({ n: i + 1, label: this.ebDayLabel(i), items, story,
         title: (ch && ch.title) || (items[0] || {}).name || 'วันใหม่' });
@@ -6227,6 +6374,7 @@ class Component extends DCLogic {
       if (!paras.length) continue;
       const st = { title: c.title || 'ตอนหนึ่ง', paras, photos: [], cover: await this.resolvePhoto(c.cover || '') || '' };
       for (const p of (c.photos || [])) { const r = await this.resolvePhoto(p); if (r) st.photos.push(r); }
+      st.photos = await this.shrinkList(st.photos, EQ);
       days.push({ n: 0, label: '', items: [], story: st, title: st.title });
     }
     days.forEach((d, i) => { d.n = i + 1; });                 // เลขตอนเรียงต่อเนื่องตามสารบัญ
@@ -6243,6 +6391,11 @@ class Component extends DCLogic {
       when: this.fmtRange(t.start, t.end) || '',
       author: this.profile.name || 'นักเดินทาง',
       cover, days,
+      quality: this.pbQuality,
+      bytes: this._urlBytes(cover) + days.reduce((a, d) => a
+        + (d.items || []).reduce((x, it) => x + (it.photos || []).reduce((y, u) => y + this._urlBytes(u), 0), 0)
+        + ((d.story && d.story.photos) || []).reduce((y, u) => y + this._urlBytes(u), 0)
+        + this._urlBytes((d.story || {}).cover), 0),
       expense: { total, rows: rows.map(k => ({ k, v: cats[k], pct: total ? Math.round(cats[k] / total * 100) : 0 })) },
       stats: {
         days: days.length,
@@ -6306,22 +6459,6 @@ class Component extends DCLogic {
     g.textAlign = 'left'; g.textBaseline = 'alphabetic';
     return { url: cv.toDataURL('image/jpeg', 0.9), stops: stops.slice(0, 8).map((s, i) => ({ no: i + 1, name: s.n })) };
   }
-  async ebPolish(days) {
-    const out = [];
-    for (let i = 0; i < days.length; i++) {
-      const d = days[i];
-      const raw = d.items.map(x => [x.t, x.name, x.note].filter(Boolean).join(' — ')).join('\n');
-      try {
-        const txt = await this.askLLM(
-          'นี่คือบันทึกเช็คอินดิบของนักเดินทางใน 1 วัน เขียนเป็นย่อหน้าเปิดวันสั้นๆ 2-3 ประโยค ' +
-          'ภาษาไทย น้ำเสียงอบอุ่นเป็นกันเองเหมือนเล่าให้เพื่อนฟัง ห้ามแต่งเรื่องที่ไม่มีในบันทึก ' +
-          'ตอบเฉพาะเนื้อความ ไม่ต้องมีหัวข้อ\n\n' + raw);
-        out.push((txt || '').trim());
-      } catch (e) { out.push(''); }
-      this.setState({ ebPct: 30 + Math.round((i + 1) / days.length * 45) });
-    }
-    days.forEach((d, i) => { d.intro = out[i] || ''; });
-  }
   _esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   // แบ่งข้อความยาวเป็นท่อนๆ ตามจำนวนตัวอักษรที่หน้าหนึ่งรับไหว
   _ebChunk(text, max) {
@@ -6348,11 +6485,24 @@ class Component extends DCLogic {
     if (!ph.length) return bs;
     const W = 120, GAP = 4, BUDGET = 148, HMAX = 96;
     const rows = [];
-    for (let i = 0; i < ph.length; i += 2) rows.push(i === ph.length - 1 ? [ph[i]] : [ph[i], ph[i + 1]]);
+    for (let i = 0; i < ph.length;) {
+      const z = ph[i].size || '';
+      if (z === 'half') { rows.push([ph[i]]); i += 1; continue; }        // ครองแถวลำพัง = ใหญ่สุด
+      if (z === 'small') {                                              // เล็ก = แถวละ 3
+        const g = [ph[i]];
+        while (g.length < 3 && ph[i + g.length] && (ph[i + g.length].size || '') === 'small') g.push(ph[i + g.length]);
+        rows.push(g); i += g.length; continue;
+      }
+      const g = [ph[i]];                                                // อัตโนมัติ = จับคู่กับใบถัดไปถ้าเป็นอัตโนมัติเหมือนกัน
+      if (ph[i + 1] && !(ph[i + 1].size || '')) g.push(ph[i + 1]);
+      rows.push(g); i += g.length;
+    }
     // ความสูงตามธรรมชาติของแต่ละแถว (กว้างรวมพอดีหน้า)
-    const nat = rows.map(us => Math.min(HMAX, (W - GAP * (us.length - 1)) / us.reduce((a, o) => a + this._ebR(o.u), 0)));
+    const capOf = us => { const z = us[0] && us[0].size; return z === 'half' ? HMAX : z === 'small' ? 44 : HMAX; };
+    const nat = rows.map(us => Math.min(capOf(us), (W - GAP * (us.length - 1)) / us.reduce((a, o) => a + this._ebR(o.u), 0)));
     const lo = Math.min.apply(null, nat);
-    let hs = nat.map(h => Math.min(h, lo * 1.6));               // ไม่ให้แถวไหนใหญ่กว่าเพื่อนในชุดเดียวกันเกินไป
+    // แถวที่ผู้ใช้สั่งขนาดเอง ไม่ต้องถูกบีบให้เท่าเพื่อน
+    let hs = nat.map((h, i) => (rows[i][0] && rows[i][0].size) ? h : Math.min(h, lo * 1.6));
     const tot = hs.reduce((a, h) => a + h + 6, 0);
     if (tot > BUDGET) { const k = BUDGET / tot; hs = hs.map(h => Math.max(30, h * k)); }   // ทั้งชุดพยายามอยู่หน้าเดียว
     rows.forEach((us, ri) => {
@@ -6420,12 +6570,13 @@ class Component extends DCLogic {
     const ph = (it.photos || []).filter(Boolean);
     const bs = [];
     const LINE = 6.4, SIDE_CPL = 30, FULL_CPL = 58;
+    const withCap = list => list.map(u => ({ u, cap: '', size: '' }));
     if (ph.length && note.length <= 230) {                    // โน้ตสั้น–กลาง — รูปแรกคู่ข้อความ ที่เหลือต่อท้ายชุดเดียวกัน
       const im = this._ebImg(ph[0], 52, 68);
       const h = Math.max(im.h, 9 + Math.ceil(note.length / SIDE_CPL) * LINE) + 9;
       bs.push({ h, grp: gid, html: '<div class="row"><div class="ph">' + im.html + '</div>' +
         '<div class="tx">' + head + (note ? '<p>' + E(note) + '</p>' : '') + '</div></div>' });
-      this._ebPhotoRows(ph.slice(1), gid).forEach(b => bs.push(b));
+      this._ebPhotoRows(withCap(ph.slice(1)), gid).forEach(b => bs.push(b));
       return bs;
     }
     const parts = this._ebChunk(note, 1200);                   // ข้อความก่อน แล้วรูปทั้งชุดตามมาด้วยกัน
@@ -6434,7 +6585,7 @@ class Component extends DCLogic {
       const h = (i ? 0 : 9) + Math.ceil(p.length / FULL_CPL) * LINE + 8;
       bs.push({ h, grp: gid, html: '<div class="tx wide">' + (i ? '' : head) + '<p>' + E(p) + '</p></div>' });
     });
-    this._ebPhotoRows(ph, gid).forEach(b => bs.push(b));
+    this._ebPhotoRows(withCap(ph), gid).forEach(b => bs.push(b));
     return bs;
   }
   // พื้นที่บล็อกจริงต่อหน้า (มม.): 210 − pad บน 16 − หัวข้อ .rh ~13 − ฟุตเตอร์ ~17
@@ -6453,7 +6604,7 @@ class Component extends DCLogic {
     const add = u => { if (u && set.indexOf(u) < 0) set.push(u); };
     add(D.cover);
     (D.days || []).forEach(d => {
-      if (d.story) { add(d.story.cover); (d.story.photos || []).forEach(add); }
+      if (d.story) { add(d.story.cover); (d.story.photos || []).forEach(add); (d.story.inserts || []).forEach(x => add(x.u)); }
       (d.items || []).forEach(it => (it.photos || []).forEach(add));
     });
     const metas = await Promise.all(set.map(u => this._shotMeta(u)));
@@ -6463,7 +6614,9 @@ class Component extends DCLogic {
     const E = s => this._esc(s);
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
     const page = inner => '<section class="pg">' + inner + '</section>';
-    const foot = (no) => '<div class="ft"><span>' + E(D.title) + '</span><span>' + no + '</span></div>';
+    // ฟรี = เล่มเต็ม ไม่กั้น · ใส่ watermark เฉพาะไฟล์ที่โหลดออก (เส้นเดียวกับโฟโต้บุ๊ก)
+    const wm = this.isPremium ? '' : '<div class="wm">สร้างด้วย Vela · onevela.net</div>';
+    const foot = (no) => '<div class="ft"><span>' + E(D.title) + '</span><span>' + no + '</span></div>' + wm;
     const pad = (d, inner, no) => '<div class="pad"><div class="rh"><span>' + (d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : E(d.title)) +
       '</span><span>' + E(D.sub) + '</span></div>' + inner + '</div>' + foot(no);
     const out = [];
@@ -6499,10 +6652,26 @@ class Component extends DCLogic {
       const units = [];
       const pushFlow = b => { const u = units[units.length - 1]; if (u && u.k === 'f') u.items.push(b); else units.push({ k: 'f', items: [b] }); };
       if (d.story) {
+        const insList = d.story.inserts || [];
+        const drawIns = k => insList.filter(x => x.after === k).forEach(x => {
+          if (x.size === 'full') {
+            units.push({ k: 'p', full: true, html: '<div class="fullimg"><img src="' + E(x.u) + '">' +
+              (x.cap ? '<div class="fullcap">' + E(x.cap) + '</div>' : '') + '</div>' });
+            return;
+          }
+          const hmm = x.size === 'small' ? 46 : 82;
+          const w = Math.min(120, hmm * this._ebR(x.u));
+          pushFlow({ h: hmm + 7 + (x.cap ? 5 : 0), grp: 'ins',
+            html: '<div class="prow"><figure style="--w:' + (Math.round(w * 10) / 10) + 'mm;--h2:' + hmm + 'mm">' +
+              '<span class="im"><img src="' + E(x.u) + '"></span>' +
+              (x.cap ? '<figcaption>' + E(x.cap) + '</figcaption>' : '') + '</figure></div>' });
+        });
+        drawIns(-1);
         d.story.paras.forEach((p, pi) => {
           this._ebChunk(p, 1200).forEach(part => {
             pushFlow({ h: Math.ceil(part.length / 52) * 6.9 + 5, html: '<p class="story' + (pi === 0 ? ' lead' : '') + '">' + E(part) + '</p>' });
           });
+          drawIns(pi);
         });
         if (d.rich.length) pushFlow({ h: 16, html: '<div class="sect">จากสมุดระหว่างวัน</div>' });
       }
@@ -6520,6 +6689,7 @@ class Component extends DCLogic {
             html: this._ebMomentPage({ t: ci2 ? '' : it.t, name: ci2 ? '' : it.name, note: ci2 ? '' : note, photos: cs }) }));
         }
       });
+
       const plate = (d.story ? (d.story.photos || []) : []).filter(u => u && u !== heroU).map(u => ({ u: u, cap: '' }));
       if (plate.length) {                                       // เฉพาะรูปของเรื่องเล่า → หน้าภาพท้ายวัน (โมเมนต์สั้นๆ ไม่เอาเข้าเล่ม)
         pushFlow({ h: 16, grp: 'sp' + d.n, html: '<div class="sect">ภาพจากวันนี้</div>' });
@@ -6618,12 +6788,16 @@ class Component extends DCLogic {
       '.ph{flex:none}.ph img{display:block;object-fit:contain;background:#f1e7d4}' +
       '.phwide{margin-bottom:7mm;display:flex;justify-content:center}.phwide img{object-fit:contain;background:#f1e7d4}' +
       '.pim{width:calc(var(--w)*var(--k,1));height:calc(var(--h2)*var(--k,1));object-fit:contain;background:#f1e7d4;display:block}' +
+      '.fullimg{position:absolute;inset:0;overflow:hidden;background:#14100d}' +
+      '.fullimg img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.fullcap{position:absolute;left:12mm;right:12mm;bottom:9mm;color:#fffaf0;font-size:9pt;letter-spacing:.4px;text-shadow:0 1px 6px rgba(0,0,0,.7)}' +
       '.prow{display:flex;gap:4mm;justify-content:center;align-items:flex-start;margin-bottom:5mm}' +
       '.plate .prow:last-child{margin-bottom:0}' +
       '.prow figure{margin:0;flex:none;width:calc(var(--w)*var(--k,1))}' +
       '.prow .im{display:block;width:100%;height:calc(var(--h2)*var(--k,1));overflow:hidden;background:#e7dcc7}' +
       '.prow figure img{width:100%;height:100%;object-fit:cover;display:block}' +
-      '.prow figcaption{font-size:7.5pt;letter-spacing:.6px;color:#a99e8e;margin-top:1.6mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.pcap{font-size:7.5pt;letter-spacing:.4px;color:#a99e8e;margin-top:1.4mm;text-align:center}' +
+      '.prow figcaption{font-size:7.5pt;letter-spacing:.6px;color:#a99e8e;margin-top:1.6mm;text-align:center;text-wrap:pretty}' +
       '.tx{flex:1;min-width:0}.tx.wide{margin-bottom:7mm}' +
       '.kick3{font-weight:600;font-size:8.5pt;letter-spacing:1.2px;color:#c05f39;margin-bottom:2mm}' +
       '.tx p{font-size:10pt;line-height:1.8;margin:0;color:#453c33}' +
@@ -6638,13 +6812,86 @@ class Component extends DCLogic {
       '.endq{font-family:' + C + ';font-size:15pt;line-height:1.6;max-width:95mm}' +
       '.endn{font-size:10pt;color:#6f6455;max-width:85mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:#a99e8e}' +
       '.ft{position:absolute;left:14mm;right:14mm;bottom:9mm;display:flex;justify-content:space-between;font-size:8pt;color:#a99e8e;border-top:.3mm solid rgba(43,36,32,.1);padding-top:2.5mm}' +
+      '.wm{position:absolute;left:14mm;right:14mm;bottom:3.2mm;text-align:center;font-size:9pt;letter-spacing:.6px;color:#8a7d6f}' +
       '.bar-print{position:sticky;top:0;z-index:9;display:flex;gap:8px;justify-content:center;padding:12px;background:#2b241f}' +
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
-      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5</span></div>' +
+      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5 · ' +
+        E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
       out.join('') + this._bookViewer(false, 'eb-' + (D.tripId || D.title)) + '</body></html>';
+  }
+  EB_INS_SIZES = { half: 'ปกติ', full: 'เต็มหน้า', small: 'เล็ก' };
+  // ค่าจากหน้า "จัดรูปรายวัน" รุ่นแรก (v17v–w) ไม่มี UI แล้ว → ย้ายมาเป็นรูปที่วางในบท แล้วล้างทิ้ง
+  migrateEbPhotoCfg() {
+    let all;
+    try { all = JSON.parse(localStorage.getItem('wtn-eb-photos') || 'null'); } catch (e) { all = null; }
+    if (!all || typeof all !== 'object') return;
+    try {
+      const ins = this.ebInsAll;
+      Object.keys(all).forEach(tid => {
+        const byDay = all[tid] || {};
+        const chs = {};
+        ((this.stories || []).forEach ? this.stories : []).forEach(s => {
+          (this.normStory(s).chapters || []).forEach(c => { const m = /^day(\d+)$/.exec(c.gen || ''); if (m) chs[+m[1]] = c.id; });
+        });
+        Object.keys(byDay).forEach(dk => {
+          const cfg = byDay[dk] || {}, chId = chs[+dk];
+          if (!chId) return;
+          const keep = [];
+          Object.keys(cfg.size || {}).forEach(ref => { if (cfg.size[ref]) keep.push({ ref, size: cfg.size[ref] === 'full' ? 'full' : cfg.size[ref] === 'small' ? 'small' : 'half' }); });
+          Object.keys(cfg.cap || {}).forEach(ref => { if (!keep.some(k => k.ref === ref)) keep.push({ ref, size: 'half' }); });
+          if (!keep.length) return;
+          ins[tid] = ins[tid] || {};
+          const cur = Array.isArray(ins[tid][String(chId)]) ? ins[tid][String(chId)] : [];
+          keep.forEach(k => { if (!cur.some(x => x.ref === k.ref)) cur.push({ ref: k.ref, cap: (cfg.cap || {})[k.ref] || '', size: k.size, after: -1 }); });
+          ins[tid][String(chId)] = cur;
+        });
+      });
+      localStorage.setItem('wtn-eb-inserts', JSON.stringify(ins));
+    } catch (e) { console.warn('[wtn] migrate eb-photos', e); }
+    try { localStorage.removeItem('wtn-eb-photos'); } catch (e) {}
+  }
+  get ebInsAll() { try { return JSON.parse(localStorage.getItem('wtn-eb-inserts')) || {}; } catch (e) { return {}; } }
+  ebInserts(chId) {
+    const t = this.ebInsAll[this.ebTripId()] || {};
+    const v = t[String(chId)];
+    return Array.isArray(v) ? v : [];
+  }
+  saveEbInserts(chId, list) {
+    try {
+      const all = this.ebInsAll, tid = this.ebTripId();
+      all[tid] = all[tid] || {};
+      if (!list || !list.length) delete all[tid][String(chId)];
+      else all[tid][String(chId)] = list;
+      localStorage.setItem('wtn-eb-inserts', JSON.stringify(all));
+    } catch (e) {}
+    this.forceUpdate();
+  }
+  // รูปทั้งหมดที่หยิบมาวางได้: โมเมนต์ของวันนั้น + รูปที่แนบไว้กับบท
+  ebPoolFor(dayIdx, ch) {
+    const tid = this.ebTripId();
+    const out = [], seen = {};
+    const add = (ref, from) => { if (ref && !seen[ref]) { seen[ref] = 1; out.push({ ref, from: from || '' }); } };
+    if (dayIdx != null) ((this.checkins || {})[tid + ':' + dayIdx] || []).forEach(c => (c.photos || []).forEach(p => add(p, (c.name || '').trim())));
+    if (ch) { add(ch.cover, 'ปกของบท'); (ch.photos || []).forEach(p => add(p, 'รูปแนบบท')); }
+    return out;
+  }
+  // บททั้งหมดที่จัดรูปได้ (ผูกวัน = หยิบรูปจากโมเมนต์วันนั้นได้)
+  ebChapterList() {
+    const m = this.ebChapterMap();
+    const out = [];
+    Object.keys(m.byDay).map(Number).sort((a, b) => a - b).forEach(i => out.push({ ch: m.byDay[i], day: i }));
+    m.extra.forEach(c => out.push({ ch: c, day: null }));
+    return out;
+  }
+  ebParasOf(ch) { return this._htmlParas((ch || {}).html); }
+  // ป้ายวันแบบไม่ซ้ำคำ — ebDayLabel คืน "วันที่ N" เองถ้าทริปไม่ได้ตั้งวันเริ่ม
+  ebDayHead(i) {
+    const lb = this.ebDayLabel(i) || '';
+    const base = 'วันที่ ' + String(i + 1).padStart(2, '0');
+    return (!lb || /^วันที่/.test(lb)) ? base : base + ' · ' + lb;
   }
   // ── โฟโต้บุ๊ก: จุดโฟกัสรูปต่อใบ (แก้ปัญหารูปโดนครอบตัดหัว/ตัดคน) ──
   get pbFocals() { try { return JSON.parse(localStorage.getItem('wtn-pb-focal')) || {}; } catch (e) { return {}; } }
@@ -6720,6 +6967,40 @@ class Component extends DCLogic {
     const pos = f.x + '% ' + f.y + '%';
     return 'object-position:' + pos + (f.z > 1.001 ? (';transform:scale(' + f.z + ');transform-origin:' + pos) : '');
   }
+  // ── โหมดไฟล์: "อ่านบนจอ" บีบรูปให้ส่งต่อได้จริง · "สำหรับพิมพ์" ใช้ความละเอียดเต็มที่เก็บไว้ ──
+  pbQualities = {
+    screen: { label: 'อ่านบนจอ', note: 'บีบรูปให้ไฟล์เล็ก ส่งไลน์/อีเมลผ่าน', max: 1200, q: 0.62 },
+    print: { label: 'สำหรับพิมพ์', note: 'ความละเอียดเต็มที่เก็บไว้ · ไฟล์ใหญ่', max: 0, q: 0 }
+  };
+  get pbQuality() { try { const k = localStorage.getItem('wtn-pb-quality'); return this.pbQualities[k] ? k : 'screen'; } catch (e) { return 'screen'; } }
+  setPbQuality(k) { try { localStorage.setItem('wtn-pb-quality', k); } catch (e) {} this.forceUpdate(); }
+  // บีบรูปหนึ่งใบ — พังตรงไหนก็คืนของเดิม ไม่ให้เล่มหายทั้งเล่มเพราะรูปใบเดียว
+  async shrinkUrl(url, max, q) {
+    if (!url || typeof url !== 'string' || !/^(data:image|blob:|https?:)/.test(url)) return url;
+    try {
+      const im = await new Promise((res, rej) => {
+        const i = new Image();
+        if (!/^data:/.test(url)) i.crossOrigin = 'anonymous';
+        i.onload = () => res(i); i.onerror = rej; setTimeout(rej, 6000); i.src = url;
+      });
+      const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+      if (!w || !h) return url;
+      const sc = Math.min(1, max / Math.max(w, h));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(w * sc)); c.height = Math.max(1, Math.round(h * sc));
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      const out = c.toDataURL('image/jpeg', q);
+      return (out && out.length < url.length) ? out : url;
+    } catch (e) { return url; }
+  }
+  async shrinkList(list, Q) {
+    if (!Q || !Q.max) return list || [];
+    const out = [];
+    for (const u of (list || [])) out.push(await this.shrinkUrl(u, Q.max, Q.q));
+    return out;
+  }
+  _urlBytes(u) { return typeof u === 'string' && u.indexOf('data:') === 0 ? Math.round((u.length - u.indexOf(',') - 1) * 0.75) : 0; }
+  fmtBytes(b) { if (!b) return ''; return b >= 1048576 ? (b / 1048576).toFixed(b > 10485760 ? 0 : 1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
   pbThemes = {
     cream: { label: 'ครีม', pg: '#fffaf0', end: '#f6efe2', ink: '#2b241f', sub: '#8a7d6f', faint: '#a99e8e', ph: '#efe4d3', desk: '#e7ddcc', line: 'rgba(43,36,32,.1)' },
     white: { label: 'ขาว', pg: '#ffffff', end: '#f7f6f4', ink: '#1b1b19', sub: '#6f6f69', faint: '#a5a59e', ph: '#eeedea', desk: '#dcdbd5', line: 'rgba(27,27,25,.1)' },
@@ -6899,12 +7180,11 @@ class Component extends DCLogic {
     for (let i = 0; i < n; i++) {
       const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], items = [], seen = {};
       const push = (u, ref) => { if (u && !seen[u]) { seen[u] = 1; items.push({ u, ref: ref || u }); } };
-      if (ch) { const cv = await this.resolvePhoto(ch.cover || ''); push(cv, ch.cover); }
+      // โฟโต้บุ๊กใช้เฉพาะรูปจากโมเมนต์ที่ติ๊กไว้ — ไม่ดึงปก/รูปของเรื่องเล่า (มักเป็นรูปเดิมอัปซ้ำ → ซ้ำในเล่ม)
       for (const c of list) {
         if (!this.ciWantsPb(c)) continue;
         for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); push(r, p); }
       }
-      if (ch) { for (const p of (ch.photos || [])) { const r = await this.resolvePhoto(p); push(r, p); } }
       if (!items.length) continue;
       const shots = await Promise.all(items.map(it => this._shotMeta(it.u).then(m => ({ ...m, ref: it.ref }))));
       const ord = this.pbOrderOf(i);
@@ -6918,6 +7198,9 @@ class Component extends DCLogic {
           return pa - pb;
         });
       }
+      // บีบรูปหลังคิดขนาดจริงแล้ว → เลย์เอาต์/จำนวนหน้าเหมือนกันทั้งสองโหมด ต่างแค่ขนาดไฟล์
+      const Q = this.pbQualities[this.pbQuality];
+      if (Q && Q.max) for (const s of shots) s.u = await this.shrinkUrl(s.u, Q.max, Q.q);
       const places = [];
       list.forEach(c => { const nm = (c.name || '').trim(); if (nm && places.indexOf(nm) < 0) places.push(nm); });
       days.push({ n: i + 1, label: this.ebDayLabel(i), title: (ch && ch.title) || places[0] || 'วันใหม่', places, shots, pinned: !!(ord && ord.length) });
@@ -6934,7 +7217,9 @@ class Component extends DCLogic {
     return { title: ttl,
       sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
       when: this.fmtRange(t.start, t.end) || '', author: this.profile.name || 'นักเดินทาง',
-      cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0) };
+      cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0),
+      quality: this.pbQuality,
+      bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
   }
   pbHtml(D) {
     const E = s => this._esc(s);
@@ -7018,7 +7303,8 @@ class Component extends DCLogic {
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
-      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · แนวนอน A5</span></div>' +
+      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · แนวนอน A5 · ' +
+        E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
       out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title)) + '</body></html>';
   }
   // ── โหมดอ่านแบบหนังสือ: กางหน้าคู่ พลิกหน้าได้จริง (ไม่ใช่หน้าเรียงแบบ PDF) ──
@@ -7168,7 +7454,6 @@ class Component extends DCLogic {
     }
   }
   async makeEbook() {
-    if (!this.isPremium) { this.setState({ ebOpen: false, pbOpen: false }); this.go('premium'); return; }
     if (this._ebBusy) return;
     this._ebBusy = true;
     this.setState({ ebBusy: true, ebPct: 4 });
@@ -7177,7 +7462,6 @@ class Component extends DCLogic {
       if (!D.days.length) { this.showToast('ยังไม่มีบันทึกในทริปนี้'); return; }
       await this._ebMeasure(D);
       this.setState({ ebPct: 26 });
-      if (this.state.ebAi) await this.ebPolish(D.days);
       this.setState({ ebPct: 80 });
       let map = null;
       try { map = await this.ebMapImage(1000, 700); } catch (e) {}
@@ -7198,6 +7482,7 @@ class Component extends DCLogic {
     const ci = this.checkins || {};
     const cmap = this.ebChapterMap();
     let days = 0, cis = 0, photos = 0, chapters = 0, pages = 2;   // ปก + สารบัญ
+    let photosAll = 0, cisIn = 0;
     const dayIdx = {};
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => { dayIdx[+k.split(':')[1]] = true; });
     Object.keys(cmap.byDay).forEach(k => { dayIdx[+k] = true; });
@@ -7218,7 +7503,9 @@ class Component extends DCLogic {
         if (list.length) put(16);
       }
       list.forEach(c => {
+        photosAll += (c.photos || []).length;
         if (!this.ciWantsBook(c)) return;
+        cisIn++;
         const ph = (c.photos || []).slice(0, 10);
         photos += ph.length;
         // ยังไม่ได้วัดรูปจริงตอนนี้ → ใช้สัดส่วนกลาง ตัวเลขหน้าจึงเป็นค่าประมาณ
@@ -7239,7 +7526,7 @@ class Component extends DCLogic {
       if (any) pages++;
     });
     if (cis || chapters) pages += 3;                // แผนที่ + ค่าใช้จ่าย + หน้าท้าย
-    return { days, cis, photos, chapters, pages };
+    return { days, cis, cisIn, photos, photosAll, chapters, pages };
   }
   // ---------- SUPPORT ----------
   supDiagInfo() {
@@ -7559,41 +7846,61 @@ class Component extends DCLogic {
   _recapPick(all, cap) {
     const max = cap || this.recapCap();
     if (all.length <= max) return all.slice();
-    const out = [];
-    for (let i = 0; i < max; i++) out.push(all[Math.round(i * (all.length - 1) / (max - 1))]);
-    return out;
+    const spread = (arr, n) => {
+      if (n <= 0) return [];
+      if (arr.length <= n) return arr.slice();
+      const out = [];
+      for (let i = 0; i < n; i++) out.push(arr[Math.round(i * (arr.length - 1) / (n - 1))]);
+      return out;
+    };
+    // ให้น้ำหนักรูปที่ผู้ใช้ติ๊กไว้ให้ลงโฟโต้บุ๊ก — นั่นคือสัญญาณว่ารูปนี้ดีที่สุดในสายตาเจ้าของทริป
+    const idx = all.map((s, i) => ({ s, i }));
+    const good = idx.filter(x => x.s && x.s.img && x.s.pick);
+    if (good.length >= max) return spread(good, max).map(x => x.s);
+    const used = {}; good.forEach(x => { used[x.i] = 1; });
+    const rest = idx.filter(x => !used[x.i]);
+    return good.concat(spread(rest, max - good.length)).sort((a, b) => a.i - b.i).map(x => x.s);
   }
-  // แบ่งทริปยาวเป็น “ตอน” — พยายามตัดที่ขอบวัน แต่ยอมตัดกลางวันถ้าจำเป็น
-  // เพื่อให้รูปครบทุกใบ และไม่มีตอนสั้นกุด
+  // คลิปเดียวต่อทริป — ไฮไลต์ที่ระบบเลือกให้ 45–60 วิ
+  // (เลิกซอยเป็น "ตอนที่ 1..N" 17 ส.ค. — รูปครบทุกใบเป็นหน้าที่ของโฟโต้บุ๊ก/หนังสือ ไม่ใช่คลิป
+  //  และพอพรีเมียมเลือกรูปเองได้ ตอนจะซ้ำซ้อนสนิท)
+  // ── พรีเมียม: เลือกรูป/เรียงเอง — เก็บเป็นลิสต์อ้างอิงรูปตามลำดับ ต่อทริป ──
+  recapPickKey() { return 'wtn-recap-pick:' + (this.state.trip || ''); }
+  recapCustom() {
+    try { const v = JSON.parse(localStorage.getItem(this.recapPickKey()) || 'null'); return Array.isArray(v) && v.length ? v : null; }
+    catch (e) { return null; }
+  }
+  setRecapCustom(list) {
+    try {
+      if (!list || !list.length) localStorage.removeItem(this.recapPickKey());
+      else localStorage.setItem(this.recapPickKey(), JSON.stringify(list));
+    } catch (e) {}
+    this.setState({ recapSel: null });
+  }
+  // ลิสต์ที่ใช้จริง — พรีเมียมที่แก้ไว้ใช้ของตัวเอง, นอกนั้นระบบเลือกให้
+  recapItems() {
+    const all = (this._recapSlides || []).filter(s => s && s.img);
+    const cus = this.isPremium ? this.recapCustom() : null;
+    if (cus) {
+      const by = {}; all.forEach(s => { if (!by[s.img]) by[s.img] = s; });
+      const out = cus.map(r => by[r]).filter(Boolean);
+      if (out.length) return out;
+    }
+    return this._recapPick(all, this.recapCap());
+  }
   recapParts() {
-    const all = this._recapSlides || [];
-    const cap = this.recapCap();
+    const all = (this._recapSlides || []).filter(s => s && s.img);
     if (!all.length) return [];
-    if (all.length <= cap) return [this._recapPart(all, 0, 1)];
-    const nParts = Math.ceil(all.length / cap);
-    const target = Math.ceil(all.length / nParts);
-    const slack = Math.round(target * 0.35);
-    const chunks = [];
-    let cur = [];
-    for (let i = 0; i < all.length; i++) {
-      cur.push(all[i]);
-      const left = all.length - (i + 1);
-      if (!left) break;
-      const newDayNext = all[i + 1].day !== all[i].day;
-      if (cur.length >= target || (newDayNext && cur.length >= target - slack)) { chunks.push(cur); cur = []; }
-    }
-    if (cur.length) {
-      const last = chunks[chunks.length - 1];
-      if (last && cur.length < Math.max(3, target * 0.4) && last.length + cur.length <= cap) chunks[chunks.length - 1] = last.concat(cur);
-      else chunks.push(cur);
-    }
-    return chunks.map((c, i) => this._recapPart(c, i, chunks.length));
+    const p = this._recapPart(this.recapItems());
+    p.total = all.length;
+    p.custom = !!(this.isPremium && this.recapCustom());
+    return [p];
   }
-  _recapPart(items, i, n) {
+  _recapPart(items) {
     const tags = [];
     items.forEach(s => { if (s.day && tags[tags.length - 1] !== s.day) tags.push(s.day); });
     const a = tags[0] || '', b = tags[tags.length - 1] || '';
-    return { idx: i, items, n: items.length, label: n > 1 ? 'ตอนที่ ' + (i + 1) : 'ทั้งทริป', range: a === b ? a : a + ' – ' + b };
+    return { idx: 0, items, n: items.length, label: 'ทั้งทริป', range: a === b ? a : a + ' – ' + b };
   }
   // ชั้น "รีแคป" ในหน้าฉัน — ดึงจากรูปเช็คอินของทุกทริป (ไม่มีไฟล์เก็บไว้ สร้างสดตอนกด)
   recapShelf() {
@@ -7610,15 +7917,14 @@ class Component extends DCLogic {
       });
       if (!photos.length) return;
       const n = photos.length;
-      const eps = Math.max(1, Math.ceil(n / cap));
-      const per = Math.ceil(n / eps);
-      const secs = Math.round(2.8 + per * 2.6 + 3);
+      const per = Math.min(n, cap);
+      const secs = this.recapSecs(per);
       const cover = this.coverOf('wtn-cover-' + t.id, '') || t.cover || 'default-cover.jpg';
       const at = i => this.px(photos[i] || '') || cover;
       out.push({
         tripId: t.id, title: String(t.name || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, ''),
         when: this.fmtRange(t.start, t.end) || '',
-        days: dayKeys, photos: n, eps,
+        days: dayKeys, photos: n,
         ...(() => {
           // สุ่มรูปทั้งทริป (คงที่ต่อทริป ไม่กระพริบ) — รูปแรกๆ มักไม่ใช่รูปสวย
           let sd = 7; for (let i = 0; i < t.id.length; i++) sd = ((sd << 5) - sd + t.id.charCodeAt(i)) >>> 0;
@@ -7634,17 +7940,30 @@ class Component extends DCLogic {
           return { imgA: src[even ? cur : prev], imgB: src[even ? prev : cur],
             styleA: base + (even ? '1' : '0'), styleB: base + (even ? '0' : '1') };
         })(),
-        cover: this.px(cover) || cover, epLabel: eps > 1 ? eps + ' ตอน · ' + (this.recapOrient() === 'port' ? 'ตั้ง' : 'นอน') : '~' + secs + ' วิ',
-        note: (this.recapOrient() === 'port' ? 'แนวตั้ง 1080×1920' : 'แนวนอน 1280×720') + ' · ตอนละ ~' + secs + ' วิ',
+        cover: this.px(cover) || cover, epLabel: '~' + secs + ' วิ',
+        note: (this.recapOrient() === 'port' ? 'แนวตั้ง 1080×1920' : 'แนวนอน 1280×720') + ' · ~' + secs + ' วิ'
+          + (n > cap ? ' · เลือกให้ ' + per + ' ใบ จาก ' + n + ' ใบ' : ''),
         open: () => { this.setState({ trip: t.id, day: 0, sum: 'recap', recapPart: 0, recapIdx: 0 }); this.go('summary'); },
       });
     });
     return out;
   }
-  recapCap() { return this.recapOrient() === 'port' ? 30 : 90; }   // แนวตั้งต้อง <90 วิ เพื่อลง Reels/Stories — แนวนอนยาวได้
+  // จังหวะคลิป — คุมที่เดียว ทั้งป้ายบอกความยาว ชั้นรีแคป และตัวส่งออกใช้ค่าเดียวกัน
+  RECAP_PER = 2000;      // วิ/รูป — 2.6 วิ เดิมช้าเกินสำหรับ Reels คนปัดทิ้งกลางทาง
+  RECAP_INTRO = 2800;
+  RECAP_OUTRO = 3000;
+  recapEndMs() { return this.isPremium ? 0 : 2000; }               // หน้าปิดแบรนด์ 2 วิ — เฉพาะไฟล์ของผู้ใช้ฟรี
+  recapFixedMs() { return this.RECAP_INTRO + this.RECAP_OUTRO + this.recapEndMs(); }
+  recapSecs(n) { return Math.round((this.recapFixedMs() + n * this.RECAP_PER) / 1000); }
+  // ความยาวเป้าหมาย: ตั้ง ~45 วิ (Reels/TikTok) · นอน ~60 วิ · "ดูครบทุกรูป" = โหมดดูในแอป ไม่ใช่ไฟล์ที่โหลดออก
+  recapTargetSec() { return this.recapOrient() === 'port' ? 45 : 60; }
+  recapCap() {
+    const room = this.recapTargetSec() * 1000 - this.recapFixedMs();
+    return Math.max(8, Math.round(room / this.RECAP_PER));
+  }
   recapOrient() {
     if (this.state.recapOrient) return this.state.recapOrient;
-    try { return localStorage.getItem('wtn-recap-orient') === 'port' ? 'port' : 'land'; } catch (e) { return 'land'; }
+    try { return localStorage.getItem('wtn-recap-orient') === 'land' ? 'land' : 'port'; } catch (e) { return 'port'; }
   }
   setRecapOrient(v) {
     try { localStorage.setItem('wtn-recap-orient', v); } catch (e) {}
@@ -7661,9 +7980,10 @@ class Component extends DCLogic {
     const cvTest = document.createElement('canvas');
     if (!window.MediaRecorder || !cvTest.captureStream) { this.showToast('เครื่องนี้ยังทำคลิปไม่ได้ — ลองบนเบราว์เซอร์รุ่นใหม่กว่า'); return; }
     const W = port ? 1080 : 1280, H = port ? 1920 : 720;
-    const PER = 2600, INTRO = 2800, OUTRO = 3000;
+    const PER = this.RECAP_PER, INTRO = this.RECAP_INTRO, OUTRO = this.RECAP_OUTRO, END = this.recapEndMs();
     this._recExporting = true;
     this.setState({ recExport: true, recExportPct: 0 });
+    let ac = null, osc = null;
     try {
       try { await document.fonts.ready; } catch (e) {}
       const load = p => this.loadImgForCanvas(p);
@@ -7678,7 +7998,8 @@ class Component extends DCLogic {
       }
       if (!okN) this.showToast('โหลดรูปในทริปไม่ได้ — ลองไปที่ ฉัน › ย้ายรูปขึ้นคลาวด์ใหม่');
       const t = this.curTripRec() || {};
-      const title = this.tripInfo.title || t.name || 'ทริปของฉัน';
+      // ตัดหางท้ายชื่อ "· 11 วัน" ออก — บนปกคลิปมันกินพื้นที่และซ้ำกับบรรทัดวันที่ข้างล่าง
+      const title = String(this.tripInfo.title || t.name || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
       const multi = parts.length > 1;
       const sub = multi
         ? part.label + ' · ' + part.range
@@ -7687,20 +8008,35 @@ class Component extends DCLogic {
       const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
       const cx = cv.getContext('2d');
       const stream = cv.captureStream(30);
-      const types = ['video/mp4;codecs=h264', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+      // ไม่ใส่เพลง (เลี่ยงลิขสิทธิ์) แต่ต้องมี audio track เงียบในไฟล์ — ไม่งั้นบางแพลตฟอร์มอัปไม่ผ่าน/แสดงผลเพี้ยน
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) {
+          ac = new AC();
+          const dst = ac.createMediaStreamDestination();
+          const g = ac.createGain(); g.gain.value = 0;
+          osc = ac.createOscillator(); osc.frequency.value = 440;
+          osc.connect(g); g.connect(dst); osc.start();
+          dst.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+        }
+      } catch (e) { console.warn('[wtn] silent audio', e); }
+      const hasAudio = stream.getAudioTracks().length > 0;
+      const types = hasAudio
+        ? ['video/mp4;codecs=h264,mp4a.40.2', 'video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm']
+        : ['video/mp4;codecs=h264', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
       const mime = types.find(x => { try { return MediaRecorder.isTypeSupported(x); } catch (e) { return false; } }) || '';
-      const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 6000000 } : {});
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 6000000, audioBitsPerSecond: 64000 } : {});
       const chunks = [];
       rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
       const stopped = new Promise(res => { rec.onstop = res; });
-      const total = INTRO + slides.length * PER + OUTRO;
+      const total = INTRO + slides.length * PER + OUTRO + END;
       rec.start();
       const t0 = performance.now(); let frame = 0;
       await new Promise(res => {
         const tick = () => {
           const ms = performance.now() - t0;
           if (ms >= total) { res(); return; }
-          this.drawRecapFrame(cx, W, H, ms, { cover, imgs, slides, INTRO, PER, OUTRO, title, sub });
+          this.drawRecapFrame(cx, W, H, ms, { cover, imgs, slides, INTRO, PER, OUTRO, END, title, sub, wm: !this.isPremium });
           if (++frame % 8 === 0) this.setState({ recExportPct: 20 + Math.round(ms / total * 78) });
           requestAnimationFrame(tick);
         };
@@ -7711,17 +8047,24 @@ class Component extends DCLogic {
       const blob = new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] });
       const ext = blob.type.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
       const url = URL.createObjectURL(blob);
+      const name = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap'
+        + (multi ? '-' + String(part.label || '').replace(/[^\w\u0E00-\u0E7F]+/g, '') : '')
+        + (port ? '-vertical' : '') + '.' + ext;
       const a = document.createElement('a');
-      a.href = url;
-      a.download = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap' + (multi ? '-ตอน' + (pi + 1) : '') + (port ? '-vertical' : '') + '.' + ext;
+      a.href = url; a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) {} }, 60000);
-      this.setState({ recExportPct: 100 });
-      this.showToast('✓ ได้คลิปแล้ว · ไฟล์ .' + ext);
+      // เรนเดอร์กินเวลาเท่าความยาวคลิป → พอสั่งโหลดจริง เบราว์เซอร์มองว่าห่างจากการกดปุ่มนานเกินไปแล้วบล็อก
+      // (ในกรอบ iframe / iOS Safari เจอบ่อย) → เก็บไฟล์ไว้ให้ผู้ใช้แตะเองด้วย ไม่พึ่งการโหลดอัตโนมัติอย่างเดียว
+      try { if (this._recBlobUrl) URL.revokeObjectURL(this._recBlobUrl); } catch (e) {}
+      this._recBlob = blob; this._recBlobUrl = url; this._recBlobName = name;
+      this.setState({ recExportPct: 100, recReady: { url, name, size: this.fmtBytes(blob.size), ext } });
+      this.showToast('✓ คลิปพร้อมแล้ว · แตะปุ่มบันทึกด้านล่างถ้าไฟล์ยังไม่เด้ง');
     } catch (e) {
       console.warn('[wtn] export recap', e);
       this.showToast('ทำคลิปไม่สำเร็จ — ลองใหม่อีกครั้ง');
     } finally {
+      try { if (osc) osc.stop(); } catch (e) {}
+      try { if (ac) ac.close(); } catch (e) {}
       this._recExporting = false;
       this.setState({ recExport: false });
     }
@@ -7750,6 +8093,17 @@ class Component extends DCLogic {
     const k = Math.min(W, H) / 720;                      // สเกลตัวอักษรตามขนาดเฟรม (แนวนอน 1 / แนวตั้ง 1.5)
     cx.fillStyle = '#14100d'; cx.fillRect(0, 0, W, H);
     const sy = W > H ? 0.45 : 0.58;
+    // watermark เฉพาะไฟล์ที่โหลดออก (ในแอปสะอาด) — เล็ก มุมล่างขวา ~50% ไม่ทับคำบรรยายที่อยู่ซ้าย
+    const wmk = () => {
+      if (!S.wm) return;
+      const t = 'Vela · onevela.net';
+      cx.save();
+      cx.globalAlpha = 0.5;
+      cx.fillStyle = '#fff';
+      cx.font = '600 ' + Math.round(22 * k) + "px 'Anuphan', sans-serif";
+      cx.fillText(t, W - 40 * k - cx.measureText(t).width, H - 26 * k);
+      cx.restore();
+    };
     const shade = () => {
       const g = cx.createLinearGradient(0, H * sy, 0, H);
       g.addColorStop(0, 'rgba(20,16,13,0)'); g.addColorStop(1, 'rgba(20,16,13,.9)');
@@ -7761,9 +8115,13 @@ class Component extends DCLogic {
       cx.fillStyle = 'rgba(20,16,13,.45)'; cx.fillRect(0, 0, W, H);
       cx.textAlign = 'left';
       cx.fillStyle = '#fff'; cx.font = (64 * k) + "px 'Chonburi', serif";
-      this._cvWrap(cx, S.title, W - 200 * k, 2).forEach((l, i) => this._cvCtr(cx, l, W / 2, H / 2 - 6 * k + i * 76 * k));
-      cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (30 * k) + "px 'Anuphan', sans-serif";
-      this._cvCtr(cx, S.sub, W / 2, H / 2 + 76 * k);
+      const tl = this._cvWrap(cx, S.title, W - 180 * k, 2), lh = 84 * k;
+      const y0 = H / 2 - 6 * k - (tl.length - 1) * lh / 2;    // จัดกลางตามจำนวนบรรทัดจริง ไม่ให้ทับบรรทัดรอง
+      tl.forEach((l, i) => this._cvCtr(cx, l, W / 2, y0 + i * lh));
+      cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (28 * k) + "px 'Anuphan', sans-serif";
+      const sy0 = y0 + (tl.length - 1) * lh + 70 * k;
+      this._cvWrap(cx, S.sub, W - 150 * k, 2).forEach((l, i) => this._cvCtr(cx, l, W / 2, sy0 + i * 40 * k));
+      wmk();
       return;
     }
     const after = ms - S.INTRO;
@@ -7783,19 +8141,37 @@ class Component extends DCLogic {
       cx.globalAlpha = 1;
       cx.fillStyle = 'rgba(246,239,226,.25)'; cx.fillRect(0, H - 6 * k, W, 6 * k);
       cx.fillStyle = '#c05f39'; cx.fillRect(0, H - 6 * k, W * ((i + p) / S.slides.length), 6 * k);
+      wmk();
       return;
     }
-    const p = (after - S.slides.length * S.PER) / S.OUTRO;   // ปิดท้าย
+    const afterSlides = after - S.slides.length * S.PER;
+    if (S.END && afterSlides >= S.OUTRO) {                    // หน้าปิดแบรนด์ 2 วิ (ฟรีเท่านั้น)
+      const q = ease((afterSlides - S.OUTRO) / 420);
+      cx.fillStyle = '#14100d'; cx.fillRect(0, 0, W, H);
+      cx.globalAlpha = q;
+      cx.fillStyle = '#c05f39'; cx.fillRect(W / 2 - 26 * k, H / 2 - 74 * k, 52 * k, 5 * k);
+      cx.fillStyle = '#f6efe2'; cx.font = (44 * k) + "px 'Chonburi', serif";
+      this._cvCtr(cx, 'สร้างด้วย Vela', W / 2, H / 2 + 10 * k);
+      cx.fillStyle = '#c9b79b'; cx.font = '600 ' + (26 * k) + "px 'Anuphan', sans-serif";
+      this._cvCtr(cx, 'onevela.net', W / 2, H / 2 + 62 * k);
+      cx.globalAlpha = 1;
+      return;
+    }
+    const p = afterSlides / S.OUTRO;                          // ปิดท้าย
     if (S.cover) { cx.globalAlpha = 0.5; this._cvCover(cx, S.cover, W, H, 1.05 + p * 0.05); cx.globalAlpha = 1; }
     cx.fillStyle = 'rgba(20,16,13,.62)'; cx.fillRect(0, 0, W, H);
     cx.textAlign = 'left';
     cx.fillStyle = '#fff'; cx.font = (54 * k) + "px 'Chonburi', serif";
-    this._cvCtr(cx, S.title, W / 2, H / 2 - 30 * k);
+    const ol = this._cvWrap(cx, S.title, W - 180 * k, 2), olh = 70 * k;
+    const oy = H / 2 - 30 * k - (ol.length - 1) * olh / 2;
+    ol.forEach((l, i) => this._cvCtr(cx, l, W / 2, oy + i * olh));
+    const oy2 = oy + (ol.length - 1) * olh;
     cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (28 * k) + "px 'Anuphan', sans-serif";
-    this._cvCtr(cx, S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, H / 2 + 26 * k);
+    this._cvCtr(cx, S.slides.length + ' ช่วงเวลาจากทริปนี้', W / 2, oy2 + 56 * k);
     cx.fillStyle = 'rgba(246,239,226,.6)'; cx.font = '500 ' + (24 * k) + "px 'Anuphan', sans-serif";
-    this._cvCtr(cx, 'บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, H / 2 + 86 * k);
+    this._cvCtr(cx, 'บันทึกด้วย Vela · ทริปหน้าไปไหน', W / 2, oy2 + 116 * k);
     cx.textAlign = 'left';
+    wmk();
   }
   coverOf(slotId, fallback) {
     try {
@@ -7849,7 +8225,7 @@ class Component extends DCLogic {
   }
   // ── การ์ดโพสต์ 1080×1350: ปกเล่มตรงหน้า + คำโปรย (เอาไปลงโพสต์/ยิงแอด) ──
   async makeShareCard(tripId, kind) {
-    if (!this.isPremium) { this.go('premium'); return; }
+    // ฟรีด้วย — การ์ดนี้คือตัวที่ออกไปโฆษณาแทนเรา (มี onevela.net อยู่บนการ์ดแล้ว) กั้นไว้เท่ากับกั้นช่องทางโตของตัวเอง
     if (this._scBusy) return;
     this._scBusy = true;
     this.setState({ scBusy: true });
@@ -8255,7 +8631,7 @@ class Component extends DCLogic {
       pickPlanTrip: () => this.setState({ premiumPlan: 'trip' }), pickPlanYear: () => this.setState({ premiumPlan: 'year' }),
       tripSel: (this.state.premiumPlan || 'trip') === 'trip', yearSel: (this.state.premiumPlan || 'trip') === 'year',
       hasBilling: this.isPremium, openBilling: () => this.openBilling(),
-      hasCredits: !this.isAdmin && this.state.aiCredits != null && this.state.aiCredits < 10,
+      hasCredits: this.isPremium && !this.isAdmin && this.state.aiCredits != null && this.state.aiCredits < 10,
       aiCreditsLeft: String(this.state.aiCredits ?? '—'),
       aiCreditsNote: this.state.aiCredits === 0 ? 'ซื้อ Trip Pass เพื่อใช้ AI ต่อ' : 'ครบแล้วต้องซื้อ Trip Pass ใหม่',
       buyCredits: () => this.go('premium'),
@@ -8340,7 +8716,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.16p',
+      appVersion: '2026.08.18b',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -8405,17 +8781,23 @@ class Component extends DCLogic {
           ebOpen: !!this.state.ebOpen,
           openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0 }),
           closeEbook: () => this.setState({ ebOpen: false }),
+          openEbPhotos: () => { this.setState({ ebOpen: false, ebChId: null, ebPick: null }); this.go('ebPhotos'); },
           ebCoverId: 'wtn-eb-cover-' + trip,
-          ebSummary: d ? (est.chapters + ' ตอนเรื่องเล่า · ' + d + ' วัน · ' + n + ' เช็คอิน · ' + ph + ' รูป — ประมาณ ' + est.pages + ' หน้า')
+          ebSummary: d ? (est.chapters + ' ตอนเรื่องเล่า · ' + d + ' วัน · ' + n + ' เช็คอิน — ประมาณ ' + est.pages + ' หน้า')
                        : 'ทริปนี้ยังไม่มีบันทึก — เช็คอินระหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม',
-          toggleEbAi: () => this.setState(s => ({ ebAi: !s.ebAi })),
-          ebAiStyle: 'width:100%;display:flex;align-items:center;gap:12px;padding:13px 15px;border-radius:14px;cursor:pointer;background:#fffaf0;border:' +
-            (this.state.ebAi ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.14)'),
-          ebAiDot: 'width:22px;height:22px;border-radius:50%;flex:none;background:' + (this.state.ebAi ? '#c05f39' : 'transparent') +
-            ';border:2px solid ' + (this.state.ebAi ? '#c05f39' : '#c9b79b'),
+          // แยกให้ชัดว่ารูป "เข้าเล่มจริง" กี่ใบ จากที่มีทั้งหมดกี่ใบ — ตัวเลขเดียวทำให้เข้าใจผิด
+          ebPhotoLine: !d ? '' : (est.photosAll
+            ? (est.photos === est.photosAll
+                ? 'ใช้รูปทั้ง ' + est.photos + ' ใบในทริป'
+                : 'ใช้รูปที่คุณเลือกไว้ ' + est.photos + ' ใบ (ในทริปมี ' + est.photosAll + ' ใบ)')
+            : 'ทริปนี้ยังไม่มีรูป'),
+          ebPhotoWarn: false,
+          ebPhotoHint: '',
+
+
           ebBusy: !!this.state.ebBusy, ebIdle: !this.state.ebBusy,
           ebBarStyle: 'width:' + pct + '%;height:6px;background:#c05f39;transition:width .3s',
-          ebBusyLabel: pct < 26 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 80 ? 'กำลังให้ AI เกลาสำนวน…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
+          ebBusyLabel: pct < 80 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
           ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
           showEbBook: () => this.setState({ bvUrl: this.state.ebUrl || '', bvTitle: 'เล่ม' }),
           ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
@@ -8451,9 +8833,82 @@ class Component extends DCLogic {
                 const zOff = "min-height:40px;padding:0 13px;background:rgba(231,221,204,.1);color:#c9b79b;font:600 13.5px 'Anuphan';border-radius:11px;border:1px solid rgba(231,221,204,.2);cursor:pointer";
                 return {
                   pbThemeChips: Object.keys(this.pbThemes).map(k => ({ label: this.pbThemes[k].label, on: () => this.setPbTheme(k), style: tk === k ? chipOnT : chipOffT })),
-                  openPbFrame: () => this.openPbFrame(),
+                  pbQualityChips: Object.keys(this.pbQualities).map(k => ({ label: this.pbQualities[k].label, on: () => this.setPbQuality(k), style: this.pbQuality === k ? chipOnT : chipOffT })),
+                  pbQualityNote: (this.pbQualities[this.pbQuality] || {}).note || '',
+                      openPbFrame: () => this.openPbFrame(),
                   pbFrameBtnLabel: this.state.pbFrLoading ? 'กำลังเปิดรูป…' : 'ปรับกรอบรูปในเล่ม',
                   sPbFrame: sc === 'pbFrame',
+                  sEbPhotos: sc === 'ebPhotos',
+                  ...(sc !== 'ebPhotos' ? {} : (() => {
+                    const chs = this.ebChapterList();
+                    const openId = this.state.ebChId;
+                    const cur = chs.find(x => String(x.ch.id) === String(openId));
+                    if (!cur) return {
+                      ebChList: true, ebChDetail: false,
+                      ebChEmpty: chs.length === 0,
+                      ebChIntro: 'เลือกบทที่จะจัดรูป — เรื่องเล่าจะแตกเป็นย่อหน้า แล้วกด “+ เพิ่มภาพ” ตรงจุดที่อยากให้รูปอยู่',
+                      ebChRows: chs.map(x => {
+                        const ins = this.ebInserts(x.ch.id);
+                        return { title: x.ch.title || 'ตอนหนึ่ง',
+                          meta: (x.day != null ? this.ebDayHead(x.day) + ' · ' : '') + this.ebParasOf(x.ch).length + ' ย่อหน้า · วางรูปแล้ว ' + ins.length + ' ใบ',
+                          on: () => this.setState({ ebChId: x.ch.id, ebPick: null }),
+                          style: 'width:100%;text-align:left;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;cursor:pointer;display:block' };
+                      }) };
+                    const ch = cur.ch, paras = this.ebParasOf(ch);
+                    const ins = this.ebInserts(ch.id);
+                    const pool = this.ebPoolFor(cur.day, ch);
+                    const used = {}; ins.forEach(x => { used[x.ref] = 1; });
+                    const put = (after, ref) => {
+                      const l = ins.concat([{ ref, cap: '', size: 'half', after }]);
+                      l.sort((p, q) => (p.after - q.after) || 0);
+                      this.saveEbInserts(ch.id, l);
+                      this.setState({ ebPick: null });
+                    };
+                    const szBtn = on => 'flex:1;min-height:32px;border-radius:9px;border:none;cursor:pointer;font:600 12px \'Anuphan\';' +
+                      (on ? 'background:#2b241f;color:#f6efe2' : 'background:#efe4d3;color:#7c7264');
+                    // บล็อกเรียงตามจริง: ย่อหน้า → รูปที่แทรกหลังย่อหน้านั้น → ปุ่มเพิ่มภาพ
+                    const blocks = [];
+                    const insAt = k => ins.map((x, gi) => ({ x, gi })).filter(o => o.x.after === k);
+                    const imgBlock = (o) => {
+                      const i = ins.indexOf(o.x);
+                      return { isImg: true, isPara: false, isAdd: false,
+                        src: this.px(o.x.ref), from: (pool.find(p => p.ref === o.x.ref) || {}).from || '',
+                        cap: o.x.cap || '',
+                        setCap: e => { const l = ins.slice(); l[i] = { ...l[i], cap: e.target.value }; this.saveEbInserts(ch.id, l); },
+                        sizes: Object.keys(this.EB_INS_SIZES).map(z => ({ label: this.EB_INS_SIZES[z], style: szBtn((o.x.size || 'half') === z),
+                          on: () => { const l = ins.slice(); l[i] = { ...l[i], size: z }; this.saveEbInserts(ch.id, l); } })),
+                        del: () => this.saveEbInserts(ch.id, ins.filter((_, j) => j !== i)),
+                        frame: () => this.setState({ pbFr: { ref: o.x.ref, u: this.px(o.x.ref), ...this.pbFocalOf(o.x.ref) } }) };
+                    };
+                    const addBlock = k => ({ isAdd: true, isImg: false, isPara: false,
+                      label: this.state.ebPick === k ? 'ปิดคลังรูป' : '+ เพิ่มภาพตรงนี้',
+                      openStyle: 'width:100%;min-height:42px;border:1px dashed rgba(192,95,57,.45);background:' + (this.state.ebPick === k ? '#fff4ec' : 'transparent') +
+                        ';color:#c05f39;font:600 13.5px \'Anuphan\';border-radius:11px;cursor:pointer',
+                      on: () => this.setState(s => ({ ebPick: s.ebPick === k ? null : k })),
+                      picking: this.state.ebPick === k,
+                      poolEmpty: pool.length === 0,
+                      pool: pool.map(p => ({ src: this.px(p.ref), from: p.from,
+                        wrap: 'position:relative;aspect-ratio:3/4;border-radius:9px;overflow:hidden;padding:0;cursor:pointer;background:#efe4d3;border:' +
+                          (used[p.ref] ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.14)'),
+                        imgStyle: 'width:100%;height:100%;object-fit:cover;display:block' + (used[p.ref] ? ';opacity:.45' : ''),
+                        on: () => put(k, p.ref) })) });
+                    insAt(-1).forEach(o => blocks.push(imgBlock(o)));
+                    blocks.push(addBlock(-1));
+                    paras.forEach((p, k) => {
+                      blocks.push({ isPara: true, isImg: false, isAdd: false, text: p });
+                      insAt(k).forEach(o => blocks.push(imgBlock(o)));
+                      blocks.push(addBlock(k));
+                    });
+                    return {
+                      ebChList: false, ebChDetail: true, ebChRows: [],
+                      ebChTitle: ch.title || 'ตอนหนึ่ง',
+                      ebChMeta: (cur.day != null ? this.ebDayHead(cur.day) + ' · ' : '') + 'วางรูปแล้ว ' + ins.length + ' ใบ · หยิบได้ ' + pool.length + ' ใบ',
+                      ebChBack: () => this.setState({ ebChId: null, ebPick: null }),
+                      ebNoParas: paras.length === 0,
+                      ebBlocks: blocks,
+                      ebChReset: () => { this.saveEbInserts(ch.id, []); this.showToast('เอารูปที่วางไว้ออกหมดแล้ว'); },
+                    };
+                  })()),
                   pbPages: (() => {
                     const T = this.pbThemes[tk], cols = { one: 'minmax(0,1fr)', two: 'minmax(0,1fr) minmax(0,1fr)', four: 'minmax(0,1fr) minmax(0,1fr)', big3: 'minmax(0,1.6fr) minmax(0,1fr)', tall1: 'minmax(0,49%)', small1: 'minmax(0,49%)' };
                     const rows = { four: 'minmax(0,1fr) minmax(0,1fr)', big3: 'minmax(0,1fr) minmax(0,1fr)', small1: 'minmax(0,49%)' };
@@ -8487,6 +8942,8 @@ class Component extends DCLogic {
                   })(),
                   pbFrDone: () => { this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }); this.back(); this.makePhotobook(); },
                   frOpen: !!fr,
+                  frPbTools: sc === 'pbFrame',
+                  frHideNav: sc !== 'pbFrame',
                   frTitle: frSlot ? ('หน้า ' + frSlot.page + ' · ' + frSlot.slotName) : 'ปรับกรอบรูป',
                   frSrc: (frSlot && frSlot.u) || (fr && fr.u) || '',
                   frBoxStyle: 'position:relative;overflow:hidden;border-radius:9px;background:#191714;touch-action:none;cursor:grab;width:100%;max-width:360px;max-height:100%;aspect-ratio:' + (frSlot ? frSlot.aspect.toFixed(3) : '1.4'),
@@ -8607,9 +9064,7 @@ class Component extends DCLogic {
           aiLoading, aiHasResults, aiEmpty, aiResultsShown: aiHasResults,
           aiErr: !!aiErrCode,
           aiErrRetry: aiErrCode === 'load-fail',
-          aiErrText: aiErrCode === 'no-key'
-            ? 'ยังไม่ได้เชื่อม API key — ไปเชื่อมที่แท็บ "ฉัน" ก่อน ถึงจะให้ AI ค้นให้ได้'
-            : 'โหลดไม่สำเร็จ ลองใหม่อีกครั้ง',
+          aiErrText: aiErrCode === 'no-key' ? this.AI_PREMIUM_MSG : 'โหลดไม่สำเร็จ ลองใหม่อีกครั้ง',
           retryExplore: () => this.runExplore(qcity, cat),
           pickKz: () => this.openCountry('kz'),
           pickJp: () => this.setState({ dest: 'jp', destCat: 'place' }),
@@ -8730,7 +9185,17 @@ class Component extends DCLogic {
       cloudShow: this.state.cloud === 'error', // ซิงก์ปกติทำเงียบๆ เบื้องหลัง — โชว์เฉพาะตอนมีปัญหาจริง
       cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); this.clearLocalAppData(); try { localStorage.removeItem('wtn-auth'); localStorage.removeItem('wtn-cloud-uid'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); this.forceUpdate(); },
-      doBackup: () => this.exportBackup(),
+      doBackup: () => { this.countBackupPhotos(); this.setState({ bkOpen: true }); },
+      bkOpen: !!this.state.bkOpen,
+      bkClose: () => this.setState({ bkOpen: false }),
+      bkBusy: !!this.state.bkBusy,
+      bkPhotoN: String(this.state.bkPhotoN == null ? '—' : this.state.bkPhotoN),
+      bkHasPhotos: (this.state.bkPhotoN || 0) > 0,
+      bkPhotoNote: (this.state.bkPhotoN || 0) > 0
+        ? 'รูปในเครื่องนี้ ' + this.state.bkPhotoN + ' ใบ · ไฟล์จะใหญ่ประมาณ ' + this.fmtBytes(this.state.bkPhotoN * 260000)
+        : 'ยังไม่มีรูปในเครื่องนี้',
+      doBackupText: () => this.exportBackup(false),
+      doBackupPhotos: () => this.exportBackup(true),
       syncNow: () => this.syncNow(),
       syncNowLabel: this.state.syncBusy ? 'กำลังซิงก์…' : 'ซิงก์ตอนนี้',
       forceRestore: () => this.forceRestoreCloud(),
@@ -8981,7 +9446,8 @@ class Component extends DCLogic {
       seNote: this.state.seNote ?? '', setSeNote: e => this.setState({ seNote: e.target.value }),
       saveStopEdit: () => this.saveStopEdit(), cancelStopEdit: () => this.cancelStopEdit(),
       addChips, coverChips, showAffil: !!af, affilLabel: af ? af.l : '', affilSub: af ? af.s : '',
-      aiConnected: !!this.aiKey, notConnected: !this.aiKey,
+      aiConnected: this.aiAvailable(), notConnected: !this.aiAvailable(),
+      aiPremiumMsg: this.AI_PREMIUM_MSG,
       ...(() => {
         const been = this.beenObj, W = this.WORLD;
         const nameSet = {}; W.forEach(c => { nameSet[c[0]] = c; });
@@ -9005,16 +9471,7 @@ class Component extends DCLogic {
           beenSearch: this.state.beenSearch || '', setBeenSearch: e => this.setState({ beenSearch: e.target.value }),
           beenOptions: opts };
       })(),
-      aiStatus: this.aiKey ? ('ใช้คีย์ของคุณ (' + ({ claude: 'Claude', gemini: 'Gemini', openai: 'OpenAI' }[this.aiProvider] || 'AI') + ') · ไม่กินโควตาแอป') : 'พร้อมใช้ AI ของ Vela แล้ว — ไม่ต้องใส่คีย์',
-      aiMasked: this.aiKey ? (this.aiKey.slice(0, 6) + '••••••••') : 'sk-••••••••',
-      onAiKey: (e) => this.setState({ aiKeyDraft: e.target.value }),
-      connectAi: () => {
-        const k = (this.state.aiKeyDraft || '').trim();
-        if (!k) return;
-        try { localStorage.setItem('wtn-ai-key', k); } catch (e) {}
-        this.setState({ aiKeyDraft: '' });
-      },
-      disconnectAi: () => { try { localStorage.removeItem('wtn-ai-key'); } catch (e) {} this.forceUpdate(); },
+      aiStatus: this.aiAvailable() ? 'ใช้ AI ของ Vela — ไม่ต้องใส่คีย์' : 'ผู้ช่วย AI เป็นของพรีเมียม',
       aiChips: ['สายชิล', 'คาเฟ่', 'ไม่เดินเยอะ', 'สายถ่ายรูป', 'ประหยัด'].map(c => ({ label: c,
         style: ((this.state.aiStyles || {})[c] ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#5c5347;') +
           'font:600 14px Anuphan;padding:7px 13px;border-radius:18px;border:none;cursor:pointer',
@@ -9022,8 +9479,8 @@ class Component extends DCLogic {
       aiBudgetDay: this.state.aiBudgetDay ?? '',
       setAiBudgetDay: e => this.setState({ aiBudgetDay: e.target.value.replace(/[^\d]/g, '') }),
       aiDayLabel: (this.days[active] || {}).tag || '',
-      genDayPlan: () => { if (!this.isPremium) { this.go('premium'); return; } if (this.aiKey) this.genDayPlan(); else this.setTab('me'); },
-      aiPlanBtnLabel: this.aiKey ? 'ให้ AI ร่างวันนี้' : 'ไปเชื่อม API key ที่แท็บ "ฉัน"',
+      genDayPlan: () => { if (this.aiGate()) this.genDayPlan(); },
+      aiPlanBtnLabel: this.aiAvailable() ? 'ให้ AI ร่างวันนี้' : '✦ ให้ AI ช่วยจัดวันนี้ (พรีเมียม)',
       aiPlanBusy: !!this.state.aiPlanBusy, aiPlanErr: this.state.aiPlanErr || '',
       aiPlanText: this.state.aiPlanText || '', hasAiPlan: !!this.state.aiPlanText,
       aiNoPlanYet: !this.state.aiPlanText && !this.state.aiPlanBusy && !this.state.aiPlanErr,
@@ -9388,8 +9845,9 @@ class Component extends DCLogic {
           let ph = 0;
           list.forEach(c => {
             ph += (c.photos || []).length;
-            (c.photos || []).forEach(p => slides.push({ img: p, cap: c.name, day: d.tag }));
-            if (!(c.photos || []).length) slides.push({ img: null, cap: c.name, day: d.tag });
+            const wantPb = this.ciWantsPb(c);
+            (c.photos || []).forEach(p => slides.push({ img: p, cap: c.name, day: d.tag, pick: wantPb }));
+            if (!(c.photos || []).length) slides.push({ img: null, cap: c.name, day: d.tag, pick: false });
           });
           photos += ph;
           rows.push({ n: d.n, title: d.city, meta: list.length + ' เช็คอิน' + (ph ? ' · ' + ph + ' รูป' : '') });
@@ -9419,7 +9877,7 @@ class Component extends DCLogic {
             const chip = on => (on ? 'background:#c05f39;color:#fff;border:1px solid #c05f39;' : 'background:#fffaf0;color:#5c5347;border:1px solid rgba(43,36,32,.16);')
               + "flex:none;min-height:46px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:6px 13px;border-radius:12px;cursor:pointer;text-align:left";
             return {
-              exportRecapLabel: 'บันทึกเป็นวิดีโอ' + (port ? 'แนวตั้ง' : 'แนวนอน') + ' (' + cur.n + ' รูป · ~' + Math.round(2.8 + cur.n * 2.6 + 3) + ' วิ)',
+              exportRecapLabel: 'บันทึกเป็นวิดีโอ' + (port ? 'แนวตั้ง' : 'แนวนอน') + ' (' + cur.n + ' รูป · ~' + this.recapSecs(cur.n) + ' วิ)',
               recapMultiPart: parts.length > 1,
               recapPartRows: parts.map(p => ({
                 label: p.label, sub: p.range + ' · ' + p.n + ' รูป',
@@ -9428,11 +9886,93 @@ class Component extends DCLogic {
               setRecapLand: () => this.setRecapOrient('land'),
               setRecapPort: () => this.setRecapOrient('port'),
               recapLandStyle: seg(!port), recapPortStyle: seg(port),
+              // โชว์ว่าคลิปนี้จะได้รูปไหน ★ = รูปที่ผู้ใช้ติ๊กไว้ให้ลงโฟโต้บุ๊ก (ระบบหยิบก่อน)
+              recapShotRows: (() => {
+                const its = (cur.items || []).filter(s => s.img);
+                const sel = this.state.recapSel;
+                const refs = () => its.map(s => s.img);
+                const commit = list => this.setRecapCustom(list);
+                return its.map((s, i) => ({
+                  src: this.px(s.img), no: String(i + 1),
+                  wrap: 'position:relative;flex:none;width:52px;height:70px;border-radius:8px;overflow:hidden;background:#efe4d3;padding:0;border:'
+                    + (sel === i ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.12)') + ';cursor:pointer',
+                  badge: 'position:absolute;top:3px;left:3px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;display:flex;align-items:center;justify-content:center;'
+                    + 'font:700 10px \'Anuphan\';' + (s.pick ? 'background:#c05f39;color:#fff' : 'background:rgba(20,16,13,.6);color:#e2d6c0'),
+                  on: () => {
+                    if (!this.isPremium) { this.setState({ recapEditHint: true }); return; }
+                    this.setState(st => ({ recapSel: st.recapSel === i ? null : i }));
+                  },
+                  selected: sel === i,
+                  moveL: () => { if (i < 1) return; const l = refs(); const t = l[i - 1]; l[i - 1] = l[i]; l[i] = t; commit(l); this.setState({ recapSel: i - 1 }); },
+                  moveR: () => { if (i >= its.length - 1) return; const l = refs(); const t = l[i + 1]; l[i + 1] = l[i]; l[i] = t; commit(l); this.setState({ recapSel: i + 1 }); },
+                  del: () => { if (its.length < 3) { this.showToast('คลิปต้องมีรูปอย่างน้อย 2 ใบ'); return; } const l = refs(); l.splice(i, 1); commit(l); },
+                }));
+              })(),
+              recapShotNote: (() => {
+                const its = (cur.items || []).filter(s => s.img);
+                if (!its.length) return '';
+                if (cur.custom) return 'คุณเลือกไว้ ' + its.length + ' ใบ · แตะรูปเพื่อสลับลำดับหรือเอาออก';
+                const st = its.filter(s => s.pick).length;
+                return 'ระบบเลือกให้ ' + its.length + ' ใบ · ' + st + ' ใบมาจากที่คุณติ๊กไว้ (สีดินเผา) ที่เหลือเติมให้กระจายทั่วทริป';
+              })(),
+              recapHasShots: (cur.items || []).some(s => s.img),
+              recapEditHintOn: !!this.state.recapEditHint && !this.isPremium,
+              recapCanEdit: !!this.isPremium,
+              recapIsCustom: !!cur.custom,
+              recapResetPick: () => { this.setRecapCustom(null); this.showToast('ให้ระบบเลือกใหม่แล้ว'); },
+              recapAddOn: !!this.state.recapAdd,
+              toggleRecapAdd: () => {
+                if (!this.isPremium) { this.setState({ recapEditHint: true }); return; }
+                this.setState(s => ({ recapAdd: !s.recapAdd, recapSel: null }));
+              },
+              recapAddLabel: this.state.recapAdd ? 'ปิดคลังรูป' : '+ เลือกรูปจากทั้งทริป',
+              recapAllRows: (() => {
+                if (!this.state.recapAdd || !this.isPremium) return [];
+                const all = (this._recapSlides || []).filter(s => s.img);
+                const inClip = {}; (cur.items || []).forEach(s => { if (s.img) inClip[s.img] = 1; });
+                return all.map(s => ({
+                  src: this.px(s.img), inClip: !!inClip[s.img],
+                  wrap: 'position:relative;aspect-ratio:3/4;border-radius:8px;overflow:hidden;padding:0;cursor:pointer;background:#efe4d3;border:'
+                    + (inClip[s.img] ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.12)'),
+                  imgStyle: 'width:100%;height:100%;object-fit:cover;display:block' + (inClip[s.img] ? '' : ';opacity:.5'),
+                  on: () => {
+                    const base = (cur.items || []).filter(x => x.img).map(x => x.img);
+                    if (inClip[s.img]) {
+                      if (base.length < 3) { this.showToast('คลิปต้องมีรูปอย่างน้อย 2 ใบ'); return; }
+                      this.setRecapCustom(base.filter(r => r !== s.img));
+                    } else {
+                      // แทรกตามลำดับเวลาจริงของทริป ไม่ต่อท้ายมั่ว
+                      const order = all.map(x => x.img);
+                      const next = base.concat([s.img]).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+                      this.setRecapCustom(next);
+                    }
+                  },
+                }));
+              })(),
+              recapAddNote: (() => {
+                const all = (this._recapSlides || []).filter(s => s.img).length;
+                const n = (cur.items || []).filter(s => s.img).length;
+                return 'ทั้งทริปมี ' + all + ' ใบ · อยู่ในคลิป ' + n + ' ใบ · ~' + this.recapSecs(n) + ' วิ'
+                  + (this.recapSecs(n) > 75 ? ' (ยาวเกิน Reels แล้ว)' : '');
+              })(),
+              recReadyOn: !!this.state.recReady,
+              recReadyUrl: (this.state.recReady || {}).url || '',
+              recReadyName: (this.state.recReady || {}).name || '',
+              recReadyLabel: 'บันทึกคลิปลงเครื่อง' + ((this.state.recReady || {}).size ? ' · ' + this.state.recReady.size : ''),
+              recCanShare: !!(navigator.canShare && this.state.recReady),
+              shareRecapFile: async () => {
+                try {
+                  const f = new File([this._recBlob], this._recBlobName, { type: this._recBlob.type });
+                  if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
+                } catch (e) { if (e && e.name === 'AbortError') return; }
+                this.showToast('เครื่องนี้แชร์ไฟล์ตรงไม่ได้ — กด "บันทึกคลิปลงเครื่อง" แล้วอัปจากคลังรูป');
+              },
               recapPrevStyle: 'position:relative;height:' + (port ? 320 : 210) + 'px;background:#1a1613',
               recapSizeNote: (port
                 ? 'คลิปแนวตั้ง 1080×1920 · พอดีกับ Reels / TikTok / Stories'
                 : 'คลิปแนวนอน 1280×720 · พอดีกับ YouTube / โพสต์เฟซบุ๊ก')
-                + (parts.length > 1 ? ' · ทริปนี้ยาว แบ่งเป็น ' + parts.length + ' ตอน ทำทีละตอน' : ''),
+                + (cur.total > cur.n ? ' · เลือกให้ ' + cur.n + ' ใบ จากทั้งหมด ' + cur.total + ' ใบ' : '')
+                + (this.isPremium ? '' : ' · ไฟล์ที่โหลดออกมีชื่อ Vela มุมล่างและหน้าปิด 2 วิ'),
             };
           })(),
           toggleRecapPlay: () => {
@@ -9464,8 +10004,8 @@ class Component extends DCLogic {
           artBusy: !!this.state.artBusy,
           artErr: this.state.artErr || '', artHasErr: !!this.state.artErr,
           artText: this.state.artText || '', artHasText: !!this.state.artText,
-          artNotConnected: !this.aiKey,
-          artGenOpacity: (this.state.artBusy || !this.aiKey) ? '.55' : '1'
+          artNotConnected: !this.aiAvailable(),
+          artGenOpacity: (this.state.artBusy || !this.aiAvailable()) ? '.55' : '1'
         };
       })(),
       sumBookFn: () => this.setState({sum:'book'}), sumRecapFn: () => this.setState({sum:'recap'}),
