@@ -1143,6 +1143,11 @@
 
           <sc-if value="{{ segIsStories }}" hint-placeholder-val="{{ true }}">
             <div style="padding:6px 20px 30px">
+              <div style="display:flex;gap:7px;margin-bottom:14px">
+                <button onClick="{{ setFeedLatest }}" style="{{ pillFeedLatest }}">ล่าสุด</button>
+                <button onClick="{{ setFeedShelf }}" style="{{ pillFeedShelf }}">คลังเรื่อง · ทวีป › ประเทศ</button>
+              </div>
+              <sc-if value="{{ feedLatest }}" hint-placeholder-val="{{ true }}">
               <sc-for list="{{ feedStories }}" as="st" hint-placeholder-count="3">
                 <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
                   <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ st.photo }}" alt="" loading="lazy" decoding="async" style="width:100%;height:180px;background:#efe4d3;object-fit:cover;display:block"></sc-if>
@@ -1155,6 +1160,42 @@
                 </div>
               </sc-for>
               <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีตอนที่เผยแพร่</div><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เขียนบันทึกแต่ละวัน แล้วกด "เผยแพร่" ที่ตอนนั้น<br>ตอนที่เผยแพร่จะมาโผล่ที่นี่</div></div></sc-if>
+              </sc-if>
+
+              <sc-if value="{{ feedShelf }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ arcHasCrumb }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+                    <button onClick="{{ arcUp }}" style="flex:none;min-height:36px;padding:0 11px;border:1px solid rgba(43,36,32,.14);border-radius:10px;background:transparent;color:#6f6455;font:600 13px 'Anuphan';cursor:pointer">← กลับ</button>
+                    <span style="flex:1;min-width:0;font:600 14px/1.4 'Anuphan';color:#8a7d6f">{{ arcCrumb }}</span>
+                  </div>
+                </sc-if>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ arcItems }}" as="it" hint-placeholder-count="0">
+                    <button onClick="{{ it.on }}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;min-height:52px;border:1px solid rgba(43,36,32,.09);border-radius:14px;background:#fffaf0;padding:0 14px;cursor:pointer">
+                      <span style="flex:1;min-width:0;font:600 15.5px 'Anuphan';color:#2b241f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ it.name }}</span>
+                      <span style="flex:none;font:500 13px 'Anuphan';color:#a1927c">{{ it.sub }}</span>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg>
+                    </button>
+                  </sc-for>
+                </div>
+                <sc-if value="{{ arcHasBooks }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:11px">
+                    <sc-for list="{{ arcBooks }}" as="bk" hint-placeholder-count="0">
+                      <div onClick="{{ bk.on }}" style="display:flex;gap:12px;align-items:center;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden;cursor:pointer">
+                        <img src="{{ bk.cover }}" alt="" loading="lazy" decoding="async" style="width:78px;height:78px;object-fit:cover;background:#efe4d3;flex:none">
+                        <div style="flex:1;min-width:0;padding:10px 12px 10px 0">
+                          <div style="font-family:'Chonburi',serif;font-size:16px;line-height:1.3;color:#2b241f;text-wrap:pretty">{{ bk.title }}</div>
+                          <div style="font:500 12.5px 'Anuphan';color:#a1927c;margin-top:3px">{{ bk.meta }}</div>
+                          <sc-if value="{{ bk.draft }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block;margin-top:6px;font:600 11.5px 'Anuphan';color:#8a7d6f;background:#efe4d3;border-radius:8px;padding:3px 8px">ร่าง · ยังไม่เผยแพร่</span></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ arcEmpty }}" hint-placeholder-val="{{ true }}">
+                  <div style="text-align:center;padding:44px 24px;font:500 15px/1.7 'Anuphan';color:#8a7d6f;text-wrap:pretty">ยังไม่มีเล่มในคลัง<br>เล่มที่นำเข้าจากบล็อกจะถูกจัดตามทวีป-ประเทศให้เอง<br>ของที่เขียนเองตั้งได้ในหน้าจัดการเล่ม</div>
+                </sc-if>
+              </sc-if>
             </div>
           </sc-if>
 
@@ -1276,6 +1317,101 @@
                 </div>
               </sc-for>
               <sc-if value="{{ noMoments }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:44px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></div><div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">{{ momentEmptyTitle }}</div><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">{{ momentEmptySub }}</div></div></sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ========== IMPORT FROM WORDPRESS BLOG ========== -->
+      <sc-if value="{{ sWpImport }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:16px 20px 40px">
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;margin-bottom:14px">
+            <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:9px">บล็อกเก่าของเรา</div>
+            <input value="{{ wpSite }}" onInput="{{ setWpSite }}" placeholder="lunarroom.wordpress.com" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);border-radius:12px;background:#fff;padding:0 13px;font:500 14.5px 'Anuphan';color:#2b241f;margin-bottom:8px">
+            <div style="display:flex;gap:8px">
+              <input value="{{ wpQ }}" onInput="{{ setWpQ }}" onKeyDown="{{ wpKey }}" placeholder="ค้นหาชื่อเรื่อง / สถานที่" style="flex:1;min-width:0;min-height:46px;border:1px solid rgba(43,36,32,.14);border-radius:12px;background:#fff;padding:0 13px;font:500 14.5px 'Anuphan';color:#2b241f">
+              <button onClick="{{ wpSearch }}" style="flex:none;min-height:46px;padding:0 18px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';cursor:pointer">ค้นหา</button>
+            </div>
+            <div style="font:500 12.5px/1.65 'Anuphan';color:#8a7d6f;margin-top:9px;text-wrap:pretty">รูปอ้างจากเซิร์ฟเวอร์ WordPress โดยตรง (files.wordpress.com) — ไม่กินพื้นที่แอป และไม่ตายตอนโดเมนหมดอายุ</div>
+          </div>
+
+          <div style="display:flex;gap:7px;margin-bottom:12px">
+            <button onClick="{{ wpModeLatest }}" style="{{ wpPillLatest }}">ล่าสุด / ค้นหา</button>
+            <button onClick="{{ wpModeBrowse }}" style="{{ wpPillBrowse }}">ทวีป → ประเทศ</button>
+          </div>
+
+          <sc-if value="{{ wpBrowse }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:12px 13px;margin-bottom:14px">
+              <sc-if value="{{ wpHasCrumbs }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px">
+                  <button onClick="{{ wpCatUp }}" style="flex:none;min-height:36px;padding:0 11px;border:1px solid rgba(43,36,32,.14);border-radius:10px;background:transparent;color:#6f6455;font:600 13px 'Anuphan';cursor:pointer">← กลับ</button>
+                  <span style="flex:1;min-width:0;font:600 13.5px/1.4 'Anuphan';color:#8a7d6f">{{ wpCrumbText }}</span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ wpShowFlatToggle }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ wpToggleFlat }}" style="width:100%;min-height:40px;margin-bottom:10px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:transparent;color:#6f6455;font:600 13px 'Anuphan';cursor:pointer">{{ wpFlatLabel }}</button>
+              </sc-if>
+              <sc-if value="{{ wpCatsBusy }}" hint-placeholder-val="{{ true }}">
+                <div style="text-align:center;padding:18px;font:500 14.5px 'Anuphan';color:#a1927c">กำลังโหลดหมวดหมู่…</div>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ wpCatList }}" as="c" hint-placeholder-count="0">
+                  <button onClick="{{ c.on }}" style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;min-height:48px;border:1px solid rgba(43,36,32,.1);border-radius:12px;background:#fff;padding:0 12px;cursor:pointer">
+                    <span style="flex:1;min-width:0;font:600 14.5px 'Anuphan';color:#2b241f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span>
+                    <span style="flex:none;font:500 12.5px 'Anuphan';color:#a1927c">{{ c.countText }}</span>
+                    <sc-if value="{{ c.hasKids }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"></path></svg></sc-if>
+                  </button>
+                </sc-for>
+              </div>
+              <sc-if value="{{ wpCanListHere }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ wpListHere }}" style="width:100%;min-height:46px;margin-top:9px;border:none;border-radius:12px;background:#2b241f;color:#f6efe2;font:600 14.5px 'Anuphan';cursor:pointer">{{ wpListHereLabel }}</button>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ wpErr }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff4ec;border:1px solid rgba(179,64,42,.28);border-radius:14px;padding:12px 14px;margin-bottom:12px;font:500 13.5px/1.6 'Anuphan';color:#b3402a">{{ wpErrText }}</div>
+          </sc-if>
+          <sc-if value="{{ wpBusy }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:26px;font:500 15px 'Anuphan';color:#a1927c">กำลังโหลดโพสต์…</div>
+          </sc-if>
+          <sc-if value="{{ wpEmpty }}" hint-placeholder-val="{{ true }}">
+            <div style="text-align:center;padding:34px 16px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;text-wrap:pretty">กด “ค้นหา” เพื่อดูโพสต์ล่าสุด หรือพิมพ์คำค้นเพื่อหาทริปที่อยากดึงเข้ามา</div>
+          </sc-if>
+
+          <sc-if value="{{ wpHasList }}" hint-placeholder-val="{{ false }}">
+            <div style="font:500 13px 'Anuphan';color:#8a7d6f;margin-bottom:9px">{{ wpFoundText }}</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ wpList }}" as="p" hint-placeholder-count="0">
+                <div onClick="{{ p.on }}" style="display:flex;gap:11px;align-items:center;background:#fffaf0;border:1.5px solid {{ p.bd }};border-radius:16px;padding:10px;cursor:pointer">
+                  <span style="width:28px;height:28px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;border:1.5px solid {{ p.bd }};background:{{ p.bg }}">
+                    <sc-if value="{{ p.sel }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"></path></svg></sc-if>
+                  </span>
+                  <sc-if value="{{ p.hasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ p.thumb }}" alt="" loading="lazy" decoding="async" style="width:58px;height:58px;border-radius:11px;object-fit:cover;background:#efe4d3;flex:none"></sc-if>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 14.5px/1.4 'Anuphan';color:#2b241f;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ p.title }}</div>
+                    <div style="font:500 12.5px 'Anuphan';color:#a1927c;margin-top:2px">{{ p.when }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ wpMore }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ wpNext }}" style="width:100%;min-height:46px;margin-top:12px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#6f6455;font:600 14.5px 'Anuphan';border-radius:13px;cursor:pointer">โหลดเพิ่ม</button>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ wpAnySel }}" hint-placeholder-val="{{ false }}">
+            <div style="position:sticky;bottom:0;margin-top:16px;background:#fffaf0;border:1px solid rgba(192,95,57,.28);border-radius:16px;padding:13px 14px;box-shadow:0 -4px 18px rgba(43,36,32,.1)">
+              <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:9px">นำเข้าไปไว้ที่</div>
+              <select value="{{ wpTarget }}" onChange="{{ setWpTarget }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);border-radius:12px;background:#fff;padding:0 11px;font:500 14.5px 'Anuphan';color:#2b241f;margin-bottom:8px">
+                <option value="new">＋ สร้างบันทึกเล่มใหม่</option>
+                <sc-for list="{{ wpStories }}" as="s" hint-placeholder-count="0"><option value="{{ s.id }}">{{ s.title }}</option></sc-for>
+              </select>
+              <sc-if value="{{ wpTargetNew }}" hint-placeholder-val="{{ true }}">
+                <input value="{{ wpTitle }}" onInput="{{ setWpTitle }}" placeholder="ชื่อเล่ม เช่น กุ้ยหลิน" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);border-radius:12px;background:#fff;padding:0 13px;font:500 14.5px 'Anuphan';color:#2b241f;margin-bottom:8px">
+              </sc-if>
+              <button onClick="{{ wpDoImport }}" style="width:100%;min-height:50px;border:none;border-radius:13px;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';cursor:pointer;opacity:{{ wpImportOpacity }}">{{ wpImportLabel }}</button>
+              <button onClick="{{ wpClearSel }}" style="width:100%;min-height:40px;margin-top:4px;border:none;background:transparent;color:#8a7d6f;font:600 13.5px 'Anuphan';cursor:pointer">ยกเลิกที่เลือกไว้</button>
             </div>
           </sc-if>
         </div>
@@ -1416,10 +1552,17 @@
           </label>
           <div style="text-align:center;margin-bottom:16px">
             <sc-if value="{{ seMetaView }}" hint-placeholder-val="{{ true }}">
-              <div style="font:600 14px 'Anuphan';color:#c05f39;margin-bottom:4px">{{ seCategory }}</div>
+              <div style="font:600 14px 'Anuphan';color:#c05f39;margin-bottom:4px">{{ seCatLine }}</div>
               <div style="font-family:'Chonburi',serif;font-size:25px;line-height:1.3;color:#2b241f;text-wrap:pretty">{{ stoTitle }}</div>
             </sc-if>
             <sc-if value="{{ seMetaEdit }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <select value="{{ smCont }}" onChange="{{ setSmCont }}" style="flex:1;min-width:0;box-sizing:border-box;min-height:44px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:#fff;padding:0 9px;font:500 14px 'Anuphan';color:#2b241f">
+                  <option value="">ทวีป…</option>
+                  <sc-for list="{{ contOpts }}" as="co" hint-placeholder-count="0"><option value="{{ co.v }}">{{ co.v }}</option></sc-for>
+                </select>
+                <input value="{{ smCountry }}" onInput="{{ setSmCountry }}" placeholder="ประเทศ" style="flex:1;min-width:0;box-sizing:border-box;min-height:44px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:#fff;padding:0 11px;font:500 14px 'Anuphan';color:#2b241f">
+              </div>
               <input value="{{ smCategory }}" onInput="{{ setSmCategory }}" placeholder="หมวด เช่น บันทึกการเดินทาง" style="width:100%;box-sizing:border-box;text-align:center;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:8px 10px;font:600 14px 'Anuphan';color:#c05f39;outline:none;margin-bottom:8px">
               <input value="{{ smTitle }}" onInput="{{ setSmTitle }}" placeholder="ชื่อเรื่อง" style="width:100%;box-sizing:border-box;text-align:center;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:10px;padding:10px 12px;font-family:'Chonburi',serif;font-size:21px;color:#2b241f;outline:none">
             </sc-if>
@@ -1861,10 +2004,54 @@
             </div>
           </sc-if>
           <sc-if value="{{ pStories }}" hint-placeholder-val="{{ false }}">
-            <div style="padding:16px 20px 30px;display:flex;flex-direction:column;gap:12px">
+            <div style="padding:14px 20px 34px">
               <sc-if value="{{ noStories }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:40px 4px;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีเรื่องเล่า<br>บันทึกจากทริปของคุณได้เลย</div></sc-if>
-              <sc-for list="{{ profileStories }}" as="st" hint-placeholder-count="3">
-                <div onClick="{{ st.on }}" style="display:flex;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><img src="{{ st.photo }}" alt="" style="width:104px;height:88px;object-fit:cover;flex:none;display:block"><div style="flex:1;padding:11px 12px 11px;min-width:0"><div style="font:500 13px 'Anuphan';color:#c05f39;margin-bottom:3px">{{ st.place }}</div><div style="font:600 15.5px/1.35 'Anuphan';color:#2b241f">{{ st.title }}</div></div></div>
+
+              <sc-if value="{{ hasHero }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ heroOn }}" style="position:relative;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 12px 28px -14px rgba(43,36,32,.6)">
+                  <img src="{{ heroCover }}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#efe4d3">
+                  <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.3),rgba(20,16,13,0) 34%,rgba(20,16,13,.55) 66%,rgba(20,16,13,.93))"></div>
+                  <div style="position:absolute;left:17px;right:17px;bottom:15px;color:#fffaf0">
+                    <div style="font:600 11.5px 'Anuphan';letter-spacing:1.5px;color:#e9b48a;margin-bottom:6px;text-transform:uppercase">{{ heroWhere }}</div>
+                    <div style="font-family:'Chonburi',serif;font-size:23px;line-height:1.25;text-wrap:pretty">{{ heroTitle }}</div>
+                    <div style="width:26px;height:1.5px;background:#c05f39;margin:8px 0"></div>
+                    <div style="font:500 12.5px 'Anuphan';color:rgba(246,239,226,.82)">{{ heroMeta }}</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:6px;justify-content:center;align-items:center;margin:12px 0 10px">
+                  <sc-for list="{{ heroDots }}" as="d" hint-placeholder-count="3"><button onClick="{{ d.on }}" style="{{ d.style }}"></button></sc-for>
+                </div>
+                <div style="display:flex;justify-content:center;margin-bottom:16px">
+                  <button onClick="{{ toggleHeroPickMode }}" style="min-height:38px;padding:0 15px;border:1px solid rgba(43,36,32,.14);border-radius:11px;background:transparent;color:#6f6455;font:600 13px 'Anuphan';cursor:pointer">{{ heroPickLabel }}</button>
+                </div>
+                <sc-if value="{{ heroPickMode }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.2);border-radius:13px;padding:11px 13px;margin-bottom:18px;font:500 13px/1.6 'Anuphan';color:#8a6a4f;text-wrap:pretty">{{ heroPickHint }}</div>
+                </sc-if>
+              </sc-if>
+
+              <sc-for list="{{ arcSecs }}" as="sec" hint-placeholder-count="0">
+                <div style="margin-bottom:26px">
+                  <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px">
+                    <span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ sec.cont }}</span>
+                    <span style="font:500 12.5px 'Anuphan';color:#a1927c">{{ sec.count }}</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px 11px;align-items:start">
+                        <sc-for list="{{ sec.books }}" as="bk" hint-placeholder-count="0">
+                          <div onClick="{{ bk.on }}" style="cursor:pointer">
+                            <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;box-shadow:0 5px 13px -6px rgba(43,36,32,.45),0 1px 2px rgba(43,36,32,.18)">
+                              <img src="{{ bk.cover }}" alt="" loading="lazy" decoding="async" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#efe4d3">
+                              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.12),rgba(20,16,13,0) 42%,rgba(20,16,13,.82))"></div>
+                              <div style="position:absolute;left:7px;right:6px;bottom:6px;color:#fffaf0;text-shadow:0 1px 3px rgba(0,0,0,.5)">
+                                <div style="font-family:'Chonburi',serif;font-size:10px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ bk.title }}</div>
+                              </div>
+                              <sc-if value="{{ bk.draft }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:6px;top:6px;font:600 9px 'Anuphan';color:#2b241f;background:rgba(246,239,226,.92);border-radius:5px;padding:1px 5px">ร่าง</span></sc-if>
+                              <sc-if value="{{ bk.picked }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:6px;top:6px;font:600 9px 'Anuphan';color:#fffaf0;background:#c05f39;border-radius:5px;padding:1px 5px">★ เด่น</span></sc-if>
+                            </div>
+                            <div style="font:500 10.5px 'Anuphan';color:#a1927c;margin-top:5px">{{ bk.sub }}</div>
+                          </div>
+                        </sc-for>
+                  </div>
+                </div>
               </sc-for>
             </div>
           </sc-if>
@@ -2105,6 +2292,13 @@
               </div>
             </div>
           </div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goWpImport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
+            <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span>
+            <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">นำเข้าจากบล็อกเก่า</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">ดึงโพสต์จาก WordPress มาเป็นบันทึกในแอป · แอดมิน</div></div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg>
+          </button>
+          </sc-if>
           <button onClick="{{ goSupport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
             <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
             <div style="flex:1;min-width:0"><div style="font:600 15px 'Anuphan';color:#2b241f">ช่วยเหลือ &amp; ติดต่อเรา</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">แจ้งปัญหา ถามคำถาม หรือเสนอฟีเจอร์</div></div>
@@ -2463,8 +2657,8 @@ class Component extends DCLogic {
     history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addPeriod: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { today: 'today', plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', ebPhotos:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover' };
-  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', ebPhotos:'จัดรูปในเล่ม', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์' };
+  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', ebPhotos:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover', wpImport:'me' };
+  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', ebPhotos:'จัดรูปในเล่ม', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์', wpImport:'นำเข้าจากบล็อกเก่า' };
   roots = ['today','myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -4456,6 +4650,8 @@ class Component extends DCLogic {
         : [];
     }
     if (s.category == null) s.category = 'บันทึกการเดินทาง';
+    if (s.continent == null) s.continent = '';
+    if (s.country == null) s.country = '';
     if (!Array.isArray(s.tags)) s.tags = [];
     if (s.synopsis == null) s.synopsis = '';
     if (s.finished == null) s.finished = false;
@@ -4585,6 +4781,179 @@ class Component extends DCLogic {
     const el = this._chEl; if (!el) return;
     const t = el.innerText || '';
     this.setState({ chChars: t.replace(/\s/g, '').length, chWords: (t.trim().match(/\S+/g) || []).length });
+  }
+  // ---------- นำเข้าจากบล็อก WordPress เก่า ----------
+  get wpSiteHost() {
+    return String(this.state.wpSite || 'lunarroom.wordpress.com').trim()
+      .replace(/^https?:\/\//i, '').replace(/\/.*$/, '') || 'lunarroom.wordpress.com';
+  }
+  // รูปของ WordPress.com อยู่ถาวรที่ <slug>.files.wordpress.com — ไม่ผูกกับโดเมนที่แมปไว้
+  _wpCdn(u, w) {
+    if (!u) return '';
+    const slug = (this.wpSiteHost.match(/^([a-z0-9-]+)\./i) || [])[1] || '';
+    let s = String(u).split('?')[0];
+    const up = s.match(/\/wp-content\/uploads\/(.+)$/i);
+    if (up && slug) s = 'https://' + slug + '.files.wordpress.com/' + up[1];
+    else if (!/\.files\.wordpress\.com\//i.test(s)) return String(u);
+    return s + (w ? '?w=' + w : '');
+  }
+  _contOf(name) {
+    const s = String(name || '').toLowerCase();
+    if (/asia|เอเชีย/.test(s)) return 'เอเชีย';
+    if (/africa|แอฟ/.test(s)) return 'แอฟริกา';
+    if (/europe|ยุโรป/.test(s)) return 'ยุโรป';
+    if (/south\s*america|อเมริกาใต้/.test(s)) return 'อเมริกาใต้';
+    if (/north\s*america|central\s*america|อเมริกาเหนือ/.test(s)) return 'อเมริกาเหนือ';
+    if (/oceania|australia|pacific|โอเชีย/.test(s)) return 'โอเชียเนีย';
+    return '';
+  }
+  get contList() { return ['เอเชีย', 'ยุโรป', 'แอฟริกา', 'อเมริกาเหนือ', 'อเมริกาใต้', 'โอเชียเนีย', 'ขั้วโลก']; }
+  _wpText(h) {
+    const d = document.createElement('div');
+    d.innerHTML = String(h || '');
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  _wpHtml(raw) {
+    const d = document.createElement('div');
+    d.innerHTML = String(raw || '');
+    d.querySelectorAll('script,style').forEach(n => n.remove());
+    // คลิป YouTube → ตัวฝังของแอป (หน้าอ่านแปลงเป็นวิดีโอเต็มความกว้างให้เอง)
+    const emb = id => {
+      const p = document.createElement('p');
+      p.innerHTML = '<span class="wtn-embed" contenteditable="false" data-yt="' + id
+        + '"><span class="wtn-embed-ic">▶</span>คลิป YouTube · แตะดูในหน้าอ่าน</span>';
+      return p;
+    };
+    d.querySelectorAll('iframe,video').forEach(f => {
+      const y = this.ytInfo(f.getAttribute('src') || '');
+      if (y) f.replaceWith(emb(y.id)); else f.remove();
+    });
+    d.querySelectorAll('a[href]').forEach(a => {
+      const y = this.ytInfo(a.getAttribute('href') || '');
+      if (y && !a.querySelector('img') && this.ytInfo(this._wpText(a.innerHTML))) a.replaceWith(emb(y.id));
+    });
+    d.querySelectorAll('.sharedaddy,.sd-block,.jp-relatedposts,.wpcnt,.wp-block-jetpack-subscriptions,.jetpack-video-wrapper,figure.wp-block-embed').forEach(n => {
+      if (n.querySelector('.wtn-embed')) n.replaceWith(...Array.from(n.childNodes));
+      else n.remove();
+    });
+    d.querySelectorAll('img').forEach(im => {
+      const s = this._wpCdn(im.getAttribute('src') || '', 1200);
+      if (s) im.setAttribute('src', s); else im.remove();
+    });
+    d.querySelectorAll('a').forEach(a => { if (a.querySelector('img')) a.replaceWith(...Array.from(a.childNodes)); });
+    return this.sanitizeHtml(d.innerHTML);
+  }
+  // หมวดหมู่ของบล็อก = ทวีป → ประเทศ → ทริป (ใช้เดินหาโพสต์เก่าแทนการค้นหาด้วยคำ)
+  async wpLoadCats() {
+    if ((this.state.wpCats || []).length || this.state.wpCatsBusy) return;
+    if (navigator.onLine === false) { this.setState({ wpErr: 'ไม่มีเน็ต — ต่อเน็ตก่อนแล้วลองอีกครั้ง' }); return; }
+    this.setState({ wpCatsBusy: true, wpErr: '' });
+    try {
+      let all = [];
+      for (let page = 1; page <= 5; page++) {
+        const r = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
+          + '/categories?per_page=100&orderby=name&order=asc&_fields=id,name,slug,parent,count&page=' + page);
+        if (!r.ok) break;
+        const d = await r.json();
+        if (!Array.isArray(d) || !d.length) break;
+        all = all.concat(d.map(c => ({ id: c.id, name: c.name, slug: c.slug, parent: c.parent || 0, count: c.count || 0 })));
+        if (d.length < 100) break;
+      }
+      if (!all.length) {                                  // สำรอง: v1.1 (บางไซต์ปิด wp/v2)
+        const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
+          + '/categories?number=1000');
+        if (r.ok) {
+          const d = await r.json();
+          all = (d.categories || []).map(c => ({
+            id: c.ID, name: c.name, slug: c.slug, count: c.post_count || 0,
+            parent: typeof c.parent === 'object' && c.parent ? (c.parent.ID || 0) : (c.parent || 0)
+          }));
+        }
+      }
+      if (!all.length) throw new Error('ไม่พบหมวดหมู่');
+      this.setState({ wpCats: all, wpCatsBusy: false });
+    } catch (e) {
+      this.setState({ wpCatsBusy: false, wpErr: 'ดึงหมวดหมู่ไม่สำเร็จ — ' + (e.message || e) });
+    }
+  }
+  async wpLoad(page) {
+    if (navigator.onLine === false) { this.setState({ wpErr: 'ไม่มีเน็ต — ต่อเน็ตก่อนแล้วลองอีกครั้ง' }); return; }
+    const q = String(this.state.wpQ || '').trim();
+    const cat = String(this.state.wpCatSlug || '').trim();
+    this.setState({ wpBusy: true, wpErr: '' });
+    try {
+      const url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
+        + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
+        + (cat ? '&category=' + encodeURIComponent(cat) : '')
+        + (q ? '&search=' + encodeURIComponent(q) : '');
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const d = await r.json();
+      const posts = (d.posts || []).map(p => ({
+        id: p.ID, title: this._wpText(p.title) || '(ไม่มีชื่อเรื่อง)', date: p.date,
+        url: p.URL, thumb: this._wpCdn(p.featured_image, 220)
+      }));
+      this.setState(s => ({
+        wpBusy: false, wpPage: page, wpFound: d.found || 0,
+        wpList: page === 1 ? posts : [...(s.wpList || []), ...posts]
+      }));
+    } catch (e) {
+      this.setState({ wpBusy: false, wpErr: 'ดึงข้อมูลไม่สำเร็จ — ตรวจชื่อบล็อกอีกครั้ง (' + (e.message || e) + ')' });
+    }
+  }
+  async wpImportSelected() {
+    if (this.state.wpImporting) return;
+    const sel = this.state.wpSel || {};
+    const picked = (this.state.wpList || []).filter(p => sel[p.id]);
+    if (!picked.length) return;
+    picked.sort((a, b) => new Date(a.date) - new Date(b.date));
+    this.setState({ wpImporting: true, wpDone: 0, wpErr: '' });
+    const host = this.wpSiteHost, chapters = [];
+    try {
+      for (let i = 0; i < picked.length; i++) {
+        const p = picked[i];
+        try {
+          const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
+            + '/posts/' + p.id + '?fields=ID,title,date,content,featured_image,URL');
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const d = await r.json();
+          const html = this._wpHtml(d.content || '');
+          const text = this._wpText(html);
+          chapters.push({
+            id: 'chwp' + p.id + '_' + Date.now(), title: this._wpText(d.title) || p.title, html,
+            createdAt: new Date(d.date || p.date).getTime() || Date.now(), updatedAt: Date.now(),
+            free: true, published: false, words: (text.match(/\S+/g) || []).length,
+            cover: this._wpCdn(d.featured_image, 1200) || '', srcUrl: d.URL || p.url
+          });
+        } catch (e) { console.warn('[wtn] wp post', p.id, e); }
+        this.setState({ wpDone: i + 1 });
+      }
+      if (!chapters.length) throw new Error('ไม่ได้เนื้อหาเลย');
+      const list = this.stories, tgt = this.state.wpTarget || 'new';
+      let sid;
+      const at = list.findIndex(x => x.id === tgt);
+      if (tgt !== 'new' && at >= 0) {
+        sid = list[at].id;
+        list[at] = { ...list[at], chapters: [...(this.normStory(list[at]).chapters || []), ...chapters] };
+      } else {
+        sid = 'stwp' + Date.now();
+        const _p = this.state.wpPath || [];
+        list.push({
+          id: sid, tripId: null, category: 'บันทึกการเดินทาง',
+          continent: this._contOf((_p[0] || {}).name), country: ((_p[1] || {}).name || '').trim(),
+          title: String(this.state.wpTitle || '').trim() || String(this.state.wpQ || '').trim() || 'บันทึกจากบล็อกเก่า',
+          author: this.profile.name || 'Nim', cover: chapters.map(c => c.cover).find(Boolean) || null,
+          subtitle: 'นำเข้าจาก ' + host, tags: ['บล็อกเก่า'], synopsis: '', synopsisAt: null,
+          published: false, finished: true, at: Date.now(), likes: 0, views: 0, chapters
+        });
+      }
+      this.saveStories(list);
+      this.setState({ wpImporting: false, wpDone: 0, wpSel: {}, wpTitle: null, openStoryId: sid });
+      this.showToast('✓ นำเข้า ' + chapters.length + ' ตอนแล้ว');
+      this.go('storyEdit');
+    } catch (e) {
+      this.setState({ wpImporting: false, wpDone: 0, wpErr: 'นำเข้าไม่สำเร็จ — ' + (e.message || e) });
+    }
   }
   sanitizeHtml(raw) {
     const wrap = document.createElement('div');
@@ -5978,8 +6347,33 @@ class Component extends DCLogic {
     if (z !== 1) r.push('.wtn-screen{zoom:' + z + '}');
     el.textContent = r.join('\n');
   }
+  get heroPicks() {
+    try { const v = JSON.parse(localStorage.getItem('wtn-hero')); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+  }
+  toggleHeroPickId(id) {
+    let picks = this.heroPicks.filter(x => this.stories.some(s => s.id === x));
+    if (picks.indexOf(id) !== -1) picks = picks.filter(x => x !== id);
+    else if (picks.length >= 3) { this.showToast('เลือกรูปเด่นได้ 3 เรื่อง — เอาออกก่อนหนึ่งเรื่อง'); return; }
+    else picks = picks.concat([id]);
+    try { localStorage.setItem('wtn-hero', JSON.stringify(picks)); } catch (e) {}
+    this.setState({ heroIdx: 0 });
+  }
+  _shuf(arr, seed) {
+    const a = arr.slice(); let s = Math.abs(seed || 1) % 233280 || 7;
+    for (let i = a.length - 1; i > 0; i--) {
+      s = (s * 9301 + 49297) % 233280;
+      const j = Math.floor(s / 233280 * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
   componentDidMount() {
     this.applyTypo();
+    this._heroTimer = setInterval(() => {
+      if (this.state.screen === 'profile' && (this.state.profileTab || 'trips') === 'stories') {
+        this.setState(s => ({ heroIdx: ((s.heroIdx || 0) + 1) % 3 }));
+      }
+    }, 5200);
     // แท็บเริ่มต้นที่ผู้ใช้ตั้งไว้ (ข้ามถ้ามาจากลิงก์เรื่องเล่า/พารามิเตอร์ go)
     try {
       const q = new URLSearchParams(location.search);
@@ -6222,6 +6616,7 @@ class Component extends DCLogic {
     this.setState({ passOpen: false, passA: '', passB: '', passErr: '' });
   }
   componentWillUnmount() {
+    try { clearInterval(this._heroTimer); } catch (e) {}
     window.removeEventListener('photopick-change', this._pp);
     if (this._ppSync) window.removeEventListener('photopick-change', this._ppSync);
     if (this._visSync) document.removeEventListener('visibilitychange', this._visSync);
@@ -8105,9 +8500,12 @@ class Component extends DCLogic {
         rafId = requestAnimationFrame(rafLoop);
         toId = setTimeout(toLoop, 16);
       });
+      const durMs = Math.max(1000, performance.now() - t0);
       rec.stop();
       await stopped;
-      const blob = new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] });
+      let blob = new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] });
+      // MediaRecorder ไม่เขียน "ความยาวคลิป" ลงในไฟล์ → แกลเลอรีแอนดรอยด์อ่านได้แค่ก้อนแรก (โชว์ 3 วิ)
+      blob = await this._fixVideoDuration(blob, durMs);
       const ext = blob.type.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
       const url = URL.createObjectURL(blob);
       const name = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap'
@@ -8133,6 +8531,114 @@ class Component extends DCLogic {
       this._recExporting = false;
       this.setState({ recExport: false });
     }
+  }
+  // เขียนความยาวคลิปกลับลงไฟล์ (webm: Info>Duration / mp4: mvhd+tkhd+mdhd)
+  // ไม่มีอันนี้ แอนดรอยด์จะเซฟเข้าแกลเลอรีแล้วโชว์แค่ ~3 วิ ทั้งที่ไฟล์เต็ม
+  async _fixVideoDuration(blob, durMs) {
+    try {
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      const out = blob.type.indexOf('mp4') !== -1
+        ? this._fixMp4Dur(buf, durMs, blob.type)
+        : this._fixWebmDur(buf, durMs, blob.type);
+      return out || blob;
+    } catch (e) { console.warn('[wtn] fix duration', e); return blob; }
+  }
+  _fixMp4Dur(buf, durMs, type) {
+    const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+    let movieTs = 1000, ok = false;
+    const walk = (start, end) => {
+      let p = start;
+      while (p + 8 <= end) {
+        let size = dv.getUint32(p), hdr = 8;
+        const tag = String.fromCharCode(buf[p + 4], buf[p + 5], buf[p + 6], buf[p + 7]);
+        if (size === 1) { size = Number(dv.getBigUint64(p + 8)); hdr = 16; }
+        else if (size === 0) size = end - p;
+        if (size < hdr || p + size > end) break;
+        if (tag === 'moov' || tag === 'trak' || tag === 'mdia') walk(p + hdr, p + size);
+        else if (tag === 'mvhd' || tag === 'mdhd') {
+          if (buf[p + hdr] === 0 && p + hdr + 20 <= end) {
+            const ts = dv.getUint32(p + hdr + 12) || 1000;
+            if (tag === 'mvhd') movieTs = ts;
+            dv.setUint32(p + hdr + 16, Math.max(1, Math.round(durMs / 1000 * ts)));
+            ok = true;
+          }
+        } else if (tag === 'tkhd') {
+          if (buf[p + hdr] === 0 && p + hdr + 24 <= end) {
+            dv.setUint32(p + hdr + 20, Math.max(1, Math.round(durMs / 1000 * movieTs)));
+            ok = true;
+          }
+        }
+        p += size;
+      }
+    };
+    walk(0, buf.length);
+    return ok ? new Blob([buf], { type }) : null;
+  }
+  _fixWebmDur(buf, durMs, type) {
+    const vint = (p, isId) => {
+      const b = buf[p];
+      if (b === undefined) return null;
+      let len = 1, mask = 0x80;
+      while (len <= 8 && !(b & mask)) { mask >>= 1; len++; }
+      if (len > 8 || p + len > buf.length) return null;
+      let val = isId ? b : (b & (mask - 1));
+      for (let i = 1; i < len; i++) val = val * 256 + buf[p + i];
+      const unknown = !isId && val === Math.pow(2, 7 * len) - 1;
+      return { len, val, unknown };
+    };
+    const child = (start, end, id) => {
+      let p = start;
+      while (p < end) {
+        const i = vint(p, true); if (!i) return null;
+        const s = vint(p + i.len, false); if (!s) return null;
+        const dataStart = p + i.len + s.len;
+        const dataEnd = s.unknown ? end : dataStart + s.val;
+        if (dataEnd > end || dataEnd <= dataStart) return null;
+        if (i.val === id) return { start: p, dataStart, dataEnd, idLen: i.len, szLen: s.len, unknown: s.unknown };
+        p = dataEnd;
+      }
+      return null;
+    };
+    const enc = (v) => {
+      for (let len = 1; len <= 8; len++) {
+        if (v < Math.pow(2, 7 * len) - 1) {
+          const o = new Uint8Array(len); let x = v;
+          for (let i = len - 1; i >= 0; i--) { o[i] = x & 0xff; x = Math.floor(x / 256); }
+          o[0] |= 1 << (8 - len);
+          return o;
+        }
+      }
+      return null;
+    };
+    const seg = child(0, buf.length, 0x18538067); if (!seg) return null;
+    const info = child(seg.dataStart, seg.dataEnd, 0x1549A966); if (!info) return null;
+    const dur = child(info.dataStart, info.dataEnd, 0x4489);
+    if (dur) {                                              // มีอยู่แล้ว → เขียนทับที่เดิม
+      const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+      const n = dur.dataEnd - dur.dataStart;
+      if (n === 8) dv.setFloat64(dur.dataStart, durMs);
+      else if (n === 4) dv.setFloat32(dur.dataStart, durMs);
+      else return null;
+      return new Blob([buf], { type });
+    }
+    const f = new Uint8Array(8); new DataView(f.buffer).setFloat64(0, durMs);
+    const durEl = new Uint8Array(11);
+    durEl.set([0x44, 0x89, 0x88]); durEl.set(f, 3);
+    const newInfoSz = enc(info.dataEnd - info.dataStart + durEl.length); if (!newInfoSz) return null;
+    if (!seg.unknown) {                                     // ขนาด Segment รู้แน่ → ต้องอัปเดตให้ตรง
+      const delta = (newInfoSz.length - info.szLen) + durEl.length;
+      const segSz = enc(seg.dataEnd - seg.dataStart + delta);
+      if (!segSz || segSz.length !== seg.szLen) return null;
+      buf.set(segSz, seg.start + seg.idLen);
+    }
+    return new Blob([
+      buf.subarray(0, info.start),
+      buf.subarray(info.start, info.start + info.idLen),
+      newInfoSz,
+      buf.subarray(info.dataStart, info.dataEnd),
+      durEl,
+      buf.subarray(info.dataEnd)
+    ], { type });
   }
   // วาดข้อความให้อยู่กลางด้วยการวัดความกว้างเอง — Safari บนมือถือไม่ยอมรับ
   // cx.textAlign='center' กับฟอนต์ไทยที่โหลดมา ข้อความจะเลื่อนไปขวาแล้วตกขอบ
@@ -8710,7 +9216,7 @@ class Component extends DCLogic {
       sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
       sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard' && sc!=='country' && sc!=='city', sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
-      sOverview: sc==='overview', sPrep: sc==='prep',
+      sOverview: sc==='overview', sPrep: sc==='prep', sWpImport: sc==='wpImport' && this.isAdmin,
       ...(() => {
         const _pk = this.packing;
         const info = this.tripInfo;
@@ -8782,7 +9288,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.18o',
+      appVersion: '2026.08.18ad',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -9267,6 +9773,101 @@ class Component extends DCLogic {
       forceRestore: () => this.forceRestoreCloud(),
       forceRestoreLabel: this.state.restoreBusy ? 'กำลังกู้…' : '↻ กู้ข้อมูลจากคลาวด์',
       goRestore: () => { this.go('restore'); this.loadVersions(); }, refreshVersions: () => this.loadVersions(),
+      ...(() => {
+        const sel = this.state.wpSel || {}, list = this.state.wpList || [];
+        const n = list.filter(p => sel[p.id]).length;
+        const imp = !!this.state.wpImporting;
+        const fmt = d => { const x = new Date(d); return isNaN(x) ? '' : x.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); };
+        return {
+          goWpImport: () => this.go('wpImport'),
+          wpSite: this.state.wpSite == null ? 'lunarroom.wordpress.com' : this.state.wpSite,
+          setWpSite: e => this.setState({ wpSite: e.target.value }),
+          wpQ: this.state.wpQ || '', setWpQ: e => this.setState({ wpQ: e.target.value }),
+          wpKey: e => { if (e.key === 'Enter') { e.target.blur(); this.wpLoad(1); } },
+          wpSearch: () => this.wpLoad(1),
+          wpNext: () => this.wpLoad((this.state.wpPage || 1) + 1),
+          wpBusy: !!this.state.wpBusy,
+          wpErr: !!this.state.wpErr, wpErrText: this.state.wpErr || '',
+          wpEmpty: !this.state.wpBusy && !this.state.wpErr && !list.length,
+          wpHasList: list.length > 0,
+          wpFoundText: (this.state.wpFound ? 'เจอ ' + this.state.wpFound + ' โพสต์ · ' : '') + 'แตะเพื่อเลือกที่อยากดึง',
+          wpMore: list.length > 0 && list.length < (this.state.wpFound || 0),
+          wpList: list.map(p => ({
+            title: p.title, when: fmt(p.date), thumb: p.thumb, hasThumb: !!p.thumb,
+            sel: !!sel[p.id], bd: sel[p.id] ? '#c05f39' : 'rgba(43,36,32,.08)',
+            bg: sel[p.id] ? '#c05f39' : '#fff',
+            on: () => this.setState(s => { const m = { ...(s.wpSel || {}) }; if (m[p.id]) delete m[p.id]; else m[p.id] = 1; return { wpSel: m }; })
+          })),
+          wpAnySel: n > 0, wpSelN: n,
+          wpClearSel: () => this.setState({ wpSel: {} }),
+          wpTarget: this.state.wpTarget || 'new',
+          wpTargetNew: (this.state.wpTarget || 'new') === 'new',
+          setWpTarget: e => this.setState({ wpTarget: e.target.value }),
+          wpStories: this.stories.map(s => ({ id: s.id, title: s.title || 'บันทึก' })),
+          wpTitle: this.state.wpTitle != null ? this.state.wpTitle : (((this.state.wpPath || []).slice(-1)[0] || {}).name || ''), setWpTitle: e => this.setState({ wpTitle: e.target.value }),
+          ...(() => {
+            const cats = this.state.wpCats || [], path = this.state.wpPath || [];
+            const node = path.length ? path[path.length - 1].id : 0;
+            const clean = s => String(s || '').replace(/^\s*\d+[-–\s]\s*/, '').trim();
+            const kids = cats.filter(c => (c.parent || 0) === node)
+              .sort((a, b) => clean(a.name).localeCompare(clean(b.name), 'th'));
+            const browse = this.state.wpMode === 'browse';
+            const flat = !!this.state.wpFlatCtry;
+            const pill = on => 'flex:1;min-height:42px;border-radius:12px;cursor:pointer;font:600 13.5px \'Anuphan\';'
+              + (on ? 'border:none;background:#2b241f;color:#f6efe2' : 'border:1px solid rgba(43,36,32,.14);background:transparent;color:#6f6455');
+            const roots = cats.filter(c => !(c.parent || 0));
+            const ctryAll = flat && !path.length
+              ? cats.filter(c => roots.some(r => r.id === (c.parent || 0)))
+                  .sort((a, b) => clean(a.name).localeCompare(clean(b.name), 'en'))
+                  .map(c => {
+                    const par = roots.find(r => r.id === (c.parent || 0)) || {};
+                    return {
+                      name: clean(c.name),
+                      countText: (clean(par.name) ? clean(par.name) + ' · ' : '') + (c.count ? c.count + ' โพสต์' : ''),
+                      hasKids: cats.some(k => (k.parent || 0) === c.id),
+                      on: () => {
+                        const hasKids = cats.some(k => (k.parent || 0) === c.id);
+                        this.setState({
+                          wpPath: [{ id: par.id, name: clean(par.name), slug: par.slug }, { id: c.id, name: clean(c.name), slug: c.slug }],
+                          wpCatSlug: c.slug, wpQ: '', wpFlatCtry: false
+                        });
+                        setTimeout(() => this.wpLoad(1), 0);
+                      }
+                    };
+                  })
+              : null;
+            return {
+              wpBrowse: browse, wpSearchMode: !browse,
+              wpFlat: flat, wpFlatLabel: flat ? 'ดูตามทวีป' : 'ดูรายชื่อประเทศทั้งหมด',
+              wpToggleFlat: () => this.setState(s => ({ wpFlatCtry: !s.wpFlatCtry, wpPath: [] })),
+              wpShowFlatToggle: !path.length,
+              wpPillLatest: pill(!browse), wpPillBrowse: pill(browse),
+              wpModeLatest: () => this.setState({ wpMode: 'latest' }),
+              wpModeBrowse: () => { this.setState({ wpMode: 'browse' }); this.wpLoadCats(); },
+              wpCatsBusy: !!this.state.wpCatsBusy,
+              wpHasCrumbs: path.length > 0,
+              wpCrumbText: path.map(p => clean(p.name)).join(' › '),
+              wpCatUp: () => this.setState(s => ({ wpPath: (s.wpPath || []).slice(0, -1) })),
+              wpCatList: (ctryAll || kids.map(c => ({
+                name: clean(c.name), countText: c.count ? c.count + ' โพสต์' : '',
+                hasKids: cats.some(k => (k.parent || 0) === c.id),
+                on: () => {
+                  const rec = { id: c.id, name: clean(c.name), slug: c.slug };
+                  const hasKids = cats.some(k => (k.parent || 0) === c.id);
+                  this.setState(s => ({ wpPath: [...(s.wpPath || []), rec], wpCatSlug: hasKids ? '' : c.slug, wpQ: '' }));
+                  if (!hasKids) setTimeout(() => this.wpLoad(1), 0);
+                }
+              }))),
+              wpCanListHere: path.length > 0,
+              wpListHereLabel: 'ดูโพสต์ใน ' + clean((path[path.length - 1] || {}).name),
+              wpListHere: () => { this.setState({ wpCatSlug: (path[path.length - 1] || {}).slug || '', wpQ: '' }); setTimeout(() => this.wpLoad(1), 0); },
+            };
+          })(),
+          wpDoImport: () => this.wpImportSelected(),
+          wpImportOpacity: imp ? .6 : 1,
+          wpImportLabel: imp ? ('กำลังนำเข้า ' + (this.state.wpDone || 0) + '/' + n + '…') : ('นำเข้า ' + n + ' โพสต์')
+        };
+      })(),
       versionsBusy: !!this.state.versionsBusy, noVersions: !this.state.versionsBusy && (this.state.versionsList || []).length === 0,
       versionsList: (this.state.versionsList || []).map(v => ({ id: v.id, when: new Date(v.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), summary: (v.trips || 0) + ' ทริป · ' + (v.moments || 0) + ' โมเมนต์', restore: () => this.restoreVersion(v.id) })),
       doRestore: e => this.importBackup(e),
@@ -9706,6 +10307,46 @@ class Component extends DCLogic {
         const mpN = (this.state.mpPhotos || []).length;
         const canPost = !!((this.state.mpText || '').trim() || mpN);
         return {
+          ...(() => {
+            const view = this.state.feedView || 'latest';
+            const cont = this.state.shelfCont || '', ctry = this.state.shelfCountry || '';
+            const UNS = 'ยังไม่จัดหมวด';
+            const all = this.stories.map(s => this.normStory(s));
+            const cOf = s => (s.continent || '').trim() || UNS;
+            const kOf = s => (s.country || '').trim() || 'อื่นๆ';
+            const pill = on => 'flex:1;min-height:40px;border-radius:11px;cursor:pointer;font:600 13.5px \'Anuphan\';'
+              + (on ? 'border:none;background:#2b241f;color:#f6efe2' : 'border:1px solid rgba(43,36,32,.14);background:transparent;color:#6f6455');
+            let items = [];
+            if (!cont) {
+              const m = {};
+              all.forEach(s => { const k = cOf(s); (m[k] = m[k] || []).push(s); });
+              items = Object.keys(m).sort((a, b) => (a === UNS) - (b === UNS) || a.localeCompare(b, 'th'))
+                .map(k => ({ name: k, sub: m[k].length + ' เล่ม', on: () => this.setState({ shelfCont: k, shelfCountry: '' }) }));
+            } else if (!ctry) {
+              const m = {};
+              all.filter(s => cOf(s) === cont).forEach(s => { const k = kOf(s); (m[k] = m[k] || []).push(s); });
+              items = Object.keys(m).sort((a, b) => a.localeCompare(b, 'th'))
+                .map(k => ({ name: k, sub: m[k].length + ' เล่ม', on: () => this.setState({ shelfCountry: k }) }));
+            }
+            const books = (cont && ctry) ? all.filter(s => cOf(s) === cont && kOf(s) === ctry)
+              .sort((a, b) => (b.at || 0) - (a.at || 0)).map(s => {
+                const chs = s.chapters || [];
+                return { title: s.title || 'บันทึก', cover: s.cover || 'default-cover.jpg',
+                  meta: chs.length + ' ตอน' + (s.subtitle ? ' · ' + s.subtitle : ''),
+                  draft: !chs.some(c => c.published), on: () => this.openStoryRead(s.id) };
+              }) : [];
+            return {
+              feedLatest: view === 'latest', feedShelf: view === 'shelf',
+              pillFeedLatest: pill(view === 'latest'), pillFeedShelf: pill(view === 'shelf'),
+              setFeedLatest: () => this.setState({ feedView: 'latest' }),
+              setFeedShelf: () => this.setState({ feedView: 'shelf' }),
+              arcHasCrumb: !!cont, arcCrumb: [cont, ctry].filter(Boolean).join(' › '),
+              arcUp: () => this.setState(s => (s.shelfCountry ? { shelfCountry: '' } : { shelfCont: '' })),
+              arcItems: items, arcHasItems: items.length > 0,
+              arcBooks: books, arcHasBooks: books.length > 0,
+              arcEmpty: !items.length && !books.length
+            };
+          })(),
           feedStories: feed, noFeed: feed.length === 0,
           myStories: all.map(card), noStories: all.length === 0,
           storyCount: all.length,
@@ -10131,6 +10772,58 @@ class Component extends DCLogic {
           shelfNote: items.length + ' เล่มจาก ' + new Set(items.map(x => x.tripId)).size + ' ทริป' };
       })(),
       pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
+      ...(() => {
+        const all = this.stories.map(s => this.normStory(s));
+        const day = Math.floor(Date.now() / 86400000);
+        const UNS = 'ยังไม่จัดหมวด';
+        const where = s => [s.continent, s.country].filter(Boolean).join(' › ');
+        const pickMode = !!this.state.heroPickMode;
+        const picked = this.heroPicks;
+        const card = s => {
+          const chs = s.chapters || [];
+          const ct = (s.country || '').trim();
+          return { title: s.title || 'บันทึก', cover: s.cover || 'default-cover.jpg',
+            sub: (ct ? ct + ' · ' : '') + chs.length + ' ตอน', draft: !chs.some(c => c.published),
+            picked: picked.indexOf(s.id) !== -1,
+            on: () => (pickMode ? this.toggleHeroPickId(s.id) : this.openStoryRead(s.id)) };
+        };
+        const chosen = picked.map(id => all.find(s => s.id === id)).filter(Boolean);
+        const withCover = all.filter(s => s.cover);
+        const picks = chosen.length ? chosen : this._shuf(withCover.length >= 3 ? withCover : all, day + 7).slice(0, 3);
+        const hi = picks.length ? ((this.state.heroIdx || 0) % picks.length) : 0;
+        const cur = picks[hi];
+        const byCont = {};
+        all.forEach(s => { const k = (s.continent || '').trim() || UNS; (byCont[k] = byCont[k] || []).push(s); });
+        let keys = Object.keys(byCont).filter(k => k !== UNS).sort((a, b) => a.localeCompare(b, 'th'));
+        if (byCont[UNS]) keys = keys.concat([UNS]);
+        const secs = keys.map(k => {
+          const inCont = byCont[k], byCtry = {};
+          inCont.forEach(s => { const c = (s.country || '').trim() || (k === UNS ? '' : 'อื่นๆ'); (byCtry[c] = byCtry[c] || []).push(s); });
+          const books = [];
+          Object.keys(byCtry).sort((a, b) => a.localeCompare(b, 'th')).forEach(c => {
+            byCtry[c].slice().sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'th')).forEach(s => books.push(card(s)));
+          });
+          return { cont: k, count: inCont.length + ' เล่ม', books };
+        });
+        return {
+          hasHero: !!cur, noHero: !cur,
+          heroCover: cur ? (cur.cover || 'default-cover.jpg') : '',
+          heroTitle: cur ? (cur.title || 'บันทึก') : '',
+          heroWhere: cur ? (where(cur) || cur.category || '') : '',
+          heroMeta: cur ? ((cur.chapters || []).length + ' ตอน' + (cur.subtitle ? ' · ' + cur.subtitle : '')) : '',
+          heroOn: () => { if (cur) this.openStoryRead(cur.id); },
+          heroDots: picks.map((p, i) => ({
+            on: () => this.setState({ heroIdx: i }),
+            style: 'width:' + (i === hi ? '20px' : '7px') + ';height:7px;border-radius:4px;border:none;cursor:pointer;padding:0;background:'
+              + (i === hi ? '#c05f39' : 'rgba(43,36,32,.2)') + ';transition:width .25s'
+          })),
+          heroPickMode: pickMode, heroPickOff: !pickMode,
+          heroPickLabel: pickMode ? 'เสร็จ' : (chosen.length ? 'เปลี่ยนรูปเด่น (' + chosen.length + ')' : 'เลือกรูปเด่นเอง'),
+          toggleHeroPickMode: () => this.setState(s => ({ heroPickMode: !s.heroPickMode })),
+          heroPickHint: 'แตะปกที่อยากให้ขึ้นเป็นรูปเด่น ได้ถึง 3 เรื่อง' + (chosen.length ? ' · เลือกแล้ว ' + chosen.length : ' · ตอนนี้สุ่มให้เอง'),
+          arcSecs: secs, hasArcSecs: secs.length > 0
+        };
+      })(),
       profileStories: this.stories.slice().sort((a, b) => b.at - a.at).map(s => {
         s = this.normStory(s);
         return { photo: s.cover || 'default-cover.jpg', place: s.category || '',
@@ -10187,13 +10880,20 @@ class Component extends DCLogic {
             if (this.state.storyMetaEdit) {
               this.patchStory(os.id, { title: (this.state.smTitle || '').trim() || os.title,
                 category: (this.state.smCategory || '').trim() || os.category,
+                continent: this.state.smCont || '', country: (this.state.smCountry || '').trim(),
                 subtitle: this.state.smSubtitle || '', tags: this.state.smTags || [] });
               this.setState({ storyMetaEdit: false });
             } else {
               this.setState({ storyMetaEdit: true, smTitle: os.title, smCategory: os.category,
+                smCont: os.continent || '', smCountry: os.country || '',
                 smSubtitle: os.subtitle || '', smTags: [...(os.tags || [])], tagDraft: '' });
             }
           },
+          seCatLine: os.category + ([os.continent, os.country].filter(Boolean).length ? ' · ' + [os.continent, os.country].filter(Boolean).join(' › ') : ''),
+          smCont: this.state.smCont ?? '', smCountry: this.state.smCountry ?? '',
+          setSmCont: e => this.setState({ smCont: e.target.value }),
+          setSmCountry: e => this.setState({ smCountry: e.target.value }),
+          contOpts: this.contList.map(v => ({ v })),
           stoTitle: os.title, seCategory: os.category, seSubtitle: os.subtitle || '', seAuthor: this.profile.name || os.author || 'Nim',
           seAvatar: this.coverOf('wtn-avatar', null), seHasAvatar: !!this.coverOf('wtn-avatar', null),
           smTitle: this.state.smTitle ?? '', smCategory: this.state.smCategory ?? '', smSubtitle: this.state.smSubtitle ?? '',
