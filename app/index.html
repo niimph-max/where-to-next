@@ -106,6 +106,7 @@
   .wtn-screen{animation:wtnFade .22s ease}
   @keyframes wtnPulse{0%{transform:scale(.5);opacity:.55}70%{transform:scale(1.9);opacity:0}100%{opacity:0}}
   @keyframes wtnLive{0%{transform:scale(1);opacity:.5}70%{transform:scale(3.4);opacity:0}100%{opacity:0}}
+  @keyframes wtnSpr{from{background-position:0 0}to{background-position:-1200% 0}}
   @keyframes wtnSpin{to{transform:rotate(360deg)}}
   @keyframes wtnToast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
   /* full-screen by default (any device/webview) */
@@ -725,7 +726,19 @@
                 <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px">
                   <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 13px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 16px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
                   <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 16.5px/1.7 'IBM Plex Sans Thai Looped','Anuphan',sans-serif;color:#4a4239;margin-top:8px;text-wrap:pretty">{{ ci.note }}</div></sc-if>
-                  <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" style="width:92px;height:92px;object-fit:cover;border-radius:12px;flex:none;cursor:pointer"></sc-for></div></sc-if>
+                  <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><span onClick="{{ ph.on }}" style="{{ ph.wrapStyle }}"><img src="{{ ph.src }}" alt="" style="{{ ph.imgStyle }}"><span style="{{ ph.sprStyle }}"></span><span style="{{ ph.badgeStyle }}">▶</span></span></sc-for></div></sc-if>
+                  <sc-if value="{{ ci.clipShowCard }}" hint-placeholder-val="{{ false }}">
+                    <div onClick="{{ ci.clipOpen }}" style="margin-top:10px;border-radius:14px;overflow:hidden;background:#2b241f;cursor:pointer">
+                      <sc-if value="{{ ci.clipHasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ ci.clipThumb }}" alt="" loading="lazy" decoding="async" style="width:100%;aspect-ratio:16/9;background:#1a1613;object-fit:cover;display:block"></sc-if>
+                      <div style="display:flex;align-items:center;gap:10px;padding:11px 13px">
+                        <span style="width:32px;height:32px;border-radius:50%;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5l12 7-12 7z"/></svg></span>
+                        <span style="flex:1;min-width:0;font:600 14px 'Anuphan';color:#f6efe2">ดูคลิปบน {{ ci.clipLabel }}</span>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ ci.clipPlaying }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:10px;border-radius:14px;overflow:hidden;background:#000"><iframe src="{{ ci.clipEmbed }}" title="clip" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style="width:100%;aspect-ratio:16/9;border:0;display:block"></iframe></div>
+                  </sc-if>
                   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:11px">
                     <button onClick="{{ ci.toggleBook }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.bookStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h6"></path></svg>หนังสือ</button>
                     <button onClick="{{ ci.togglePb }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.pbStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>โฟโต้บุ๊ก</button>
@@ -1288,7 +1301,7 @@
                   </div>
                   <sc-if value="{{ mo.viewMode }}" hint-placeholder-val="{{ true }}">
                     <sc-if value="{{ mo.hasText }}" hint-placeholder-val="{{ true }}"><p style="font:500 17px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;margin:11px 0 0;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere"><sc-for list="{{ mo.textParts }}" as="tp" hint-placeholder-count="1"><sc-if value="{{ tp.isLink }}" hint-placeholder-val="{{ false }}"><a href="{{ tp.href }}" target="_blank" rel="noopener noreferrer" style="color:#c05f39;text-decoration:underline;text-underline-offset:2px">{{ tp.t }}</a></sc-if><sc-if value="{{ tp.plain }}" hint-placeholder-val="{{ true }}">{{ tp.t }}</sc-if></sc-for></p></sc-if>
-                    <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><img onClick="{{ ph.on }}" src="{{ ph.src }}" alt="" loading="lazy" decoding="async" style="height:220px;min-width:96px;background:#efe4d3;border-radius:13px;flex:none;scroll-snap-align:start;object-fit:cover;cursor:pointer"></sc-for></div></sc-if>
+                    <sc-if value="{{ mo.hasPhotos }}" hint-placeholder-val="{{ false }}"><div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;margin-top:12px;scroll-snap-type:x mandatory"><sc-for list="{{ mo.photos }}" as="ph" hint-placeholder-count="2"><span onClick="{{ ph.on }}" style="{{ ph.wrapStyle }}"><img src="{{ ph.src }}" alt="" loading="lazy" decoding="async" style="{{ ph.imgStyle }}"><span style="{{ ph.sprStyle }}"></span><span style="{{ ph.badgeStyle }}">▶ คลิป</span></span></sc-for></div></sc-if>
                     <sc-if value="{{ mo.clipShowCard }}" hint-placeholder-val="{{ false }}">
                       <div onClick="{{ mo.clipOpen }}" style="margin-top:12px;border-radius:14px;overflow:hidden;background:#2b241f;cursor:pointer">
                         <sc-if value="{{ mo.clipHasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ mo.clipThumb }}" alt="" loading="lazy" decoding="async" style="width:100%;aspect-ratio:16/9;background:#1a1613;object-fit:cover;display:block"></sc-if>
@@ -2414,6 +2427,52 @@
           <button onClick="{{ pbFrDone }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างเล่มด้วยกรอบนี้</button>
         </div>
       </sc-if>
+
+      <sc-if value="{{ sPbCheck }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:16px 20px 40px">
+          <div style="font:500 14.5px/1.7 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">ตรวจให้ครบก่อนส่งไฟล์ให้โรงพิมพ์ — ความละเอียดรูปในแต่ละช่อง ขนาดตัดตก จำนวนหน้า และลายน้ำ</div>
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;margin-bottom:16px;display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ pcStats }}" as="st" hint-placeholder-count="5">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px"><span style="flex:none;font:500 14px 'Anuphan';color:#8a7d6f">{{ st.k }}</span><span style="flex:1;min-width:0;font:600 14.5px 'Anuphan';color:#2b241f;text-align:right">{{ st.v }}</span></div>
+            </sc-for>
+          </div>
+          <div style="font:600 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:8px">โหมดไฟล์</div>
+          <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pcQualityChips }}" as="qc" hint-placeholder-count="3"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:18px">{{ pbQualityNote }}</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ pcRows }}" as="r" hint-placeholder-count="5">
+              <div style="{{ r.wrap }}"><span style="{{ r.dot }}">{{ r.mark }}</span><span style="flex:1;min-width:0"><b style="display:block;font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:2px">{{ r.title }}</b><span style="display:block;font:500 13px/1.65 'Anuphan';color:#7c7264;text-wrap:pretty">{{ r.note }}</span></span></div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pcCanFill }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:18px;background:#fffaf0;border:1px solid rgba(192,95,57,.24);border-radius:16px;padding:14px 15px">
+              <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:4px">เติมไฟล์เต็มจากคลังรูป</div>
+              <div style="font:500 13px/1.65 'Anuphan';color:#7c7264;margin-bottom:12px;text-wrap:pretty">{{ pcFillNote }}</div>
+              <label style="position:relative;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;border-radius:13px;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';cursor:pointer">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="flex:none"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>{{ pcFillLabel }}
+                <input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ pcFill }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px">
+              </label>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pcHasLow }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:22px">
+              <div style="font:400 18px 'Chonburi',serif;color:#2b241f;margin-bottom:5px">รูปที่ความละเอียดไม่พอ</div>
+              <div style="font:500 13px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:12px;text-wrap:pretty">แตะเพื่อเปิดกรอบรูป — ถอยซูมออกจะได้ความละเอียดคืนมา ถ้าไม่ไหวให้เปลี่ยนไปใช้รูปต้นฉบับที่ใหญ่กว่า</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ pcLow }}" as="lw" hint-placeholder-count="2">
+                  <button onClick="{{ lw.on }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fffaf0;border:1px solid rgba(184,80,60,.28);border-radius:14px;padding:9px 12px 9px 9px;cursor:pointer">
+                    <img src="{{ lw.u }}" alt="" style="width:58px;height:58px;flex:none;border-radius:10px;object-fit:cover;display:block">
+                    <span style="flex:1;min-width:0"><b style="display:block;font:600 14.5px 'Anuphan';color:#2b241f">{{ lw.title }}</b><span style="font:500 12.5px 'Anuphan';color:#b8503c">{{ lw.sub }}</span></span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a1927c" stroke-width="2.2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <button onClick="{{ pcMake }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">{{ pcMakeLabel }}</button>
+          <div style="font:500 12.5px/1.7 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px;text-wrap:pretty">เปิดไฟล์แล้วกด "บันทึกเป็น PDF" · ในหน้าพิมพ์ให้ตั้ง Scale 100% และปิด "Fit to page" ไม่งั้นตัดตกจะเพี้ยน</div>
+        </div>
+      </sc-if>
     </div>
 
     <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
@@ -2435,13 +2494,19 @@
                   </div>
                   <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 16px 'Anuphan';color:#2b241f;outline:none">
                   <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:7px;font:600 13.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="flex:none"><rect x="2.5" y="6" width="19" height="12" rx="3"></rect><path d="M10.5 9.6l4.2 2.4-4.2 2.4z" fill="currentColor" stroke="none"></path></svg>ลิงก์คลิปของโมเมนต์นี้</div>
+                    <input value="{{ ciClip }}" onInput="{{ setCiClip }}" inputMode="url" placeholder="วางลิงก์ YouTube / TikTok / Reels (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none">
+                    <sc-if value="{{ ciClipOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:7px 9px"><sc-if value="{{ ciClipHasThumb }}" hint-placeholder-val="{{ false }}"><img src="{{ ciClipThumb }}" alt="" style="width:64px;height:36px;flex:none;border-radius:7px;object-fit:cover;display:block"></sc-if><span style="font:600 13px 'Anuphan';color:#5c5347">{{ ciClipLabel }}</span></div></sc-if>
+                    <div style="font:500 12px/1.6 'Anuphan';color:#a1927c">คลิปยาวอยู่บน YouTube / TikTok เหมือนเดิม — แอปเก็บแค่ลิงก์ แตะดูในหน้าโมเมนต์ได้เลย ไม่กินที่เก็บ</div>
+                  </div>
                   <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
                   <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
                   <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
                     <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
-                      <span style="position:relative;width:64px;height:64px;flex:none"><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
+                      <span style="position:relative;width:64px;height:64px;flex:none"><span style="{{ dp.clipStyle }}">▶</span><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
-                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="position:relative;width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป<input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ ciAddPhotos }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label></sc-if>
+                    <sc-if value="{{ ciCanAddPhoto }}" hint-placeholder-val="{{ true }}"><label style="position:relative;width:64px;height:64px;border:1.5px dashed rgba(43,36,32,.22);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#a1927c;cursor:pointer;font:600 12.5px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"></rect><circle cx="12" cy="13" r="3.2"></circle><path d="M8 7l1.5-2h5L16 7"></path></svg>+ รูป · คลิป<input type="file" accept="image/*,video/*" ref="{{ multiRef }}" onChange="{{ ciAddPhotos }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label></sc-if>
                   </div>
                   <div style="border-top:1px solid rgba(43,36,32,.08);padding-top:13px">
                     <div style="font:600 14px 'Anuphan';color:#5c5347;margin-bottom:3px">เอาโมเมนต์นี้ไปไว้ที่ไหน</div>
@@ -2512,6 +2577,23 @@
     <span style="width:7px;height:7px;border-radius:50%;background:#e6a15c"></span>{{ cloudText }}
   </div>
 </sc-if>
+<sc-if value="{{ vidOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:9860;background:rgba(20,16,13,.94);display:flex;flex-direction:column;justify-content:flex-end">
+    <div style="background:#f6efe2;border-radius:20px 20px 0 0;padding:15px 18px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:11px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="flex:1;min-width:0;font:400 19px 'Chonburi',serif;color:#2b241f">เลือกช่วงของคลิป</span>
+        <button onClick="{{ vidCancel }}" style="min-width:44px;min-height:40px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ยกเลิก</button>
+      </div>
+      <video ref="{{ vidRef }}" playsInline muted preload="auto" style="width:100%;max-height:42vh;background:#1a1613;border-radius:14px;display:block"></video>
+      <div style="font:500 13px/1.6 'Anuphan';color:#8a7d6f">{{ vidHint }}</div>
+      <input type="range" min="0" max="{{ vidMax }}" step="0.1" value="{{ vidStart }}" onInput="{{ setVidStartEv }}" style="width:100%;min-height:44px;accent-color:#c05f39">
+      <div style="display:flex;gap:9px">
+        <button onClick="{{ vidPreview }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">เล่นดูช่วงนี้</button>
+        <button onClick="{{ vidUse }}" style="flex:1.3;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">ใช้ช่วงนี้</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
 <sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ lbClose }}" style="position:fixed;inset:0;z-index:9800;background:rgba(20,16,13,.96);display:flex;flex-direction:column">
     <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px">
@@ -2520,7 +2602,8 @@
       <button onClick="{{ lbClose }}" style="width:44px;height:44px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
     </div>
     <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 10px">
-      <img src="{{ lbSrc }}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;display:block">
+      <sc-if value="{{ lbIsStill }}" hint-placeholder-val="{{ true }}"><img src="{{ lbSrc }}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;display:block"></sc-if>
+      <sc-if value="{{ lbIsClip }}" hint-placeholder-val="{{ false }}"><div style="{{ lbClipStyle }}"></div></sc-if>
     </div>
     <sc-if value="{{ lbHasMany }}" hint-placeholder-val="{{ false }}">
       <div style="flex:none;display:flex;align-items:center;justify-content:center;gap:26px;padding:16px 0 calc(env(safe-area-inset-bottom) + 20px)">
@@ -2584,6 +2667,7 @@
       <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:10px">{{ pbQualityNote }}</div>
       <sc-if value="{{ pbIdle }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ openPbFrame }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 6v12M15 6v12" opacity=".45"/></svg>{{ pbFrameBtnLabel }}</button>
+        <button onClick="{{ openPbCheck }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>ตรวจก่อนสั่งพิมพ์</button>
         <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
       </sc-if>
       <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
@@ -2657,8 +2741,8 @@ class Component extends DCLogic {
     history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addPeriod: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
   tabRoot = { today: 'today', plan: 'myplans', stories: 'feed', discover: 'discover', me: 'profile' };
-  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', ebPhotos:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover', wpImport:'me' };
-  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', ebPhotos:'จัดรูปในเล่ม', pbFrame:'ปรับกรอบรูปในเล่ม', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์', wpImport:'นำเข้าจากบล็อกเก่า' };
+  tabOf = { today:'today', myplans:'plan', create:'plan', trip:'plan', budget:'plan', ai:'plan', summary:'plan', map:'plan', addStop:'plan', askAi:'plan', pbFrame:'plan', pbCheck:'plan', ebPhotos:'plan', docs:'plan', ticket:'plan', feed:'stories', story:'stories', comments:'stories', storyEdit:'stories', chapterEdit:'stories', chapterRead:'stories', discover:'discover', profile:'me', docView:'plan', country:'discover', city:'discover', wpImport:'me' };
+  titles = { today:'วันนี้', premium:'Vela พรีเมียม', admin:'แดชบอร์ดแอดมิน', restore:'เวอร์ชันสำรอง', myplans:'แผนของฉัน', create:'สร้างทริปใหม่', trip:'ยามากาตะ 8 วัน', budget:'สรุปงบ', ai:'ผู้ช่วย AI', summary:'สรุปทริป', map:'แผนที่ · เส้นทาง', addStop:'เพิ่มกิจกรรม', askAi:'ถาม AI ระหว่างทาง', ebPhotos:'จัดรูปในเล่ม', pbFrame:'ปรับกรอบรูปในเล่ม', pbCheck:'ตรวจก่อนสั่งพิมพ์', docs:'ตั๋ว & เอกสาร', ticket:'ตั๋วเครื่องบิน AirAsia', feed:'เรื่องเล่า', story:'เรื่องเล่า', comments:'ถาม-ตอบ', storyEdit:'สร้างบันทึก', chapterEdit:'เขียนตอน', chapterRead:'ทดลองอ่าน', discover:'สำรวจ', profile:'โปรไฟล์', wpImport:'นำเข้าจากบล็อกเก่า' };
   roots = ['today','myplans','feed','discover','profile'];
 
   signIn(provider, name, email) {
@@ -4301,8 +4385,10 @@ class Component extends DCLogic {
     if (have >= 10) { this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์'); return; }
     if (files.length > 10 - have) this.showToast('ใส่ได้สูงสุด 10 รูปต่อโพสต์');
     files = files.slice(0, 10 - have);
-    if (files[0]) this.applyCiPhotoMeta(files[0]);
+    const im0 = files.find(f => /^image\//.test(f.type || ''));
+    if (im0) this.applyCiPhotoMeta(im0);
     files.forEach(f => {
+      if (/^video\//.test(f.type || '')) { this.openVidPick(f); return; }
       const rd = new FileReader();
       rd.onload = () => {
         const im = new Image();
@@ -4322,6 +4408,163 @@ class Component extends DCLogic {
       };
       rd.readAsDataURL(f);
     });
+  }
+  // แถบรูปในการ์ด: รูปนิ่ง + ถ้าเป็นโมเมนต์เคลื่อนไหวให้เล่นวนทับบนรูปเลย
+  thumbList(list, size, square) {
+    const arr = list || [];
+    const srcs = arr.map(p => this.px(p)), ts = arr.map(p => this.pxT(p));
+    return arr.map((p, pi) => {
+      const sp = this.spriteOf(p);
+      const ss = sp ? this.px(sp.ref) : '';
+      return {
+        src: ts[pi], on: () => this.openLightbox(srcs, pi),
+        wrapStyle: 'position:relative;flex:none;display:block;border:none;padding:0;overflow:hidden;cursor:pointer;background:#efe4d3;border-radius:' + (square ? '12px' : '13px') +
+          (square ? (';width:' + size + 'px;height:' + size + 'px') : (';height:' + size + 'px;min-width:96px;scroll-snap-align:start')),
+        imgStyle: square ? 'width:100%;height:100%;object-fit:cover;display:block'
+          : ('height:' + size + 'px;min-width:96px;object-fit:cover;display:block'),
+        sprStyle: ss ? ('position:absolute;inset:0;background-image:url(' + ss + ');background-size:' + (sp.n * 100) + '% 100%;background-repeat:no-repeat;animation:wtnSpr ' +
+          (sp.n / Math.max(1, sp.fps)).toFixed(2) + 's steps(' + sp.n + ') infinite') : 'display:none',
+        badgeStyle: ss ? "position:absolute;left:6px;bottom:6px;height:19px;padding:0 6px;border-radius:10px;background:rgba(20,16,13,.7);color:#fff;font:700 9px 'Anuphan';display:flex;align-items:center;justify-content:center;z-index:2" : 'display:none'
+      };
+    });
+  }
+  // ── โมเมนต์เคลื่อนไหว: คลิปสั้นจากมือถือ → เก็บเป็นเฟรมนิ่ง 1 ใบ + สตริป 12 เฟรมที่เล่นวนได้ ──
+  // ตัวไฟล์วิดีโอไม่ถูกเก็บและไม่อัปคลาวด์ — รวมสองไฟล์แค่ ~รูปนิ่งใบครึ่ง
+  SPR = { n: 12, w: 330, fps: 6, span: 3 };   // n×w ต้อง < 4096px — เกินนี้ canvas บน iOS คืนภาพเปล่า (n ผูกกับ @keyframes wtnSpr ที่ -1200%)
+  get sprites() { try { return JSON.parse(localStorage.getItem('wtn-sprite')) || {}; } catch (e) { return {}; } }
+  spriteOf(ref) { const v = this.sprites[String(ref || '')]; return (v && v.ref) ? v : null; }
+  saveSprite(ref, info) {
+    try {
+      const all = this.sprites;
+      if (info) all[String(ref)] = info; else delete all[String(ref)];
+      localStorage.setItem('wtn-sprite', JSON.stringify(all));
+    } catch (e) {}
+  }
+  // หาสตริปจาก src ที่เรนเดอร์อยู่ (จุดเรียกเก่าส่งมาแค่ src ไม่มี ref)
+  spriteForSrc(src) {
+    if (!src) return null;
+    const all = this.sprites;
+    for (const k of Object.keys(all)) {
+      if (this.px(k) === src) { const v = all[k]; return (v && v.ref) ? { ...v, src: this.px(v.ref) } : null; }
+    }
+    return null;
+  }
+  async videoFrames(file, startAt) {
+    const url = URL.createObjectURL(file);
+    try {
+      const v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+      await new Promise((res, rej) => { v.onloadedmetadata = () => res(); v.onerror = rej; setTimeout(rej, 15000); });
+      const dur = (isFinite(v.duration) && v.duration > 0) ? v.duration : 1;
+      const N = this.SPR.n, span = Math.min(dur, this.SPR.span);
+      const start = (startAt != null && startAt >= 0)
+        ? Math.max(0, Math.min(startAt, Math.max(0, dur - 0.2)))
+        : (dur > span ? Math.max(0, (dur - span) / 2) : 0);              // ไม่ได้เลือกช่วง → หยิบช่วงกลางคลิป
+      const vw = v.videoWidth || 640, vh = v.videoHeight || 360;
+      const FW = this.SPR.w, FH = Math.max(1, Math.round(FW * vh / vw));
+      const strip = document.createElement('canvas'); strip.width = FW * N; strip.height = FH;
+      const sx = strip.getContext('2d');
+      const still = document.createElement('canvas');
+      const sr = Math.min(1, 1100 / Math.max(vw, vh));
+      still.width = Math.max(1, Math.round(vw * sr)); still.height = Math.max(1, Math.round(vh * sr));
+      for (let i = 0; i < N; i++) {
+        const t = start + (span * i) / (N - 1);
+        await new Promise(res => {
+          let done = false;
+          const fin = () => { if (!done) { done = true; res(); } };
+          v.onseeked = fin; setTimeout(fin, 1500);
+          try { v.currentTime = Math.min(t, Math.max(0, dur - 0.05)); } catch (e) { fin(); }
+        });
+        try {
+          sx.drawImage(v, i * FW, 0, FW, FH);
+          if (i === Math.floor(N / 2)) still.getContext('2d').drawImage(v, 0, 0, still.width, still.height);
+        } catch (e) {}
+      }
+      // กันกรณี canvas เกินลิมิต/วาดไม่ออก → สตริปเปล่า ให้ตกไปเก็บเป็นรูปนิ่งเหมือนเก่า
+      const okStrip = strip.width <= 4096 && (() => {
+        try {
+          let sum = 0, alpha = 0;
+          [0.08, 0.5, 0.92].forEach(fx => {
+            const x0 = Math.max(0, Math.min(strip.width - 8, Math.floor(strip.width * fx)));
+            const d = sx.getImageData(x0, Math.max(0, Math.floor(FH / 2) - 4), 8, 8).data;
+            for (let i = 0; i < d.length; i += 4) { sum += d[i] + d[i + 1] + d[i + 2]; alpha += d[i + 3]; }
+          });
+          return alpha > 0 && sum > 0;
+        } catch (e) { return false; }
+      })();
+      return { still: still.toDataURL('image/jpeg', 0.82), strip: okStrip ? strip.toDataURL('image/jpeg', 0.72) : '',
+        n: N, fw: FW, fh: FH, fps: this.SPR.fps };
+    } finally { URL.revokeObjectURL(url); }
+  }
+  async addVideoMoment(file, startAt) {
+    if (this._vidBusy) { this.showToast('ทำคลิปก่อนหน้าอยู่ รอสักครู่'); return; }
+    this._vidBusy = true;
+    this.showToast('กำลังทำโมเมนต์เคลื่อนไหว…');
+    try {
+      const r = await this.videoFrames(file, startAt);
+      const stillRef = await this.stashPhoto(r.still);
+      if (!r.strip) {
+        this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].concat(stillRef).slice(0, 10) }));
+        this.showToast('✓ เก็บเป็นรูปนิ่งจากคลิปให้แล้ว · เครื่องนี้ทำภาพเคลื่อนไหวไม่ได้');
+        return;
+      }
+      const stripRef = await this.stashPhoto(r.strip);
+      this.saveSprite(stillRef, { ref: stripRef, n: r.n, fw: r.fw, fh: r.fh, fps: r.fps });
+      this.setState(s => ({ ciPhotos: [...(s.ciPhotos || [])].concat(stillRef).slice(0, 10) }));
+      this.showToast('✓ ได้โมเมนต์เคลื่อนไหว · แตะดูเต็มจอเพื่อเล่นวน');
+    } catch (e) { console.warn('[wtn] video', e); this.showToast('อ่านคลิปไม่สำเร็จ — ลองคลิปสั้นกว่านี้'); }
+    finally { this._vidBusy = false; }
+  }
+  // ── เลือกช่วงของคลิปก่อนเก็บ (พรีวิวในเครื่อง ไม่มีการอัปโหลด) ──
+  openVidPick(file) {
+    try { if (this._vidURL) URL.revokeObjectURL(this._vidURL); } catch (e) {}
+    this._vidFile = file;
+    this._vidURL = URL.createObjectURL(file);
+    this.setState({ vidOpen: true, vidStart: 0, vidDur: 0 });
+  }
+  vidRef = (el) => {
+    this._vidEl = el || null;
+    if (!el || !this._vidURL) return;
+    if (el.getAttribute('data-src') !== this._vidURL) {
+      el.setAttribute('data-src', this._vidURL);
+      el.src = this._vidURL;
+      el.muted = true;
+      el.onloadedmetadata = () => {
+        const d = (isFinite(el.duration) && el.duration > 0) ? el.duration : 0;
+        const span = Math.min(d || this.SPR.span, this.SPR.span);
+        const st = d > span ? Math.max(0, (d - span) / 2) : 0;
+        this.setState({ vidDur: d, vidStart: st });
+        try { el.currentTime = st; } catch (e) {}
+      };
+    }
+  };
+  setVidStart(v) {
+    const t = Math.max(0, Number(v) || 0);
+    this.setState({ vidStart: t });
+    if (this._vidEl) { try { this._vidEl.currentTime = t; } catch (e) {} }
+  }
+  previewVid() {
+    const el = this._vidEl; if (!el) return;
+    try {
+      el.currentTime = this.state.vidStart || 0;
+      el.play();
+      clearTimeout(this._vidT);
+      this._vidT = setTimeout(() => { try { el.pause(); el.currentTime = this.state.vidStart || 0; } catch (e) {} }, this.SPR.span * 1000);
+    } catch (e) {}
+  }
+  closeVidPick() {
+    clearTimeout(this._vidT);
+    try { if (this._vidURL) URL.revokeObjectURL(this._vidURL); } catch (e) {}
+    this._vidURL = ''; this._vidFile = null; this._vidEl = null;
+    this.setState({ vidOpen: false });
+  }
+  useVidPick() {
+    const f = this._vidFile, st = this.state.vidStart || 0;
+    clearTimeout(this._vidT);
+    this.setState({ vidOpen: false });
+    if (f) this.addVideoMoment(f, st);
+    try { if (this._vidURL) URL.revokeObjectURL(this._vidURL); } catch (e) {}
+    this._vidURL = ''; this._vidFile = null; this._vidEl = null;
   }
   // จำ EXIF ของแต่ละรูปที่แนบ — กดที่รูปเพื่อใช้เวลาจากรูปนั้นกับบันทึก
   async notePhotoExif(file, url) {
@@ -4394,9 +4637,16 @@ class Component extends DCLogic {
     const dayIdx = (di == null) ? this.state.day : di;
     const k = this.state.trip + ':' + dayIdx;
     let saved = null;
+    // ลิงก์คลิปเก็บต่อท้ายบันทึก — การ์ดคลิปในไทม์ไลน์อ่านจากที่นี่เหมือนเดิม ไม่ต้องเพิ่มฟิลด์ใหม่ทั้งระบบ
+    const clipUrl = (this.state.ciClip || '').trim();
+    const noteTxt = (() => {
+      const body = (this.state.ciNote || '').trim();
+      if (!clipUrl) return body;
+      return (body ? body + '\n\n' : '') + clipUrl;
+    })();
     if (ei != null && (all[oldK] || [])[ei]) {
       const oldList = all[oldK] || [];
-      saved = { ...oldList[ei], name, note: (this.state.ciNote || '').trim(), photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
+      saved = { ...oldList[ei], name, note: noteTxt, photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
       if (k === oldK) { oldList[ei] = saved; all[oldK] = oldList; }
       else {
         oldList.splice(ei, 1); all[oldK] = oldList;
@@ -4406,7 +4656,7 @@ class Component extends DCLogic {
       saved = {
         t: tLabel,
         at: cts,
-        name, note: (this.state.ciNote || '').trim(), photos: (this.state.ciPhotos || []).slice(0, 10),
+        name, note: noteTxt, photos: (this.state.ciPhotos || []).slice(0, 10),
         inBook: this.state.ciUseBook !== false, inPb: this.state.ciUsePb !== false,
         lat: pos.lat, lng: pos.lng,
         mid: 'm' + Date.now() + Math.floor(Math.random() * 1000), published: true, _m: Date.now() };
@@ -4419,7 +4669,7 @@ class Component extends DCLogic {
     if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name, cts);
     const located = pos.lat != null;
     if (located) this._flashLL = { lat: pos.lat, lng: pos.lng };
-    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '', ciUseBook: true, ciUsePb: true, day: dayIdx });
+    this.setState({ ciFormOpen: false, ciEditIdx: null, ciName: '', ciNote: '', ciClip: '', ciPhotos: [], ciAmt: '', ciCat: null, ciGeoStatus: null, ciAt: null, ciFromPhoto: '', ciUseBook: true, ciUsePb: true, day: dayIdx });
     if (this._ciFromFab) { this._ciFromFab = false; if (this.state.screen !== 'map') this.go('map'); }  // บันทึกแล้วพาไปดูที่ที่มันไปอยู่
     this.showToast(ei != null
       ? '✓ บันทึกการแก้ไขแล้ว'
@@ -6747,7 +6997,7 @@ class Component extends DCLogic {
       for (const c of list) {
         if (!this.ciWantsBook(c)) continue;                     // ผู้ใช้ไม่ได้เลือกให้ลงหนังสือ
         const ph = [];                                          // รูปที่วางในเรื่องแล้ว ไม่ต้องโผล่ซ้ำในส่วนโมเมนต์
-        for (const p of (c.photos || []).filter(p => !placed[p]).slice(0, 10)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
+        for (const p of (c.photos || []).filter(p => !placed[p] && !this.spriteOf(p)).slice(0, 10)) { const r = await this.resolvePhoto(p); if (r) ph.push(r); }
         items.push({ t: c.t || '', name: c.name || '', note: c.note || '', photos: await this.shrinkList(ph, EQ) });
       }
       const story = ch ? { title: ch.title || '', paras: this._htmlParas(ch.html), photos: [], cover: '', inserts: [] } : null;
@@ -7366,10 +7616,169 @@ class Component extends DCLogic {
   // ── โหมดไฟล์: "อ่านบนจอ" บีบรูปให้ส่งต่อได้จริง · "สำหรับพิมพ์" ใช้ความละเอียดเต็มที่เก็บไว้ ──
   pbQualities = {
     screen: { label: 'อ่านบนจอ', note: 'บีบรูปให้ไฟล์เล็ก ส่งไลน์/อีเมลผ่าน', max: 1200, q: 0.62 },
-    print: { label: 'สำหรับพิมพ์', note: 'ความละเอียดเต็มที่เก็บไว้ · ไฟล์ใหญ่', max: 0, q: 0 }
+    print: { label: 'พิมพ์เอง', note: 'ความละเอียดเต็มที่เก็บไว้ · ขนาดพอดีขอบ A5 · ไฟล์ใหญ่', max: 0, q: 0 },
+    press: { label: 'ส่งโรงพิมพ์', note: 'รูปละ 300 dpi + ตัดตก 3 มม. รอบด้าน + จำนวนหน้าหาร 4 ลงตัว · กระดาษที่ตั้งตอนพิมพ์ 216×154 มม.', max: 0, q: 0, press: true }
   };
   get pbQuality() { try { const k = localStorage.getItem('wtn-pb-quality'); return this.pbQualities[k] ? k : 'screen'; } catch (e) { return 'screen'; } }
   setPbQuality(k) { try { localStorage.setItem('wtn-pb-quality', k); } catch (e) {} this.forceUpdate(); }
+  // ขนาดจริงของช่องรูปบนกระดาษ (มม.) — ฐานของการคิดความละเอียดที่ต้องใช้ตอนพิมพ์
+  pbSlotMM(cls, i, dayo, press) {
+    const b = press ? 3 : 0;
+    if (cls === 'bleed') return { w: 210 + b * 2, h: 148 + b * 2 };
+    const g = dayo ? 104 : 124.5, W = 192, half = (W - 3) / 2, hg = (g - 3) / 2;
+    if (cls === 'two' || cls === 'tall1') return { w: half, h: g };
+    if (cls === 'small1' || cls === 'four') return { w: half, h: hg };
+    if (cls === 'big3') return i === 0 ? { w: 189 * 1.6 / 2.6, h: g } : { w: 189 / 2.6, h: hg };
+    return { w: W, h: g };
+  }
+  // ความละเอียดที่รูปใบนี้ให้จริงในช่องนี้ (คิดการครอบแบบ cover + การซูมที่ผู้ใช้ปรับไว้)
+  pbDpiOf(shot, mm, Q) {
+    const f = this.pbFocalOf(shot && shot.ref);
+    let w = (shot && shot.w) || 0, h = (shot && shot.h) || (w && shot.r ? w / shot.r : 0);
+    if (Q && Q.max && Math.max(w, h) > Q.max) { const k = Q.max / Math.max(w, h); w *= k; h *= k; }
+    if (!w || !h) return { dpi: 0, max: 0 };
+    const A = mm.w / mm.h, uw = (w / h) > A ? h * A : w;
+    const z = Math.max(1, f.z || 1);
+    return { dpi: Math.round(uw / (mm.w / 25.4) / z), max: Math.max(w, h) };
+  }
+  // โหมดโรงพิมพ์: ย่อรูปลงมาที่พอดี 300 dpi ของช่องตัวเอง — สายตาเหมือนเดิม แต่ไฟล์ไม่บวมจนเบราว์เซอร์เด้ยง
+  async pbPressPrep(D) {
+    const plan = this.pbPlan(D);
+    let i = 0;
+    for (const p of plan) {
+      for (let k = 0; k < ((p.shots || []).length); k++) {
+        const s = p.shots[k];
+        const d = this.pbDpiOf(s, this.pbSlotMM(p.cls, k, !!p.dayo, true), null);
+        if (d.dpi > 330 && d.max) s.u = await this.shrinkUrl(s.u, Math.min(3600, Math.round(d.max * 300 / d.dpi)), 0.92);
+      }
+      this.setState({ pbPct: 10 + Math.round(++i / Math.max(1, plan.length) * 70) });
+    }
+    if (D.cover) D.cover = await this.shrinkUrl(D.cover, 2600, 0.92);
+    D.bytes = plan.reduce((a, p) => a + (p.shots || []).reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(D.cover);
+  }
+  // ── ตรวจความพร้อมก่อนสั่งพิมพ์ ──
+  pbAudit(D) {
+    const Q = this.pbQualities[D.quality] || {};
+    const press = !!Q.press;
+    const plan = this.pbPlan(D);
+    const slots = this.pbFrameSlots();
+    const shots = [];
+    plan.forEach((p, pi) => (p.shots || []).forEach((s, i) => {
+      const mm = this.pbSlotMM(p.cls, i, !!p.dayo, press);
+      const d = this.pbDpiOf(s, mm, Q);
+      shots.push({ page: pi + 1, u: s.u, ref: s.ref, dpi: d.dpi, mm, full: !!s.full,
+        idx: slots.findIndex(x => x.ref === s.ref && x.page === pi + 1),
+        remote: /^https?:/.test(String(s.u || '')) });
+    }));
+    const pages = plan.length, blanks = press ? (4 - pages % 4) % 4 : 0;
+    let demoted = 0;
+    (D.days || []).forEach(d => (d.shots || []).forEach(s => {
+      const v = this.pbSizeOf(s.ref);
+      if (v && this.pbFitSize(s, v, press) !== v) demoted++;
+    }));
+    const known = shots.filter(s => s.dpi);
+    return { press, quality: D.quality, pages, blanks, total: pages + blanks, shots,
+      low: shots.filter(s => s.dpi && s.dpi < 180).sort((a, b) => a.dpi - b.dpi),
+      soft: shots.filter(s => s.dpi >= 180 && s.dpi < 240).length,
+      unknown: shots.filter(s => !s.dpi).length,
+      remote: shots.filter(s => s.remote).length,
+      minDpi: known.length ? Math.min.apply(null, known.map(s => s.dpi)) : 0,
+      filled: shots.filter(s => s.full).length, demoted,
+      bytes: D.bytes || 0, wm: !this.isPremium, photos: shots.length };
+  }
+  async openPbCheck() {
+    if (this._pbChkBusy) return;
+    this._pbChkBusy = true;
+    this.setState({ pbBusy: true, pbPct: 6 });
+    try {
+      this._pbData = await this.pbGather();
+      if (!this._pbData.days.length) { this.showToast('ทริปนี้ยังไม่มีรูปที่เลือกไว้สำหรับโฟโต้บุ๊ก'); return; }
+      this.setState({ pbAud: this.pbAudit(this._pbData), pbOpen: false });
+      this.go('pbCheck');
+    } catch (e) { console.warn('[wtn] pbCheck', e); this.showToast('ตรวจไม่สำเร็จ ลองอีกครั้ง'); }
+    finally { this._pbChkBusy = false; this.setState({ pbBusy: false, pbPct: 0 }); }
+  }
+  reAudit() { if (this._pbData) this.setState({ pbAud: this.pbAudit(this._pbData) }); }
+  // ── เติมไฟล์เต็ม: หยิบไฟล์เดิมจากคลังรูปมือถือ จับคู่กับรูปในเล่มด้วยลายนิ้วมือของรูป (dHash) ──
+  // ใช้แค่ตอนสร้าง PDF รอบนี้ — ไม่อัปขึ้นคลาวด์ ไม่กินที่เก็บ
+  _hashImg(im) {
+    const W = 9, H = 8;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0, W, H);
+    const d = x.getImageData(0, 0, W, H).data, g = [];
+    for (let i = 0; i < W * H; i++) g.push(0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]);
+    let bits = '';
+    for (let y = 0; y < H; y++) for (let xx = 0; xx < W - 1; xx++) bits += (g[y * W + xx] > g[y * W + xx + 1]) ? '1' : '0';
+    return bits;
+  }
+  async _pHash(src) {
+    try {
+      const im = await new Promise((res, rej) => {
+        const i = new Image();
+        if (!/^data:/.test(src)) i.crossOrigin = 'anonymous';
+        i.onload = () => res(i); i.onerror = rej; setTimeout(rej, 7000); i.src = src;
+      });
+      return this._hashImg(im);
+    } catch (e) { return null; }
+  }
+  _hDist(a, b) { if (!a || !b || a.length !== b.length) return 999; let n = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) n++; return n; }
+  async pbFillFull(ev) {
+    const files = Array.from((ev.target && ev.target.files) || []);
+    if (ev.target) ev.target.value = '';
+    const A = this.state.pbAud;
+    if (!files.length || !A) return;
+    this.setState({ pbFillBusy: true });
+    try {
+      if (!this._fullRes) this._fullRes = {};
+      const targets = [];
+      for (const s of A.shots.filter(s => s.dpi && s.dpi < 240 && !s.full)) {
+        const h = await this._pHash(s.u);
+        if (h) targets.push({ s, h });
+      }
+      if (!targets.length) { this.showToast('ไม่มีรูปที่ต้องเติมแล้ว'); return; }
+      let hit = 0, miss = 0;
+      for (const f of files) {
+        if (!/^image\//.test(f.type || '')) continue;
+        const url = await new Promise(res => { const rd = new FileReader(); rd.onload = () => res(rd.result); rd.onerror = () => res(''); rd.readAsDataURL(f); });
+        if (!url) { miss++; continue; }
+        const h = await this._pHash(url);
+        let best = null, bd = 999;
+        targets.forEach(t => { const d = this._hDist(h, t.h); if (d < bd) { bd = d; best = t; } });
+        if (!best || bd > 13) { miss++; continue; }
+        const meta = await this._shotMeta(url);
+        if (!meta.w || !meta.h) { miss++; continue; }
+        const shot = { w: meta.w, h: meta.h, r: meta.r, ref: best.s.ref };
+        const d = this.pbDpiOf(shot, best.s.mm, null);
+        if (d.dpi <= best.s.dpi + 8) { miss++; continue; }             // ไฟล์ที่เลือกมาไม่ดีกว่าเดิม
+        const cap = d.dpi > 320 ? Math.round(d.max * 300 / d.dpi) : d.max;
+        const u = await this.shrinkUrl(url, Math.min(3600, cap), 0.92);
+        const m2 = await this._shotMeta(u);
+        this._fullRes[best.s.ref] = { u, w: m2.w || meta.w, h: m2.h || meta.h };
+        targets.splice(targets.indexOf(best), 1);
+        hit++;
+        if (!targets.length) break;
+      }
+      if (hit) {
+        this._pbData = await this.pbGather();
+        this.setState({ pbAud: this.pbAudit(this._pbData) });
+      }
+      this.showToast(hit ? ('เติมไฟล์เต็มแล้ว ' + hit + ' ใบ' + (miss ? ' · จับคู่ไม่ได้ ' + miss + ' ไฟล์' : ''))
+        : 'จับคู่ไม่ได้ — ต้องเป็นไฟล์เดิมของรูปที่ขึ้นเตือน');
+    } catch (e) { console.warn('[wtn] fillFull', e); this.showToast('เติมไฟล์ไม่สำเร็จ ลองอีกครั้ง'); }
+    finally { this.setState({ pbFillBusy: false }); }
+  }
+  // โหมดโรงพิมพ์: รูปที่ความละเอียดไม่พอกับช่องที่ตั้งไว้ → ลดช่องลงจนพอ (ไม่แก้ค่าที่ผู้ใช้ตั้ง)
+  pbFitSize(shot, v, on) {
+    if (!on || !v) return v;
+    const order = ['bleed', 'one', 'tall', 'small'], cls = { bleed: 'bleed', one: 'one', tall: 'tall1', small: 'small1' };
+    const i0 = order.indexOf(v);
+    if (i0 < 0) return v;
+    if (!this.pbDpiOf(shot, this.pbSlotMM('one', 0, false, true), null).dpi) return v;   // อ่านขนาดไม่ได้ อย่าเดา
+    for (let i = i0; i < order.length; i++) {
+      if (this.pbDpiOf(shot, this.pbSlotMM(cls[order[i]], 0, false, true), null).dpi >= 180) return order[i];
+    }
+    return 'small';
+  }
   // บีบรูปหนึ่งใบ — พังตรงไหนก็คืนของเดิม ไม่ให้เล่มหายทั้งเล่มเพราะรูปใบเดียว
   async shrinkUrl(url, max, q) {
     if (!url || typeof url !== 'string' || !/^(data:image|blob:|https?:)/.test(url)) return url;
@@ -7422,10 +7831,10 @@ class Component extends DCLogic {
     const pages = [{ kind: 'cover' }];
     let li = 0;
     const port = s => s && s.r < 0.95;
-    const sz = s => this.pbSizeOf(s && s.ref);
+    const sz = s => this.pbFitSize(s, this.pbSizeOf(s && s.ref), !!D.fit);
     (D.days || []).forEach(d => {
       const rest = d.shots.slice();
-      const wide = s => s && s.r >= 1.15 && (s.w || 0) >= 1400;
+      const wide = s => s && s.r >= 1.15 && (s.w || 0) >= (D.fit ? 2200 : 1400);
       let hi = -1;
       if (!d.pinned) {
         hi = rest.findIndex(s => sz(s) === 'bleed');
@@ -7535,7 +7944,7 @@ class Component extends DCLogic {
     const byDay = {};
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
       const i = +k.split(':')[1];
-      (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).length); });
+      (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).filter(p => !this.spriteOf(p)).length); });
     });
     Object.keys(cmap.byDay).forEach(k => {
       const ch = cmap.byDay[k];
@@ -7558,11 +7967,11 @@ class Component extends DCLogic {
   _shotMeta(u) {
     return new Promise(res => {
       let done = false;
-      const fin = (r, w) => { if (!done) { done = true; res({ u, r, w: w || 0 }); } };
+      const fin = (r, w, h) => { if (!done) { done = true; res({ u, r, w: w || 0, h: h || 0 }); } };
       const im = new Image();
-      im.onload = () => fin((im.naturalWidth || 4) / (im.naturalHeight || 3), im.naturalWidth || 0);
-      im.onerror = () => fin(1.4, 0);
-      setTimeout(() => fin(1.4, 0), 2500);
+      im.onload = () => fin((im.naturalWidth || 4) / (im.naturalHeight || 3), im.naturalWidth || 0, im.naturalHeight || 0);
+      im.onerror = () => fin(1.4, 0, 0);
+      setTimeout(() => fin(1.4, 0, 0), 2500);
       im.src = u;
     });
   }
@@ -7579,7 +7988,7 @@ class Component extends DCLogic {
       // โฟโต้บุ๊กใช้เฉพาะรูปจากโมเมนต์ที่ติ๊กไว้ — ไม่ดึงปก/รูปของเรื่องเล่า (มักเป็นรูปเดิมอัปซ้ำ → ซ้ำในเล่ม)
       for (const c of list) {
         if (!this.ciWantsPb(c)) continue;
-        for (const p of (c.photos || []).slice(0, 6)) { const r = await this.resolvePhoto(p); push(r, p); }
+        for (const p of (c.photos || []).slice(0, 6)) { if (this.spriteOf(p)) continue; const r = await this.resolvePhoto(p); push(r, p); }
       }
       if (!items.length) continue;
       const shots = await Promise.all(items.map(it => this._shotMeta(it.u).then(m => ({ ...m, ref: it.ref }))));
@@ -7593,6 +8002,11 @@ class Component extends DCLogic {
           if (pb == null) return -1;
           return pa - pb;
         });
+      }
+      // ไฟล์เต็มที่เพิ่งเติมเข้ามารอบนี้ (อยู่ในหน่วยความจำอย่างเดียว) — ใช้แทนรูปที่เก็บไว้
+      for (const s of shots) {
+        const fr = (this._fullRes || {})[s.ref];
+        if (fr && fr.w) { s.u = fr.u; s.w = fr.w; s.h = fr.h; s.r = fr.w / fr.h; s.full = 1; }
       }
       // บีบรูปหลังคิดขนาดจริงแล้ว → เลย์เอาต์/จำนวนหน้าเหมือนกันทั้งสองโหมด ต่างแค่ขนาดไฟล์
       const Q = this.pbQualities[this.pbQuality];
@@ -7615,6 +8029,7 @@ class Component extends DCLogic {
       when: this.fmtRange(t.start, t.end) || '', author: this.profile.name || 'นักเดินทาง',
       cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0),
       quality: this.pbQuality,
+      fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
   }
   pbHtml(D) {
@@ -7622,7 +8037,10 @@ class Component extends DCLogic {
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
     const T = this.pbThemes[this.pbThemeKey] || this.pbThemes.cream;
     const dark = this.pbThemeKey === 'dark';
-    const page = i => '<section class="pg">' + i + '</section>';
+    const press = !!(this.pbQualities[D.quality] || {}).press;
+    const PGW = press ? 216 : 210, PGH = press ? 154 : 148, BL = press ? 3 : 0;
+    const M = n => (Math.round((n + BL) * 10) / 10) + 'mm';
+    const page = i => '<section class="pg">' + i + (press ? '<div class="tg"></div>' : '') + '</section>';
     const dayKick = d => d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'วันที่ ' + d.n;
     const out = [];
     out.push(page((D.cover ? '<img class="bleed" src="' + E(D.cover) + '">' : '<div class="bleed" style="background:linear-gradient(150deg,#8f7b62,#5b4c3d 55%,#2b241f)"></div>') +
@@ -7650,30 +8068,32 @@ class Component extends DCLogic {
     out.push(page('<div class="end"><div class="endq">' + D.days.length + ' วัน · ' + D.photos + ' รูป</div>' +
       '<div class="rule c"></div><div class="endn">ถ่ายไว้ระหว่างทาง แล้วรวมเป็นเล่มนี้เมื่อกลับถึงบ้าน</div>' +
       '<div class="brand dark"><i></i>VELA</div><div class="endn sm">ทำจากแอป ทริปหน้าไปไหน · onevela.net</div></div>'));
+    if (press) { const bl = (4 - out.length % 4) % 4; for (let i = 0; i < bl; i++) out.splice(out.length - 1, 0, page('')); }
     return '<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1"><title>' + E(D.title) + '</title>' +
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
-      '@page{size:210mm 148mm;margin:0}' +
+      '@page{size:' + PGW + 'mm ' + PGH + 'mm;margin:0}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:' + T.desk + ';font-family:' + A + ';color:' + T.ink + ';-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
-      '.pg{width:210mm;height:148mm;background:' + T.pg + ';position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(20,16,13,.22);page-break-after:always;break-after:page}' +
+      '.pg{width:' + PGW + 'mm;height:' + PGH + 'mm;background:' + T.pg + ';position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(20,16,13,.22);page-break-after:always;break-after:page}' +
       '.pg:last-child{margin-bottom:0}' +
-      '.bleed{position:absolute;left:0;top:0;width:210mm;height:148mm;object-fit:cover;object-position:center 38%}' +
+      '.bleed{position:absolute;left:0;top:0;width:' + PGW + 'mm;height:' + PGH + 'mm;object-fit:cover;object-position:center 38%}' +
+      (press ? '.tg{position:absolute;inset:3mm;outline:.25mm dashed rgba(192,95,57,.5);pointer-events:none;z-index:5}@media print{.tg{display:none}}' : '') +
       '.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,16,13,.42),rgba(20,16,13,0) 38%,rgba(20,16,13,.1) 58%,rgba(20,16,13,.88))}' +
-      '.brand{position:absolute;left:12mm;top:10mm;display:flex;align-items:center;gap:2mm;font-weight:600;font-size:8.5pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
+      '.brand{position:absolute;left:' + M(12) + ';top:' + M(10) + ';display:flex;align-items:center;gap:2mm;font-weight:600;font-size:8.5pt;letter-spacing:2.4px;color:rgba(246,239,226,.85)}' +
       '.brand i{width:2mm;height:2mm;border-radius:50%;background:#e9b48a}' +
       '.brand.dark{position:static;color:#8a7d6f;justify-content:center;margin:6mm 0 2mm}.brand.dark i{background:#c05f39}' +
-      '.cov{position:absolute;left:12mm;right:12mm;bottom:13mm;color:#fffaf0}' +
+      '.cov{position:absolute;left:' + M(12) + ';right:' + M(12) + ';bottom:' + M(13) + ';color:#fffaf0}' +
       '.cov .k{font-weight:600;font-size:8.5pt;letter-spacing:2px;color:#e9b48a;margin-bottom:3mm}' +
       '.cov h1{font-family:' + C + ';font-size:30pt;line-height:1.2;margin:0;font-weight:400;max-width:150mm}' +
       '.cov .by{font-size:10pt;color:rgba(246,239,226,.78);margin-top:2.5mm}' +
       '.rule{width:14mm;height:.7mm;background:#c05f39;margin:4mm 0}.rule.c{margin:5mm auto}' +
-      '.op{position:absolute;left:12mm;right:12mm;bottom:12mm;color:#fffaf0}' +
+      '.op{position:absolute;left:' + M(12) + ';right:' + M(12) + ';bottom:' + M(12) + ';color:#fffaf0}' +
       '.op .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#e9b48a;margin-bottom:2.5mm}' +
       '.op h3{font-family:' + C + ';font-size:21pt;line-height:1.25;margin:0;font-weight:400;max-width:135mm}' +
-      '.sheet{position:absolute;inset:0;padding:9mm 9mm 8mm;display:flex;flex-direction:column}' +
+      '.sheet{position:absolute;inset:0;padding:' + M(9) + ' ' + M(9) + ' ' + M(8) + ';display:flex;flex-direction:column}' +
       '.sheet.dayo .g{height:104mm}' +
       '.dayh{flex:none;height:20.5mm;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4mm}' +
       '.dayh .k{font-weight:600;font-size:8.5pt;letter-spacing:2.2px;color:#c05f39}' +
@@ -7687,10 +8107,10 @@ class Component extends DCLogic {
       '.g.small1{grid-template-columns:minmax(0,94.5mm);grid-template-rows:minmax(0,60.75mm);justify-content:center;align-content:center}' +
       '.g img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;object-position:center 42%;display:block;background:' + T.ph + '}' +
       '.cap{flex:none;height:6.5mm;display:flex;justify-content:space-between;gap:6mm;align-items:baseline;font-size:7.5pt;line-height:1.2;letter-spacing:1.1px;color:' + T.faint + ';padding-top:3mm}' +
-      '.wm{position:absolute;right:9mm;bottom:2.9mm;font-size:9pt;letter-spacing:.6px;color:' + T.sub + ';opacity:1}' +
+      '.wm{position:absolute;right:' + M(9) + ';bottom:' + M(2.9) + ';font-size:9pt;letter-spacing:.6px;color:' + T.sub + ';opacity:1}' +
       '.cap span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}' +
       '.cap span:last-child{text-align:right;color:' + T.sub + '}' +
-      '.end{position:absolute;inset:0;background:' + T.end + ';display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16mm}' +
+      '.end{position:absolute;inset:0;background:' + T.end + ';display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:' + M(16) + '}' +
       '.endq{font-family:' + C + ';font-size:17pt;line-height:1.5}' +
       '.endn{font-size:10pt;color:' + T.sub + ';max-width:110mm;line-height:1.8}.endn.sm{font-size:8.5pt;color:' + T.faint + '}' +
       '.brand.dark{color:' + T.sub + '}' +
@@ -7699,13 +8119,16 @@ class Component extends DCLogic {
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
-      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · แนวนอน A5 · ' +
-        E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
-      out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title)) + '</body></html>';
+      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · ' +
+        (press ? 'A5 แนวนอน + ตัดตก 3 มม. · ตั้งกระดาษ 216×154 มม. · Scale 100% ปิด Fit to page'
+               : 'แนวนอน A5 · ' + E((this.pbQualities[D.quality || 'screen'] || {}).label || '')) +
+        (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
+      out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title), PGW, PGH) + '</body></html>';
   }
   // ── โหมดอ่านแบบหนังสือ: กางหน้าคู่ พลิกหน้าได้จริง (ไม่ใช่หน้าเรียงแบบ PDF) ──
-  _bookViewer(landscape, bookKey) {
-    const PW = landscape ? 793.7 : 559.37, PH = landscape ? 559.37 : 793.7;
+  _bookViewer(landscape, bookKey, mmW, mmH) {
+    const px = mm => Math.round(mm * 96 / 25.4 * 10) / 10;
+    const PW = mmW ? px(mmW) : (landscape ? 793.7 : 559.37), PH = mmH ? px(mmH) : (landscape ? 559.37 : 793.7);
     const A = "'Anuphan',sans-serif";
     const css = 'html,body{height:100%;overflow:hidden}' +
       '#bkstage{position:fixed;inset:0;z-index:60;background:radial-gradient(130% 95% at 50% -5%,#3e3429,#1d1813 72%);display:flex;flex-direction:column;perspective:2600px}' +
@@ -7837,6 +8260,7 @@ class Component extends DCLogic {
     try {
       const D = await this.pbGather();
       if (!D.days.length) { this.showToast('ทริปนี้ยังไม่มีรูป'); return; }
+      if ((this.pbQualities[D.quality] || {}).press) await this.pbPressPrep(D);
       this.setState({ pbPct: 88 });
       const html = this.pbHtml(D);
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
@@ -9288,7 +9712,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.18ad',
+      appVersion: '2026.08.18ai',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -9391,7 +9815,7 @@ class Component extends DCLogic {
                 const tk = this.pbThemeKey;
                 const chipOnT = "flex:1;min-height:44px;background:#2b241f;color:#f6efe2;font:600 14px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
                 const chipOffT = "flex:1;min-height:44px;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
-                const slots = sc === 'pbFrame' ? this.pbFrameSlots() : [];
+                const slots = (sc === 'pbFrame' || sc === 'pbCheck') ? this.pbFrameSlots() : [];
                 const imgSty = (s, extra) => {
                   const fo = this.pbFocalOf(s.ref), pos = fo.x + '% ' + fo.y + '%';
                   return 'width:100%;height:100%;display:block;object-fit:cover;object-position:' + pos +
@@ -9408,8 +9832,57 @@ class Component extends DCLogic {
                   pbQualityChips: Object.keys(this.pbQualities).map(k => ({ label: this.pbQualities[k].label, on: () => this.setPbQuality(k), style: this.pbQuality === k ? chipOnT : chipOffT })),
                   pbQualityNote: (this.pbQualities[this.pbQuality] || {}).note || '',
                       openPbFrame: () => this.openPbFrame(),
+                  openPbCheck: () => this.openPbCheck(),
                   pbFrameBtnLabel: this.state.pbFrLoading ? 'กำลังเปิดรูป…' : 'ปรับกรอบรูปในเล่ม',
                   sPbFrame: sc === 'pbFrame',
+                  sPbCheck: sc === 'pbCheck',
+                  ...(sc !== 'pbCheck' ? {} : (() => {
+                    const Au = this.state.pbAud || { shots: [], low: [], total: 0, pages: 0, photos: 0 };
+                    const tone = { ok: ['#f1f6f1', '#5b8a5f', '✓'], warn: ['#fbf2e8', '#c9873f', '!'], bad: ['#faeceb', '#b8503c', '!'], info: ['#f5f1e8', '#8a7d6f', 'i'] };
+                    const row = (k, title, note) => ({
+                      wrap: 'display:flex;gap:11px;align-items:flex-start;background:' + tone[k][0] + ';border-radius:14px;padding:12px 13px',
+                      dot: "flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:" + tone[k][1] + ";color:#fff;font:700 12.5px 'Anuphan'",
+                      mark: tone[k][2], title, note
+                    });
+                    const rows = [];
+                    rows.push(Au.low.length
+                      ? row('bad', 'ความละเอียดรูป · มี ' + Au.low.length + ' ใบต่ำกว่า 180 dpi', 'ต่ำสุด ' + (Au.minDpi || 0) + ' dpi — พิมพ์ออกมาจะเห็นเบลอ/แตก แก้ที่รายการข้างล่าง')
+                      : row('ok', 'ความละเอียดรูปผ่าน', 'ทุกใบ ≥ 180 dpi' + (Au.soft ? ' · มี ' + Au.soft + ' ใบอยู่ช่วง 180–239 dpi พอใช้ได้ แต่ไม่คมเท่า 300' : ' · ส่วนใหญ่ถึง 300 dpi')));
+                    rows.push(Au.press
+                      ? row('ok', 'ตัดตก 3 มม. ครบทุกด้าน', 'ตั้งกระดาษ 216×154 มม. ตอนพิมพ์ · ตัดเสร็จได้ A5 แนวนอน 210×148 มม. เส้นประในไฟล์คือแนวตัด ไม่ติดไปบนกระดาษ')
+                      : row('warn', 'ยังไม่มีตัดตก', 'โหมดนี้เป็นไฟล์ขอบพอดี A5 — โรงพิมพ์เกือบทั้งหมดขอไฟล์มีตัดตก เลือก "ส่งโรงพิมพ์" ด้านบน'));
+                    rows.push(Au.press
+                      ? row(Au.blanks ? 'info' : 'ok', 'จำนวนหน้า ' + Au.total + ' หน้า', Au.blanks ? ('เพิ่มหน้าเปล่า ' + Au.blanks + ' หน้าท้ายเล่มให้หาร 4 ลงตัว — เงื่อนไขของการเข้าเล่มแบบพิมพ์ทีละยก') : 'หาร 4 ลงตัวพอดี เข้าเล่มได้เลย')
+                      : row('info', 'จำนวนหน้า ' + Au.pages + ' หน้า', 'โหมดโรงพิมพ์จะเติมหน้าเปล่าให้หาร 4 ลงตัวเอง'));
+                    if (Au.wm) rows.push(row('bad', 'ยังมีลายน้ำ Vela', 'มุมล่างขวาของหน้าที่มีกรอบรูป — ลายน้ำจะติดไปบนเล่มจริง อัปเกรดพรีเมียมก่อนสั่งพิมพ์'));
+                    else rows.push(row('ok', 'ไม่มีลายน้ำ', 'หน้าในเล่มสะอาด พร้อมพิมพ์'));
+                    if (Au.remote) rows.push(row('warn', 'รูป ' + Au.remote + ' ใบยังโหลดจากอินเทอร์เน็ต', 'ตอนเปิดไฟล์เพื่อบันทึก PDF ต้องต่อเน็ตอยู่ ไม่งั้นรูปจะหาย'));
+                    if (Au.unknown) rows.push(row('warn', 'อ่านขนาดรูปไม่ได้ ' + Au.unknown + ' ใบ', 'ตรวจความละเอียดของใบเหล่านี้ไม่ได้ — ดูในเล่มก่อนสั่งพิมพ์'));
+                    if (Au.demoted) rows.push(row('info', 'ย้ายรูป ' + Au.demoted + ' ใบไปช่องเล็กลงให้อัตโนมัติ', 'ความละเอียดไม่พอกับช่องที่ตั้งไว้ — เล่มยังคมทั้งเล่ม แต่เลย์เอาต์เปลี่ยนจากที่ปรับไว้ · เติมไฟล์เต็มแล้วจะกลับช่องเดิม'));
+                    if (Au.filled) rows.push(row('ok', 'เติมไฟล์เต็มแล้ว ' + Au.filled + ' ใบ', 'ใช้เพื่อสร้างเล่มรอบนี้เท่านั้น ไม่ได้อัปขึ้นคลาวด์ · หากปิดแอปแล้วเปิดใหม่ ต้องเลือกไฟล์อีกครั้ง'));
+                    rows.push(row('info', 'สีเป็นระบบ RGB', 'โรงพิมพ์จะแปลงเป็น CMYK เอง สีสด/สีเข้มจัดอาจซีดลงเล็กน้อย ถือว่าปกติ · ถ้าซีเรียสเรื่องสี ขอปรู๊ฟก่อนพิมพ์ทั้งเล่ม'));
+                    const chipOnQ = "flex:1;min-height:44px;background:#2b241f;color:#f6efe2;font:600 13.5px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
+                    const chipOffQ = "flex:1;min-height:44px;background:#efe4d3;color:#7c7264;font:600 13.5px 'Anuphan';border-radius:12px;border:none;cursor:pointer";
+                    return {
+                      pcRows: rows,
+                      pcStats: [
+                        { k: 'ขนาดเล่มหลังตัด', v: '210 × 148 มม. (A5 แนวนอน)' },
+                        { k: 'ไฟล์ที่ส่งโรงพิมพ์', v: Au.press ? '216 × 154 มม. (มีตัดตก 3 มม.)' : '210 × 148 มม. (ไม่มีตัดตก)' },
+                        { k: 'จำนวนหน้า', v: (Au.press ? Au.total : Au.pages) + ' หน้า' },
+                        { k: 'รูปในเล่ม', v: Au.photos + ' ใบ' },
+                        { k: 'ความละเอียดต่ำสุด', v: Au.minDpi ? (Au.minDpi + ' dpi') : '—' }
+                      ],
+                      pcQualityChips: Object.keys(this.pbQualities).map(k => ({ label: this.pbQualities[k].label, on: () => { this.setPbQuality(k); if (this._pbData) { this._pbData.quality = k; this.reAudit(); } }, style: this.pbQuality === k ? chipOnQ : chipOffQ })),
+                      pcHasLow: Au.low.length > 0,
+                      pcCanFill: Au.shots.some(s => s.dpi && s.dpi < 240 && !s.full),
+                      pcFillNote: 'เลือกไฟล์เดิมของรูปที่ยังไม่คมจากคลังรูปมือถือ — แอปจับคู่เองจากหน้าตารูป เลือกทีเดียวหลายใบได้ ไม่ต้องเรียงลำดับ · ไฟล์เต็มใช้แค่ตอนสร้างเล่ม ไม่อัปขึ้นคลาวด์ ไม่กินที่เก็บ' + (Au.filled ? ' · เติมแล้ว ' + Au.filled + ' ใบ' : ''),
+                      pcFillLabel: this.state.pbFillBusy ? 'กำลังจับคู่รูป…' : 'เลือกไฟล์เต็ม (เลือกหลายใบได้)',
+                      pcFill: e => this.pbFillFull(e),
+                      pcLow: Au.low.map(s => ({ u: s.u, title: 'หน้า ' + s.page + ' · ช่อง ' + Math.round(s.mm.w) + '×' + Math.round(s.mm.h) + ' มม.', sub: s.dpi + ' dpi · ควรได้ 300 dpi', on: () => { if (s.idx >= 0) this.openFrEdit(s.idx); else this.showToast('เปิดกรอบรูปนี้ไม่ได้'); } })),
+                      pcMakeLabel: Au.press ? 'สร้างไฟล์สำหรับโรงพิมพ์' : 'สร้างไฟล์โหมด "' + ((this.pbQualities[this.pbQuality] || {}).label || '') + '"',
+                      pcMake: () => { this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }); this.back(); this.makePhotobook(); }
+                    };
+                  })()),
                   sEbPhotos: sc === 'ebPhotos',
                   ...(sc !== 'ebPhotos' ? {} : (() => {
                     const chs = this.ebChapterList();
@@ -9514,8 +9987,8 @@ class Component extends DCLogic {
                   })(),
                   pbFrDone: () => { this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }); this.back(); this.makePhotobook(); },
                   frOpen: !!fr,
-                  frPbTools: sc === 'pbFrame',
-                  frHideNav: sc !== 'pbFrame',
+                  frPbTools: sc === 'pbFrame' || sc === 'pbCheck',
+                  frHideNav: sc !== 'pbFrame' && sc !== 'pbCheck',
                   frTitle: frSlot ? ('หน้า ' + frSlot.page + ' · ' + frSlot.slotName) : 'ปรับกรอบรูป',
                   frSrc: (frSlot && frSlot.u) || (fr && fr.u) || '',
                   frBoxStyle: 'position:relative;overflow:hidden;border-radius:9px;background:#191714;touch-action:none;cursor:grab;width:100%;max-width:360px;max-height:100%;aspect-ratio:' + (frSlot ? frSlot.aspect.toFixed(3) : '1.4'),
@@ -9943,9 +10416,18 @@ class Component extends DCLogic {
           : 'flex:none;background:#efe4d3;color:#7c7264;') + 'font:600 14px Anuphan;padding:9px 14px;border-radius:20px;border:none;cursor:pointer' })),
       ciDayLabel: (this.days[active] || {}).tag || '',
       ciList: (this.checkins[this.ciKey] || []).map((c, idx) => ({
-        t: c.t, name: c.name, note: c.note, hasNote: !!c.note,
-        photos: (() => { const srcs = (c.photos || []).map(p => this.px(p)), ts = (c.photos || []).map(p => this.pxT(p));
-          return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+        t: c.t, name: c.name,
+        ...(() => {
+          const cl = this.clipOf(c.note || ''), body = this.clipBody(c.note || '', cl);
+          const cid = 'ci:' + (c.mid || (c.at || 0) + ':' + idx);
+          const playing = !!(cl && cl.embed && this.state.clipPlay === cid);
+          return { note: body, hasNote: !!body,
+            clipShowCard: !!cl && !playing, clipPlaying: playing,
+            clipLabel: cl ? cl.label : '', clipThumb: (cl && cl.thumb) || '', clipHasThumb: !!(cl && cl.thumb),
+            clipEmbed: (cl && cl.embed) || '',
+            clipOpen: () => { if (!cl) return; if (cl.embed) this.setState({ clipPlay: cid }); else window.open(cl.url, '_blank', 'noopener'); } };
+        })(),
+        photos: this.thumbList(c.photos, 92, true),
         hasPhotos: (c.photos || []).length > 0,
         // ผู้ใช้เลือกเองว่าโมเมนต์นี้ไปโผล่ที่ไหน
         bookStyle: this.ciWantsBook(c) ? 'background:#c05f39;color:#fff;border:1px solid #c05f39' : 'background:transparent;color:#8a7d6f;border:1px solid rgba(43,36,32,.16)',
@@ -9964,10 +10446,10 @@ class Component extends DCLogic {
             id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' });
         },
         del: () => this.askConfirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้', () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); }),
-        edit: () => this.setState({ ciUseBook: this.ciWantsBook(c), ciUsePb: this.ciWantsPb(c), ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: c.note || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
+        edit: () => this.setState({ ciUseBook: this.ciWantsBook(c), ciUsePb: this.ciWantsPb(c), ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: this.clipBody(c.note || '', this.clipOf(c.note || '')), ciClip: (this.clipOf(c.note || '') || {}).raw || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       goCheckIn: () => {
         this._ciFromFab = true;
-        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciUseBook: true, ciUsePb: true,
+        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciClip: '', ciPhotos: [], ciPos: null, ciUseBook: true, ciUsePb: true,
           ciGeoStatus: 'locating', ciAcc: null, ciAt: this.dayTs(this.state.day || 0), ciAmt: '', ciCat: null, ciFromPhoto: '' });
         this.grabCiPos();
       },
@@ -9997,18 +10479,52 @@ class Component extends DCLogic {
       closeBook: () => this.setState({ bvUrl: '' }),
       lbOpen: !!(this.state.lbList && this.state.lbList.length),
       lbSrc: (this.state.lbList || [])[this.state.lbIdx || 0] || '',
+      ...(() => {
+        const sp = this.spriteForSrc((this.state.lbList || [])[this.state.lbIdx || 0] || '');
+        return {
+          lbIsClip: !!(sp && sp.src),
+          lbIsStill: !(sp && sp.src),
+          lbClipStyle: sp && sp.src
+            ? ('width:100%;max-width:min(100%,calc((100vh - 190px) * ' + (sp.fw / Math.max(1, sp.fh)).toFixed(3) + '));aspect-ratio:' + sp.fw + '/' + sp.fh +
+               ';background-image:url(' + sp.src + ');background-size:' + (sp.n * 100) + '% 100%;background-repeat:no-repeat;border-radius:8px;' +
+               'animation:wtnSpr ' + (sp.n / Math.max(1, sp.fps)).toFixed(2) + 's steps(' + sp.n + ') infinite')
+            : 'display:none'
+        };
+      })(),
       lbLabel: (this.state.lbList || []).length > 1 ? ((this.state.lbIdx || 0) + 1) + ' / ' + this.state.lbList.length : '',
       lbHasMany: (this.state.lbList || []).length > 1,
       lbClose: () => this.closeLightbox(),
       lbPrev: e => { if (e && e.stopPropagation) e.stopPropagation(); this.lbStep(-1); },
       lbNext: e => { if (e && e.stopPropagation) e.stopPropagation(); this.lbStep(1); },
       ciName: this.state.ciName ?? '', ciNote: this.state.ciNote ?? '',
+      ciClip: this.state.ciClip ?? '',
+      setCiClip: e => this.setState({ ciClip: e.target.value }),
+      ...(() => {
+        const c = this.clipOf(this.state.ciClip || '');
+        const d = this.state.vidDur || 0, span = Math.min(d || this.SPR.span, this.SPR.span);
+        const st = this.state.vidStart || 0;
+        return {
+          ciClipOk: !!c, ciClipThumb: (c && c.thumb) || '', ciClipHasThumb: !!(c && c.thumb),
+          ciClipLabel: c ? ('เจอคลิป ' + c.label + ' · จะผูกกับโมเมนต์นี้') : '',
+          vidOpen: !!this.state.vidOpen,
+          vidRef: this.vidRef,
+          vidMax: Math.max(0.1, Math.round((d > span ? d - span : 0) * 10) / 10),
+          vidStart: Math.round(st * 10) / 10,
+          setVidStartEv: e => this.setVidStart(e.target.value),
+          vidPreview: () => this.previewVid(),
+          vidUse: () => this.useVidPick(),
+          vidCancel: () => this.closeVidPick(),
+          vidHint: d ? ('เริ่มที่ ' + st.toFixed(1) + ' วิ · เก็บ ' + span.toFixed(1) + ' วิ เป็น ' + this.SPR.n + ' เฟรม · คลิปยาว ' + d.toFixed(1) + ' วิ')
+            : 'กำลังอ่านคลิป…'
+        };
+      })(),
       setCiName: e => this.setState({ ciName: e.target.value }),
       ciWhenVal: this.tsToInput(this.state.ciAt || this.dayTs(this.state.day)),
       setCiWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ ciAt: t, ciFromPhoto: '' }); },
       ciFromPhoto: this.state.ciFromPhoto || '', ciHasPhotoMeta: !!this.state.ciFromPhoto,
       setCiNote: e => this.setState({ ciNote: e.target.value }),
       ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: this.px(p),
+        clipStyle: this.spriteOf(p) ? "position:absolute;left:-5px;top:-5px;width:21px;height:21px;border-radius:50%;background:#2b241f;color:#fff;font:700 9px 'Anuphan';display:flex;align-items:center;justify-content:center;z-index:2" : 'display:none',
         hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
         useDate: () => this.useCiPhotoDate(p),
         rm: () => this.setState(s => ({ ciPhotos: (s.ciPhotos || []).filter((_, j) => j !== i) })) })),
@@ -10251,8 +10767,7 @@ class Component extends DCLogic {
             },
             hasWx: !!(m.wx && m.wx.t != null),
             wxStr: m.wx && m.wx.t != null ? (m.wx.t + '°C' + (this.wxLabel(m.wx.code) ? ' · ' + this.wxLabel(m.wx.code) : '')) : '',
-            photos: (() => { const srcs = (m.photos || []).map(p => this.px(p)), ts = (m.photos || []).map(p => this.pxT(p));
-              return ts.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
+            photos: this.thumbList(m.photos, 220, false),
             hasPhotos: (m.photos || []).length > 0,
             catIdx: ci, catName: cats[ci] || '', hasCat: true,
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),
