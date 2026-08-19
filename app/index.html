@@ -2854,6 +2854,8 @@ class Component extends DCLogic {
     screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
+    // ฟีดสาธารณะที่ดึงมารอบก่อน — โชว์ได้ทันทีระหว่างรอของใหม่ ไม่ต้องเห็นจอว่าง
+    remoteFeed: (() => { try { const a = JSON.parse(localStorage.getItem('wtn-feed-cache') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } })(),
     tab: (() => { try { const t = localStorage.getItem('wtn-home-tab'); return ['today', 'stories', 'plan', 'me'].indexOf(t) !== -1 ? t : 'plan'; } catch (e) { return 'plan'; } })(),
     history: [], day: 2, sum: 'book', profileTab: 'trips', trip: 'yamagata', editing: false, added: {}, addKind: 'ที่เที่ยว', addTitle: '', addTime: '', addPeriod: '', addNote: '', coverIdx: 0, aiConnected: false, aiKey: '' };
 
@@ -4268,6 +4270,22 @@ class Component extends DCLogic {
     { d: '7', ll: [43.352, 79.083], name: 'Charyn Canyon' },
     { d: '8', ll: [43.33, 77.73], name: 'Turgen' },
     { d: '11', ll: [43.238, 76.889], name: 'กลับอัลมาตี' } ];
+  // โหลด Leaflet ตอนเปิดหน้าแผนที่จริงๆ (ไม่ถ่วงการเปิดแอป)
+  ensureLeaflet() {
+    if (window.L || this._leafletAsked) return;
+    this._leafletAsked = true;
+    try {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet'; css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(css);
+      const js = document.createElement('script');
+      js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      js.async = true;
+      js.onload = () => { this.initMap(); this.initFeedMap(); };
+      js.onerror = () => { this._leafletAsked = false; };
+      document.head.appendChild(js);
+    } catch (e) { this._leafletAsked = false; }
+  }
   initMap() {
     const el = this._mapEl;
     if (this.state.screen !== 'map') {
@@ -4277,7 +4295,7 @@ class Component extends DCLogic {
       return;
     }
     if (!el) return;
-    if (!window.L) { clearTimeout(this._mapWait); this._mapWait = setTimeout(() => this.initMap(), 300); return; }
+    if (!window.L) { this.ensureLeaflet(); clearTimeout(this._mapWait); this._mapWait = setTimeout(() => this.initMap(), 300); return; }
     if (this._map && this._map.getContainer() !== el) { this._map.remove(); this._map = null; }
     if (!this._map) {
       const m = L.map(el, { zoomControl: false, attributionControl: true });
@@ -4371,7 +4389,7 @@ class Component extends DCLogic {
     const on = this.state.screen === 'feed' && (this.state.feedSeg || 'stories') === 'map';
     if (!on) { if (this._fmap) { this._fmap.remove(); this._fmap = null; } return; }
     if (!el) return;
-    if (!window.L) { clearTimeout(this._fmapWait); this._fmapWait = setTimeout(() => this.initFeedMap(), 300); return; }
+    if (!window.L) { this.ensureLeaflet(); clearTimeout(this._fmapWait); this._fmapWait = setTimeout(() => this.initFeedMap(), 300); return; }
     if (this._fmap && this._fmap.getContainer() !== el) { this._fmap.remove(); this._fmap = null; }
     const pts = this.memoryPoints();
     if (!this._fmap) {
@@ -6419,10 +6437,12 @@ class Component extends DCLogic {
   }
   openRemoteChapter(item) {
     const r = item.raw || {};
+    // ฟีดที่มาจากแคชในเครื่องจะไม่มี raw — ใช้ค่าบนตัว item แทน
+    const cov = r.cover || (item.hasCover ? item.photo : '') || '';
     const story = { id: item.storyId, title: r.storyTitle || item.series || '', author: item.author,
-      cover: r.cover || '', category: '', country: r.country || '', continent: r.continent || '', chapters: [] };
+      cover: cov, category: '', country: r.country || item.country || '', continent: r.continent || item.continent || '', chapters: [] };
     const chapter = { id: item.chapterId, title: item.title, html: '', photos: [],
-      clip: '', cover: r.cover || '', likes: item.likes || 0, views: r.views || 0, published: true, updatedAt: item._t, _loading: true };
+      clip: '', cover: cov, likes: item.likes || 0, views: r.views || item.views || 0, published: true, updatedAt: item._t, _loading: true };
     story.chapters = [chapter];
     this._chReadId = null;
     this.setState({ remoteOpen: { story, chapter }, openStoryId: item.storyId, openChapterId: item.chapterId, chReadPreview: false });
@@ -6496,9 +6516,13 @@ class Component extends DCLogic {
         ? { ...s.remoteOpen, chapter: { ...s.remoteOpen.chapter, views: (s.remoteOpen.chapter.views || 0) + 1 } } : s.remoteOpen
     }));
   }
-  async loadFeed() {
+  async loadFeed(force) {
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
+    // เพิ่งดึงไปไม่นานและมีของอยู่แล้ว — ใช้ของเดิม (ประหยัด egress + ไม่กระพริบ)
+    if (!force && (this.state.remoteFeed || []).length && Date.now() - (this._feedAt || 0) < 300000) return;
+    if (this._feedBusy) return;
+    this._feedBusy = true;
     const decodeEnt = s => { try { const t = document.createElement('textarea'); t.innerHTML = String(s || ''); return t.value; } catch (e) { return s || ''; } };
     try {
       const rows = await be.feed(60);
@@ -6514,8 +6538,12 @@ class Component extends DCLogic {
           _t: (r.updatedAt && r.updatedAt.seconds ? r.updatedAt.seconds * 1000 : Date.now()),
           raw: r };
       });
+      this._feedAt = Date.now();
       this.setState({ remoteFeed: list });
+      // เก็บไว้ใช้เปิดครั้งหน้า (ตัด raw ออก — เก็บแค่ที่หน้าฟีดใช้จริง)
+      try { localStorage.setItem('wtn-feed-cache', JSON.stringify(list.slice(0, 40).map(r => ({ ...r, raw: undefined })))); } catch (e) {}
     } catch (e) { console.warn('[wtn] feed', e); }
+    this._feedBusy = false;
   }
   async resolveDeepLink(sid, cid) {
     if (this._deepDone || !sid || !cid) return;
@@ -10190,7 +10218,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19p',
+      appVersion: '2026.08.19r',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
