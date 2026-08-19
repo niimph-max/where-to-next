@@ -2305,6 +2305,7 @@
               </div>
             </div>
           </div>
+          <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
           <div style="margin-bottom:11px">
             <div style="font:600 15.5px 'Anuphan';color:#2b241f;margin-bottom:8px">พื้นที่เก็บในเครื่อง</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
@@ -2326,6 +2327,12 @@
                   <button onClick="{{ doTidy }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ tidyLabel }}</button>
                 </div>
               </sc-if>
+              <sc-if value="{{ stBodyShow }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:9px">
+                  <div style="font:500 13px/1.55 'Anuphan';color:#5c524a;margin-bottom:10px;text-wrap:pretty">{{ stBodyNote }}</div>
+                  <button onClick="{{ doMoveBodies }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyLabel }}</button>
+                </div>
+              </sc-if>
               <sc-if value="{{ stCanPurge }}" hint-placeholder-val="{{ false }}">
                 <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:9px">
                   <div style="font:500 13px/1.55 'Anuphan';color:#5c524a;margin-bottom:10px;text-wrap:pretty">{{ stPurgeNote }}</div>
@@ -2337,6 +2344,7 @@
               </sc-if>
             </div>
           </div>
+          </sc-if>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ goWpImport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
             <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span>
@@ -2924,6 +2932,7 @@ class Component extends DCLogic {
         data[k] = v;
       });
     } catch (e) {}
+    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; else if (this.storiesOmit()) delete data['wtn-stories']; } catch (e) {}
     return data;
   }
   scheduleCloudPush() {
@@ -3071,6 +3080,28 @@ class Component extends DCLogic {
   }
   LS_LABEL = { 'wtn-stories': 'เรื่องเล่า', 'wtn-moments': 'โมเมนต์', 'wtn-checkins': 'เช็คอิน', 'wtn-sprite': 'ฟิล์มคลิปวิดีโอ', 'wtn-docs': 'เอกสาร/ตั๋ว', 'wtn-itinerary': 'แผนรายวัน', 'wtn-trips': 'ทริป', 'wtn-sync-base': 'สำเนาสำหรับเทียบซิงก์', 'wtn-expenses': 'ค่าใช้จ่าย', 'wtn-packing': 'ของที่ต้องเตรียม', 'wtn-explore-cache': 'แคชสำรวจ' };
   mb(b) { return b >= 1048576 ? (Math.round(b / 1048576 * 10) / 10 + ' MB') : (Math.max(1, Math.round(b / 1024)) + ' KB'); }
+  storyBodyBytes() {                                    // เนื้อตอนที่ยังนอนในพื้นที่หลัก
+    let b = 0;
+    try {
+      const raw = JSON.parse(localStorage.getItem('wtn-stories') || '[]');
+      (Array.isArray(raw) ? raw : []).forEach(st => (st.chapters || []).forEach(c => {
+        if (c && typeof c.html === 'string' && c.html.length > this.BODY_MIN) b += c.html.length * 2;
+      }));
+    } catch (e) {}
+    return b;
+  }
+  async moveStoryBodies() {
+    if (!this.storyBodiesOn || this.state.bodyBusy) return;
+    this.setState({ bodyBusy: true });
+    const size = () => { try { return (localStorage.getItem('wtn-stories') || '').length * 2; } catch (e) { return 0; } };
+    const before = size();
+    const lean = await this._dehydrateStories(this.stories);
+    try { localStorage.setItem('wtn-stories', JSON.stringify(lean)); } catch (e) {}
+    const freed = before - size();
+    this.setState({ bodyBusy: false });
+    this.showToast(freed > 1024 ? ('✓ ย้ายเนื้อเรื่องแล้ว · คืนพื้นที่ ' + this.mb(freed)) : 'เนื้อเรื่องอยู่นอกพื้นที่หลักครบแล้ว');
+    this.forceUpdate();
+  }
   PURGE_KEYS = ['wtn-sync-base', 'wtn-explore-cache', 'wtn-place-cache', 'wtn-wx-cache', 'vela-geo-cache-v3'];
   purgeBytes() {
     let b = 0;
@@ -3287,6 +3318,7 @@ class Component extends DCLogic {
   _gatherRaw() {
     const data = {};
     try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
+    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; else if (this.storiesOmit()) delete data['wtn-stories']; } catch (e) {}
     return data;
   }
   // เพดานก้อนที่ดันขึ้นคลาวด์ — ฟรี 500 KB, พรีเมียม 850 KB (ตกลง 17 ส.ค.)
@@ -3390,7 +3422,7 @@ class Component extends DCLogic {
       const toDel = [];
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
       toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-      Object.keys(map).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, map[k]); } catch (e) {} });
+      Object.keys(map).forEach(k => { if (keep[k]) return; this._setLS(k, map[k]); });
     } finally { this._applyingCloud = false; }
     this.dedupeCheckins();
   }
@@ -3414,6 +3446,14 @@ class Component extends DCLogic {
       return;
     }
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; }
+    if (this.storyBodiesPending() && (this._sbDefer = (this._sbDefer || 0) + 1) <= 3) {   // เนื้อเรื่องยังอ่านไม่ครบ — รอไม่เกิน 3 รอบ
+      this._pendingPush = true;
+      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      this.setState({ cloud: 'idle' });
+      setTimeout(() => this.scheduleCloudPush(), 4000);
+      return;
+    }
+    this._sbDefer = 0;
     if (this.egCapped('push')) {                                        // ชนเพดานข้อมูลของวันนี้ — พักไว้ก่อน ค่อยดันพรุ่งนี้
       this._pendingPush = true;
       try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
@@ -3479,7 +3519,7 @@ class Component extends DCLogic {
         const toDel = [];
         for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
         toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-        Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
+        Object.keys(bk.data).forEach(k => { if (keep[k]) return; this._setLS(k, bk.data[k]); });
         try { localStorage.setItem('wtn-cloud-at', String(bk._at || Date.now())); } catch (e) {}
         this._setBase(bk.data);
       } finally { this._applyingCloud = false; }
@@ -3598,7 +3638,7 @@ class Component extends DCLogic {
         const toDel = [];
         for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
         toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
-        Object.keys(bk.data).forEach(k => { if (keep[k]) return; try { localStorage.setItem(k, bk.data[k]); } catch (e) {} });
+        Object.keys(bk.data).forEach(k => { if (keep[k]) return; this._setLS(k, bk.data[k]); });
       } finally { this._applyingCloud = false; }
       this._synced = true;
       this.dedupeCheckins();
@@ -4979,12 +5019,122 @@ class Component extends DCLogic {
   }
 
   get stories() {
-    try { return JSON.parse(localStorage.getItem('wtn-stories')) || []; } catch (e) { return []; }
+    let a = [];
+    try { a = JSON.parse(localStorage.getItem('wtn-stories')) || []; } catch (e) { a = []; }
+    return this.storyBodiesOn ? this._hydrateStories(a) : a;
+  }
+  // เนื้อเรื่องตอนยาว เก็บใน IndexedDB แทนพื้นที่หลัก 5MB — เปิดให้แอดมินก่อน
+  get storyBodiesOn() { try { return !!this.isAdmin; } catch (e) { return false; } }
+  BODY_MIN = 4000;
+  _hydrateStories(list) {
+    if (!Array.isArray(list)) return list;
+    const mem = this._hMem || (this._hMem = {});
+    let miss = 0;
+    const out = list.map(st => {
+      if (!st || !Array.isArray(st.chapters)) return st;
+      return { ...st, chapters: st.chapters.map(c => {
+        if (!c || !c.hRef || c.html) return c;
+        const h = mem[c.hRef];
+        if (h == null || h === '') { miss++; this._loadBody(c.hRef); return c; }   // หาไม่เจอ/ยังไม่มา = ถือว่าไม่ครบ ไม่เอาไปทับคลาวด์
+        return { ...c, html: h };
+      }) };
+    });
+    this._hMiss = miss;
+    return out;
+  }
+  _loadBody(ref) {
+    if ((this._hLost || {})[ref]) return;                // หาไม่เจอแล้ว — รอให้กู้จากคลาวด์ ไม่ยิงซ้ำ
+    const p = this._hLoading || (this._hLoading = {});
+    if (p[ref]) return;
+    p[ref] = 1;
+    this.idbGet(String(ref).slice(4)).then(v => {
+      if (v == null || v === '') {                       // หาไม่เจอในที่เก็บสำรอง (เช่น iOS ล้าง IDB) — จำว่าหาย ไม่ใช่ว่าง
+        (this._hLost || (this._hLost = {}))[ref] = 1;    // คงธง _hLoading ไว้ ไม่ให้ยิงซ้ำ
+        this.forceUpdate();
+        return;
+      }
+      (this._hMem || (this._hMem = {}))[ref] = v;
+      delete (this._hLost || {})[ref];
+      this.forceUpdate();
+    });
+  }
+  async _dehydrateStories(list) {
+    if (!Array.isArray(list)) return list;
+    const mem = this._hMem || (this._hMem = {});
+    const out = [];
+    for (const st of list) {
+      if (!st || !Array.isArray(st.chapters)) { out.push(st); continue; }
+      const chs = [];
+      for (const c of st.chapters) {
+        if (c && typeof c.html === 'string' && c.html.length > this.BODY_MIN) {
+          const id = 'h' + st.id + '_' + c.id;
+          let ok = false;
+          try { await this.idbPut(id, c.html); ok = true; } catch (e) {}
+          if (ok) { mem['idb:' + id] = c.html; chs.push({ ...c, html: '', hRef: 'idb:' + id, hLen: c.html.length }); continue; }
+        }
+        chs.push(c);
+      }
+      out.push({ ...st, chapters: chs });
+    }
+    return out;
+  }
+  // JSON ของเรื่องเล่าแบบมีเนื้อครบ (ใช้ตอนซิงก์ขึ้นคลาวด์) — คืน null ถ้าเนื้อยังโหลดไม่ครบ
+  storiesFullJson() {
+    if (!this.storyBodiesOn) return null;
+    let raw = null;
+    try { raw = JSON.parse(localStorage.getItem('wtn-stories')); } catch (e) {}
+    if (!Array.isArray(raw)) return null;
+    if (JSON.stringify(raw).indexOf('"hRef"') === -1) return null;
+    const full = this._hydrateStories(raw);
+    if (this._hMiss) return null;
+    const bad = (Array.isArray(full) ? full : []).some(st => (st && st.chapters || []).some(c => c && c.hRef && !c.html));
+    if (bad) return null;
+    try { return JSON.stringify(full); } catch (e) { return null; }
+  }
+  // เนื้อไม่ครบ → ตัดคีย์เรื่องเล่าออกจากก้อนที่เอาไป merge/push (ค่าบนคลาวด์จะไหลกลับมากู้ให้)
+  storiesOmit() {
+    if (!this.storyBodiesOn) return false;
+    let raw = '';
+    try { raw = localStorage.getItem('wtn-stories') || ''; } catch (e) {}
+    if (raw.indexOf('"hRef"') === -1) return false;
+    return this.storiesFullJson() == null;
+  }
+  storyBodiesPending() {
+    if (!this.storyBodiesOn) return false;
+    let raw = '';
+    try { raw = localStorage.getItem('wtn-stories') || ''; } catch (e) {}
+    if (raw.indexOf('"hRef"') === -1) return false;
+    return this.storiesFullJson() == null;
+  }
+  // เขียนคีย์จากคลาวด์ลงเครื่อง — เรื่องเล่าให้แยกเนื้อออกก่อน ไม่ให้ทะลุพื้นที่หลัก
+  _setLS(k, v) {
+    if (k === 'wtn-stories') { this._hLost = {}; this._hLoading = {}; }
+    if (k === 'wtn-stories' && this.storyBodiesOn && typeof v === 'string' && v.length > 200000) {
+      const a = this._parseJSON(v);
+      if (Array.isArray(a)) {
+        this._hydrateStories(a);
+        this._dehydrateStories(a).then(lean => {
+          try { localStorage.setItem('wtn-stories', JSON.stringify(lean)); } catch (e) {}
+          this.forceUpdate();
+        });
+        return;
+      }
+    }
+    try { localStorage.setItem(k, v); } catch (e) {}
   }
   saveStories(list) {
     list = this._stampChanged(this.stories, list, 'id');
-    try { localStorage.setItem('wtn-stories', JSON.stringify(list)); }
-    catch (e) { this.freeSpaceThenSave('wtn-stories', list, '(เรื่องเล่า)'); }
+    let wrote = false;
+    try { localStorage.setItem('wtn-stories', JSON.stringify(list)); wrote = true; } catch (e) {}
+    if (this.storyBodiesOn) {
+      this._dehydrateStories(list).then(lean => {
+        try { localStorage.setItem('wtn-stories', JSON.stringify(lean)); wrote = true; } catch (e) {}
+        if (!wrote) this.freeSpaceThenSave('wtn-stories', lean, '(เรื่องเล่า)');
+        this.forceUpdate();
+      });
+      return;
+    }
+    if (!wrote) this.freeSpaceThenSave('wtn-stories', list, '(เรื่องเล่า)');
   }
   addStoryPhoto(ev) {
     const files = Array.from(ev.target.files || []);
@@ -5107,6 +5257,22 @@ class Component extends DCLogic {
   openChapterEdit(cid) {
     const s = this.openStory; if (!s) return;
     const ch = (s.chapters || []).find(c => c.id === cid); if (!ch) return;
+    if (ch.hRef && !ch.html) {                                           // เนื้อยังโหลดไม่เสร็จ — รอก่อน ไม่งั้นเซฟทับเป็นตอนว่าง
+      const lost = (this._hLost || {})[ch.hRef];
+      const tries = (this._chWait && this._chWait.id === cid ? this._chWait.n : 0) + 1;
+      this._chWait = { id: cid, n: tries };
+      if (!lost && tries <= 8) {
+        this._loadBody(ch.hRef);
+        if (tries === 1) this.showToast('กำลังเปิดตอน…');
+        setTimeout(() => this.openChapterEdit(cid), 350);
+        return;
+      }
+      this._chWait = null;
+      this.showToast('เนื้อตอนนี้หาไม่เจอในที่เก็บสำรอง — กำลังดึงจากคลาวด์');
+      try { this._lastFullPull = 0; this.cloudPull(); } catch (e) {}
+      return;
+    }
+    this._chWait = null;
     this._chLoadedId = null;
     this.setState({ openChapterId: cid, chTitleDraft: ch.title, chPhotos: [...(ch.photos || [])], chClip: ch.clip || '', chCover: ch.cover || '' });
     this.go('chapterEdit');
@@ -6422,7 +6588,7 @@ class Component extends DCLogic {
       let d, obj; try { obj = JSON.parse(rd.result); d = (obj && obj.data) ? obj.data : obj; } catch (e) { alert('ไฟล์สำรองไม่ถูกต้อง'); return; }
       if (!d || typeof d !== 'object') { alert('ไฟล์สำรองไม่ถูกต้อง'); return; }
       if (!confirm('กู้ข้อมูลจากไฟล์นี้? ข้อมูลปัจจุบันที่ชื่อซ้ำจะถูกทับ')) return;
-      Object.keys(d).forEach(k => { if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) { try { localStorage.setItem(k, d[k]); } catch (e) {} } });
+      Object.keys(d).forEach(k => { if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) this._setLS(k, d[k]); });
       const ph = (obj && obj.photos) || null;                    // ไฟล์รุ่นใหม่มีตัวรูปมาด้วย → ใส่กลับ IndexedDB
       if (ph && typeof ph === 'object') {
         const keys = Object.keys(ph);
@@ -9857,7 +10023,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19c',
+      appVersion: '2026.08.19g',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -10379,6 +10545,7 @@ class Component extends DCLogic {
       ...(() => {
         const st = this.lsStats();
         const pb = this.purgeBytes();
+        const bb = this.storyBodyBytes();
         const tidying = !!this.state.tidyBusy;
         return {
           stUsed: this.mb(st.total),
@@ -10386,10 +10553,16 @@ class Component extends DCLogic {
           stRows: st.rows,
           stCanTidy: st.imgs > 0,
           stCanPurge: pb > 20480,
+          stBodyShow: this.storyBodiesOn,
+          stBodyNote: bb > 20480
+            ? ('เนื้อเรื่องยาว ' + this.mb(bb) + ' ยังอยู่ในพื้นที่หลัก — ย้ายไปที่เก็บสำรองได้ (แอดมิน) นำเข้าได้อีกไม่จำกัด ข้อความยังซิงก์ขึ้นคลาวด์ครบ')
+            : 'เนื้อเรื่องยาวถูกเก็บนอกพื้นที่หลักแล้ว (แอดมิน) — พื้นที่ 5 MB เหลือไว้ให้ข้อมูลอื่น',
+          bodyLabel: this.state.bodyBusy ? 'กำลังย้าย…' : (bb > 20480 ? ('ย้ายเนื้อเรื่องออกจากพื้นที่หลัก · ' + this.mb(bb)) : 'ตรวจ/ย้ายอีกครั้ง'),
+          doMoveBodies: () => this.moveStoryBodies(),
           stPurgeSize: this.mb(pb),
           stPurgeNote: 'สำเนาสำหรับเทียบซิงก์และแคชแผนที่/สถานที่ สร้างใหม่ได้เอง — ล้างได้เลยไม่มีข้อมูลหาย',
           doPurge: () => this.purgeCaches(),
-          stClean: st.imgs === 0 && pb <= 20480,
+          stClean: st.imgs === 0 && pb <= 20480 && !this.storyBodiesOn,
           stTidyNote: 'มีรูปฝังอยู่ในพื้นที่หลัก ' + st.imgs + ' ใบ (' + this.mb(st.b64) + ') — ย้ายไปที่เก็บสำรองในเครื่องได้ รูปยังอยู่ครบเหมือนเดิม',
           tidyBusy: tidying,
           tidyLabel: tidying ? 'กำลังย้าย…' : 'ย้ายรูปออกจากพื้นที่หลัก',
