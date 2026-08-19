@@ -3334,13 +3334,38 @@ class Component extends DCLogic {
     const lm = l._m || 0, rm = r._m || 0;
     let w = (lm !== rm) ? (lm > rm ? l : r)
       : (JSON.stringify(l) >= JSON.stringify(r) ? l : r); // เท่ากัน — เลือกแบบเดียวกันทุกเครื่อง (กันลูป)
-    // เรื่องเล่า: ตัวชนะอาจถือแค่ตัวชี้เนื้อ (hRef) ที่ยังโหลดไม่มา — เติมเนื้อจากอีกฝั่งถ้ามี กันเนื้อหายตอน merge
+    // เรื่องเล่า: รวม "รายตอน" ไม่ใช่ทับทั้งเล่ม — สองเครื่องแก้คนละตอนต้องไม่กินกัน
     const o = w === l ? r : l;
-    if (Array.isArray(w.chapters) && Array.isArray(o.chapters) && w.chapters.some(c => c && c.hRef && !c.html)) {
-      const by = {}; o.chapters.forEach(c => { if (c && c.id != null && c.html) by[c.id] = c.html; });
-      let hit = false;
-      const chs = w.chapters.map(c => (c && c.hRef && !c.html && by[c.id]) ? (hit = true, { ...c, html: by[c.id] }) : c);
-      if (hit) w = { ...w, chapters: chs };
+    if (Array.isArray(w.chapters) && Array.isArray(o.chapters)) {
+      const tomb = this._tombs();
+      const tOf = c => Math.max(c.updatedAt || 0, c.createdAt || 0, c._m || 0);
+      const byO = {}; o.chapters.forEach(c => { if (c && c.id != null) byO[c.id] = c; });
+      const inW = {}; w.chapters.forEach(c => { if (c && c.id != null) inW[c.id] = 1; });
+      // ตอนเดียวกัน — เอาฉบับที่แก้ล่าสุด; ถ้าตัวที่เลือกถือแค่ตัวชี้เนื้อ (hRef) เติมเนื้อจากอีกฝั่ง
+      let chs = w.chapters.map(c => {
+        if (!c || c.id == null || !byO[c.id]) return c;
+        const oc = byO[c.id];
+        let n = tOf(oc) > tOf(c) ? oc : c;
+        if (n.hRef && !n.html) { const alt = n === c ? oc : c; if ((alt.html || '').trim()) n = { ...n, html: alt.html }; }
+        return n;
+      });
+      // ตอนที่อีกฝั่งมีแต่ฝั่งชนะไม่มี: มีเนื้อ + ไม่มีใบสั่งลบ = เก็บไว้ (แทรกตามลำดับเวลาที่สร้าง)
+      o.chapters.forEach(x => {
+        if (!x || x.id == null || inW[x.id] || tomb[String(x.id)]) return;
+        if (!((x.html || '').trim() || x.hRef || x.cover)) return;
+        const i = chs.findIndex(c => (c && c.createdAt || 0) > (x.createdAt || 0));
+        if (i < 0) chs.push(x); else chs.splice(i, 0, x);
+      });
+      // ตอนของวันเดียวกัน (gen ซ้ำ) — คงตัวที่มีเนื้อ/ใหม่สุดตัวเดียว ตัดตอนว่างที่เพิ่งถูกสร้างซ้อนทิ้ง
+      const byGen = {};
+      chs.forEach(c => { const g = c && c.gen; if (g) (byGen[g] = byGen[g] || []).push(c); });
+      Object.keys(byGen).forEach(g => {
+        const arr = byGen[g]; if (arr.length < 2) return;
+        const withBody = arr.filter(c => (c.html || '').trim() || c.hRef);
+        const keep = (withBody.length ? withBody : arr).slice().sort((a, b) => tOf(b) - tOf(a))[0];
+        chs = chs.filter(c => !(c && c.gen === g && c !== keep));
+      });
+      w = { ...w, chapters: chs };
     }
     return w;
   }
@@ -5479,6 +5504,7 @@ class Component extends DCLogic {
   }
   deleteChapter(cid) {
     const s = this.openStory; if (!s) return;
+    this._addTombs([String(cid)]);   // ใบสั่งลบรายตอน — กัน merge รายตอนปลุกตอนที่ตั้งใจลบกลับมา
     this.patchStory(s.id, { chapters: (s.chapters || []).filter(c => c.id !== cid) });
   }
   updateCounts() {
@@ -10285,7 +10311,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19z',
+      appVersion: '2026.08.20a',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
