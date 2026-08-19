@@ -161,8 +161,6 @@
   }
 </style>
 <script src="photo-pick.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </helmet>
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
@@ -7110,9 +7108,15 @@ class Component extends DCLogic {
       const im = e.target;
       if (!im || im.tagName !== 'IMG' || im.dataset.tFallback) return;
       const s = im.currentSrc || im.src || '';
-      if (s.indexOf('/storage/v1/object/public/media/') === -1 || !/_t\.[a-z0-9]+(\?|$)/i.test(s)) return;
+      if (s.indexOf('/storage/v1/object/public/media/') !== -1 && /_t\.[a-z0-9]+(\?|$)/i.test(s)) {
+        im.dataset.tFallback = '1';
+        im.src = s.replace(/_t(\.[a-z0-9]+)(\?|$)/i, '$1$2');
+        return;
+      }
+      // รูปนอก (เช่นนำเข้าจากบล็อกเก่า) โหลดพัง — สลับไปปกดีฟอลต์แทนไอคอนรูปหัก
+      if (im.dataset.tFallback || /default-cover\.jpg(\?|$)/.test(s)) return;
       im.dataset.tFallback = '1';
-      im.src = s.replace(/_t(\.[a-z0-9]+)(\?|$)/i, '$1$2');
+      im.src = 'default-cover.jpg';
     };
     document.addEventListener('error', this._imgFallback, true);
     // เปลี่ยนรูปเมื่อไหร่ สั่งซิงก์ขึ้นคลาวด์ทันที (กันรูปโปรไฟล์/ปกไม่ push)
@@ -10169,7 +10173,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19l',
+      appVersion: '2026.08.19n',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
