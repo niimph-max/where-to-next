@@ -1201,6 +1201,7 @@
                   </div>
                 </div>
               </sc-for>
+              <sc-if value="{{ feedHasMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ feedMore }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#6f6455;font:600 15px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:18px">{{ feedMoreLabel }}</button></sc-if>
               <sc-if value="{{ noFeed }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีตอนที่เผยแพร่</div><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เขียนบันทึกแต่ละวัน แล้วกด "เผยแพร่" ที่ตอนนั้น<br>ตอนที่เผยแพร่จะมาโผล่ที่นี่</div></div></sc-if>
               </sc-if>
 
@@ -3091,7 +3092,11 @@ class Component extends DCLogic {
   // รูปเก่าที่ยังไม่มีตัวย่อ: <img> จะ error → _imgFallback สลับกลับไปตัวเต็มให้เอง
   pxT(p) {
     const s = this.px(p);
-    if (typeof s !== 'string' || s.indexOf('/storage/v1/object/public/media/') === -1) return s;
+    if (typeof s !== 'string') return s;
+    // รูปที่นำเข้าจาก WordPress เก็บลิงก์ไว้ที่ w=1200 (ขนาดสำหรับอ่านเต็มจอ)
+    // แต่ฟีด/ชั้นวางแสดงแค่ ~180px — ขอ 640 พอ ลดข้อมูลที่ต้องโหลดลงหลายเท่า
+    if (/(^|\.)files\.wordpress\.com\//.test(s)) return s.replace(/([?&])w=\d+/i, '$1w=640');
+    if (s.indexOf('/storage/v1/object/public/media/') === -1) return s;
     return s.replace(/(\.[a-z0-9]+)(\?|$)/i, '_t$1$2');
   }
   // ทำรูปย่อ JPEG จาก data url / Image — ด้านยาวสุด 640px
@@ -4270,6 +4275,34 @@ class Component extends DCLogic {
     { d: '7', ll: [43.352, 79.083], name: 'Charyn Canyon' },
     { d: '8', ll: [43.33, 77.73], name: 'Turgen' },
     { d: '11', ll: [43.238, 76.889], name: 'กลับอัลมาตี' } ];
+  // WordPress ต้องย่อรูปให้ใหม่ตอนถูกขอขนาด 640 ครั้งแรก บางใบค้างไม่ตอบเลย
+  // ใบไหนยังไม่มาใน 4 วิ → เปลี่ยนไปขอไฟล์ต้นฉบับ (มีอยู่แล้วบนเซิร์ฟเวอร์เขา ตอบทันที)
+  wpStuckWatch() {
+    if (this._wpWatch) return;
+    this._wpWatch = setInterval(() => {
+      const now = Date.now();
+      document.querySelectorAll('img[src*="files.wordpress.com"][src*="w=640"]').forEach(im => {
+        if (im.complete && im.naturalWidth) { delete im.dataset.wpSeen; return; }
+        if (!im.dataset.wpSeen) { im.dataset.wpSeen = String(now); return; }
+        if (now - (+im.dataset.wpSeen) < 4000 || im.dataset.wpFull) return;
+        im.dataset.wpFull = '1';
+        im.src = im.src.replace(/[?&]w=640/, '');
+      });
+    }, 1500);
+  }
+  // หน้าจอแต่ละหน้าเป็น sc-if = สลับแท็บแล้ว <img> ถูกทำลายทั้งหมด กลับมาต้องขอรูปใหม่หมด
+  // เก็บอ็อบเจกต์ Image ไว้ในหน่วยความจำ = เบราว์เซอร์ถือบิตแมปที่ถอดรหัสแล้วต่อ ครั้งต่อไปขึ้นทันที
+  warmImgs(urls) {
+    const w = this._imgWarm || (this._imgWarm = new Map());
+    (urls || []).forEach(u => {
+      if (!u || typeof u !== 'string' || u.indexOf('data:') === 0 || w.has(u)) return;
+      if (w.size > 400) { const k = w.keys().next().value; w.delete(k); }
+      const im = new Image();
+      im.decoding = 'async';
+      im.src = u;
+      w.set(u, im);
+    });
+  }
   // โหลด Leaflet ตอนเปิดหน้าแผนที่จริงๆ (ไม่ถ่วงการเปิดแอป)
   ensureLeaflet() {
     if (window.L || this._leafletAsked) return;
@@ -7119,6 +7152,7 @@ class Component extends DCLogic {
   }
   componentDidMount() {
     this.applyTypo();
+    this.wpStuckWatch();
     this._heroTimer = setInterval(() => {
       if (this.state.screen === 'profile' && (this.state.profileTab || 'trips') === 'stories') {
         this.setState(s => ({ heroIdx: ((s.heroIdx || 0) + 1) % 3 }));
@@ -10218,7 +10252,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19r',
+      appVersion: '2026.08.19v',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -11269,7 +11303,7 @@ class Component extends DCLogic {
           const chs = s.chapters || [];
           let ex = (s.synopsis || stripped(chs[0]).strip || '').slice(0, 96);
           return {
-            photo: s.cover || 'default-cover.jpg',
+            photo: this.pxT(s.cover) || 'default-cover.jpg',
             hasCover: !!s.cover, place: s.category || '', title: s.title,
             excerpt: ex ? (ex + (ex.length >= 96 ? '…' : '')) : 'ยังไม่มีเนื้อหา — แตะเพื่อเริ่มเขียน',
             draft: !s.published, likes: s.likes || 0, chapCount: chs.length,
@@ -11281,7 +11315,7 @@ class Component extends DCLogic {
           (st.chapters || []).forEach(c => {
             if (!(c.html || '').trim() && !c.cover) return;
             const sp = stripped(c);
-            const img = c.cover || sp.img || st.cover || '';
+            const img = this.pxT(c.cover || sp.img || st.cover || '');
             const ex = sp.strip.slice(0, 100);
             feed.push({ _t: c.updatedAt || st.at || 0,
               photo: img || 'default-cover.jpg', hasCover: !!img,
@@ -11436,7 +11470,18 @@ class Component extends DCLogic {
               arcEmpty: !items.length && !books.length
             };
           })(),
-          feedStories: feed, noFeed: feed.length === 0,
+          // แสดงทีละ 20 ตอน — 202 เรื่องถ้าปล่อยทั้งหมดพร้อมกัน รูปจะแย่งคิวโหลดกันเอง
+          ...(() => {
+            const lim = this.state.feedLimit || 20;
+            const shown = feed.slice(0, lim);
+            this.warmImgs(shown.map(x => x.photo));
+            return {
+              feedStories: shown, noFeed: feed.length === 0,
+              feedHasMore: feed.length > lim,
+              feedMoreLabel: 'ดูเพิ่ม · เหลืออีก ' + (feed.length - lim) + ' ตอน',
+              feedMore: () => this.setState({ feedLimit: lim + 20 })
+            };
+          })(),
           ...(() => {
             const remote = this.state.remoteFeed || [];
             const scopeSaved = (() => { try { return localStorage.getItem('wtn-story-scope'); } catch (e) { return null; } })();
@@ -11444,7 +11489,7 @@ class Component extends DCLogic {
             const setScope = v => { try { localStorage.setItem('wtn-story-scope', v); } catch (e) {} this.setState({ storyScope: v }); if (v === 'global') this.loadFeed(); };
             const scopeBtn = on => 'flex:1;text-align:center;padding:9px 0;border-radius:9px;border:none;cursor:pointer;font:600 14px \'Anuphan\';' + (on ? 'background:#2b241f;color:#f6efe2' : 'background:transparent;color:#8a7d6f');
             const mkCard = item => ({
-              hasCover: !!item.hasCover, photo: item.photo,
+              hasCover: !!item.hasCover, photo: this.pxT(item.photo),
               byline: item.author, hasPlace: !!item.country && item.country.trim() !== (item.series || '').trim(), place: item.country,
               series: item.series, title: item.title, excerpt: item.excerpt,
               showViews: (item.views || 0) >= 5, viewsLabel: (item.views || 0) + ' คนอ่าน', isNew: (item.views || 0) < 5,
@@ -11452,6 +11497,7 @@ class Component extends DCLogic {
             });
             const velaFeed = remote.filter(r => r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
             const usersFeed = remote.filter(r => !r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
+            this.warmImgs(velaFeed.concat(usersFeed).map(c => c.photo));
             return {
               storyScopeMine: scope === 'mine', storyScopeGlobal: scope === 'global',
               setScopeMine: () => setScope('mine'), setScopeGlobal: () => setScope('global'),
@@ -11460,7 +11506,7 @@ class Component extends DCLogic {
               globalEmpty: velaFeed.length === 0 && usersFeed.length === 0
             };
           })(),
-          myStories: all.map(card), noStories: all.length === 0,
+          myStories: (() => { const c = all.map(card); this.warmImgs(c.slice(0, 20).map(x => x.photo)); return c; })(), noStories: all.length === 0,
           storyCount: all.length,
           composeNew: () => this.openStoryEdit(null),
           segStories: () => this.setState({ feedSeg: 'stories' }),
