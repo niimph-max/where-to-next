@@ -5096,9 +5096,25 @@ class Component extends DCLogic {
   }
 
   get stories() {
-    let a = [];
-    try { a = JSON.parse(localStorage.getItem('wtn-stories')) || []; } catch (e) { a = []; }
-    return this.storyBodiesOn ? this._hydrateStories(a) : a;
+    // localStorage.getItem คืน string ทุกครั้ง แต่ JSON.parse ของบล็อบนี้แพง — และหน้าฟีด/โปรไฟล์เรียก this.stories หลายจุดในเรนเดอร์เดียว
+    // แคชผลลัพธ์ไว้ตามค่า raw string ล่าสุด กันพาร์สซ้ำถ้าเนื้อหายังไม่เปลี่ยน
+    const raw = (() => { try { return localStorage.getItem('wtn-stories'); } catch (e) { return null; } })();
+    let a;
+    if (this._storiesRawCache === raw && this._storiesParsedCache) {
+      a = this._storiesParsedCache;
+    } else {
+      try { a = JSON.parse(raw) || []; } catch (e) { a = []; }
+      this._storiesRawCache = raw;
+      this._storiesParsedCache = a;
+    }
+    if (!this.storyBodiesOn) return a;
+    // _hydrateStories ก็อป-สร้างอ็อบเจกต์ทุกเรื่อง/ทุกตอนใหม่หมด (แพงสำหรับบัญชีแอดมินที่มีหลายร้อยเรื่อง) —
+    // แคชผลไว้ตาม (raw, เวอร์ชัน _hMem) กันรีบิลด์ซ้ำถ้าไม่มีอะไรเปลี่ยนจริง
+    const hv = this._hMemVer || 0;
+    if (this._hydratedRawCache === raw && this._hydratedVerCache === hv && this._hydratedCache) return this._hydratedCache;
+    const out = this._hydrateStories(a);
+    this._hydratedRawCache = raw; this._hydratedVerCache = hv; this._hydratedCache = out;
+    return out;
   }
   // เนื้อเรื่องตอนยาว เก็บใน IndexedDB แทนพื้นที่หลัก 5MB — เปิดให้แอดมินก่อน
   get storyBodiesOn() { try { return !!this.isAdmin; } catch (e) { return false; } }
@@ -5132,6 +5148,7 @@ class Component extends DCLogic {
       }
       (this._hMem || (this._hMem = {}))[ref] = v;
       delete (this._hLost || {})[ref];
+      this._hMemVer = (this._hMemVer || 0) + 1;
       this.forceUpdate();
     });
   }
@@ -10173,7 +10190,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19n',
+      appVersion: '2026.08.19p',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
