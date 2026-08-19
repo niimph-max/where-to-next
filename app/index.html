@@ -3012,7 +3012,9 @@ class Component extends DCLogic {
         data[k] = v;
       });
     } catch (e) {}
-    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; else if (this.storiesOmit()) delete data['wtn-stories']; } catch (e) {}
+    // เนื้อตอนยังโหลดจากที่เก็บสำรองไม่ครบ → คงค่า raw (มี hRef) ไว้ให้ merge รายชิ้นตาม _m
+    // ห้ามลบคีย์ทิ้ง — ลบแล้วฝั่งคลาวด์จะทับทั้งก้อน ทำให้ที่แก้ล่าสุดในเครื่องหาย
+    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; } catch (e) {}
     return data;
   }
   scheduleCloudPush() {
@@ -3330,8 +3332,17 @@ class Component extends DCLogic {
   }
   _pickNewer(l, r) {
     const lm = l._m || 0, rm = r._m || 0;
-    if (lm !== rm) return lm > rm ? l : r;
-    return JSON.stringify(l) >= JSON.stringify(r) ? l : r; // เท่ากัน — เลือกแบบเดียวกันทุกเครื่อง (กันลูป)
+    let w = (lm !== rm) ? (lm > rm ? l : r)
+      : (JSON.stringify(l) >= JSON.stringify(r) ? l : r); // เท่ากัน — เลือกแบบเดียวกันทุกเครื่อง (กันลูป)
+    // เรื่องเล่า: ตัวชนะอาจถือแค่ตัวชี้เนื้อ (hRef) ที่ยังโหลดไม่มา — เติมเนื้อจากอีกฝั่งถ้ามี กันเนื้อหายตอน merge
+    const o = w === l ? r : l;
+    if (Array.isArray(w.chapters) && Array.isArray(o.chapters) && w.chapters.some(c => c && c.hRef && !c.html)) {
+      const by = {}; o.chapters.forEach(c => { if (c && c.id != null && c.html) by[c.id] = c.html; });
+      let hit = false;
+      const chs = w.chapters.map(c => (c && c.hRef && !c.html && by[c.id]) ? (hit = true, { ...c, html: by[c.id] }) : c);
+      if (hit) w = { ...w, chapters: chs };
+    }
+    return w;
   }
   _stampChanged(prev, next, idf) {
     idf = idf || 'id';
@@ -3402,7 +3413,9 @@ class Component extends DCLogic {
   _gatherRaw() {
     const data = {};
     try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k) continue; if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') continue; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data[k] = localStorage.getItem(k); } } catch (e) {}
-    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; else if (this.storiesOmit()) delete data['wtn-stories']; } catch (e) {}
+    // เนื้อตอนยังโหลดจากที่เก็บสำรองไม่ครบ → คงค่า raw (มี hRef) ไว้ให้ merge รายชิ้นตาม _m
+    // ห้ามลบคีย์ทิ้ง — ลบแล้วฝั่งคลาวด์จะทับทั้งก้อน ทำให้ที่แก้ล่าสุดในเครื่องหาย
+    try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; } catch (e) {}
     return data;
   }
   // เพดานก้อนที่ดันขึ้นคลาวด์ — ฟรี 500 KB, พรีเมียม 850 KB (ตกลง 17 ส.ค.)
@@ -3424,6 +3437,15 @@ class Component extends DCLogic {
       }
       out[k] = v;
     });
+    // เรื่องเล่าที่เนื้อตอนยังเป็นตัวชี้ (hRef) โหลดไม่ครบ — ห้ามดันขึ้นคลาวด์ (จะทับเนื้อบนคลาวด์เป็นค่าว่าง)
+    // ใช้ฉบับเต็มถ้าประกอบได้ ไม่งั้นคงค่าเดิมบนคลาวด์ไว้ รอบหน้าโหลดครบค่อยดัน
+    if (typeof out['wtn-stories'] === 'string' && out['wtn-stories'].indexOf('"hRef"') !== -1) {
+      let full = null;
+      try { full = this.storiesFullJson(); } catch (e) {}
+      if (full) out['wtn-stories'] = full;
+      else if (remote['wtn-stories'] !== undefined) out['wtn-stories'] = remote['wtn-stories'];
+      else delete out['wtn-stories'];
+    }
     return out;
   }
   _getBase() {
@@ -5158,14 +5180,16 @@ class Component extends DCLogic {
       this._storiesRawCache = raw;
       this._storiesParsedCache = a;
     }
-    if (!this.storyBodiesOn) return a;
+    // คืน "สำเนาชั้นบน" เสมอ — ผู้เรียกหลายที่ทำ list[i] = ... / list.push(...)
+    // ถ้าคืนตัวแคชตรงๆ การแก้จะไปทับตัวเทียบใน _stampChanged ด้วย → มองว่า "ไม่มีอะไรเปลี่ยน" → ไม่ประทับ _m → ซิงก์รอบต่อไปเอาของเก่าทับ
+    if (!this.storyBodiesOn) return a.slice();
     // _hydrateStories ก็อป-สร้างอ็อบเจกต์ทุกเรื่อง/ทุกตอนใหม่หมด (แพงสำหรับบัญชีแอดมินที่มีหลายร้อยเรื่อง) —
     // แคชผลไว้ตาม (raw, เวอร์ชัน _hMem) กันรีบิลด์ซ้ำถ้าไม่มีอะไรเปลี่ยนจริง
     const hv = this._hMemVer || 0;
-    if (this._hydratedRawCache === raw && this._hydratedVerCache === hv && this._hydratedCache) return this._hydratedCache;
+    if (this._hydratedRawCache === raw && this._hydratedVerCache === hv && this._hydratedCache) return this._hydratedCache.slice();
     const out = this._hydrateStories(a);
     this._hydratedRawCache = raw; this._hydratedVerCache = hv; this._hydratedCache = out;
-    return out;
+    return out.slice();
   }
   // เนื้อเรื่องตอนยาว เก็บใน IndexedDB แทนพื้นที่หลัก 5MB — เปิดให้แอดมินก่อน
   get storyBodiesOn() { try { return !!this.isAdmin; } catch (e) { return false; } }
@@ -5301,22 +5325,25 @@ class Component extends DCLogic {
     });
   }
   // ---------- Stories = travel journals with chapters (ตอน) ----------
+  // เติมค่าเริ่มต้นแบบ copy-on-write — ห้ามแก้ตัวเดิม เพราะ s อาจเป็นอ็อบเจกต์ในแคช (ตัวเทียบของ _stampChanged)
   normStory(s) {
     if (!s) return s;
+    const d = {};
     if (!Array.isArray(s.chapters)) {
       const html = this.legacyHtml(s);
-      s.chapters = (html || (s.photos || []).length)
+      d.chapters = (html || (s.photos || []).length)
         ? [{ id: 'ch' + (s.at || Date.now()), title: 'ตอนที่ 1', html,
             createdAt: s.at || Date.now(), updatedAt: s.at || Date.now(), free: true, published: !!s.published }]
         : [];
     }
-    if (s.category == null) s.category = 'บันทึกการเดินทาง';
-    if (s.continent == null) s.continent = '';
-    if (s.country == null) s.country = '';
-    if (!Array.isArray(s.tags)) s.tags = [];
-    if (s.synopsis == null) s.synopsis = '';
-    if (s.finished == null) s.finished = false;
-    if (s.author == null) s.author = this.profile.name || 'Nim';
+    if (s.category == null) d.category = 'บันทึกการเดินทาง';
+    if (s.continent == null) d.continent = '';
+    if (s.country == null) d.country = '';
+    if (!Array.isArray(s.tags)) d.tags = [];
+    if (s.synopsis == null) d.synopsis = '';
+    if (s.finished == null) d.finished = false;
+    if (s.author == null) d.author = this.profile.name || 'Nim';
+    for (const k in d) return { ...s, ...d };
     return s;
   }
   legacyHtml(s) {
@@ -5346,11 +5373,12 @@ class Component extends DCLogic {
     const i = this.state.day, d = this.days[i] || {};
     const gen = 'day' + i;
     const list = this.stories, si = list.findIndex(x => x.id === s.id);
-    let ch = (list[si].chapters || []).find(c => c.gen === gen);
+    if (si < 0) return;
+    let ch = ((list[si].chapters) || []).find(c => c.gen === gen);
     if (!ch) {
       ch = { id: 'ch' + gen + Date.now(), gen, title: 'วันที่ ' + (d.n || (i + 1)) + (d.city ? ' · ' + d.city : ''),
         html: '', createdAt: Date.now(), updatedAt: Date.now(), free: true, published: false };
-      list[si].chapters = [...(list[si].chapters || []), ch];
+      list[si] = { ...list[si], chapters: [...(list[si].chapters || []), ch] };
       this.saveStories(list);
     }
     this._chLoadedId = null;
@@ -5373,7 +5401,7 @@ class Component extends DCLogic {
     const list = this.stories;
     const i = list.findIndex(x => x.id === id);
     if (i < 0) return;
-    list[i] = { ...list[i], ...patch };
+    list[i] = { ...list[i], ...patch, _m: Date.now() };   // ประทับเวลาตรงนี้ด้วย ไม่พึ่งการเทียบใน _stampChanged เพียงทางเดียว
     this.saveStories(list); this.forceUpdate();
   }
   get openStory() {
@@ -5639,7 +5667,7 @@ class Component extends DCLogic {
       const at = list.findIndex(x => x.id === tgt);
       if (tgt !== 'new' && at >= 0) {
         sid = list[at].id;
-        list[at] = { ...list[at], chapters: [...(this.normStory(list[at]).chapters || []), ...chapters] };
+        list[at] = { ...list[at], chapters: [...(this.normStory(list[at]).chapters || []), ...chapters], _m: Date.now() };
       } else {
         sid = 'stwp' + Date.now();
         const _p = this.state.wpPath || [];
@@ -5849,6 +5877,10 @@ class Component extends DCLogic {
           storyTitle: s.title || '', authorName: author, published: true, likes: c.likes || 0,
           country: s.country || '', continent: s.continent || '', isFromVela: !!this.isAdmin });
       } else {
+        // เอาออกจากฟีดทั่วโลกที่ถืออยู่ทันที (ทั้งในจอและแคช) — ไม่ต้องรอรอบดึงใหม่ 5 นาที
+        this.setState(s => ({ remoteFeed: (s.remoteFeed || []).filter(r => !(r.storyId === storyId && (r.chapterId === chapterId || r.id === chapterId))) }));
+        try { const fc = JSON.parse(localStorage.getItem('wtn-feed-cache') || '[]');
+          localStorage.setItem('wtn-feed-cache', JSON.stringify(fc.filter(r => !(r.storyId === storyId && (r.chapterId === chapterId || r.id === chapterId))))); } catch (e) {}
         await be.publishChapter(storyId, chapterId, false).catch(() => {});
       }
     } catch (e) { console.warn('[wtn] publish remote', e); }
@@ -9235,7 +9267,8 @@ class Component extends DCLogic {
   }
   setRecapCustom(list) {
     try {
-      if (!list || !list.length) localStorage.removeItem(this.recapPickKey());
+      // ห้าม removeItem — ซิงก์ถือว่า "คีย์หาย = ยังไม่ได้ส่ง" แล้วดึงค่าเก่าจากคลาวด์กลับมา ให้เก็บ [] แทน (= ระบบเลือกให้)
+      if (!list || !list.length) localStorage.setItem(this.recapPickKey(), '[]');
       else localStorage.setItem(this.recapPickKey(), JSON.stringify(list));
     } catch (e) {}
     this.setState({ recapSel: null });
@@ -10252,7 +10285,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19v',
+      appVersion: '2026.08.19z',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
