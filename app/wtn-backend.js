@@ -265,11 +265,13 @@ async function boot() {
       } catch (e) { console.warn("[wtn] getChapter", e); return null; }
     },
     async feed(max = 40) {
-      const rows = ok(await SB.from("chapters").select("*").eq("published", true)
-        .order("updated_at", { ascending: false }).limit(max));
+      const rows = ok(await SB.rpc("feed_chapters", { p_max: max }));
       return (rows || []).map(r => ({
-        id: r.id, storyId: r.story_id, ...r.data,
-        published: true, likes: r.likes, views: r.views || 0, owner: r.owner, updatedAt: secs(r.updated_at)
+        id: r.id, storyId: r.story_id, owner: r.owner,
+        title: r.title, cover: r.cover, excerpt: r.excerpt, hasCover: r.has_cover,
+        published: true, likes: r.likes, views: r.views || 0,
+        isFromVela: r.is_from_vela, country: r.country, continent: r.continent,
+        storyTitle: r.story_title, authorName: r.author_name, updatedAt: secs(r.updated_at)
       }));
     },
 

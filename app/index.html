@@ -6406,13 +6406,23 @@ class Component extends DCLogic {
     const r = item.raw || {};
     const story = { id: item.storyId, title: r.storyTitle || item.series || '', author: item.author,
       cover: r.cover || '', category: '', country: r.country || '', continent: r.continent || '', chapters: [] };
-    const chapter = { id: item.chapterId, title: item.title, html: r.html || '', photos: r.photos || [],
-      clip: r.clip || '', cover: r.cover || '', likes: item.likes || 0, views: r.views || 0, published: true, updatedAt: item._t };
+    const chapter = { id: item.chapterId, title: item.title, html: '', photos: [],
+      clip: '', cover: r.cover || '', likes: item.likes || 0, views: r.views || 0, published: true, updatedAt: item._t, _loading: true };
     story.chapters = [chapter];
     this._chReadId = null;
     this.setState({ remoteOpen: { story, chapter }, openStoryId: item.storyId, openChapterId: item.chapterId, chReadPreview: false });
     this.go('chapterRead');
     this.loadComments(item.storyId, item.chapterId);
+    const be = window.WTNBackend;
+    if (be && be.getChapter) {
+      be.getChapter(item.storyId, item.chapterId).then(res => {
+        if (!res || !res.chapter) return;
+        this.setState(s => (s.openChapterId === item.chapterId && s.remoteOpen) ? {
+          remoteOpen: { story: s.remoteOpen.story, chapter: { ...s.remoteOpen.chapter, html: res.chapter.html || '',
+            photos: res.chapter.photos || [], clip: res.chapter.clip || '', _loading: false } }
+        } : null);
+      }).catch(() => {});
+    }
   }
   reopenInspiration(x) {
     const be = window.WTNBackend;
@@ -6478,14 +6488,12 @@ class Component extends DCLogic {
     try {
       const rows = await be.feed(60);
       const mine = be._uid;
-      const strip = h => (h || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-      const firstImg = h => { const m = (h || '').match(/<img[^>]+src="([^"]+)"/); return m ? m[1] : ''; };
       const list = rows.filter(r => r.isFromVela || r.owner !== mine).map(r => {
-        const img = r.cover || firstImg(r.html) || '';
-        const ex = strip(r.html).slice(0, 100);
+        const img = r.cover || '';
+        const ex = (r.excerpt || '').replace(/\s+/g, ' ').trim();
         return { storyId: r.storyId, chapterId: r.id, series: decodeEnt(r.storyTitle || ''), title: decodeEnt(r.title || 'ตอน'),
           author: decodeEnt(r.authorName || 'นักเดินทาง'), photo: img || 'default-cover.jpg',
-          hasCover: !!img, excerpt: decodeEnt(ex ? (ex + (ex.length >= 100 ? '…' : '')) : ''),
+          hasCover: !!img, excerpt: decodeEnt(ex ? (ex + (ex.length >= 155 ? '…' : '')) : ''),
           likes: r.likes || 0, views: r.views || 0, country: decodeEnt(r.country || ''), continent: decodeEnt(r.continent || ''),
           isFromVela: !!r.isFromVela, owner: r.owner,
           _t: (r.updatedAt && r.updatedAt.seconds ? r.updatedAt.seconds * 1000 : Date.now()),
@@ -10161,7 +10169,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19j',
+      appVersion: '2026.08.19l',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -11192,12 +11200,25 @@ class Component extends DCLogic {
       nowKicker: nowK, nowTitle: nowT, nowSub: nowS, showNow: nowCard.show,
       trips: this.trips, noTrips: this.trips.length === 0,
       ...(() => {
-        const strip = h => (h || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        const firstImg = h => { const m = (h || '').match(/<img[^>]+src="([^"]+)"/); return m ? m[1] : ''; };
+        // แคชผลลบ HTML tag ต่อบทไว้ (คีย์ = id+updatedAt+ความยาว) — กันรันรีเจ็กซ์ซ้ำทุกครั้งที่ re-render บนเนื้อหาที่อาจฝัง base64 รูปยาวมาก
+        const excerptCache = this._excerptCache || (this._excerptCache = new Map());
+        const stripped = c => {
+          if (!c) return { strip: '', img: '' };
+          const key = (c.id || '') + ':' + (c.updatedAt || 0) + ':' + ((c.html || '').length);
+          let hit = excerptCache.get(key);
+          if (!hit) {
+            const strip = (c.html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            const m = (c.html || '').match(/<img[^>]+src="([^"]+)"/);
+            hit = { strip, img: m ? m[1] : '' };
+            if (excerptCache.size > 500) excerptCache.clear(); // กันแคชบวมไม่รู้จบ
+            excerptCache.set(key, hit);
+          }
+          return hit;
+        };
         const card = s => {
           s = this.normStory(s);
           const chs = s.chapters || [];
-          let ex = (s.synopsis || strip((chs[0] || {}).html) || '').slice(0, 96);
+          let ex = (s.synopsis || stripped(chs[0]).strip || '').slice(0, 96);
           return {
             photo: s.cover || 'default-cover.jpg',
             hasCover: !!s.cover, place: s.category || '', title: s.title,
@@ -11210,8 +11231,9 @@ class Component extends DCLogic {
           st = this.normStory(st);
           (st.chapters || []).forEach(c => {
             if (!(c.html || '').trim() && !c.cover) return;
-            const img = c.cover || firstImg(c.html) || st.cover || '';
-            const ex = strip(c.html).slice(0, 100);
+            const sp = stripped(c);
+            const img = c.cover || sp.img || st.cover || '';
+            const ex = sp.strip.slice(0, 100);
             feed.push({ _t: c.updatedAt || st.at || 0,
               photo: img || 'default-cover.jpg', hasCover: !!img,
               series: st.title, title: c.title, byline: this.myName, byAvatar: this.myAvatar, byHasAvatar: !!this.myAvatar, byNoAvatar: !this.myAvatar,
@@ -12022,7 +12044,7 @@ class Component extends DCLogic {
           previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this.chHtml(), photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
           crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: this.profile.name || os.author || 'Nim',
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
-          chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; this.enrichRead(el); if (this.isRemoteOpen) this.armViewTimer(this.state.openStoryId, this.state.openChapterId, (oc || {}).html || ''); } },
+          chReaderRef: el => { const key = this.state.openChapterId + ':' + (((oc || {}).html) ? 'y' : 'n'); if (el && el._loadedId !== key) { el.innerHTML = (oc || {}).html || (this.isRemoteOpen ? '<p style=\"color:#a1927c\">กำลังโหลด...</p>' : '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'); el._loadedId = key; this.enrichRead(el); if (this.isRemoteOpen && (oc || {}).html) this.armViewTimer(this.state.openStoryId, this.state.openChapterId, (oc || {}).html || ''); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
           crShowSave: this.isRemoteOpen,
