@@ -2305,6 +2305,38 @@
               </div>
             </div>
           </div>
+          <div style="margin-bottom:11px">
+            <div style="font:600 15.5px 'Anuphan';color:#2b241f;margin-bottom:8px">พื้นที่เก็บในเครื่อง</div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px">
+                <span style="font:500 13.5px 'Anuphan';color:#8a7d6f">พื้นที่หลัก (จำกัดราว 5 MB)</span>
+                <span style="font:700 17px 'Anuphan';color:{{ stColor }}">{{ stUsed }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:11px">
+                <sc-for list="{{ stRows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <span style="font:500 13px 'Anuphan';color:#5c524a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</span>
+                    <span style="font:600 13px 'Anuphan';color:#8a7d6f;flex:none">{{ r.size }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ stCanTidy }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px">
+                  <div style="font:500 13px/1.55 'Anuphan';color:#5c524a;margin-bottom:10px;text-wrap:pretty">{{ stTidyNote }}</div>
+                  <button onClick="{{ doTidy }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ tidyLabel }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ stCanPurge }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:9px">
+                  <div style="font:500 13px/1.55 'Anuphan';color:#5c524a;margin-bottom:10px;text-wrap:pretty">{{ stPurgeNote }}</div>
+                  <button onClick="{{ doPurge }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ล้างสำเนา/แคช · คืน {{ stPurgeSize }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ stClean }}" hint-placeholder-val="{{ false }}">
+                <div style="font:500 13px/1.55 'Anuphan';color:#8a7d6f;text-wrap:pretty">รูปทั้งหมดอยู่ในที่เก็บสำรอง (ไม่กินพื้นที่หลัก) — ถ้ายังเต็ม ให้ลบรูปในเรื่องที่ไม่ใช้แล้ว</div>
+              </sc-if>
+            </div>
+          </div>
           <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ goWpImport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
             <span style="width:36px;height:36px;border-radius:10px;background:#f6efe2;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></span>
@@ -2868,6 +2900,7 @@ class Component extends DCLogic {
     this.loadFeed();
     this.migrateEbPhotoCfg();
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
+    try { if (this.lsStats().total > 3.6e6) this.purgeCaches(true); } catch (e) {}   // ใกล้เต็ม → ทิ้งสำเนา/แคชที่สร้างใหม่ได้
     Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); this.loadCredits(); });
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
@@ -3005,6 +3038,85 @@ class Component extends DCLogic {
       alert('พื้นที่เก็บเต็มจริงๆ ' + (label || '') + '\nลองลบรูปเก่าสักหน่อย หรือกดซิงก์ขึ้นคลาวด์ตอนมีเน็ต');
       return false;
     }
+  }
+  // เต็มแล้วยังบันทึกให้ได้: ทิ้งสำเนา baseline + ย้ายรูป base64 ทั้งเครื่องไป IndexedDB แล้วเซฟซ้ำ
+  async freeSpaceThenSave(key, obj, label) {
+    try { localStorage.removeItem('wtn-sync-base'); this._baseMem = null; } catch (e) {}
+    try { localStorage.setItem(key, JSON.stringify(obj)); this.forceUpdate(); return true; } catch (e) {}
+    await this.tidyStorage(true);
+    try { localStorage.setItem(key, JSON.stringify(obj)); this.showToast('✓ บันทึกแล้ว · ย้ายรูปไปที่เก็บสำรองในเครื่อง'); this.forceUpdate(); return true; } catch (e) {}
+    return await this.rescueSave(key, obj, label);
+  }
+  // ---------- พื้นที่เก็บในเครื่อง ----------
+  lsStats() {
+    let total = 0, b64 = 0, imgs = 0, rows = {};
+    const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i); if (!k) continue;
+        const v = localStorage.getItem(k) || '';
+        const b = (k.length + v.length) * 2;
+        total += b;
+        const g = k.indexOf('photopick:') === 0 ? 'รูปปก/รูปที่เลือก' : (this.LS_LABEL[k] || k);
+        rows[g] = (rows[g] || 0) + b;
+        if (v.indexOf('data:image') !== -1 && k !== 'wtn-sync-base') {
+          const m = v.match(re) || [];
+          imgs += m.length; m.forEach(x => { b64 += x.length * 2; });
+        }
+      }
+    } catch (e) {}
+    const list = Object.keys(rows).map(k => ({ k, name: k, size: this.mb(rows[k]) , b: rows[k] }))
+      .sort((a, b) => b.b - a.b).slice(0, 5);
+    return { total, b64, imgs, rows: list };
+  }
+  LS_LABEL = { 'wtn-stories': 'เรื่องเล่า', 'wtn-moments': 'โมเมนต์', 'wtn-checkins': 'เช็คอิน', 'wtn-sprite': 'ฟิล์มคลิปวิดีโอ', 'wtn-docs': 'เอกสาร/ตั๋ว', 'wtn-itinerary': 'แผนรายวัน', 'wtn-trips': 'ทริป', 'wtn-sync-base': 'สำเนาสำหรับเทียบซิงก์', 'wtn-expenses': 'ค่าใช้จ่าย', 'wtn-packing': 'ของที่ต้องเตรียม', 'wtn-explore-cache': 'แคชสำรวจ' };
+  mb(b) { return b >= 1048576 ? (Math.round(b / 1048576 * 10) / 10 + ' MB') : (Math.max(1, Math.round(b / 1024)) + ' KB'); }
+  PURGE_KEYS = ['wtn-sync-base', 'wtn-explore-cache', 'wtn-place-cache', 'wtn-wx-cache', 'vela-geo-cache-v3'];
+  purgeBytes() {
+    let b = 0;
+    try { this.PURGE_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) b += (k.length + v.length) * 2; }); } catch (e) {}
+    return b;
+  }
+  purgeCaches(quiet) {
+    const b = this.purgeBytes();
+    try { this.PURGE_KEYS.forEach(k => localStorage.removeItem(k)); } catch (e) {}
+    this._baseMem = this._baseMem || null;
+    if (!quiet) { this.showToast(b ? ('✓ ล้างสำเนา/แคชแล้ว · คืนพื้นที่ ' + this.mb(b)) : 'ไม่มีสำเนา/แคชค้างอยู่'); this.forceUpdate(); }
+    return b;
+  }
+  async tidyStorage(quiet) {
+    if (this._tidying) return 0;
+    this._tidying = true;
+    if (!quiet) this.setState({ tidyBusy: true });
+    const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
+    const keys = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) && k !== 'wtn-img-map' && k !== 'wtn-sync-base') keys.push(k);
+      }
+    } catch (e) {}
+    try { localStorage.removeItem('wtn-sync-base'); this._baseMem = null; } catch (e) {}
+    let moved = 0, freed = 0;
+    for (const k of keys) {
+      let v = ''; try { v = localStorage.getItem(k) || ''; } catch (e) {}
+      if (v.indexOf('data:image') === -1) continue;
+      const found = Array.from(new Set(v.match(re) || []));
+      let nv = v, ok = 0;
+      for (const d of found) {
+        let ref = null;
+        try { ref = await this.stashPhoto(d); } catch (e) {}
+        if (ref && ref.indexOf('idb:') === 0) { nv = nv.split(d).join(ref); ok++; freed += d.length * 2; }
+      }
+      if (ok && nv !== v) { try { localStorage.setItem(k, nv); moved += ok; } catch (e) {} }
+    }
+    this._tidying = false;
+    if (!quiet) {
+      this.setState({ tidyBusy: false });
+      this.showToast(moved ? ('✓ ย้ายรูป ' + moved + ' ใบไปที่เก็บสำรอง · คืนพื้นที่ ' + this.mb(freed)) : 'เรียบร้อย — ไม่มีรูปค้างในพื้นที่หลักแล้ว');
+      this.forceUpdate();
+    }
+    return moved;
   }
   // ยกรูป base64 ที่ฝังในข้อมูลขึ้น Cloud Storage แล้วแทนด้วยลิงก์ (อัพครั้งเดียว/รูป, กันซ้ำด้วย map)
   async hoistImages() {
@@ -3206,8 +3318,12 @@ class Component extends DCLogic {
   }
   _setBase(o) {
     this._baseMem = o || null;
-    try { localStorage.setItem('wtn-sync-base', JSON.stringify(o)); }
-    catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }   // เต็ม → ทิ้งสำเนาบนดิสก์ ใช้ในแรมพอ
+    let j = '';
+    try { j = JSON.stringify(o); } catch (e) {}
+    // สำเนานี้เป็นแค่ตัวเทียบ ทิ้งได้ — ใหญ่เกิน 300KB ให้อยู่ในแรมพอ ไม่กินพื้นที่หลัก
+    if (!j || j.length > 300000) { try { localStorage.removeItem('wtn-sync-base'); } catch (e) {} return; }
+    try { localStorage.setItem('wtn-sync-base', j); }
+    catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }
   }
   // ประตูเดียวที่โหลด blob เต็มตอน push — ถ้าเพิ่งโหลดไปไม่ถึง 2 นาที ใช้สำเนาในแรมแทน (กัน egress ระเบิด)
   // ── ตัวคุม egress: นับปริมาณข้อมูลที่คุยกับคลาวด์ + เพดานต่อวัน (เก็บนอกคีย์ wtn- เพื่อไม่ให้ถูกซิงก์) ──
@@ -4868,7 +4984,7 @@ class Component extends DCLogic {
   saveStories(list) {
     list = this._stampChanged(this.stories, list, 'id');
     try { localStorage.setItem('wtn-stories', JSON.stringify(list)); }
-    catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม — ลองลบรูปในเรื่องเก่าบางส่วน'); }
+    catch (e) { this.freeSpaceThenSave('wtn-stories', list, '(เรื่องเล่า)'); }
   }
   addStoryPhoto(ev) {
     const files = Array.from(ev.target.files || []);
@@ -5130,21 +5246,50 @@ class Component extends DCLogic {
     if (navigator.onLine === false) { this.setState({ wpErr: 'ไม่มีเน็ต — ต่อเน็ตก่อนแล้วลองอีกครั้ง' }); return; }
     const q = String(this.state.wpQ || '').trim();
     const cat = String(this.state.wpCatSlug || '').trim();
+    const catId = this.state.wpCatId || 0;
+    const host = encodeURIComponent(this.wpSiteHost);
     this.setState({ wpBusy: true, wpErr: '' });
     try {
-      const url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
-        + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
-        + (cat ? '&category=' + encodeURIComponent(cat) : '')
-        + (q ? '&search=' + encodeURIComponent(q) : '');
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      const posts = (d.posts || []).map(p => ({
-        id: p.ID, title: this._wpText(p.title) || '(ไม่มีชื่อเรื่อง)', date: p.date,
-        url: p.URL, thumb: this._wpCdn(p.featured_image, 220)
-      }));
+      let posts = null, found = 0;
+      // 1) ถามด้วยรหัสหมวด (wp/v2) — แม่นกว่า slug ที่อาจไม่ตรง
+      if (catId) {
+        try {
+          const r2 = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + host
+            + '/posts?per_page=20&page=' + page + '&categories=' + catId
+            + '&_fields=id,title,date,link,jetpack_featured_media_url'
+            + (q ? '&search=' + encodeURIComponent(q) : ''));
+          if (r2.ok) {
+            const d2 = await r2.json();
+            if (Array.isArray(d2)) {
+              posts = d2.map(p => ({
+                id: p.id, title: this._wpText(p.title && p.title.rendered) || '(ไม่มีชื่อเรื่อง)',
+                date: p.date, url: p.link, thumb: this._wpCdn(p.jetpack_featured_media_url || '', 220)
+              }));
+              found = +(r2.headers.get('X-WP-Total') || posts.length) || posts.length;
+            }
+          }
+        } catch (e2) {}
+      }
+      // 2) สำรอง: v1.1 ด้วย slug
+      if (!posts || !posts.length) {
+        const url = 'https://public-api.wordpress.com/rest/v1.1/sites/' + host
+          + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
+          + (cat ? '&category=' + encodeURIComponent(cat) : '')
+          + (q ? '&search=' + encodeURIComponent(q) : '');
+        const r = await fetch(url);
+        if (!r.ok && !posts) throw new Error('HTTP ' + r.status);
+        if (r.ok) {
+          const d = await r.json();
+          const p11 = (d.posts || []).map(p => ({
+            id: p.ID, title: this._wpText(p.title) || '(ไม่มีชื่อเรื่อง)', date: p.date,
+            url: p.URL, thumb: this._wpCdn(p.featured_image, 220)
+          }));
+          if (p11.length || !posts) { posts = p11; found = d.found || p11.length; }
+        }
+      }
+      posts = posts || [];
       this.setState(s => ({
-        wpBusy: false, wpPage: page, wpFound: d.found || 0,
+        wpBusy: false, wpPage: page, wpFound: found,
         wpList: page === 1 ? posts : [...(s.wpList || []), ...posts]
       }));
     } catch (e) {
@@ -6151,7 +6296,7 @@ class Component extends DCLogic {
   saveDocs(list) {
     try { list = this._stampChanged(this.docs, list, 'id'); } catch (e) {}
     try { const all = JSON.parse(localStorage.getItem('wtn-docs')) || {}; all[this.state.trip] = list; localStorage.setItem('wtn-docs', JSON.stringify(all)); }
-    catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม — ลองลบไฟล์เก่าบางส่วน'); }
+    catch (e) { const all = JSON.parse(localStorage.getItem('wtn-docs') || '{}'); all[this.state.trip] = list; this.freeSpaceThenSave('wtn-docs', all, '(เอกสาร)'); }
     this.forceUpdate();
   }
   get openDoc() { return this.docs.find(d => d.id === this.state.openDocId) || null; }
@@ -9712,7 +9857,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.18ai',
+      appVersion: '2026.08.19c',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -10231,6 +10376,26 @@ class Component extends DCLogic {
       cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); this.clearLocalAppData(); try { localStorage.removeItem('wtn-auth'); localStorage.removeItem('wtn-cloud-uid'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); this.forceUpdate(); },
       doBackup: () => { this.countBackupPhotos(); this.setState({ bkOpen: true }); },
+      ...(() => {
+        const st = this.lsStats();
+        const pb = this.purgeBytes();
+        const tidying = !!this.state.tidyBusy;
+        return {
+          stUsed: this.mb(st.total),
+          stColor: st.total > 4e6 ? '#c05f39' : '#2b241f',
+          stRows: st.rows,
+          stCanTidy: st.imgs > 0,
+          stCanPurge: pb > 20480,
+          stPurgeSize: this.mb(pb),
+          stPurgeNote: 'สำเนาสำหรับเทียบซิงก์และแคชแผนที่/สถานที่ สร้างใหม่ได้เอง — ล้างได้เลยไม่มีข้อมูลหาย',
+          doPurge: () => this.purgeCaches(),
+          stClean: st.imgs === 0 && pb <= 20480,
+          stTidyNote: 'มีรูปฝังอยู่ในพื้นที่หลัก ' + st.imgs + ' ใบ (' + this.mb(st.b64) + ') — ย้ายไปที่เก็บสำรองในเครื่องได้ รูปยังอยู่ครบเหมือนเดิม',
+          tidyBusy: tidying,
+          tidyLabel: tidying ? 'กำลังย้าย…' : 'ย้ายรูปออกจากพื้นที่หลัก',
+          doTidy: () => this.tidyStorage()
+        };
+      })(),
       bkOpen: !!this.state.bkOpen,
       bkClose: () => this.setState({ bkOpen: false }),
       bkBusy: !!this.state.bkBusy,
@@ -10302,7 +10467,7 @@ class Component extends DCLogic {
                         const hasKids = cats.some(k => (k.parent || 0) === c.id);
                         this.setState({
                           wpPath: [{ id: par.id, name: clean(par.name), slug: par.slug }, { id: c.id, name: clean(c.name), slug: c.slug }],
-                          wpCatSlug: c.slug, wpQ: '', wpFlatCtry: false
+                          wpCatSlug: c.slug, wpCatId: c.id, wpQ: '', wpFlatCtry: false
                         });
                         setTimeout(() => this.wpLoad(1), 0);
                       }
@@ -10315,7 +10480,7 @@ class Component extends DCLogic {
               wpToggleFlat: () => this.setState(s => ({ wpFlatCtry: !s.wpFlatCtry, wpPath: [] })),
               wpShowFlatToggle: !path.length,
               wpPillLatest: pill(!browse), wpPillBrowse: pill(browse),
-              wpModeLatest: () => this.setState({ wpMode: 'latest' }),
+              wpModeLatest: () => this.setState({ wpMode: 'latest', wpCatId: 0, wpCatSlug: '' }),
               wpModeBrowse: () => { this.setState({ wpMode: 'browse' }); this.wpLoadCats(); },
               wpCatsBusy: !!this.state.wpCatsBusy,
               wpHasCrumbs: path.length > 0,
@@ -10326,14 +10491,13 @@ class Component extends DCLogic {
                 hasKids: cats.some(k => (k.parent || 0) === c.id),
                 on: () => {
                   const rec = { id: c.id, name: clean(c.name), slug: c.slug };
-                  const hasKids = cats.some(k => (k.parent || 0) === c.id);
-                  this.setState(s => ({ wpPath: [...(s.wpPath || []), rec], wpCatSlug: hasKids ? '' : c.slug, wpQ: '' }));
-                  if (!hasKids) setTimeout(() => this.wpLoad(1), 0);
+                  this.setState(s => ({ wpPath: [...(s.wpPath || []), rec], wpCatSlug: c.slug, wpCatId: c.id, wpQ: '' }));
+                  if (c.count) setTimeout(() => this.wpLoad(1), 0);   // มีโพสต์ในหมวดนี้ → โหลดเลย (มีหมวดย่อยก็ยังเลือกลงลึกได้)
                 }
               }))),
               wpCanListHere: path.length > 0,
               wpListHereLabel: 'ดูโพสต์ใน ' + clean((path[path.length - 1] || {}).name),
-              wpListHere: () => { this.setState({ wpCatSlug: (path[path.length - 1] || {}).slug || '', wpQ: '' }); setTimeout(() => this.wpLoad(1), 0); },
+              wpListHere: () => { const t = path[path.length - 1] || {}; this.setState({ wpCatSlug: t.slug || '', wpCatId: t.id || 0, wpQ: '' }); setTimeout(() => this.wpLoad(1), 0); },
             };
           })(),
           wpDoImport: () => this.wpImportSelected(),
