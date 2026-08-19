@@ -393,6 +393,11 @@
             <p style="font:500 15px/1.6 'Anuphan';color:#f6d9c6;margin:0 0 16px">ตั้งชื่อ ใส่ช่วงวันกับงบ แล้วเริ่มวางแผนรายวันได้เลย</p>
             <button onClick="{{ goCreate }}" style="border:none;background:#fff;color:#a4482a;font:600 16px 'Anuphan';padding:12px 20px;border-radius:22px;cursor:pointer">+ สร้างทริปใหม่</button>
           </div>
+          <div style="display:flex;gap:7px;margin-bottom:16px">
+            <button onClick="{{ setPlansTrips }}" style="{{ plansTripsStyle }}">ทริป</button>
+            <button onClick="{{ setPlansInspire }}" style="{{ plansInspireStyle }}">แรงบันดาลใจ</button>
+          </div>
+          <sc-if value="{{ plansTabTrips }}" hint-placeholder-val="{{ true }}">
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:12px">แผนของฉัน</div>
           <sc-for list="{{ myTrips }}" as="t" hint-placeholder-count="0">
             <div onClick="{{ t.open }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:pointer">
@@ -412,6 +417,27 @@
           </sc-for>
           <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}">
             <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">ยังไม่มีทริป</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e">แตะ “สร้างทริปใหม่” ด้านบน แล้ววางแผนวันแรกได้เลย</div></div>
+          </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ plansTabInspire }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ inspireEmpty }}" hint-placeholder-val="{{ true }}">
+              <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">ยังไม่มีแรงบันดาลใจ</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e">กด “เก็บไว้ในแรงบันดาลใจ” ตอนอ่านเรื่องเล่าในฟีดทั่วโลก แล้วมันจะมารวมที่นี่</div></div>
+            </sc-if>
+            <sc-for list="{{ inspireGroups }}" as="g" hint-placeholder-count="0">
+              <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:8px">{{ g.continent }}</div>
+              <sc-for list="{{ g.countries }}" as="c" hint-placeholder-count="0">
+                <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">{{ c.name }} · {{ c.count }} เรื่อง</div>
+                <div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:18px">
+                  <sc-for list="{{ c.items }}" as="it" hint-placeholder-count="0">
+                    <div onClick="{{ it.on }}" style="flex:none;width:150px;border-radius:16px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);cursor:pointer">
+                      <sc-if value="{{ it.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ it.cover }}" alt="" style="width:100%;height:96px;object-fit:cover;background:#efe4d3;display:block"></sc-if>
+                      <div style="padding:9px 10px 11px"><div style="font:600 12.5px/1.4 'Anuphan';color:#2b241f">{{ it.title }}</div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </sc-for>
           </sc-if>
         </div>
       </sc-if>
@@ -1156,6 +1182,11 @@
 
           <sc-if value="{{ segIsStories }}" hint-placeholder-val="{{ true }}">
             <div style="padding:6px 20px 30px">
+              <div style="display:flex;background:#efe4d3;border-radius:12px;padding:3px;margin-bottom:12px">
+                <button onClick="{{ setScopeGlobal }}" style="{{ scopeGlobalStyle }}">ทั่วโลก</button>
+                <button onClick="{{ setScopeMine }}" style="{{ scopeMineStyle }}">ของฉัน</button>
+              </div>
+              <sc-if value="{{ storyScopeMine }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;gap:7px;margin-bottom:14px">
                 <button onClick="{{ setFeedLatest }}" style="{{ pillFeedLatest }}">ล่าสุด</button>
                 <button onClick="{{ setFeedShelf }}" style="{{ pillFeedShelf }}">คลังเรื่อง · ทวีป › ประเทศ</button>
@@ -1207,6 +1238,49 @@
                 </sc-if>
                 <sc-if value="{{ arcEmpty }}" hint-placeholder-val="{{ true }}">
                   <div style="text-align:center;padding:44px 24px;font:500 15px/1.7 'Anuphan';color:#8a7d6f;text-wrap:pretty">ยังไม่มีเล่มในคลัง<br>เล่มที่นำเข้าจากบล็อกจะถูกจัดตามทวีป-ประเทศให้เอง<br>ของที่เขียนเองตั้งได้ในหน้าจัดการเล่ม</div>
+                </sc-if>
+              </sc-if>
+              </sc-if>
+
+              <sc-if value="{{ storyScopeGlobal }}" hint-placeholder-val="{{ false }}">
+                <sc-if value="{{ globalHasVela }}" hint-placeholder-val="{{ false }}">
+                  <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:9px">เรื่องเล่าจาก Vela</div>
+                  <sc-for list="{{ velaFeed }}" as="st" hint-placeholder-count="0">
+                    <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
+                      <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><div style="position:relative"><img src="{{ st.photo }}" alt="" loading="lazy" decoding="async" style="width:100%;height:170px;background:#efe4d3;object-fit:cover;display:block"><span style="position:absolute;top:10px;left:10px;background:rgba(43,36,32,.55);color:#f6efe2;font:600 11px 'Anuphan';padding:4px 9px;border-radius:20px">Vela</span></div></sc-if>
+                      <div style="padding:13px 15px 15px">
+                        <div style="font:600 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:4px">{{ st.byline }}<sc-if value="{{ st.hasPlace }}" hint-placeholder-val="{{ false }}"> · {{ st.place }}</sc-if> · {{ st.series }}</div>
+                        <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
+                        <p style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin:0 0 9px">{{ st.excerpt }}</p>
+                        <div style="display:flex;align-items:center;gap:5px;color:#a1927c">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                          <sc-if value="{{ st.showViews }}" hint-placeholder-val="{{ false }}"><span style="font:600 12px 'Anuphan'">{{ st.viewsLabel }}</span></sc-if>
+                          <sc-if value="{{ st.isNew }}" hint-placeholder-val="{{ true }}"><span style="font:600 12px 'Anuphan';color:#c9a876">ใหม่</span></sc-if>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ globalHasUsers }}" hint-placeholder-val="{{ false }}">
+                  <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:9px">จากผู้ใช้ Vela</div>
+                  <sc-for list="{{ usersFeed }}" as="st" hint-placeholder-count="0">
+                    <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
+                      <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ st.photo }}" alt="" loading="lazy" decoding="async" style="width:100%;height:170px;background:#efe4d3;object-fit:cover;display:block"></sc-if>
+                      <div style="padding:13px 15px 15px">
+                        <div style="font:600 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:4px">{{ st.byline }}<sc-if value="{{ st.hasPlace }}" hint-placeholder-val="{{ false }}"> · {{ st.place }}</sc-if> · {{ st.series }}</div>
+                        <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
+                        <p style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin:0 0 9px">{{ st.excerpt }}</p>
+                        <div style="display:flex;align-items:center;gap:5px;color:#a1927c">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                          <sc-if value="{{ st.showViews }}" hint-placeholder-val="{{ false }}"><span style="font:600 12px 'Anuphan'">{{ st.viewsLabel }}</span></sc-if>
+                          <sc-if value="{{ st.isNew }}" hint-placeholder-val="{{ true }}"><span style="font:600 12px 'Anuphan';color:#c9a876">ใหม่</span></sc-if>
+                        </div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </sc-if>
+                <sc-if value="{{ globalEmpty }}" hint-placeholder-val="{{ false }}">
+                  <div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div><div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีเรื่องเล่าสาธารณะ</div><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เมื่อมีคนกดเผยแพร่เรื่องเล่า จะมาโผล่ที่นี่</div></div>
                 </sc-if>
               </sc-if>
             </div>
@@ -1615,7 +1689,7 @@
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2" style="flex:none;margin-top:2px"><path d="M4 20h4L18 10l-4-4L4 16z"></path></svg>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:11px;border-top:1px solid rgba(43,36,32,.07)">
-                  <span onClick="{{ c.togglePub }}" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer"><span style="font:600 13.5px 'Anuphan';color:#5c5347">เผยแพร่</span><span style="width:42px;height:24px;border-radius:14px;position:relative;flex:none;{{ c.pubTrack }}"><span style="position:absolute;top:3px;{{ c.pubKnob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span></span>
+                  <span onClick="{{ c.togglePub }}" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer"><span style="font:600 13.5px 'Anuphan';color:#5c5347">เผยแพร่สู่สาธารณะ</span><span style="width:42px;height:24px;border-radius:14px;position:relative;flex:none;{{ c.pubTrack }}"><span style="position:absolute;top:3px;{{ c.pubKnob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span></span>
                   <span style="flex:1"></span>
                   <sc-if value="{{ c.canUp }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.up }}" title="เลื่อนขึ้น" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 19V6M6 12l6-6 6 6"/></svg></button></sc-if>
                   <sc-if value="{{ c.canDown }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.down }}" title="เลื่อนลง" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button></sc-if>
@@ -1640,7 +1714,7 @@
             <sc-if value="{{ chHasCover }}" hint-placeholder-val="{{ false }}"><span style="position:relative;width:56px;height:56px;flex:none"><img src="{{ chCover }}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ clearChCover }}" style="position:absolute;top:-6px;right:-6px;width:21px;height:21px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 12px 'Anuphan';cursor:pointer;line-height:1">✕</button></span></sc-if>
             <label style="display:inline-flex;align-items:center;gap:7px;border:1px dashed rgba(43,36,32,.24);border-radius:11px;padding:9px 13px;cursor:pointer;color:#8a7d6f;font:600 14px 'Anuphan'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg>{{ chCoverLabel }}<input type="file" accept="image/*" onChange="{{ setChCover }}" style="display:none"></label>
             <span style="flex:1"></span>
-            <span onClick="{{ toggleChPublish }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;flex:none"><span style="font:600 14px 'Anuphan';color:#5c5347">เผยแพร่</span><span style="width:46px;height:26px;border-radius:15px;position:relative;flex:none;{{ cePubTrack }}"><span style="position:absolute;top:3px;{{ cePubKnob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span></span>
+            <span onClick="{{ toggleChPublish }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;flex:none"><span style="font:600 14px 'Anuphan';color:#5c5347">เผยแพร่สู่สาธารณะ</span><span style="width:46px;height:26px;border-radius:15px;position:relative;flex:none;{{ cePubTrack }}"><span style="position:absolute;top:3px;{{ cePubKnob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span></span>
           </div>
           <div class="wtn-s" style="flex:none;display:flex;align-items:center;gap:1px;overflow-x:auto;padding:7px 12px;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08);background:#fffaf0">
             <button onMouseDown="{{ rtUndo }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 7L4 12l5 5"></path><path d="M4 12h11a5 5 0 0 1 0 10h-3"></path></svg></button>
@@ -1729,8 +1803,14 @@
             <sc-if value="{{ crHasClipLink }}" hint-placeholder-val="{{ false }}">
               <a href="{{ crClipUrl }}" target="_blank" style="display:flex;align-items:center;gap:10px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;margin-top:22px;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:#c05f39;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ดูคลิปของวันนี้</span></a>
             </sc-if>
+            <sc-if value="{{ crShowViews }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;margin-top:-10px;margin-bottom:18px;font:600 13px 'Anuphan';color:#a1927c">{{ crViewsLabel }}</div>
+            </sc-if>
             <sc-if value="{{ crLive }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid rgba(43,36,32,.1)">
+                <sc-if value="{{ crShowSave }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ crToggleSave }}" style="{{ crSaveStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="{{ crSaveFill }}" stroke="currentColor" stroke-width="1.8"><path d="M20.8 8.6c0 5-8.8 9.4-8.8 9.4S3.2 13.6 3.2 8.6a4.6 4.6 0 018.8-1.9A4.6 4.6 0 0120.8 8.6z"/></svg>{{ crSaveLabel }}</button>
+                </sc-if>
                 <button onClick="{{ crShare }}" style="display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(43,36,32,.14);background:#fffaf0;font:600 15px 'Anuphan';color:#5c5347;padding:9px 15px;border-radius:22px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg>แชร์</button>
               </div>
             </sc-if>
@@ -2057,7 +2137,6 @@
                               <div style="position:absolute;left:7px;right:6px;bottom:6px;color:#fffaf0;text-shadow:0 1px 3px rgba(0,0,0,.5)">
                                 <div style="font-family:'Chonburi',serif;font-size:10px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ bk.title }}</div>
                               </div>
-                              <sc-if value="{{ bk.draft }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;left:6px;top:6px;font:600 9px 'Anuphan';color:#2b241f;background:rgba(246,239,226,.92);border-radius:5px;padding:1px 5px">ร่าง</span></sc-if>
                               <sc-if value="{{ bk.picked }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:6px;top:6px;font:600 9px 'Anuphan';color:#fffaf0;background:#c05f39;border-radius:5px;padding:1px 5px">★ เด่น</span></sc-if>
                             </div>
                             <div style="font:500 10.5px 'Anuphan';color:#a1927c;margin-top:5px">{{ bk.sub }}</div>
@@ -5246,7 +5325,6 @@ class Component extends DCLogic {
     if (r && r.chapter && r.chapter.id === this.state.openChapterId) return r.chapter;
     return null;
   }
-  get isRemoteOpen() { const r = this.state.remoteOpen; return !!(r && r.chapter && r.chapter.id === this.state.openChapterId && !this.stories.find(x => x.id === this.state.openStoryId)); }
   addChapter() {
     const s = this.openStory; if (!s) return;
     const ch = { id: 'ch' + Date.now(), title: 'ตอนที่ ' + ((s.chapters || []).length + 1),
@@ -5697,11 +5775,13 @@ class Component extends DCLogic {
         const c = (s.chapters || []).find(x => x.id === chapterId); if (!c) return;
         const author = this.profile.name || s.author || 'nimjourney';
         await be.saveStory({ id: s.id, title: s.title || 'ไม่มีชื่อ', author, ownerName: author,
-          cover: s.cover || '', category: s.category || '', subtitle: s.subtitle || '', tags: s.tags || [] });
+          cover: s.cover || '', category: s.category || '', subtitle: s.subtitle || '', tags: s.tags || [],
+          country: s.country || '', continent: s.continent || '' });
         await be.saveChapter(s.id, { id: c.id, title: c.title || 'ตอน', html: c.html || '',
           photos: c.photos || [], clip: c.clip || '', cover: c.cover || '',
           order: (s.chapters || []).findIndex(x => x.id === c.id),
-          storyTitle: s.title || '', authorName: author, published: true, likes: c.likes || 0 });
+          storyTitle: s.title || '', authorName: author, published: true, likes: c.likes || 0,
+          country: s.country || '', continent: s.continent || '', isFromVela: !!this.isAdmin });
       } else {
         await be.publishChapter(storyId, chapterId, false).catch(() => {});
       }
@@ -5712,29 +5792,7 @@ class Component extends DCLogic {
     this.patchStory(storyId, { chapters: (s.chapters || []).map(c => c.id === chapterId ? { ...c, published: on } : c) });
     this.publishChapterRemote(storyId, chapterId, on);
   }
-  async loadFeed() {
-    return; // เรื่องเล่าเป็นส่วนตัว — ปิดฟีดสาธารณะ
-    /* eslint-disable no-unreachable */
-    const be = window.WTNBackend;
-    if (!be || !be._uid) return;
-    try {
-      const rows = await be.feed(40);
-      const mine = be._uid;
-      const strip = h => (h || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-      const firstImg = h => { const m = (h || '').match(/<img[^>]+src="([^"]+)"/); return m ? m[1] : ''; };
-      const list = rows.filter(r => r.ownerUid !== mine).map(r => {
-        const img = r.cover || firstImg(r.html) || '';
-        const ex = strip(r.html).slice(0, 100);
-        return { storyId: r.storyId, chapterId: r.id, series: r.storyTitle || '', title: r.title || 'ตอน',
-          author: r.authorName || 'นักเดินทาง', photo: img || 'default-cover.jpg',
-          hasCover: !!img, excerpt: ex ? (ex + (ex.length >= 100 ? '…' : '')) : '',
-          likes: r.likes || 0, _t: (r.updatedAt && r.updatedAt.seconds ? r.updatedAt.seconds * 1000 : Date.now()),
-          raw: r };
-      });
-      this.setState({ remoteFeed: list });
-    } catch (e) { console.warn('[wtn] feed', e); }
-    /* eslint-enable no-unreachable */
-  }
+
   // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) ----------
   get moments() { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }
   saveMoments(a) { a = this._stampChanged(this.moments, a, 'id'); try { localStorage.setItem('wtn-moments', JSON.stringify(a)); } catch (e) { this.rescueSave('wtn-moments', a, '(โมเมนต์)'); } }
@@ -6347,14 +6405,94 @@ class Component extends DCLogic {
   openRemoteChapter(item) {
     const r = item.raw || {};
     const story = { id: item.storyId, title: r.storyTitle || item.series || '', author: item.author,
-      cover: r.cover || '', category: '', chapters: [] };
+      cover: r.cover || '', category: '', country: r.country || '', continent: r.continent || '', chapters: [] };
     const chapter = { id: item.chapterId, title: item.title, html: r.html || '', photos: r.photos || [],
-      clip: r.clip || '', cover: r.cover || '', likes: item.likes || 0, published: true, updatedAt: item._t };
+      clip: r.clip || '', cover: r.cover || '', likes: item.likes || 0, views: r.views || 0, published: true, updatedAt: item._t };
     story.chapters = [chapter];
     this._chReadId = null;
     this.setState({ remoteOpen: { story, chapter }, openStoryId: item.storyId, openChapterId: item.chapterId, chReadPreview: false });
     this.go('chapterRead');
     this.loadComments(item.storyId, item.chapterId);
+  }
+  reopenInspiration(x) {
+    const be = window.WTNBackend;
+    if (!be || !be.getChapter) return;
+    be.getChapter(x.storyId, x.chapterId).then(r => {
+      if (!r || !r.chapter) { this.showToast('เรื่องนี้อาจถูกลบหรือซ่อนไปแล้ว'); return; }
+      const st = r.story || {};
+      const story = { id: x.storyId, title: st.title || x.title || '', author: st.authorName || st.author || '',
+        cover: st.cover || r.chapter.cover || x.cover || '', category: '',
+        country: st.country || x.country || '', continent: st.continent || x.continent || '', chapters: [] };
+      const chapter = { id: x.chapterId, title: r.chapter.title || x.title || 'เรื่องเล่า', html: r.chapter.html || '',
+        photos: r.chapter.photos || [], clip: r.chapter.clip || '', cover: r.chapter.cover || '',
+        likes: r.chapter.likes || 0, views: r.chapter.views || 0, published: true, updatedAt: r.chapter.updatedAt };
+      story.chapters = [chapter];
+      this._chReadId = null;
+      this.setState({ remoteOpen: { story, chapter }, openStoryId: x.storyId, openChapterId: x.chapterId, chReadPreview: false });
+      this.go('chapterRead');
+      this.loadComments(x.storyId, x.chapterId);
+    }).catch(() => this.showToast('เปิดเรื่องนี้ไม่ได้ตอนนี้'));
+  }
+  get inspiration() { try { return JSON.parse(localStorage.getItem('wtn-inspiration')) || []; } catch (e) { return []; } }
+  saveInspiration(a) { try { localStorage.setItem('wtn-inspiration', JSON.stringify(a)); } catch (e) {} }
+  isInspired(sid, cid) { return this.inspiration.some(x => x.storyId === sid && x.chapterId === cid); }
+  toggleInspiration(item) {
+    const list = this.inspiration;
+    const i = list.findIndex(x => x.storyId === item.storyId && x.chapterId === item.chapterId);
+    if (i >= 0) { list.splice(i, 1); this.showToast('นำออกจากแรงบันดาลใจแล้ว'); }
+    else { list.unshift({ ...item, savedAt: Date.now() }); this.showToast('เก็บไว้ในแรงบันดาลใจแล้ว'); }
+    this.saveInspiration(list);
+    this.forceUpdate();
+  }
+  get isRemoteOpen() { const r = this.state.remoteOpen; return !!(r && r.chapter && r.chapter.id === this.state.openChapterId && !this.stories.find(x => x.id === this.state.openStoryId)); }
+  get crInspiredNow() { return this.isRemoteOpen && this.isInspired(this.state.openStoryId, this.state.openChapterId); }
+  get crRemoteViews() {
+    if (!this.isRemoteOpen) return 0;
+    const ro = this.state.remoteOpen;
+    return (ro && ro.chapter && ro.chapter.views) || 0;
+  }
+  armViewTimer(storyId, cid, html) {
+    if (this._viewTimer) clearTimeout(this._viewTimer);
+    const words = (html || '').replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+    const sec = Math.max(10, Math.min(45, Math.round(words / 200 * 60 / 3)));
+    this._viewTimer = setTimeout(() => {
+      if (this.state.screen === 'chapterRead' && this.state.openChapterId === cid) this.tryRecordView(storyId, cid);
+    }, sec * 1000);
+  }
+  tryRecordView(storyId, cid) {
+    const key = 'wtn-viewed-' + storyId + ':' + cid;
+    const today = new Date().toDateString();
+    try { if (localStorage.getItem(key) === today) return; localStorage.setItem(key, today); } catch (e) {}
+    const be = window.WTNBackend;
+    if (be && be.recordView) be.recordView(storyId, cid).catch(() => {});
+    this.setState(s => ({
+      remoteFeed: (s.remoteFeed || []).map(r => (r.storyId === storyId && r.chapterId === cid) ? { ...r, views: (r.views || 0) + 1 } : r),
+      remoteOpen: s.remoteOpen && s.remoteOpen.chapter && s.remoteOpen.chapter.id === cid
+        ? { ...s.remoteOpen, chapter: { ...s.remoteOpen.chapter, views: (s.remoteOpen.chapter.views || 0) + 1 } } : s.remoteOpen
+    }));
+  }
+  async loadFeed() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) return;
+    const decodeEnt = s => { try { const t = document.createElement('textarea'); t.innerHTML = String(s || ''); return t.value; } catch (e) { return s || ''; } };
+    try {
+      const rows = await be.feed(60);
+      const mine = be._uid;
+      const strip = h => (h || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      const firstImg = h => { const m = (h || '').match(/<img[^>]+src="([^"]+)"/); return m ? m[1] : ''; };
+      const list = rows.filter(r => r.isFromVela || r.owner !== mine).map(r => {
+        const img = r.cover || firstImg(r.html) || '';
+        const ex = strip(r.html).slice(0, 100);
+        return { storyId: r.storyId, chapterId: r.id, series: decodeEnt(r.storyTitle || ''), title: decodeEnt(r.title || 'ตอน'),
+          author: decodeEnt(r.authorName || 'นักเดินทาง'), photo: img || 'default-cover.jpg',
+          hasCover: !!img, excerpt: decodeEnt(ex ? (ex + (ex.length >= 100 ? '…' : '')) : ''),
+          likes: r.likes || 0, views: r.views || 0, country: decodeEnt(r.country || ''), continent: decodeEnt(r.continent || ''),
+          isFromVela: !!r.isFromVela, owner: r.owner,
+          _t: (r.updatedAt && r.updatedAt.seconds ? r.updatedAt.seconds * 1000 : Date.now()),
+          raw: r };
+      });
+      this.setState({ remoteFeed: list });
+    } catch (e) { console.warn('[wtn] feed', e); }
   }
   async resolveDeepLink(sid, cid) {
     if (this._deepDone || !sid || !cid) return;
@@ -10023,7 +10161,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.19g',
+      appVersion: '2026.08.19j',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
@@ -10728,6 +10866,34 @@ class Component extends DCLogic {
         edit: e => { if (e && e.stopPropagation) e.stopPropagation(); this.openCreate(t.id); },
         del: e => { if (e && e.stopPropagation) e.stopPropagation(); if (confirm('ลบทริป “' + (t.name || '') + '”?')) this.saveUserTrips(this.userTrips.filter(x => x.id !== t.id)); } })),
       hasMyTrips: this.userTrips.length > 0, noMyTrips: this.userTrips.length === 0,
+      ...(() => {
+        const tab = this.state.plansTab || 'trips';
+        const btn = on => 'flex:1;min-height:40px;border-radius:11px;cursor:pointer;font:600 13.5px \'Anuphan\';'
+          + (on ? 'border:none;background:#2b241f;color:#f6efe2' : 'border:1px solid rgba(43,36,32,.14);background:transparent;color:#6f6455');
+        const insp = this.inspiration;
+        const UNS = 'ยังไม่จัดหมวด';
+        const byCont = {};
+        insp.forEach(x => {
+          const cont = (x.continent || '').trim() || UNS;
+          const ctry = (x.country || '').trim() || 'อื่นๆ';
+          byCont[cont] = byCont[cont] || {};
+          (byCont[cont][ctry] = byCont[cont][ctry] || []).push(x);
+        });
+        const groups = Object.keys(byCont).sort((a, b) => (a === UNS) - (b === UNS) || a.localeCompare(b, 'th')).map(cont => ({
+          continent: cont,
+          countries: Object.keys(byCont[cont]).sort((a, b) => a.localeCompare(b, 'th')).map(ctry => ({
+            name: ctry, count: byCont[cont][ctry].length,
+            items: byCont[cont][ctry].map(x => ({ hasCover: !!x.cover, cover: x.cover || '', title: x.title || 'เรื่องเล่า',
+              on: () => this.reopenInspiration(x) }))
+          }))
+        }));
+        return {
+          plansTabTrips: tab === 'trips', plansTabInspire: tab === 'inspiration',
+          setPlansTrips: () => this.setState({ plansTab: 'trips' }), setPlansInspire: () => this.setState({ plansTab: 'inspiration' }),
+          plansTripsStyle: btn(tab === 'trips'), plansInspireStyle: btn(tab === 'inspiration'),
+          inspireGroups: groups, inspireEmpty: insp.length === 0
+        };
+      })(),
       tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripPhaseInfo().live, tripPlanned: !this.tripPhaseInfo().live, tripStatus: this.tripPhaseInfo().status,
       tripLiveLabel: (() => {
@@ -11043,7 +11209,7 @@ class Component extends DCLogic {
         this.stories.forEach(st => {
           st = this.normStory(st);
           (st.chapters || []).forEach(c => {
-            if (!c.published) return;
+            if (!(c.html || '').trim() && !c.cover) return;
             const img = c.cover || firstImg(c.html) || st.cover || '';
             const ex = strip(c.html).slice(0, 100);
             feed.push({ _t: c.updatedAt || st.at || 0,
@@ -11185,7 +11351,7 @@ class Component extends DCLogic {
                 const chs = s.chapters || [];
                 return { title: s.title || 'บันทึก', cover: s.cover || 'default-cover.jpg',
                   meta: chs.length + ' ตอน' + (s.subtitle ? ' · ' + s.subtitle : ''),
-                  draft: !chs.some(c => c.published), on: () => this.openStoryRead(s.id) };
+                  draft: !s.published, on: () => this.openStoryRead(s.id) };
               }) : [];
             return {
               feedLatest: view === 'latest', feedShelf: view === 'shelf',
@@ -11200,6 +11366,29 @@ class Component extends DCLogic {
             };
           })(),
           feedStories: feed, noFeed: feed.length === 0,
+          ...(() => {
+            const remote = this.state.remoteFeed || [];
+            const scopeSaved = (() => { try { return localStorage.getItem('wtn-story-scope'); } catch (e) { return null; } })();
+            const scope = this.state.storyScope || scopeSaved || (this.stories.length ? 'mine' : 'global');
+            const setScope = v => { try { localStorage.setItem('wtn-story-scope', v); } catch (e) {} this.setState({ storyScope: v }); if (v === 'global') this.loadFeed(); };
+            const scopeBtn = on => 'flex:1;text-align:center;padding:9px 0;border-radius:9px;border:none;cursor:pointer;font:600 14px \'Anuphan\';' + (on ? 'background:#2b241f;color:#f6efe2' : 'background:transparent;color:#8a7d6f');
+            const mkCard = item => ({
+              hasCover: !!item.hasCover, photo: item.photo,
+              byline: item.author, hasPlace: !!item.country && item.country.trim() !== (item.series || '').trim(), place: item.country,
+              series: item.series, title: item.title, excerpt: item.excerpt,
+              showViews: (item.views || 0) >= 5, viewsLabel: (item.views || 0) + ' คนอ่าน', isNew: (item.views || 0) < 5,
+              on: () => this.openRemoteChapter(item)
+            });
+            const velaFeed = remote.filter(r => r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
+            const usersFeed = remote.filter(r => !r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
+            return {
+              storyScopeMine: scope === 'mine', storyScopeGlobal: scope === 'global',
+              setScopeMine: () => setScope('mine'), setScopeGlobal: () => setScope('global'),
+              scopeMineStyle: scopeBtn(scope === 'mine'), scopeGlobalStyle: scopeBtn(scope === 'global'),
+              velaFeed, usersFeed, globalHasVela: velaFeed.length > 0, globalHasUsers: usersFeed.length > 0,
+              globalEmpty: velaFeed.length === 0 && usersFeed.length === 0
+            };
+          })(),
           myStories: all.map(card), noStories: all.length === 0,
           storyCount: all.length,
           composeNew: () => this.openStoryEdit(null),
@@ -11635,7 +11824,7 @@ class Component extends DCLogic {
           const chs = s.chapters || [];
           const ct = (s.country || '').trim();
           return { title: s.title || 'บันทึก', cover: s.cover || 'default-cover.jpg',
-            sub: (ct ? ct + ' · ' : '') + chs.length + ' ตอน', draft: !chs.some(c => c.published),
+            sub: (ct ? ct + ' · ' : '') + chs.length + ' ตอน', draft: !s.published,
             picked: picked.indexOf(s.id) !== -1,
             on: () => (pickMode ? this.toggleHeroPickId(s.id) : this.openStoryRead(s.id)) };
         };
@@ -11770,7 +11959,7 @@ class Component extends DCLogic {
             n: '#' + (i + 1), title: c.title, meta: fmtDT(c.updatedAt), words: (c.words || 0) + ' คำ',
             free: !!c.free, freeLabel: c.free ? 'ฟรี' : 'พรีเมียม',
             freeStyle: seg + (c.free ? 'background:#efe4d3;color:#5c5347' : 'background:#f3e2d5;color:#a4482a'),
-            published: !!c.published, pubLabel: c.published ? 'เผยแพร่' : 'ร่าง',
+            published: !!c.published, pubLabel: c.published ? 'เผยแพร่สู่สาธารณะ' : 'ร่าง',
             pubStyle: seg + (c.published ? 'background:rgba(143,206,155,.2);color:#4e8a5c' : 'background:#efe4d3;color:#7c7264'),
             pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8', pubKnob: c.published ? 'right:3px' : 'left:3px',
             canUp: i > 0, canDown: i < chs.length - 1,
@@ -11821,7 +12010,7 @@ class Component extends DCLogic {
           chCover: this.state.chCover || '', chHasCover: !!this.state.chCover, chNoCover: !this.state.chCover,
           chCoverLabel: this.state.chCover ? 'เปลี่ยนปกตอน' : 'เลือกปกตอน',
           setChCover: e => this.setChCover(e), clearChCover: () => this.setState({ chCover: '' }),
-          cePublished: !!(oc || {}).published, cePubText: (oc || {}).published ? 'เผยแพร่แล้ว' : 'ยังไม่เผยแพร่',
+          cePublished: !!(oc || {}).published, cePubText: (oc || {}).published ? 'เผยแพร่สู่สาธารณะแล้ว' : 'ยังไม่เผยแพร่',
           cePubTrack: (oc || {}).published ? 'background:#c05f39' : 'background:#d8ccb8', cePubKnob: (oc || {}).published ? 'right:3px' : 'left:3px',
           toggleChPublish: () => { if (oc) this.setChapterPublished(os.id, oc.id, !oc.published); },
           chPhotos: (this.state.chPhotos || []).map((p, i) => ({ src: p, rm: () => this.setState(st => ({ chPhotos: (st.chPhotos || []).filter((_, j) => j !== i) })) })),
@@ -11833,9 +12022,16 @@ class Component extends DCLogic {
           previewChapterFn: () => { if (this._chEl && oc) chPatch(oc.id, { html: this.chHtml(), photos: (this.state.chPhotos || []).slice(0, 4), clip: (this.state.chClip || '').trim(), cover: this.state.chCover || '' }); this.openChapterRead(this.state.openChapterId, true); },
           crStoryTitle: os.title, crChapterTitle: (oc || {}).title || '', crAuthor: this.profile.name || os.author || 'Nim',
           crPreview: !!this.state.chReadPreview, crLive: !this.state.chReadPreview,
-          chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; this.enrichRead(el); } },
+          chReaderRef: el => { if (el && el._loadedId !== this.state.openChapterId) { el.innerHTML = (oc || {}).html || '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'; el._loadedId = this.state.openChapterId; this.enrichRead(el); if (this.isRemoteOpen) this.armViewTimer(this.state.openStoryId, this.state.openChapterId, (oc || {}).html || ''); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
+          crShowSave: this.isRemoteOpen,
+          crSaveLabel: this.crInspiredNow ? 'เก็บไว้แล้ว' : 'เก็บไว้ในแรงบันดาลใจ',
+          crSaveFill: this.crInspiredNow ? '#c05f39' : 'none',
+          crSaveStyle: 'display:inline-flex;align-items:center;gap:7px;border:1px solid ' + (this.crInspiredNow ? 'rgba(192,95,57,.4)' : 'rgba(43,36,32,.14)') + ';background:' + (this.crInspiredNow ? '#fbf0e8' : '#fffaf0') + ';font:600 15px \'Anuphan\';color:' + (this.crInspiredNow ? '#c05f39' : '#5c5347') + ';padding:9px 15px;border-radius:22px;cursor:pointer',
+          crToggleSave: () => this.toggleInspiration({ storyId: this.state.openStoryId, chapterId: this.state.openChapterId, title: os.title, cover: os.cover || '', country: os.country || '', continent: os.continent || '' }),
+          crShowViews: this.crRemoteViews >= 5,
+          crViewsLabel: this.crRemoteViews + ' คนอ่าน',
           crPhotos: (() => { const srcs = ((oc || {}).photos || []).map(p => this.px(p));
             return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
           crHasPhotos: (((oc || {}).photos) || []).length > 0,

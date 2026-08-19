@@ -240,6 +240,9 @@ async function boot() {
       ok(await SB.from("chapters").update({ published: !!on, updated_at: new Date().toISOString() })
         .eq("story_id", storyId).eq("id", cid));
     },
+    async recordView(storyId, cid) {
+      try { await SB.rpc("record_chapter_view", { p_story: storyId, p_chapter: cid }); } catch (e) { console.warn("[wtn] recordView", e); }
+    },
     async myStories() {
       const rows = ok(await SB.from("stories").select("*").eq("owner", this._uid));
       return (rows || []).map(r => ({ id: r.id, ...r.data, updatedAt: secs(r.updated_at) }));
@@ -257,7 +260,7 @@ async function boot() {
         if (!c) return null;
         return {
           story: s ? { id: s.id, ...s.data } : { id: storyId },
-          chapter: { id: c.id, ...c.data, published: c.published, likes: c.likes, updatedAt: secs(c.updated_at) }
+          chapter: { id: c.id, ...c.data, published: c.published, likes: c.likes, views: c.views || 0, updatedAt: secs(c.updated_at) }
         };
       } catch (e) { console.warn("[wtn] getChapter", e); return null; }
     },
@@ -266,7 +269,7 @@ async function boot() {
         .order("updated_at", { ascending: false }).limit(max));
       return (rows || []).map(r => ({
         id: r.id, storyId: r.story_id, ...r.data,
-        published: true, likes: r.likes, updatedAt: secs(r.updated_at)
+        published: true, likes: r.likes, views: r.views || 0, owner: r.owner, updatedAt: secs(r.updated_at)
       }));
     },
 
