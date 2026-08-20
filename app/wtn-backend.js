@@ -420,7 +420,17 @@ async function boot() {
     async aiComplete(prompt) {
       const { data, error } = await SB.functions.invoke("ai-complete", { body: { prompt } });
       if (data && data.code === "no-credits") { const e = new Error(data.error || "เครดิต AI หมดแล้ว"); e.code = "no-credits"; e.credits = data.credits; throw e; }
-      if (error) throw new Error((error && error.message) || "เรียก AI ไม่สำเร็จ");
+      if (error) {
+        let detail = "";
+        try {
+          const r = error.context;
+          if (r && typeof r.text === "function") {
+            const t = await r.text();
+            try { detail = (JSON.parse(t) || {}).error || t; } catch (e) { detail = t; }
+          }
+        } catch (e) {}
+        throw new Error(detail || (error && error.message) || "เรียก AI ไม่สำเร็จ");
+      }
       if (data && data.error) throw new Error(data.error);
       if (data && typeof data.credits === "number") this._credits = data.credits;
       return (data && data.text) || "";

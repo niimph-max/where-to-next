@@ -5929,11 +5929,14 @@ class Component extends DCLogic {
         await this.hoistImages();
         const s = this.normStory(this.stories.find(x => x.id === storyId)); if (!s) return;
         const c = (s.chapters || []).find(x => x.id === chapterId); if (!c) return;
-        const author = this.profile.name || s.author || 'nimjourney';
+        // เนื้อตอนอาจแยกเก็บใน IDB (hRef) — ต้องดึงเนื้อจริงมาส่ง ไม่งั้นคนอื่นเปิดอ่านได้แต่หน้าว่าง
+        let body = c.html || '';
+        if (!body && c.hRef) body = (this._hMem || {})[c.hRef] || await this.idbGet(c.hRef.slice(4)) || '';
+        if (!body) { this.toast('ยังเผยแพร่ไม่ได้ — เนื้อตอนยังโหลดไม่ครบ ลองใหม่อีกครั้ง'); return; }
         await be.saveStory({ id: s.id, title: s.title || 'ไม่มีชื่อ', author, ownerName: author,
           cover: s.cover || '', category: s.category || '', subtitle: s.subtitle || '', tags: s.tags || [],
           country: s.country || '', continent: s.continent || '' });
-        await be.saveChapter(s.id, { id: c.id, title: c.title || 'ตอน', html: c.html || '',
+        await be.saveChapter(s.id, { id: c.id, title: c.title || 'ตอน', html: body,
           photos: c.photos || [], clip: c.clip || '', cover: c.cover || '',
           order: (s.chapters || []).findIndex(x => x.id === c.id),
           storyTitle: s.title || '', authorName: author, published: true, likes: c.likes || 0,
@@ -10347,7 +10350,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.20d',
+      appVersion: '2026.08.20e',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -11415,7 +11418,7 @@ class Component extends DCLogic {
         this.stories.forEach(st => {
           st = this.normStory(st);
           (st.chapters || []).forEach(c => {
-            if (!(c.html || '').trim() && !c.cover) return;
+            if (!(c.html || '').trim() && !c.cover && !c.hRef) return;
             const sp = stripped(c);
             const img = this.pxT(c.cover || sp.img || st.cover || '');
             const ex = sp.strip.slice(0, 100);
