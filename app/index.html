@@ -2438,6 +2438,7 @@
           <button onClick="{{ logout }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">ออกจากระบบ</button>
           <div style="text-align:center;font:500 13px 'Anuphan';color:#b3a897;margin-top:16px">Vela · เวอร์ชัน {{ appVersion }}</div>
           <div style="text-align:center;font:500 12.5px/1.6 'Anuphan';color:#c3b8a6;margin-top:4px">{{ egLine }}</div>
+          <div style="text-align:center;font:600 13px/1.6 'Anuphan';color:{{ syncLineColor }};margin-top:6px">{{ syncLine }}</div>
         </div>
       </sc-if>
 
@@ -3258,6 +3259,17 @@ class Component extends DCLogic {
       const d = await this.idbGet(r.slice(4));
       if (d && d.indexOf('data:image') === 0) { dataOfRef[r] = d; found.add(d); }
     }
+    // เนื้อตอนที่แยกเก็บใน IDB (idb:h...) — รูป base64 ฝังในเนื้อก็ต้องยกขึ้นด้วย ไม่งั้นก้อนซิงก์บวม
+    const bodyOf = {};
+    {
+      const stRaw = raw['wtn-stories'] || '';
+      const bre = /"hRef":"idb:(h[^"]+)"/g; let bm;
+      const ids = new Set(); while ((bm = bre.exec(stRaw))) ids.add(bm[1]);
+      for (const id of ids) {
+        const v = (this._hMem || {})['idb:' + id] || await this.idbGet(id);
+        if (v && v.indexOf('data:image') !== -1) { bodyOf[id] = v; const m = v.match(re); if (m) m.forEach(d => found.add(d)); }
+      }
+    }
     if (!found.size) return;
     const urlFor = {};
     for (const d of found) {
@@ -3273,6 +3285,13 @@ class Component extends DCLogic {
         found.forEach(d => { if (urlFor[d]) nv = nv.split(d).join(urlFor[d]); });
         if (nv !== raw[k]) { try { localStorage.setItem(k, nv); } catch (e) {} }
       });
+      for (const id of Object.keys(bodyOf)) {                          // เนื้อตอนใน IDB: แทนรูปเป็นลิงก์คลาวด์แล้วเขียนกลับ
+        let nv = bodyOf[id];
+        found.forEach(d => { if (urlFor[d]) nv = nv.split(d).join(urlFor[d]); });
+        if (nv !== bodyOf[id]) {
+          try { await this.idbPut(id, nv); (this._hMem || (this._hMem = {}))['idb:' + id] = nv; this._hMemVer = (this._hMemVer || 0) + 1; } catch (e) {}
+        }
+      }
       try { localStorage.setItem('wtn-img-map', JSON.stringify(map)); } catch (e) {}
     } finally { this._applyingCloud = false; }
     this.dedupeCheckins();
@@ -3471,6 +3490,12 @@ class Component extends DCLogic {
       else if (remote['wtn-stories'] !== undefined) out['wtn-stories'] = remote['wtn-stories'];
       else delete out['wtn-stories'];
     }
+    // กันชนลิมิตเซิร์ฟเวอร์ 4MB — ก้อนยังใหญ่เกิน (รูปในเนื้อตอนยังยกขึ้นคลาวด์ไม่เสร็จ) ให้คงเรื่องเล่าฉบับคลาวด์ไว้ก่อน ส่วนอื่นซิงก์ตามปกติ รอบหน้าค่อยดัน
+    let sz = 0; try { sz = JSON.stringify(out).length; } catch (e) {}
+    if (sz > 3500000) {
+      if (remote['wtn-stories'] !== undefined) out['wtn-stories'] = remote['wtn-stories'];
+      else delete out['wtn-stories'];
+    }
     return out;
   }
   _getBase() {
@@ -3546,6 +3571,17 @@ class Component extends DCLogic {
     return out;
   }
   _writeLocal(map) {
+    // ตาข่ายนิรภัย: ก่อนซิงก์เขียนทับรายการเรื่องเล่าในเครื่อง เก็บฉบับเดิมไว้ใน IDB 10 ชุดล่าสุด (กู้ได้เสมอ)
+    try {
+      const oldSt = localStorage.getItem('wtn-stories');
+      if (oldSt && map['wtn-stories'] !== undefined && map['wtn-stories'] !== oldSt) {
+        this.idbGet('stories-hist').then(h => {
+          let a = []; try { a = JSON.parse(h) || []; } catch (e) {}
+          a.push({ at: Date.now(), v: oldSt }); while (a.length > 10) a.shift();
+          return this.idbPut('stories-hist', JSON.stringify(a));
+        }).catch(() => {});
+      }
+    } catch (e) {}
     const base = this._getBase() || {};
     this._applyingCloud = true;
     try {
@@ -10311,7 +10347,14 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.20a',
+      appVersion: '2026.08.20d',
+      syncLine: (() => {
+        const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
+        const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
+        if (this.state.cloud === 'error') return 'ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · สำเร็จล่าสุด ' + t;
+        return 'ซิงก์กับคลาวด์สำเร็จล่าสุด ' + t;
+      })(),
+      syncLineColor: this.state.cloud === 'error' ? '#b3563a' : '#8a9b7d',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
