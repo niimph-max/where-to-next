@@ -5473,10 +5473,12 @@ class Component extends DCLogic {
     return null;
   }
   get openChapter() {
+    const r = this.state.remoteOpen;
+    // เปิดจากฟีดทั่วโลก: ใช้ฉบับ remote ที่อัปเดตเนื้อแล้วเสมอ — ห้ามใช้สำเนาแรกใน story.chapters (เนื้อยังว่าง จะค้าง "กำลังโหลด")
+    if (r && r.chapter && r.chapter.id === this.state.openChapterId && !this.stories.find(x => x.id === this.state.openStoryId)) return r.chapter;
     const s = this.openStory; if (!s) return null;
     const local = (s.chapters || []).find(c => c.id === this.state.openChapterId);
     if (local) return local;
-    const r = this.state.remoteOpen;
     if (r && r.chapter && r.chapter.id === this.state.openChapterId) return r.chapter;
     return null;
   }
@@ -10350,7 +10352,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.20e',
+      appVersion: '2026.08.21a',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
