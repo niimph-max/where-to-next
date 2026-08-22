@@ -414,7 +414,7 @@
             </div>
           </sc-for>
           <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}">
-            <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">ยังไม่มีทริป</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e">แตะ “สร้างทริปใหม่” ด้านบน แล้ววางแผนวันแรกได้เลย</div></div>
+            <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">เริ่มจากสร้างทริปแรกของคุณ</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e;margin-bottom:14px">ตั้งชื่อ ใส่ช่วงวันกับงบ แล้ววางแผนทีละวัน<br>เที่ยวเสร็จค่อยกลับมาเขียนเป็นเรื่องเล่า</div><button onClick="{{ goCreate }}" style="border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';min-height:46px;padding:0 22px;border-radius:14px;cursor:pointer">+ สร้างทริปใหม่</button></div>
           </sc-if>
           </sc-if>
 
@@ -1116,7 +1116,7 @@
                 </div>
               </div>
             </sc-for>
-            <sc-if value="{{ tdNoEntries }}" hint-placeholder-val="{{ true }}"><div style="padding:18px 12px 22px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีบันทึกของวันนี้</div></sc-if>
+            <sc-if value="{{ tdNoEntries }}" hint-placeholder-val="{{ true }}"><div style="padding:18px 12px 22px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีบันทึกของวันนี้<br>เช็คอินหรือจดโมเมนต์ระหว่างวัน แล้วจะมาโผล่ที่นี่</div></sc-if>
           </div>
 
           <div style="margin-top:22px">
@@ -2088,7 +2088,7 @@
           </sc-if>
           <div style="padding:14px 20px 0"><div style="display:flex;gap:8px"><button onClick="{{ pTabTrips }}" style="{{ pStyleTrips }}">ทริป</button><button onClick="{{ pTabStories }}" style="{{ pStyleStories }}">เรื่องเล่า</button><button onClick="{{ pTabBooks }}" style="{{ pStyleBooks }}">หนังสือ</button><button onClick="{{ pTabRecap }}" style="{{ pStyleRecap }}">รีแคป</button></div></div>
           <sc-if value="{{ pTrips }}" hint-placeholder-val="{{ true }}">
-            <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีทริป<br>สร้างหรือโหลดโปรแกรมทัวร์ที่แท็บ "แผนของฉัน"</div></sc-if>
+            <sc-if value="{{ noMyTrips }}" hint-placeholder-val="{{ false }}"><div style="padding:34px 20px;text-align:center"><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:14px">ทริปที่สร้างไว้จะมาโชว์ที่นี่</div><button onClick="{{ tabPlanFn }}" style="border:1.5px solid rgba(192,95,57,.4);background:transparent;color:#c05f39;font:600 15px 'Anuphan';min-height:46px;padding:0 20px;border-radius:14px;cursor:pointer">ไปสร้างทริปที่ “แผนของฉัน”</button></div></sc-if>
             <div style="padding:16px 20px 30px;display:grid;grid-template-columns:1fr 1fr;gap:13px">
               <sc-for list="{{ myTrips }}" as="t" hint-placeholder-count="0">
                 <div onClick="{{ t.open }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:16px;overflow:hidden;cursor:pointer"><div style="position:relative"><photo-pick id="{{ t.coverId }}" readonly fallback="{{ t.cover }}" style="display:block;width:100%;height:96px"></photo-pick><sc-if value="{{ t.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:8px;left:8px;background:rgba(233,180,138,.95);color:#5b3115;font:600 10.5px 'Anuphan';padding:3px 9px;border-radius:20px">{{ t.badge }}</span></sc-if></div><div style="padding:9px 11px 11px"><div style="font:600 14.5px 'Anuphan';color:#2b241f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.name }}</div><div style="font:500 13px 'Anuphan';color:#8a7d6f;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.meta }}</div></div></div>
@@ -2097,7 +2097,7 @@
           </sc-if>
           <sc-if value="{{ pStories }}" hint-placeholder-val="{{ false }}">
             <div style="padding:14px 20px 34px">
-              <sc-if value="{{ noStories }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:40px 4px;font:500 15px/1.6 'Anuphan';color:#8a7d6f">ยังไม่มีเรื่องเล่า<br>บันทึกจากทริปของคุณได้เลย</div></sc-if>
+              <sc-if value="{{ noStories }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:40px 4px"><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:14px">เรื่องเล่าที่เขียนไว้จะมารวมที่นี่</div><button onClick="{{ tabStoriesFn }}" style="border:1.5px solid rgba(192,95,57,.4);background:transparent;color:#c05f39;font:600 15px 'Anuphan';min-height:46px;padding:0 20px;border-radius:14px;cursor:pointer">ไปเขียนที่ “เรื่องเล่า”</button></div></sc-if>
 
               <sc-if value="{{ hasHero }}" hint-placeholder-val="{{ false }}">
                 <div onClick="{{ heroOn }}" style="position:relative;border-radius:20px;overflow:hidden;cursor:pointer;box-shadow:0 12px 28px -14px rgba(43,36,32,.6)">
@@ -10355,7 +10355,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.22a',
+      appVersion: '2026.08.22b',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
