@@ -5541,6 +5541,13 @@ class Component extends DCLogic {
     else this.pushChapterCloud(s.id, cid);   // ดันเนื้อตอนขึ้นคลาวด์ทันที ไม่รอรอบซิงก์ — กัน iOS ล้างเครื่องก่อนซิงก์
     this.back();
   }
+  // ลบเรื่องออกจากคลาวด์ด้วย (ตอนที่เผยแพร่ไว้จะหายจากฟีดทั่วโลกทันที)
+  async deleteStoryCloud(storyId) {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || !be.deleteStory) return;
+    try { await be.deleteStory(storyId); this.loadFeed(true); }
+    catch (e) { console.warn('[wtn] deleteStoryCloud', e); }
+  }
   // สำรองเนื้อตอนขึ้นคลาวด์ทันทีหลังกดบันทึก (ไม่แตะสถานะเผยแพร่)
   async pushChapterCloud(storyId, chapterId) {
     const be = window.WTNBackend;
@@ -10386,7 +10393,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.22e',
+      appVersion: '2026.08.22f',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -12235,7 +12242,7 @@ class Component extends DCLogic {
           seCheckinDays: this.checkinDayCount(),
           seHasCheckins: this.checkinDayCount() > 0,
           genFromCheckins: () => this.chaptersFromCheckins(),
-          deleteStory: () => { const l = this.stories.filter(x => x.id !== os.id); this.saveStories(l); this.setState({ openStoryId: null }); this.setTab('stories'); },
+          deleteStory: () => { const l = this.stories.filter(x => x.id !== os.id); this.saveStories(l); this.deleteStoryCloud(os.id); this.setState({ openStoryId: null }); this.setTab('stories'); },
           aiChOpen: !!this.state.aiChOpen, aiChBusy: !!this.state.aiChBusy,
           aiChText: this.state.aiChText || '', aiChHasText: !!(this.state.aiChText || '').trim(),
           aiChErr: this.state.aiChErr || '', aiChHasErr: !!this.state.aiChErr,
@@ -12311,7 +12318,7 @@ class Component extends DCLogic {
             meta: fmtD(c.updatedAt), free: !!c.free, premium: !c.free, freeLabel: c.free ? 'ฟรี' : 'พรีเมียม',
             on: () => this.openChapterRead(c.id, false) })),
           editOpenStory: () => this.openStoryEdit(os.id),
-          deleteOpenStory: () => { const l = this.stories.filter(x => x.id !== os.id); this.saveStories(l); this.setState({ openStoryId: null }); this.back(); },
+          deleteOpenStory: () => { const l = this.stories.filter(x => x.id !== os.id); this.saveStories(l); this.deleteStoryCloud(os.id); this.setState({ openStoryId: null }); this.back(); },
         };
       })(),
     };

@@ -290,6 +290,11 @@ async function boot() {
       if (!this._uid) return;
       try { await SB.from("moments").update({ published: false }).eq("id", id); } catch (e) {}
     },
+    async deleteStory(storyId) {
+      if (!this._uid || !storyId) return;
+      try { await SB.from("chapters").delete().eq("story_id", storyId).eq("owner", this._uid); } catch (e) { console.warn("[wtn] deleteStory ch", e); }
+      try { await SB.from("stories").delete().eq("id", storyId).eq("owner", this._uid); } catch (e) { console.warn("[wtn] deleteStory st", e); }
+    },
     async deleteMoment(id) {
       if (!this._uid) return;
       try { await SB.from("moments").delete().eq("id", id); } catch (e) {}
