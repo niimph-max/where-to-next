@@ -9550,6 +9550,16 @@ class Component extends DCLogic {
       document.body.appendChild(stage);
       this._recCanvas = stage;
       const cx = cv.getContext('2d', { alpha: false, desynchronized: false });
+      const drawArgs = { cover: coverBaked || cover, imgs, slides: useSlides, INTRO, PER, OUTRO, END, title, sub, wm: !this.isPremium };
+      const total = INTRO + useSlides.length * PER + OUTRO + END;
+      let blob = null;
+      // ทางหลัก: WebCodecs — วาดทีละเฟรมด้วยนาฬิกาของเราเอง (ไม่ใช่เวลาจริง) ได้ 30fps คงที่เป๊ะ
+      // เครื่องช้า/ร้อนก็แค่ใช้เวลาทำนานขึ้น เฟรมไม่หายไปจากไฟล์เหมือนการอัดเรียลไทม์
+      if (window.VideoEncoder && window.VideoFrame) {
+        try { blob = await this._recapEncodeCFR(cx, cv, W, H, total, drawArgs); }
+        catch (e) { console.warn('[wtn] webcodecs encode — ถอยไปใช้ตัวอัดเดิม', e); blob = null; }
+      }
+      if (!blob) {
       let vTrack = null, manualFrames = false;
       let stream;
       // iOS/Safari: requestFrame() ไม่น่าเชื่อถือ — สตรีมหยุดดึงเฟรมกลางคลิปแล้วไฟล์ค้างภาพ
@@ -9583,7 +9593,6 @@ class Component extends DCLogic {
       const chunks = [];
       rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
       const stopped = new Promise(res => { rec.onstop = res; });
-      const total = INTRO + useSlides.length * PER + OUTRO + END;
       rec.start(1000);
       const t0 = performance.now(); let frame = 0, lastDraw = -1;
       await new Promise(res => {
@@ -9595,7 +9604,7 @@ class Component extends DCLogic {
           if (ms >= total) { finish(); return; }
           if (ms - lastDraw < 28) return;                    // ~30fps พอ ไม่วาดถี่เกินจำเป็น
           lastDraw = ms;
-          this.drawRecapFrame(cx, W, H, ms, { cover: coverBaked || cover, imgs, slides: useSlides, INTRO, PER, OUTRO, END, title, sub, wm: !this.isPremium });
+          this.drawRecapFrame(cx, W, H, ms, drawArgs);
           if (manualFrames) { try { vTrack.requestFrame(); } catch (e) {} }
           if (++frame % 8 === 0) this.setState({ recExportPct: 20 + Math.round(ms / total * 78) });
         };
@@ -9608,9 +9617,10 @@ class Component extends DCLogic {
       const durMs = Math.max(1000, performance.now() - t0);
       rec.stop();
       await stopped;
-      let blob = new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] });
+      blob = new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] });
       // MediaRecorder ไม่เขียน "ความยาวคลิป" ลงในไฟล์ → แกลเลอรีแอนดรอยด์อ่านได้แค่ก้อนแรก (โชว์ 3 วิ)
       blob = await this._fixVideoDuration(blob, durMs);
+      }
       const ext = blob.type.indexOf('mp4') !== -1 ? 'mp4' : 'webm';
       const url = URL.createObjectURL(blob);
       const name = (title.replace(/[^\w\u0E00-\u0E7F.-]+/g, '_') || 'recap') + '-recap'
@@ -9636,6 +9646,142 @@ class Component extends DCLogic {
       this._recExporting = false;
       this.setState({ recExport: false });
     }
+  }
+  // เข้ารหัสรีแคปแบบ WebCodecs: เฟรมละ 1/30 วิ เป๊ะทุกเฟรม → ไฟล์ CFR ไม่กระตุกบน TikTok
+  async _recapEncodeCFR(cx, cv, W, H, total, drawArgs) {
+    const FPS = 30, usPerF = 1e6 / FPS;
+    const nFrames = Math.max(FPS, Math.round(total / 1000 * FPS));
+    // baseline ก่อน (ไม่มี B-frame → ลำดับเฟรมตรงไปตรงมา mux ง่ายและชัวร์)
+    const codecs = ['avc1.42E028', 'avc1.420028', 'avc1.4D0028', 'avc1.640028'];
+    let cfg = null;
+    for (const c of codecs) {
+      const t = { codec: c, width: W, height: H, bitrate: W >= 1080 ? 8000000 : 5000000, framerate: FPS, avc: { format: 'avc' } };
+      try { const s = await VideoEncoder.isConfigSupported(t); if (s && s.supported) { cfg = t; break; } } catch (e) {}
+    }
+    if (!cfg) return null;
+    const vChunks = []; let vDesc = null, encErr = null;
+    const toU8 = d => new Uint8Array(d instanceof ArrayBuffer ? d.slice(0) : d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength));
+    const enc = new VideoEncoder({
+      output: (chunk, meta) => {
+        if (!vDesc && meta && meta.decoderConfig && meta.decoderConfig.description) vDesc = toU8(meta.decoderConfig.description);
+        const d = new Uint8Array(chunk.byteLength); chunk.copyTo(d);
+        vChunks.push({ data: d, key: chunk.type === 'key', ts: chunk.timestamp });
+      },
+      error: e => { encErr = e; }
+    });
+    enc.configure(cfg);
+    for (let i = 0; i < nFrames; i++) {
+      if (encErr) throw encErr;
+      this.drawRecapFrame(cx, W, H, Math.min(total - 1, i * 1000 / FPS), drawArgs);
+      const vf = new VideoFrame(cv, { timestamp: Math.round(i * usPerF), duration: Math.round(usPerF) });
+      try { enc.encode(vf, { keyFrame: i % (FPS * 2) === 0 }); } finally { vf.close(); }
+      // อย่าให้คิวตัวเข้ารหัสบวม — รอแบบ event (setTimeout โดนเบราว์เซอร์หน่วงตอนจอปิด/แท็บพื้นหลัง)
+      while (!encErr && enc.encodeQueueSize > 4) {
+        if ('ondequeue' in enc) await new Promise(r => enc.addEventListener('dequeue', r, { once: true }));
+        else await enc.flush();
+      }
+      if (i % 6 === 0) this.setState({ recExportPct: 20 + Math.round(i / nFrames * 72) });
+      // เปิดจังหวะให้จออัปเดต — ใช้ MessageChannel เพราะ setTimeout โดนหน่วงเป็นวินาทีตอนแท็บ/จอไม่แอ็กทีฟ
+      if (i % 30 === 0) await new Promise(r => { const mc = new MessageChannel(); mc.port1.onmessage = () => r(); mc.port2.postMessage(0); });
+    }
+    await enc.flush(); try { enc.close(); } catch (e) {}
+    if (encErr) throw encErr;
+    if (!vChunks.length || !vDesc) return null;
+    // ลำดับเวลาต้องไล่ขึ้นเท่านั้น (กัน B-frame หลุดมา) — ผิดเมื่อไหร่ถอยไปใช้ตัวอัดเดิม
+    for (let i = 1; i < vChunks.length; i++) if (vChunks[i].ts <= vChunks[i - 1].ts) return null;
+    this.setState({ recExportPct: 94 });
+    let audio = null;
+    try { audio = await this._recapSilentAac(nFrames / FPS); } catch (e) { audio = null; }
+    return this._muxMp4({ W, H, fps: FPS, vChunks, vDesc, audio, durMs: Math.round(nFrames / FPS * 1000) });
+  }
+  // แทร็กเสียงเงียบ AAC — บางแพลตฟอร์มไม่ชอบไฟล์ไร้เสียง; ทำไม่ได้ก็ปล่อยไฟล์ภาพล้วน
+  async _recapSilentAac(durSec) {
+    if (!window.AudioEncoder || !window.AudioData) return null;
+    const SR = 44100, cfgA = { codec: 'mp4a.40.2', sampleRate: SR, numberOfChannels: 1, bitrate: 64000 };
+    try { const s = await AudioEncoder.isConfigSupported(cfgA); if (!s || !s.supported) return null; } catch (e) { return null; }
+    const toU8 = d => new Uint8Array(d instanceof ArrayBuffer ? d.slice(0) : d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength));
+    const chunks = []; let desc = null, err = null;
+    const enc = new AudioEncoder({
+      output: (c, meta) => {
+        if (!desc && meta && meta.decoderConfig && meta.decoderConfig.description) desc = toU8(meta.decoderConfig.description);
+        const u = new Uint8Array(c.byteLength); c.copyTo(u);
+        chunks.push({ data: u, ts: c.timestamp });
+      },
+      error: e => { err = e; }
+    });
+    enc.configure(cfgA);
+    const FR = 1024, nBlocks = Math.ceil(durSec * SR / FR);
+    const silence = new Float32Array(FR);
+    for (let i = 0; i < nBlocks; i++) {
+      if (err) return null;
+      const ad = new AudioData({ format: 'f32-planar', sampleRate: SR, numberOfFrames: FR, numberOfChannels: 1, timestamp: Math.round(i * FR / SR * 1e6), data: silence });
+      try { enc.encode(ad); } finally { ad.close(); }
+    }
+    await enc.flush(); try { enc.close(); } catch (e) {}
+    if (err || !chunks.length) return null;
+    if (!desc) desc = new Uint8Array([0x12, 0x08]); // AAC-LC 44.1kHz mono
+    return { chunks, desc, sampleRate: SR, blocks: nBlocks, frameLen: FR };
+  }
+  // ประกอบ MP4 เอง (ftyp + mdat + moov) — เฟรมคงที่, ความยาวถูกต้อง, เปิดได้ทุกแกลเลอรี
+  _muxMp4(o) {
+    const { W, H, fps, vChunks, vDesc, audio, durMs } = o;
+    const u16 = v => new Uint8Array([v >> 8 & 255, v & 255]);
+    const u32 = v => new Uint8Array([v >>> 24 & 255, v >>> 16 & 255, v >>> 8 & 255, v & 255]);
+    const str = s => new Uint8Array([...s].map(c => c.charCodeAt(0)));
+    const zeros = n => new Uint8Array(n);
+    const cat = arrs => { let n = 0; for (const a of arrs) n += a.length; const out = new Uint8Array(n); let p = 0; for (const a of arrs) { out.set(a, p); p += a.length; } return out; };
+    const box = (t, ...kids) => { const body = cat(kids); return cat([u32(body.length + 8), str(t), body]); };
+    const full = (t, ver, flags, ...kids) => box(t, new Uint8Array([ver, flags >> 16 & 255, flags >> 8 & 255, flags & 255]), ...kids);
+    const matrix = cat([u32(0x10000), u32(0), u32(0), u32(0), u32(0x10000), u32(0), u32(0), u32(0), u32(0x40000000)]);
+    const nV = vChunks.length;
+    const vData = cat(vChunks.map(c => c.data));
+    const aData = audio ? cat(audio.chunks.map(c => c.data)) : new Uint8Array(0);
+    const ftyp = box('ftyp', str('isom'), u32(512), str('isom'), str('iso2'), str('avc1'), str('mp41'));
+    const vOff = ftyp.length + 8, aOff = vOff + vData.length;
+    const mdat = cat([u32(8 + vData.length + aData.length), str('mdat'), vData, aData]);
+    const VTS = fps * 1000; // timescale วิดีโอ → delta ต่อเฟรม = 1000 พอดี
+    const stblV = box('stbl',
+      full('stsd', 0, 0, u32(1), box('avc1',
+        zeros(6), u16(1), zeros(16), u16(W), u16(H), u32(0x00480000), u32(0x00480000), u32(0), u16(1), zeros(32), u16(24), u16(0xFFFF),
+        box('avcC', vDesc))),
+      full('stts', 0, 0, u32(1), u32(nV), u32(1000)),
+      full('stss', 0, 0, u32(vChunks.filter(c => c.key).length), ...vChunks.map((c, i) => c.key ? u32(i + 1) : null).filter(Boolean)),
+      full('stsc', 0, 0, u32(1), u32(1), u32(nV), u32(1)),
+      full('stsz', 0, 0, u32(0), u32(nV), ...vChunks.map(c => u32(c.data.length))),
+      full('stco', 0, 0, u32(1), u32(vOff)));
+    const trakV = box('trak',
+      full('tkhd', 0, 3, u32(0), u32(0), u32(1), u32(0), u32(durMs), zeros(8), u16(0), u16(0), u16(0), u16(0), matrix, u32(W << 16), u32(H << 16)),
+      box('mdia',
+        full('mdhd', 0, 0, u32(0), u32(0), u32(VTS), u32(nV * 1000), u16(0x55C4), u16(0)),
+        full('hdlr', 0, 0, u32(0), str('vide'), zeros(12), str('VideoHandler'), zeros(1)),
+        box('minf', full('vmhd', 0, 1, zeros(8)),
+          box('dinf', full('dref', 0, 0, u32(1), full('url ', 0, 1))),
+          stblV)));
+    let trakA = null;
+    if (audio) {
+      const nA = audio.chunks.length, SR = audio.sampleRate;
+      const dsi = cat([new Uint8Array([0x05, audio.desc.length]), audio.desc]);
+      const dcdBody = cat([new Uint8Array([0x40, 0x15, 0, 0, 0]), u32(96000), u32(64000), dsi]);
+      const esBody = cat([new Uint8Array([0, 2, 0]), new Uint8Array([0x04, dcdBody.length]), dcdBody, new Uint8Array([0x06, 1, 0x02])]);
+      const esds = full('esds', 0, 0, new Uint8Array([0x03, esBody.length]), esBody);
+      const stblA = box('stbl',
+        full('stsd', 0, 0, u32(1), box('mp4a', zeros(6), u16(1), zeros(8), u16(1), u16(16), u16(0), u16(0), u32(SR << 16), esds)),
+        full('stts', 0, 0, u32(1), u32(nA), u32(audio.frameLen)),
+        full('stsc', 0, 0, u32(1), u32(1), u32(nA), u32(1)),
+        full('stsz', 0, 0, u32(0), u32(nA), ...audio.chunks.map(c => u32(c.data.length))),
+        full('stco', 0, 0, u32(1), u32(aOff)));
+      trakA = box('trak',
+        full('tkhd', 0, 3, u32(0), u32(0), u32(2), u32(0), u32(durMs), zeros(8), u16(0), u16(0), u16(0x0100), u16(0), matrix, u32(0), u32(0)),
+        box('mdia',
+          full('mdhd', 0, 0, u32(0), u32(0), u32(SR), u32(nA * audio.frameLen), u16(0x55C4), u16(0)),
+          full('hdlr', 0, 0, u32(0), str('soun'), zeros(12), str('SoundHandler'), zeros(1)),
+          box('minf', full('smhd', 0, 0, zeros(4)),
+            box('dinf', full('dref', 0, 0, u32(1), full('url ', 0, 1))),
+            stblA)));
+    }
+    const mvhd = full('mvhd', 0, 0, u32(0), u32(0), u32(1000), u32(durMs), u32(0x10000), u16(0x0100), zeros(10), matrix, zeros(24), u32(audio ? 3 : 2));
+    const moov = trakA ? box('moov', mvhd, trakV, trakA) : box('moov', mvhd, trakV);
+    return new Blob([ftyp, mdat, moov], { type: 'video/mp4' });
   }
   // เขียนความยาวคลิปกลับลงไฟล์ (webm: Info>Duration / mp4: mvhd+tkhd+mdhd)
   // ไม่มีอันนี้ แอนดรอยด์จะเซฟเข้าแกลเลอรีแล้วโชว์แค่ ~3 วิ ทั้งที่ไฟล์เต็ม
@@ -10393,7 +10539,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.22f',
+      appVersion: '2026.08.23a',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
