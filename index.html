@@ -29,13 +29,6 @@
 <helmet>
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">
 <script src="image-slot.js"></script>
-<script type="text/javascript">
-  (function (d, sc, u) {
-    var s = d.createElement(sc), p = d.getElementsByTagName(sc)[0];
-    s.type = "text/javascript"; s.async = true; s.src = u;
-    p.parentNode.insertBefore(s, p);
-  })(document, "script", "https://affiliate.klook.com/widget/fetch-iframe-init.js");
-</script>
 <script>
 // แอปย้ายไป /app/ แล้ว — ถ้ามี service worker ตัวเก่าค้างที่ root ให้ปลดระวางทิ้ง
 // (ไม่งั้นเดสก์ท็อปจะโดนแคชเก่าเสิร์ฟแอปเวอร์ชันเดิมค้างไว้ตลอด)
@@ -358,10 +351,13 @@ if ('serviceWorker' in navigator) {
     <div style="max-width:900px;margin:0 auto;text-align:center">
       <div style="font-size:12.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#a1927c;margin-bottom:7px">จองต่อได้ในแอป</div>
       <p style="font-size:15.5px;line-height:1.7;color:#6c5f4f;margin:0 auto 22px;max-width:520px;text-wrap:pretty">วางแผนเสร็จแล้วกดจองที่พัก ทัวร์ และตั๋วได้เลย ไม่ต้องออกไปหาที่อื่น</p>
-      <div style="display:flex;justify-content:center">
-        <ins class="klk-aff-widget" data-wid="130623" data-bgtype="Hotel" data-adid="1383367" data-lang="th" data-prod="banner" data-width="200" data-height="200" style="display:block;width:200px;height:200px;border-radius:14px;overflow:hidden;background:#e7dcc7"><a href="//www.klook.com/?aid=130623" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-weight:600;color:#8a7d6f">Klook.com</a></ins>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px">
+        <span style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:20px;padding:9px 18px;font-size:14.5px;font-weight:600;color:#5c5347">ที่พัก</span>
+        <span style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:20px;padding:9px 18px;font-size:14.5px;font-weight:600;color:#5c5347">ตั๋วเครื่องบิน</span>
+        <span style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:20px;padding:9px 18px;font-size:14.5px;font-weight:600;color:#5c5347">ทัวร์ &amp; บัตรเข้า</span>
+        <span style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:20px;padding:9px 18px;font-size:14.5px;font-weight:600;color:#5c5347">รถไฟ &amp; รถรับส่ง</span>
       </div>
-      <div style="font-size:12.5px;line-height:1.6;color:#a1927c;margin-top:20px">Vela ได้รับค่าตอบแทนจากการจองผ่านลิงก์พาร์ทเนอร์ โดยราคาที่คุณจ่ายเท่าเดิม</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#a1927c">Vela ได้รับค่าตอบแทนจากการจองผ่านลิงก์พาร์ทเนอร์ โดยราคาที่คุณจ่ายเท่าเดิม</div>
     </div>
   </section>
 
@@ -373,6 +369,7 @@ if ('serviceWorker' in navigator) {
         <a href="#pricing" style="color:inherit">ราคา</a>
         <a href="#faq" style="color:inherit">คำถาม</a>
         <a href="help.html" style="color:inherit">ช่วยเหลือ</a>
+        <a href="privacy.html" style="color:inherit">ความเป็นส่วนตัว</a>
         <a href="mailto:admin@onevela.net" style="color:inherit">ติดต่อ</a>
         <a href="https://www.facebook.com/ourvela" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:inherit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.19 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.75 8.44-4.92 8.44-9.94z"></path></svg>เพจ Facebook</a>
         <a href="app/" style="color:inherit">เปิดแอป</a>

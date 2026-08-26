@@ -120,12 +120,16 @@
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
-  .wtn-rte,.wtn-read{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif}
+  /* ขนาดพื้นของกล่องเขียน = ขนาดเดียวกับย่อหน้า — ข้อความที่ไม่ได้อยู่ใน <p> (เช่นวางมาเป็นตัวหนาลอย ๆ) จะได้ไม่เล็กลงเอง */
+  .wtn-rte,.wtn-read{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-size:19px;line-height:1.95}
   .wtn-rte p,.wtn-read p{margin:0 0 1.05em;font-size:19px;line-height:1.95;text-wrap:pretty;overflow-wrap:anywhere;word-break:break-word}
-  .wtn-read{color:#2f2a24}
+  .wtn-read{color:#2f2a24;font-size:25px;line-height:2}
   .wtn-read p{font-size:25px;line-height:2;color:#2f2a24}
   .wtn-rte h3,.wtn-read h3{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-weight:700;font-size:22px;line-height:1.45;color:#2b241f;margin:1.4em 0 .5em}
   .wtn-read h3{font-size:26px}
+  .wtn-rte h4,.wtn-read h4{font-family:'IBM Plex Sans Thai Looped','Sarabun',system-ui,sans-serif;font-weight:700;font-size:19px;line-height:1.5;color:#4a4038;margin:1.15em 0 .4em}
+  .wtn-read h4{font-size:22px}
+  .wtn-read h4:first-child,.wtn-rte h4:first-child{margin-top:0}
   .wtn-rte blockquote,.wtn-read blockquote{margin:1.2em 0;padding:6px 0 6px 16px;border-left:3px solid #d8a07f;color:#6f6558;font-style:italic}
   .wtn-rte ol,.wtn-rte ul,.wtn-read ol,.wtn-read ul{margin:0 0 1.05em;padding-left:1.5em}
   .wtn-rte li,.wtn-read li{font-size:19px;line-height:1.9;margin:0 0 .35em}
@@ -277,12 +281,20 @@
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">5 ครั้ง/ด</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรวจจุดหมายด้วย AI</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
           </div>
+          <sc-if value="{{ buyOnWeb }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:18px;padding:20px 18px;text-align:center">
+              <div style="font:700 16.5px 'Anuphan';color:#2b241f;margin-bottom:8px">อัปเกรดได้ที่เว็บ</div>
+              <div style="font:500 14.5px/1.7 'Anuphan';color:#6c5f4f;text-wrap:pretty">เปิด <b>onevela.net</b> ในเบราว์เซอร์ แล้วเข้าด้วยบัญชีเดียวกับที่ใช้ในแอปนี้ · สมัครเสร็จแล้วสิทธิ์พรีเมียมจะมาโผล่ในแอปเองเมื่อซิงก์ครั้งถัดไป</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ canBuyHere }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;flex-direction:column;gap:11px">
             <button onClick="{{ pickPlanTrip }}" style="{{ planTripStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ tripSel }}" hint-placeholder-val="{{ true }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">Trip Pass · ฿99<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/30 วัน</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">จ่ายครั้งเดียว · AI 60 ครั้ง</div></div><span style="flex:none;background:#c05f39;color:#fff;font:700 12px 'Anuphan';padding:5px 10px;border-radius:12px">ยอดนิยม</span></button>
             <button onClick="{{ pickPlanYear }}" style="{{ planYearStyle }}"><span style="width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;border:2px solid #c05f39"><sc-if value="{{ yearSel }}" hint-placeholder-val="{{ false }}"><span style="width:12px;height:12px;border-radius:50%;background:#c05f39"></span></sc-if></span><div style="flex:1;min-width:0"><div style="font:700 17px 'Anuphan';color:#2b241f">รายปี · ฿790<span style="font:500 13.5px 'Anuphan';color:#8a7d6f">/ปี</span></div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ถูกกว่าซื้อ Trip Pass 8 ครั้ง · AI 100 ครั้ง/เดือน</div></div></button>
           </div>
           <button onClick="{{ subscribeNow }}" style="width:100%;min-height:52px;margin-top:18px;border:none;background:#c05f39;color:#fff;font:700 17px 'Anuphan';border-radius:15px;cursor:pointer;box-shadow:0 10px 24px -8px rgba(192,95,57,.6)">สมัครพรีเมียม {{ planPriceLabel }}</button>
           <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:13px;text-wrap:pretty">ชำระผ่าน Stripe · รับบัตรเครดิต/เดบิต · Trip Pass ไม่ตัดเงินซ้ำ · รายปียกเลิกได้ทุกเมื่อ<br>ผู้ช่วย AI มีจำนวนครั้งจำกัดตามแพ็ก (1 คำขอ = 1 ครั้ง) — ฟีเจอร์อื่นใช้ได้ไม่จำกัด</div>
+          </sc-if>
           <sc-if value="{{ hasBilling }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openBilling }}" style="width:100%;min-height:44px;margin-top:10px;border:none;background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';cursor:pointer">จัดการการชำระเงิน / ใบเสร็จ</button></sc-if>
         </div>
       </sc-if>
@@ -719,6 +731,9 @@
               </div>
               <div style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;margin-top:9px">จองผ่านลิงก์นี้ Vela อาจได้ค่าแนะนำเล็กน้อย โดยคุณไม่จ่ายเพิ่ม</div>
             </div>
+          </sc-if>
+          <sc-if value="{{ showTransfer }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ transferGo }}" style="width:100%;min-height:46px;margin-top:9px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#5c5347;font:600 14.5px 'Anuphan';border-radius:13px;cursor:pointer">หรือหารถรับส่งสนามบิน</button>
           </sc-if>
           <div style="display:flex;gap:9px;margin-top:16px">
             <button onClick="{{ saveStopMore }}" style="flex:1;min-height:54px;border:1px solid rgba(43,36,32,.18);background:transparent;color:#5c5347;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer">บันทึก + เพิ่มต่อ</button>
@@ -1724,7 +1739,9 @@
             <button onMouseDown="{{ rtUnderline }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:600 17px 'Anuphan';text-decoration:underline;cursor:pointer;flex:none">U</button>
             <button onMouseDown="{{ rtStrike }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:600 17px 'Anuphan';text-decoration:line-through;cursor:pointer;flex:none">S</button>
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
-            <button onMouseDown="{{ rtHead }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:700 15px 'Anuphan';cursor:pointer;flex:none">H</button>
+            <button onMouseDown="{{ rtHead }}" title="หัวข้อ" style="min-width:44px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:700 15px 'Anuphan';cursor:pointer;flex:none">หัวข้อ</button>
+            <button onMouseDown="{{ rtSubHead }}" title="หัวข้อย่อย" style="min-width:40px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;font:700 13px 'Anuphan';cursor:pointer;flex:none">ย่อย</button>
+            <button onMouseDown="{{ rtPara }}" title="ตัวหนังสือปกติ" style="min-width:40px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;font:500 13px 'Anuphan';cursor:pointer;flex:none">ปกติ</button>
             <button onMouseDown="{{ rtQuote }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7H4v6h3l-1 4h2l1-4V7zm9 0h-3v6h3l-1 4h2l1-4V7z"></path></svg></button>
             <button onMouseDown="{{ rtOL }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 6h10M10 12h10M10 18h10"></path><path d="M4 5.5l1-.5v3" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 15.5a1 1 0 1 1 1.5.9L4 18.5h2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
             <button onMouseDown="{{ rtUL }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 6h11M9 12h11M9 18h11"></path><circle cx="4.5" cy="6" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="12" r="1.3" fill="currentColor" stroke="none"></circle><circle cx="4.5" cy="18" r="1.3" fill="currentColor" stroke="none"></circle></svg></button>
@@ -1736,6 +1753,8 @@
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
             <label onMouseDown="{{ saveChSelFn }}" style="position:relative;min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M4 18l5-4 4 3 3-2 4 3"></path></svg><input type="file" accept="image/*" ref="{{ multiRef }}" onChange="{{ insertChImage }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px"></label>
             <button onMouseDown="{{ insertChClip }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M10 9.5v5l4-2.5z"></path></svg></button>
+            <sc-if value="{{ pastePlainOn }}" hint-placeholder-val="{{ true }}"><button onClick="{{ togglePastePlain }}" title="วางแล้วใช้ตัวหนังสือของแอป (กดเพื่อปิด)" style="min-width:38px;height:34px;border:none;background:#f0e2d2;border-radius:8px;color:#a54e2c;font:700 13px 'Anuphan';cursor:pointer;flex:none">Aa</button></sc-if>
+            <sc-if value="{{ pastePlainOff }}" hint-placeholder-val="{{ false }}"><button onClick="{{ togglePastePlain }}" title="วางแล้วเก็บรูปแบบเดิมไว้ (กดเพื่อเปิดใช้ตัวหนังสือของแอป)" style="min-width:38px;height:34px;border:none;background:transparent;border-radius:8px;color:#b3a897;font:700 13px 'Anuphan';cursor:pointer;flex:none">Aa</button></sc-if>
             <button onClick="{{ cleanChFormat }}" title="ล้างรูปแบบที่ติดมาจากการวาง" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h11"></path><path d="M9 7l-2 12"></path><path d="M13 7l-1 6"></path><path d="M15 15l6 6M21 15l-6 6"></path></svg></button>
           </div>
           <div style="flex:none;display:flex;align-items:center;gap:9px;padding:9px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
@@ -2282,6 +2301,15 @@
             </sc-if>
           </div>
           <div>
+            <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">การเดินทาง</div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
+              <div style="font:500 16px 'Anuphan';color:#2b241f;margin-bottom:3px">สนามบินต้นทาง</div>
+              <div style="font:500 13px/1.5 'Anuphan';color:#a1927c;margin-bottom:10px">ใช้เป็นต้นทางตั้งต้นตอนกดหาตั๋วเครื่องบินจากแผนทริป</div>
+              <input value="{{ homeAirDraft }}" onInput="{{ setHomeAir }}" onBlur="{{ blurHomeAir }}" placeholder="BKK" maxlength="3" style="width:110px;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:700 17px 'Anuphan';letter-spacing:1.5px;text-transform:uppercase;color:#2b241f;outline:none">
+              <div style="font:500 12.5px/1.5 'Anuphan';color:#a1927c;margin-top:8px">ใส่รหัสสนามบิน 3 ตัว เช่น BKK (กรุงเทพ) · DMK (ดอนเมือง) · CNX (เชียงใหม่) · HKT (ภูเก็ต)</div>
+            </div>
+          </div>
+          <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 15px">
@@ -2773,6 +2801,9 @@
         <button onClick="{{ closePbook }}" style="min-width:44px;min-height:44px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ปิด</button>
       </div>
       <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px">{{ pbSummary }}</div>
+      <sc-if value="{{ pbNeedsPick }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ pbPickAll }}" style="width:100%;min-height:48px;margin-bottom:16px;border:1px solid rgba(192,95,57,.4);background:#fbeee6;color:#a54e2c;font:700 15px 'Anuphan';border-radius:14px;cursor:pointer">เลือกรูปทั้งทริปเข้าเล่ม</button>
+      </sc-if>
       <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
       <photo-pick id="{{ pbCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:130px;border-radius:14px;margin-bottom:18px"></photo-pick>
       <sc-if value="{{ pbBusy }}" hint-placeholder-val="{{ false }}">
@@ -4044,7 +4075,157 @@ class Component extends DCLogic {
     }
     return null;
   }
-  affPartnerName(kind) { const p = this.affPartner(kind); return (p ? p.name : 'Klook') + ' · พาร์ตเนอร์'; }
+  // ── Trip.com Affiliate (อนุมัติแล้ว — ลิงก์ตรง ไม่ผ่าน CJ) ──────
+  TRIP_AFF = { aid: '10296147', sid: '329511729' };
+  // Trip.com ต้องใช้ "รหัสเมือง" แบบตัวเลข ส่งแค่ชื่อเมืองไม่ได้
+  // วิธีหารหัส: Affiliate Link > Hotels page > เลือกเมือง > Create → ดูเลขในพารามิเตอร์ city=
+  // เมืองที่ไม่มีในตารางนี้จะถอยไปใช้ Klook อัตโนมัติ (Klook ค้นด้วยชื่อเมืองได้ เติมวันที่ให้ด้วย)
+  TRIP_CITY = {
+    'tokyo': 228, 'โตเกียว': 228,
+    'bangkok': 359, 'กรุงเทพ': 359, 'กรุงเทพมหานคร': 359,
+    'xiamen': 25, 'เซี่ยะเหมิน': 25, 'เซียะเหมิน': 25,
+    'lisbon': 1231, 'lisboa': 1231, 'ลิสบอน': 1231, 'โปรตุเกส': 1231,
+    'seoul': 274, 'โซล': 274, 'เกาหลี': 274,
+    'almaty': 174, 'อัลมาตี': 174, 'อัลมาต้า': 174, 'คาซัคสถาน': 174, 'kazakh': 174,
+    'taipei': 617, 'ไทเป': 617, 'ไต้หวัน': 617, 'taiwan': 617,
+  };
+  // ชื่อเมืองที่ส่งให้ Trip.com แสดง (ต้องเป็นอังกฤษ ไม่ใช่ชื่อไทยที่ผู้ใช้พิมพ์)
+  TRIP_CITY_NAME = { 228: 'Tokyo', 359: 'Bangkok', 25: 'Xiamen', 1231: 'Lisbon', 274: 'Seoul', 174: 'Almaty', 617: 'Taipei' };
+  // รับได้หลายชื่อ (ชื่อวัน, เมืองของทริป, ประเทศ, ชื่อทริป) — เจออันไหนก่อนใช้อันนั้น
+  tripCityInfo(...names) {
+    for (const n of names) {
+      const k = String(n || '').trim().toLowerCase();
+      if (!k) continue;
+      let id = this.TRIP_CITY[k];
+      if (!id) for (const key of Object.keys(this.TRIP_CITY)) if (k.indexOf(key) !== -1) { id = this.TRIP_CITY[key]; break; }
+      if (id) return { id, name: this.TRIP_CITY_NAME[id] || '' };
+    }
+    return null;
+  }
+  // เที่ยวบิน: Trip.com เป็นตัวหลัก (Klook ไม่ได้ขายตั๋วเครื่องบิน หน้าค้นหาจึงไม่ตรงงาน)
+  // รหัสเมืองของสายการบิน (IATA) — ใช้เติมต้นทาง/ปลายทางให้อัตโนมัติจากปลายทางของทริป
+  // ต้นทางเดาเป็นกรุงเทพ ปลายทางไม่รู้ก็เปิดหน้าค้นหาเปล่าให้กรอกเอง
+  AIR = {
+    'กรุงเทพ': ['BKK', 'Bangkok'], 'bangkok': ['BKK', 'Bangkok'], 'ไทย': ['BKK', 'Bangkok'],
+    'โตเกียว': ['TYO', 'Tokyo'], 'tokyo': ['TYO', 'Tokyo'], 'ญี่ปุ่น': ['TYO', 'Tokyo'], 'japan': ['TYO', 'Tokyo'],
+    'โซล': ['SEL', 'Seoul'], 'seoul': ['SEL', 'Seoul'], 'เกาหลี': ['SEL', 'Seoul'], 'korea': ['SEL', 'Seoul'],
+    'อัลมาตี': ['ALA', 'Almaty'], 'almaty': ['ALA', 'Almaty'], 'คาซัคสถาน': ['ALA', 'Almaty'], 'kazakh': ['ALA', 'Almaty'],
+    'เซี่ยะเหมิน': ['XMN', 'Xiamen'], 'xiamen': ['XMN', 'Xiamen'],
+    'ลิสบอน': ['LIS', 'Lisbon'], 'lisbon': ['LIS', 'Lisbon'], 'lisboa': ['LIS', 'Lisbon'], 'โปรตุเกส': ['LIS', 'Lisbon'], 'portugal': ['LIS', 'Lisbon'],
+    'ปอร์โต': ['OPO', 'Porto'], 'porto': ['OPO', 'Porto'],
+    'ซานติอาโก': ['SCQ', 'Santiago'], 'santiago': ['SCQ', 'Santiago'],
+    'ไทเป': ['TPE', 'Taipei'], 'taipei': ['TPE', 'Taipei'], 'ไต้หวัน': ['TPE', 'Taipei'], 'taiwan': ['TPE', 'Taipei'],
+    'สิงคโปร์': ['SIN', 'Singapore'], 'singapore': ['SIN', 'Singapore'],
+    'ฮ่องกง': ['HKG', 'Hong Kong'], 'hong kong': ['HKG', 'Hong Kong'],
+    'ลอนดอน': ['LON', 'London'], 'london': ['LON', 'London'],
+    'ปารีส': ['PAR', 'Paris'], 'paris': ['PAR', 'Paris'],
+  };
+  airOf(...names) {
+    for (const n of names) {
+      const k = String(n || '').trim().toLowerCase();
+      if (!k) continue;
+      if (this.AIR[k]) return this.AIR[k];
+      for (const key of Object.keys(this.AIR)) if (k.indexOf(key) !== -1) return this.AIR[key];
+    }
+    return null;
+  }
+  // สนามบินต้นทางที่ผู้ใช้ตั้งเอง (ค่าตั้งต้น BKK)
+  get homeAirRaw() { try { return (localStorage.getItem('wtn-home-air') || '').toUpperCase(); } catch (e) { return ''; } }
+  get homeAir() { const v = this.homeAirRaw; return v.length === 3 ? v : 'BKK'; }
+  AIR_NAME = { BKK: 'Bangkok', DMK: 'Bangkok', CNX: 'Chiang-Mai', HKT: 'Phuket', HDY: 'Hat-Yai', URT: 'Surat-Thani', KBV: 'Krabi', SIN: 'Singapore', KUL: 'Kuala-Lumpur', HKG: 'Hong-Kong', TPE: 'Taipei' };
+  // Klook ค้นด้วยชื่อไทยของเมืองต่างประเทศแทบไม่เจอ (เช่น "เซี่ยะเหมิน" "อัลมาตี")
+  // → ถ้ารู้จักเมืองนี้ ให้ส่งชื่ออังกฤษไปค้นแทน ไม่รู้จักก็ส่งข้อความเดิม
+  latinPlace(...names) {
+    const hit = this.airOf(...names);
+    if (hit) return hit[1].replace(/-/g, ' ');
+    return String(names.find(n => String(n || '').trim()) || '').trim();
+  }
+  tripAffFlights(sub1, dest) {
+    if (!this.TRIP_AFF.aid) return false;
+    const to = this.airOf(dest);
+    const hc = this.homeAir;
+    const from = [hc, this.AIR_NAME[hc] || hc];
+    let url;
+    if (to && to[0] !== from[0]) {
+      const slug = from[1].replace(/\s+/g, '-') + '-to-' + to[1].replace(/\s+/g, '-');
+      url = new URL('https://th.trip.com/flights/' + slug + '/tickets-' + from[0] + '-' + to[0]);
+      url.searchParams.set('flighttype', 'S');
+      url.searchParams.set('dcity', from[0]);
+      url.searchParams.set('acity', to[0]);
+    } else {
+      url = new URL('https://th.trip.com/flights/');
+    }
+    url.searchParams.set('Allianceid', this.TRIP_AFF.aid);
+    url.searchParams.set('SID', this.TRIP_AFF.sid);
+    if (sub1) url.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
+    window.open(url.toString(), '_blank', 'noopener');
+    return true;
+  }
+  // Klook เปิดไม่ผ่านเลย (ค้างที่โครงหน้าเปล่าทุกเมือง/ทุกคำค้น) → ใช้ Trip.com เป็นตัวหลักทุกหมวด
+  TRIP_PAGE = {
+    'ที่พัก':   'https://th.trip.com/hotels/',
+    'เดินทาง':  'https://th.trip.com/trains/',
+    'ที่เที่ยว': 'https://th.trip.com/things-to-do/',
+    'กิน':      'https://th.trip.com/things-to-do/',
+  };
+  tripAffPage(kind, sub1) {
+    const base = this.TRIP_PAGE[kind];
+    if (!base || !this.TRIP_AFF.aid) return false;
+    const u = new URL(base);
+    u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
+    u.searchParams.set('SID', this.TRIP_AFF.sid);
+    if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
+    window.open(u.toString(), '_blank', 'noopener');
+    return true;
+  }
+  // รถรับส่งสนามบิน — หน้านี้ไม่รับพารามิเตอร์เมือง ผู้ใช้เลือกในหน้าเว็บเอง
+  tripAffTransfer(sub1) {
+    if (!this.TRIP_AFF.aid) return false;
+    const u = new URL('https://th.trip.com/airport-transfers/index/');
+    u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
+    u.searchParams.set('SID', this.TRIP_AFF.sid);
+    if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
+    window.open(u.toString(), '_blank', 'noopener');
+    return true;
+  }
+  // หน้าทัวร์/ที่เที่ยวของเมืองนั้น — ใช้รหัสเมืองชุดเดียวกับโรงแรม (searchkey=<city id>, searchtype=1)
+  tripAffThings(names, sub1) {
+    const hit = this.tripCityInfo(...(Array.isArray(names) ? names : [names]));
+    if (!hit || !this.TRIP_AFF.aid) return false;
+    const u = new URL('https://th.trip.com/things-to-do/list');
+    u.searchParams.set('searchkey', String(hit.id));
+    u.searchParams.set('searchtype', '1');
+    u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
+    u.searchParams.set('SID', this.TRIP_AFF.sid);
+    if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
+    window.open(u.toString(), '_blank', 'noopener');
+    return true;
+  }
+  // เปิดหน้าโรงแรม Trip.com พร้อมเมือง+วันที่จากแผน (ต้องรู้รหัสเมือง)
+  tripAffStay(names, ci, co, sub1) {
+    const hit = this.tripCityInfo(...(Array.isArray(names) ? names : [names]));
+    if (!hit || !this.TRIP_AFF.aid) return false;
+    const id = hit.id, city = hit.name;
+    const u = new URL('https://th.trip.com/hotels/list');
+    u.searchParams.set('city', String(id));
+    u.searchParams.set('optionId', String(id));
+    u.searchParams.set('optionType', 'City');
+    u.searchParams.set('optionName', city);
+    u.searchParams.set('display', city);
+    // ยังไม่ยืนยันชื่อ/รูปแบบพารามิเตอร์วันที่ของ Trip.com — ใส่ทั้งสองแบบเผื่อไว้ ตัวที่ไม่รู้จักถูกเมินเอง
+    if (ci) { u.searchParams.set('checkin', String(ci).replace(/-/g, '')); u.searchParams.set('checkIn', String(ci)); }
+    if (co) { u.searchParams.set('checkout', String(co).replace(/-/g, '')); u.searchParams.set('checkOut', String(co)); }
+    u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
+    u.searchParams.set('SID', this.TRIP_AFF.sid);
+    if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
+    window.open(u.toString(), '_blank', 'noopener');
+    return true;
+  }
+  affPartnerName(kind) {
+    const p = this.affPartner(kind);
+    if (p) return p.name + ' · พาร์ตเนอร์';
+    return (this.TRIP_PAGE[kind] ? 'Trip.com' : 'Klook') + ' · พาร์ตเนอร์';
+  }
   cjOpen(p, q, ci, co, sid) {
     const u = new URL(p.url);
     if (q && p.q) u.searchParams.set(p.q, q);
@@ -4103,8 +4284,14 @@ class Component extends DCLogic {
     const sid = (this.state.trip || 'trip') + '-stay-d' + ((Number(this.state.day) || 0) + 1);
     const p = this.affPartner('ที่พัก');
     if (p) return this.cjOpen(p, q, ci, co, sid);
-    const u = new URL('https://www.klook.com/th/hotels/');
-    if (q) u.searchParams.set('query', q);
+    // Trip.com: รู้รหัสเมือง → เข้าหน้าโรงแรมของเมืองนั้นพร้อมวันที่ / ไม่รู้ → หน้าค้นหาโรงแรม (ยังโหลดได้จริง)
+    // เมืองที่ผู้ใช้พิมพ์ในช่อง "เมือง / โน้ต" มาก่อน แล้วค่อยไล่จากชื่อวัน/ทริป/ประเทศ
+    if (this.tripAffStay([(this.state.stayMetaDraft || '').trim(), d.city, t.city, t.name, t.country, q], ci, co, sid)) return;
+    if (this.tripAffPage('ที่พัก', sid)) return;
+    const u = new URL('https://www.klook.com/th/search/result/');
+    u.searchParams.set('search_landing', 'true');
+    const qk = this.latinPlace(d.city, t.city, t.country, q);
+    if (qk) u.searchParams.set('query', qk + ' hotel');
     if (ci) u.searchParams.set('checkin', ci);
     if (co) u.searchParams.set('checkout', co);
     u.searchParams.set('aid', this.KLOOK_AID);
@@ -4115,15 +4302,23 @@ class Component extends DCLogic {
     const kind = this.state.addKind;
     const t = (this.userTrips || []).find(x => x.id === this.state.trip) || {};
     const q = (this.state.addTitle || '').trim() || (t.city || '').trim() || (t.name || '').trim();
-    const path = { 'ที่พัก': 'hotels/', 'เดินทาง': 'search/', 'กิน': 'search/', 'ที่เที่ยว': 'search/' }[kind] || 'search/';
+    const path = { 'ที่พัก': 'hotels/', 'เดินทาง': 'search/', 'กิน': 'search/', 'ที่เที่ยว': 'search/', 'เที่ยวบิน': 'search/' }[kind] || 'search/';
     const p = this.affPartner(kind);
     if (p) {
       const i0 = this.tripDayIso(this.state.day);
       const i1 = this.tripDayIso((Number(this.state.day) || 0) + 1);
       return this.cjOpen(p, q, i0, i1, (this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1));
     }
-    const u = new URL('https://www.klook.com/th/' + path);
-    if (q) u.searchParams.set('query', q);
+    const sub1 = (this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1);
+    // เฉพาะหมวด "เที่ยวบิน" ใช้ Trip.com — หมวดอื่น (รวม "เดินทาง" ที่เป็นรถ/รถไฟ/เรือ) ใช้ Klook ตามเดิม
+    if (kind === 'เที่ยวบิน' && this.tripAffFlights(sub1, [q, t.city, t.country, t.name].filter(Boolean).join(' '))) return;
+    if ((kind === 'ที่เที่ยว' || kind === 'กิน') &&
+        this.tripAffThings([q, t.city, t.name, t.country], sub1)) return;
+    if (this.tripAffPage(kind, sub1)) return;
+    const u = new URL('https://www.klook.com/th/search/result/');
+    u.searchParams.set('search_landing', 'true');
+    const qk = (this.state.addTitle || '').trim() || this.latinPlace(t.city, t.country, t.name);
+    if (qk) u.searchParams.set('query', qk);
     // วันที่จากแผน — Klook นับเฉพาะ in-session ยิ่งลิงก์ตรงยิ่งได้ค่าคอม
     if (t.start) {
       const d0 = new Date(new Date(t.start).getTime() + (Number(this.state.day) || 0) * 86400000);
@@ -5013,7 +5208,9 @@ class Component extends DCLogic {
     })();
     if (ei != null && (all[oldK] || [])[ei]) {
       const oldList = all[oldK] || [];
-      saved = { ...oldList[ei], name, note: noteTxt, photos: this.state.ciPhotos || [], at: cts, t: tLabel, _m: Date.now() };
+      // ปุ่ม "ใส่ในหนังสือ / โฟโต้บุ๊ก" ในฟอร์มแก้ไขต้องบันทึกด้วย (ก่อนหน้านี้กดแล้วไม่มีผล)
+      saved = { ...oldList[ei], name, note: noteTxt, photos: this.state.ciPhotos || [], at: cts, t: tLabel,
+        inBook: this.state.ciUseBook !== false, inPb: this.state.ciUsePb !== false, _m: Date.now() };
       if (k === oldK) { oldList[ei] = saved; all[oldK] = oldList; }
       else {
         oldList.splice(ei, 1); all[oldK] = oldList;
@@ -5788,18 +5985,36 @@ class Component extends DCLogic {
       this.setState({ wpImporting: false, wpDone: 0, wpErr: 'นำเข้าไม่สำเร็จ — ' + (e.message || e) });
     }
   }
+  // ข้อความที่ลอยอยู่นอกบล็อกใด ๆ (วางมาจากที่อื่นเป็น <b> เดี่ยว ๆ) → ห่อเป็น <p>
+  // ไม่ห่อไว้จะได้ขนาดตัวอักษรของกล่อง ไม่ใช่ของย่อหน้า แล้วดูเล็กกว่าเนื้อหาที่เหลือ
+  wrapNakedBlocks(root) {
+    const BLOCK = { P: 1, UL: 1, OL: 1, BLOCKQUOTE: 1, H3: 1, H4: 1, HR: 1, FIGURE: 1 };
+    const out = document.createDocumentFragment();
+    let buf = null;
+    Array.from(root.childNodes).forEach(n => {
+      if (n.nodeType === 1 && BLOCK[n.tagName]) { buf = null; out.appendChild(n); return; }
+      if (n.nodeType === 3 && !n.nodeValue.trim()) { out.appendChild(n); return; }
+      if (!buf) { buf = document.createElement('p'); out.appendChild(buf); }
+      buf.appendChild(n);
+    });
+    root.appendChild(out);
+    return root;
+  }
   sanitizeHtml(raw) {
     const wrap = document.createElement('div');
     wrap.innerHTML = String(raw || '');
     wrap.querySelectorAll('script,style,meta,link,title,head,noscript,iframe,object').forEach(n => n.remove());
-    const keep = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, A: 1, IMG: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1, H3: 1, HR: 1, FIGURE: 1, FIGCAPTION: 1 };
+    const keep = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, S: 1, STRIKE: 1, A: 1, IMG: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1, H3: 1, H4: 1, HR: 1, FIGURE: 1, FIGCAPTION: 1 };
     const walk = el => {
       Array.from(el.children).forEach(walk);
       const t = el.tagName;
       if (t === 'SPAN' && el.classList.contains('wtn-embed')) return;
       if (el.closest && el.closest('.wtn-embed') !== el && el.closest('.wtn-embed')) return;
-      if (t === 'H1' || t === 'H2' || t === 'H4' || t === 'H5' || t === 'H6') {
+      if (t === 'H1' || t === 'H2') {
         const h = document.createElement('h3'); h.innerHTML = el.innerHTML; el.replaceWith(h); return;
+      }
+      if (t === 'H5' || t === 'H6') {
+        const h = document.createElement('h4'); h.innerHTML = el.innerHTML; el.replaceWith(h); return;
       }
       if (t === 'DIV' || t === 'SECTION' || t === 'ARTICLE' || t === 'PRE') {
         const p = document.createElement('p'); p.innerHTML = el.innerHTML; el.replaceWith(p); return;
@@ -5813,18 +6028,35 @@ class Component extends DCLogic {
       if (t === 'A') el.setAttribute('target', '_blank');
     };
     Array.from(wrap.children).forEach(walk);
+    this.wrapNakedBlocks(wrap);
     wrap.querySelectorAll('figcaption').forEach(c => { if (!c.textContent.trim()) c.innerHTML = ''; });
     wrap.querySelectorAll('p').forEach(p => { if (!p.textContent.trim() && !p.querySelector('img,br')) p.remove(); });
     return wrap.innerHTML;
+  }
+  // วางแล้วใช้ตัวหนังสือของแอป (ค่าเริ่มต้น: เปิด) — ตัดตัวหนา/หัวข้อ/ขนาดที่ติดมาจากที่อื่นทิ้ง
+  get pastePlain() { try { return localStorage.getItem('wtn-paste-plain') !== '0'; } catch (e) { return true; } }
+  togglePastePlain() {
+    const on = !this.pastePlain;
+    try { localStorage.setItem('wtn-paste-plain', on ? '1' : '0'); } catch (e) {}
+    this.showToast(on ? 'วางแล้วจะใช้ตัวหนังสือของแอป' : 'วางแล้วจะเก็บรูปแบบเดิมไว้');
+    this.forceUpdate();
+  }
+  // ดึงข้อความเปล่าจาก html ที่วางมา (เก็บการขึ้นบรรทัดของย่อหน้าไว้)
+  _plainFromHtml(html) {
+    const d = document.createElement('div');
+    d.innerHTML = String(html || '');
+    d.querySelectorAll('script,style,figcaption').forEach(n => n.remove());
+    d.querySelectorAll('p,div,li,br,h1,h2,h3,h4,h5,h6,blockquote,tr').forEach(n => n.appendChild(document.createTextNode('\n')));
+    return d.textContent || '';
   }
   onChPaste(e) {
     const cd = e.clipboardData; if (!cd) return;
     e.preventDefault();
     const html = cd.getData('text/html');
     let out;
-    if (html) out = this.sanitizeHtml(html);
+    if (html && !this.pastePlain) out = this.sanitizeHtml(html);
     else {
-      const txt = cd.getData('text/plain') || '';
+      const txt = cd.getData('text/plain') || this._plainFromHtml(html);
       out = txt.split(/\n{2,}|\n/).filter(l => l.trim()).map(l => '<p>' + this.esc(l.trim()) + '</p>').join('');
     }
     if (!out) return;
@@ -5837,6 +6069,7 @@ class Component extends DCLogic {
     w.innerHTML = this._chEl.innerHTML;
     w.querySelectorAll('figcaption').forEach(c => { if (!c.textContent.trim()) c.innerHTML = ''; });
     w.querySelectorAll('figure').forEach(fg => { if (!fg.querySelector('img')) fg.replaceWith(...Array.from(fg.childNodes)); });
+    this.wrapNakedBlocks(w); // ทุกครั้งที่บันทึก: ซ่อมข้อความลอยของตอนเก่าให้เป็นย่อหน้าด้วย
     return w.innerHTML;
   }
   onChClick(e) {
@@ -6375,6 +6608,30 @@ class Component extends DCLogic {
     all[k] = list; this.saveCheckins(all);
     this.showToast(on ? (field === 'inBook' ? '✓ จะอยู่ในหนังสือ' : '✓ จะอยู่ในโฟโต้บุ๊ก')
       : (field === 'inBook' ? 'เอาออกจากหนังสือแล้ว' : 'เอาออกจากโฟโต้บุ๊กแล้ว'));
+    this.forceUpdate();
+  }
+  // รูปในโมเมนต์ทั้งทริป (ยังไม่กรองว่าติ๊กเข้าเล่มไว้หรือไม่)
+  ciRawPhotos(trip) {
+    const all = this.checkins || {};
+    let n = 0;
+    Object.keys(all).filter(k => k.indexOf(trip + ':') === 0)
+      .forEach(k => (all[k] || []).forEach(c => { n += (c.photos || []).filter(p => !this.spriteOf(p)).length; }));
+    return n;
+  }
+  // ติ๊กรูปทุกโมเมนต์ของทริปเข้าเล่มรวดเดียว — กันกรณีข้อมูลเก่าถูกบันทึกเป็น "ไม่เอาเข้าเล่ม" ไว้ทั้งทริป
+  ciSelectAllForPb(trip) {
+    const all = this.checkins || {};
+    let n = 0;
+    Object.keys(all).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
+      (all[k] || []).forEach(c => {
+        if (!(c.photos || []).length) return;
+        if (this.ciWantsPb(c)) return;
+        c.inPb = true; c._m = Date.now(); n++;
+      });
+    });
+    if (!n) { this.showToast('ไม่มีโมเมนต์ที่ต้องเลือกเพิ่ม'); return; }
+    this.saveCheckins(all);
+    this.showToast('เลือกรูปจาก ' + n + ' โมเมนต์เข้าเล่มแล้ว');
     this.forceUpdate();
   }
   publishCheckin(k, idx, on) {
@@ -7429,6 +7686,15 @@ class Component extends DCLogic {
   get asUser() { return false; }
   get isAdminReal() { return this._isAdminRaw(); }
   get isPremium() { if (this.isAdmin) return true; try { return localStorage.getItem('wtn-premium') === '1'; } catch (e) { return false; } }
+  // รันอยู่ในแอป native (Capacitor) ไหม — ถ้าใช่ ต้องไม่โชว์การชำระเงินของเราเอง
+  // (นโยบาย Google Play: สินค้าดิจิทัลในแอปต้องผ่าน Play Billing เท่านั้น)
+  get isNativeApp() {
+    try {
+      if (document.documentElement.classList.contains('is-native')) return true;
+      const C = window.Capacitor;
+      return !!(C && C.isNativePlatform && C.isNativePlatform());
+    } catch (e) { return false; }
+  }
   toggleAsUser() {
     const on = !this.asUser;
     try { localStorage.setItem('wtn-as-user', on ? '1' : '0'); } catch (e) {}
@@ -7444,6 +7710,7 @@ class Component extends DCLogic {
     this.back();
   }
   async startCheckout(plan) {
+    if (this.isNativeApp) { this.showToast('อัปเกรดได้ที่ onevela.net'); return; }
     const be = window.WTNBackend;
     if (be && be.startCheckout && be._uid) {
       try {
@@ -10396,7 +10663,7 @@ class Component extends DCLogic {
     const coverOn = "flex:1;text-align:center;background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverOff = "flex:1;text-align:center;background:#efe4d3;color:#7c7264;font:600 14px 'Anuphan';padding:8px;border-radius:10px;border:none;cursor:pointer";
     const coverChips = [1,2,3,4].map((n,i) => ({ n, on: () => this.setState({ coverIdx: i }), style: this.state.coverIdx === i ? coverOn : coverOff }));
-    const affilMap = { 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:this.affPartnerName('ที่พัก') }, 'เดินทาง': { l:'รถรับส่ง / รถเช่า / ตั๋ว', s:this.affPartnerName('เดินทาง') }, 'กิน': { l:'ร้าน / คอร์สอาหาร', s:this.affPartnerName('กิน') }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:this.affPartnerName('ที่เที่ยว') } };
+    const affilMap = { 'เที่ยวบิน': { l:'ค้นตั๋วเครื่องบิน', s:'Trip.com · พาร์ตเนอร์' }, 'ที่พัก': { l:'ค้นที่พัก + ลิงก์จอง', s:this.affPartnerName('ที่พัก') }, 'เดินทาง': { l:'ตั๋วรถไฟ / รถบัส', s:this.affPartnerName('เดินทาง') }, 'กิน': { l:'ร้าน / คอร์สอาหาร', s:this.affPartnerName('กิน') }, 'ที่เที่ยว': { l:'บัตรเข้า / ทัวร์', s:this.affPartnerName('ที่เที่ยว') } };
     const af = affilMap[this.state.addKind];
     const pillBase = 'flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:54px;border-radius:14px;cursor:pointer;border:1px solid rgba(43,36,32,.1)';
     const tc = (t) => this.state.tab === t ? '#c05f39' : '#b3a897';
@@ -10453,7 +10720,8 @@ class Component extends DCLogic {
       adminRevenue: (this.state.adminStats && this.state.adminStats.revenue != null) ? ('฿' + Number(this.state.adminStats.revenue).toLocaleString()) : '—',
       pickPlanTrip: () => this.setState({ premiumPlan: 'trip' }), pickPlanYear: () => this.setState({ premiumPlan: 'year' }),
       tripSel: (this.state.premiumPlan || 'trip') === 'trip', yearSel: (this.state.premiumPlan || 'trip') === 'year',
-      hasBilling: this.isPremium, openBilling: () => this.openBilling(),
+      canBuyHere: !this.isNativeApp, buyOnWeb: this.isNativeApp,
+      hasBilling: this.isPremium && !this.isNativeApp, openBilling: () => this.openBilling(),
       hasCredits: this.isPremium && !this.isAdmin && this.state.aiCredits != null && this.state.aiCredits < 10,
       aiCreditsLeft: String(this.state.aiCredits ?? '—'),
       aiCreditsNote: this.state.aiCredits === 0 ? 'ซื้อ Trip Pass เพื่อใช้ AI ต่อ' : 'ครบแล้วต้องซื้อ Trip Pass ใหม่',
@@ -10539,7 +10807,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.23a',
+      appVersion: '2026.08.26ab',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -10641,7 +10909,11 @@ class Component extends DCLogic {
               pbCoverId: 'wtn-pb-cover-' + trip,
               pbCardNote: pe.photos ? (pe.photos + ' รูป · ' + pe.days + ' วัน — เล่มแนวนอน ประมาณ ' + pe.pages + ' หน้า') : 'ยังไม่มีรูปในทริปนี้',
               pbSummary: pe.photos ? (pe.photos + ' รูป จาก ' + pe.days + ' วัน — จัดเป็นเล่มแนวนอนประมาณ ' + pe.pages + ' หน้า ไม่ต้องเขียนอะไรเพิ่ม')
-                                   : 'ทริปนี้ยังไม่มีรูป — เช็คอินพร้อมรูประหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม',
+                                   : (this.ciRawPhotos(trip)
+                                      ? 'ทริปนี้มีรูปในโมเมนต์ ' + this.ciRawPhotos(trip) + ' รูป แต่ยังไม่ได้ติ๊กเข้าเล่มไว้'
+                                      : 'ทริปนี้ยังไม่มีรูป — เช็คอินพร้อมรูประหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม'),
+              pbNeedsPick: !pe.photos && this.ciRawPhotos(trip) > 0,
+              pbPickAll: () => this.ciSelectAllForPb(trip),
               pbBusy: !!this.state.pbBusy, pbIdle: !this.state.pbBusy,
               pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
               pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
@@ -10999,6 +11271,14 @@ class Component extends DCLogic {
         };
       })(),
       sSettings: sc === 'settings',
+      // ระหว่างพิมพ์เก็บค่าดิบไว้ (ลบจนว่างได้) ค่าตั้งต้น BKK ไปเติมตอนใช้งานจริงเท่านั้น
+      homeAirDraft: this.state.homeAirDraft != null ? this.state.homeAirDraft : this.homeAirRaw,
+      setHomeAir: e => {
+        const v = String(e.target.value || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+        try { localStorage.setItem('wtn-home-air', v); } catch (er) {}
+        this.setState({ homeAirDraft: v });
+      },
+      blurHomeAir: () => this.setState({ homeAirDraft: null }),
       goSettings: () => this.go('settings'),
       acctName: this.profile.name || this.acct.name || 'ฉัน',
       acctEditOpen: !!this.state.acctEditOpen,
@@ -11576,6 +11856,8 @@ class Component extends DCLogic {
       onAddTime: (e) => this.setState({ addTime: e.target.value }),
       onAddNote: (e) => this.setState({ addNote: e.target.value }),
       affilGo: () => this.openAffiliate(),
+      showTransfer: this.state.addKind === 'เดินทาง',
+      transferGo: () => this.tripAffTransfer((this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1)),
       openAdd: () => this.go('addStop'), sAddStop: sc === 'addStop',
       saveStop: () => this.addStopNow(false),
       saveStopMore: () => this.addStopNow(true),
@@ -12416,11 +12698,14 @@ class Component extends DCLogic {
           rtUndo: this.rt('undo'), rtRedo: this.rt('redo'), rtBold: this.rt('bold'), rtItalic: this.rt('italic'),
           rtUnderline: this.rt('underline'), rtStrike: this.rt('strikeThrough'),
           rtLeft: this.rt('justifyLeft'), rtCenter: this.rt('justifyCenter'), rtRight: this.rt('justifyRight'),
-          rtHead: this.rt('formatBlock', '<h3>'), rtQuote: this.rt('formatBlock', '<blockquote>'),
+          rtHead: this.rt('formatBlock', '<h3>'), rtSubHead: this.rt('formatBlock', '<h4>'),
+          rtPara: this.rt('formatBlock', '<p>'), rtQuote: this.rt('formatBlock', '<blockquote>'),
           rtOL: this.rt('insertOrderedList'), rtUL: this.rt('insertUnorderedList'), rtHR: this.rt('insertHorizontalRule'),
           saveChSelFn: () => this.saveChSel(),
           insertChImage: e => this.insertChImage(e), onChInput: () => this.updateCounts(),
           onChPaste: e => this.onChPaste(e), cleanChFormat: () => this.cleanChFormat(),
+          pastePlainOn: this.pastePlain, pastePlainOff: !this.pastePlain,
+          togglePastePlain: () => this.togglePastePlain(),
           onChClick: e => this.onChClick(e),
           insertChClip: () => this.insertChClip(),
           chCover: this.state.chCover || '', chHasCover: !!this.state.chCover, chNoCover: !this.state.chCover,
