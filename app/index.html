@@ -111,6 +111,9 @@
   @keyframes wtnToast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
   /* full-screen by default (any device/webview) */
   body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
+  /* ล็อกไม่ให้ document เลื่อนเอง — บน iOS คีย์บอร์ดดันหน้าขึ้นแล้วค้าง
+     ทำให้เห็นพื้นสีเข้มด้านล่างและหัวข้อถูกตัดด้านบน (สกรอลล์จริงอยู่ที่ .wtn-s) */
+  html,body{height:100%!important;overflow:hidden!important;overscroll-behavior:none}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
   .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
@@ -2329,15 +2332,6 @@
                 <div style="display:flex;gap:8px"><button onClick="{{ toggleAcctEdit }}" style="flex:1;min-height:44px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveAcctName }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกชื่อ</button></div>
               </div>
             </sc-if>
-          </div>
-          <div>
-            <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">การเดินทาง</div>
-            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
-              <div style="font:500 16px 'Anuphan';color:#2b241f;margin-bottom:3px">สนามบินต้นทาง</div>
-              <div style="font:500 13px/1.5 'Anuphan';color:#a1927c;margin-bottom:10px">ใช้เป็นต้นทางตั้งต้นตอนกดหาตั๋วเครื่องบินจากแผนทริป</div>
-              <input value="{{ homeAirDraft }}" onInput="{{ setHomeAir }}" onBlur="{{ blurHomeAir }}" placeholder="BKK" maxlength="3" style="width:110px;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:700 17px 'Anuphan';letter-spacing:1.5px;text-transform:uppercase;color:#2b241f;outline:none">
-              <div style="font:500 12.5px/1.5 'Anuphan';color:#a1927c;margin-top:8px">ใส่รหัสสนามบิน 3 ตัว เช่น BKK (กรุงเทพ) · DMK (ดอนเมือง) · CNX (เชียงใหม่) · HKT (ภูเก็ต)</div>
-            </div>
           </div>
           <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
@@ -7674,6 +7668,12 @@ class Component extends DCLogic {
     window.addEventListener('offline', this._onOff);
     this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); } else this.flushCloudPush(); };
     document.addEventListener('visibilitychange', this._visSync);
+    // iOS: ปิดคีย์บอร์ดแล้ว document มักค้างอยู่ตำแหน่งที่ถูกดันขึ้น → ดึงกลับที่ 0
+    this._unscroll = () => { try { if (window.scrollY || window.pageYOffset) window.scrollTo(0, 0); } catch (e) {} };
+    document.addEventListener('focusout', this._unscroll, true);
+    window.addEventListener('orientationchange', this._unscroll);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', this._unscroll);
+    this._unscrollTimer = setInterval(this._unscroll, 1200);
     // iOS พักแท็บทันทีที่สลับออก/ล็อกจอ → ต้องดันข้อมูลค้างก่อนโดนพัก
     this._pageHide = () => this.flushCloudPush();
     window.addEventListener('pagehide', this._pageHide);
@@ -7880,6 +7880,12 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     try { clearInterval(this._heroTimer); } catch (e) {}
+    try {
+      clearInterval(this._unscrollTimer);
+      document.removeEventListener('focusout', this._unscroll, true);
+      window.removeEventListener('orientationchange', this._unscroll);
+      if (window.visualViewport) window.visualViewport.removeEventListener('resize', this._unscroll);
+    } catch (e) {}
     window.removeEventListener('photopick-change', this._pp);
     if (this._ppSync) window.removeEventListener('photopick-change', this._ppSync);
     if (this._visSync) document.removeEventListener('visibilitychange', this._visSync);
@@ -10873,7 +10879,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27c',
+      appVersion: '2026.08.27d',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
