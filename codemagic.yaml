@@ -1,108 +1,61 @@
 # Vela — บิลด์ iOS จาก Windows โดยไม่ต้องมี Mac
-# วางไฟล์นี้ที่ราก repo (ระดับเดียวกับ capacitor/)
+# วางไฟล์นี้ที่ราก repo (ระดับเดียวกับ capacitor/) แล้วต่อ repo เข้า codemagic.io
 # ฟรี 500 นาที/เดือน — บิลด์ iOS หนึ่งครั้งกินราว 8-14 นาที
-#
-# ตอนนี้ตั้งเป็น "บิลด์ทดสอบแบบไม่เซ็นชื่อ" เพื่อพิสูจน์ว่าสายพานทำงาน
-# ใช้ได้เลยโดยยังไม่ต้องมีบัญชี Apple ที่อนุมัติแล้ว
-#
-# ▶ พอ Apple อนุมัติแล้วให้ทำ 3 อย่าง (ดูหมายเหตุท้ายไฟล์):
-#   1) ใน Codemagic UI ต่อ Apple Developer Portal + App Store Connect API key
-#   2) เปิดคอมเมนต์บล็อก ios_signing / integrations / publishing
-#   3) ลบ CODE_SIGNING_ALLOWED=NO ออกจากคำสั่งบิลด์
 
 workflows:
-  ios-test:
-    name: Vela iOS · บิลด์ทดสอบ (ยังไม่เซ็นชื่อ)
+  ios-release:
+    name: Vela iOS · TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 45
     environment:
       xcode: latest
       cocoapods: default
       node: 20
+      vars:
+        XCODE_WORKSPACE: "capacitor/ios/App/App.xcworkspace"
+        XCODE_SCHEME: "App"
+        BUNDLE_ID: "net.onevela.app"
+      ios_signing:
+        # ตั้งใน Codemagic UI: Teams > Integrations > Apple Developer Portal
+        # แล้วสร้าง automatic code signing — ไม่ต้องยุ่งกับ certificate เอง
+        distribution_type: app_store
+        bundle_identifier: net.onevela.app
     scripts:
       - name: ติดตั้ง dependencies
         script: |
           cd capacitor
-          npm install
+          npm ci || npm install
       - name: เตรียม iOS platform
         script: |
           cd capacitor
+          if [ ! -d "ios" ]; then npx cap add ios; fi
           npx cap sync ios
       - name: pod install
         script: |
           cd capacitor/ios/App
           pod install
-      - name: บิลด์ (ไม่เซ็นชื่อ — แค่ดูว่าคอมไพล์ผ่าน)
+      - name: ตั้ง build number จากเลขบิลด์ของ Codemagic
         script: |
           cd capacitor/ios/App
-          xcodebuild \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath build/App.xcarchive \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            archive
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0) + 1))
+      - name: บิลด์ ipa
+        script: |
+          cd capacitor/ios/App
+          xcode-project use-profiles
+          xcode-project build-ipa --workspace "App.xcworkspace" --scheme "App"
     artifacts:
-      - capacitor/ios/App/build/**/*.xcarchive
+      - capacitor/ios/App/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
+      app_store_connect:
+        # ตั้งใน Codemagic UI: App Store Connect API key (Issuer ID + Key ID + .p8)
+        auth: integration
+        submit_to_testflight: true
+        # เปิดบรรทัดล่างเมื่อพร้อมส่งขึ้นขายจริง
+        # submit_to_app_store: false
       email:
         recipients:
           - admin@onevela.net
         notify:
           success: true
           failure: true
-
-# ─────────────────────────────────────────────────────────────
-# ▶ เวอร์ชันจริง (ใช้หลัง Apple อนุมัติ)
-# เอาบล็อกล่างนี้ไปแทน workflow ด้านบน แล้วเปลี่ยนชื่อ integration
-# ให้ตรงกับที่ตั้งไว้ใน Codemagic UI
-#
-# workflows:
-#   ios-release:
-#     name: Vela iOS · TestFlight
-#     instance_type: mac_mini_m2
-#     max_build_duration: 45
-#     integrations:
-#       app_store_connect: Vela ASC key      # ← ชื่อ key ที่ตั้งใน Codemagic UI
-#     environment:
-#       xcode: latest
-#       cocoapods: default
-#       node: 20
-#       ios_signing:
-#         distribution_type: app_store
-#         bundle_identifier: net.onevela.app
-#     scripts:
-#       - name: ติดตั้ง dependencies
-#         script: |
-#           cd capacitor
-#           npm install
-#       - name: เตรียม iOS platform
-#         script: |
-#           cd capacitor
-#           npx cap sync ios
-#       - name: pod install
-#         script: |
-#           cd capacitor/ios/App
-#           pod install
-#       - name: ตั้งเลขบิลด์
-#         script: |
-#           cd capacitor/ios/App
-#           agvtool new-version -all $(($BUILD_NUMBER + 1))
-#       - name: บิลด์ ipa
-#         script: |
-#           cd capacitor/ios/App
-#           xcode-project use-profiles
-#           xcode-project build-ipa --workspace "App.xcworkspace" --scheme "App"
-#     artifacts:
-#       - capacitor/ios/App/build/ios/ipa/*.ipa
-#       - /tmp/xcodebuild_logs/*.log
-#     publishing:
-#       app_store_connect:
-#         auth: integration
-#         submit_to_testflight: true
-#       email:
-#         recipients:
-#           - admin@onevela.net
