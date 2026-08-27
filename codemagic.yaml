@@ -57,6 +57,21 @@ workflows:
             fi
           fi
           npx cap sync ios
+      - name: ตั้งค่า Info.plist (export compliance + คำขออนุญาต)
+        script: |
+          PLIST=capacitor/ios/App/App/Info.plist
+          plutil -replace ITSAppUsesNonExemptEncryption -bool NO "$PLIST"
+          plutil -replace NSPhotoLibraryUsageDescription -string "ใช้เลือกรูปจากคลังภาพเพื่อแนบในบันทึกทริปของคุณ" "$PLIST"
+          plutil -replace NSPhotoLibraryAddUsageDescription -string "ใช้บันทึกรูปที่สร้างจากแอปลงคลังภาพของคุณ" "$PLIST"
+          plutil -replace NSCameraUsageDescription -string "ใช้ถ่ายรูปเพื่อแนบในบันทึกทริปของคุณ" "$PLIST"
+          plutil -replace NSLocationWhenInUseUsageDescription -string "ใช้ระบุตำแหน่งเพื่อเช็คอินสถานที่ในทริปของคุณ" "$PLIST"
+          plutil -p "$PLIST" | grep -E "ITSApp|UsageDescription"
+      - name: ยกระดับ minimum iOS เป็น 15.0 (แก้ ITMS-90068)
+        script: |
+          cd capacitor/ios/App
+          sed -i '' "s/platform :ios, '[0-9.]*'/platform :ios, '15.0'/" Podfile
+          sed -i '' "s/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 15.0;/g" App.xcodeproj/project.pbxproj
+          grep -n "platform :ios" Podfile
       - name: pod install
         script: |
           cd capacitor/ios/App
