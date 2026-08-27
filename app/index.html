@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vela</title>
 <meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
@@ -172,6 +172,15 @@
   }
 </style>
 <script src="photo-pick.js"></script>
+<script>
+  /* ต้องมี viewport-fit=cover ไม่งั้น env(safe-area-inset-*) = 0 ทุกที่
+     (นี่คือเหตุที่หัวข้อไปซ้อนนาฬิกา และแถบล่างชิดขอบเกินไป) */
+  (function(){
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    if (!/viewport-fit/.test(m.content || '')) m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+</script>
 </helmet>
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
@@ -2697,8 +2706,8 @@
       </div>
     </sc-if>
 
-      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" style="position:absolute;right:18px;bottom:146px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>โมเมนต์</button>
-      <button onClick="{{ goAskAi }}" style="position:absolute;right:18px;bottom:84px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
+      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" class="wtn-fab wtn-fab-2" style="position:absolute;right:18px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>โมเมนต์</button>
+      <button onClick="{{ goAskAi }}" class="wtn-fab wtn-fab-1" style="position:absolute;right:18px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
     <div class="wtn-tabbar" style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
@@ -2769,6 +2778,20 @@
     </div>
   </div>
 </sc-if>
+<sc-if value="{{ shareLinkOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:9700;background:rgba(20,16,13,.72);display:flex;flex-direction:column;justify-content:flex-end">
+    <div style="background:#f6efe2;border-radius:22px 22px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:13px">
+      <div style="font:400 20px 'Chonburi',serif;color:#2b241f">คัดลอกลิงก์เอง</div>
+      <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f">เครื่องนี้เปิดแผงแชร์ให้ไม่ได้ — แตะช่องด้านล่างเพื่อเลือกทั้งหมด แล้วคัดลอก</div>
+      <input value="{{ shareLinkUrl }}" readonly="readonly" onClick="{{ shareLinkCopy }}" style="width:100%;box-sizing:border-box;min-height:50px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;border-radius:13px;padding:0 14px;font:500 14px 'Anuphan';color:#2b241f;outline:none">
+      <div style="display:flex;gap:10px">
+        <button onClick="{{ shareLinkClose }}" style="flex:none;min-height:50px;padding:0 20px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#5c5347;font:600 16px 'Anuphan';border-radius:13px;cursor:pointer">ปิด</button>
+        <button onClick="{{ shareLinkCopy }}" style="flex:1;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:13px;cursor:pointer">คัดลอกลิงก์</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ lbClose }}" style="position:fixed;inset:0;z-index:9800;background:rgba(20,16,13,.96);display:flex;flex-direction:column">
     <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px">
@@ -7120,13 +7143,54 @@ class Component extends DCLogic {
     try { localStorage.setItem('wtn-comments', JSON.stringify(all)); } catch (e) {}
     this.setState({ commentDraft: '' });
   }
-  shareChapter() {
+  // ลิงก์แชร์: ส่งผ่านฟังก์ชัน share ของ Supabase เพื่อให้ Facebook/LINE เห็นปกกับหัวข้อของตอนนั้นจริง
+  // (crawler ไม่รัน JS — ลิงก์ตรงไปที่แอปจะได้ปกกลางของ Vela ทุกลิงก์)
+  chapterShareUrl(sid, cid) {
+    const q = '?st=' + encodeURIComponent(sid || '') + '&ch=' + encodeURIComponent(cid || '');
+    const cfg = window.WTN_SUPABASE || {};
+    // ลิงก์สวยผ่าน Cloudflare Worker: onevela.net/s/<story>/<chapter>
+    if (cfg.shareBase) {
+      return String(cfg.shareBase).replace(/\/+$/, '') +
+        '/' + encodeURIComponent(sid || '') + '/' + encodeURIComponent(cid || '');
+    }
+    if (cfg.url) return String(cfg.url).replace(/\/+$/, '') + '/functions/v1/share' + q;
+    return location.href.split('#')[0].split('?')[0] + q;   // สำรอง: ลิงก์ตรง (ไม่มีปกเฉพาะตอน)
+  }
+  // คัดลอกข้อความให้ได้ทุกที่ — ใน WKWebView ของแอป native ไม่มี navigator.clipboard
+  // (ต้องเป็น secure context) ต้องถอยไปใช้ textarea + execCommand
+  copyText(txt) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt);
+        return true;
+      }
+    } catch (e) {}
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, txt.length);   // iOS ต้องสั่งช่วงเลือกเอง
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+  async shareChapter() {
     const t = (this.openChapter || {}).title || 'เรื่องเล่า';
-    const base = location.href.split('#')[0].split('?')[0];
-    const url = base + '?st=' + encodeURIComponent(this.state.openStoryId || '') + '&ch=' + encodeURIComponent(this.state.openChapterId || '');
-    try { if (navigator.share) { navigator.share({ title: t, url }); return; } } catch (e) {}
-    try { navigator.clipboard && navigator.clipboard.writeText(url); } catch (e) {}
-    alert('คัดลอกลิงก์ตอน "' + t + '" แล้ว');
+    const url = this.chapterShareUrl(this.state.openStoryId, this.state.openChapterId);
+    // แอป native: เรียกแผงแชร์ของ iOS/Android ผ่านปลั๊กอินก่อน (navigator.share มักไม่มีใน WKWebView)
+    try {
+      const S = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
+      if (S && S.share) { await S.share({ title: t, text: t, url, dialogTitle: 'แชร์เรื่องเล่า' }); return; }
+    } catch (e) { if (e && /cancel/i.test(e.message || '')) return; }
+    try { if (navigator.share) { await navigator.share({ title: t, url }); return; } }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+    // ไม่มีแผงแชร์ → คัดลอกลิงก์ให้ แล้วบอกด้วยทับข้อความ (ไม่ใช้ alert — ใน webview บางทีถูกบล็อก)
+    if (this.copyText(url)) this.showToast('คัดลอกลิงก์ตอน "' + t + '" แล้ว');
+    else this.setState({ shareLinkOpen: true, shareLinkUrl: url, shareLinkTitle: t });
   }
   esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   defaultDocs() {
@@ -10883,7 +10947,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27f',
+      appVersion: '2026.08.27k',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -12818,6 +12882,14 @@ class Component extends DCLogic {
           chReaderRef: el => { const key = this.state.openChapterId + ':' + (((oc || {}).html) ? 'y' : 'n'); if (el && el._loadedId !== key) { el.innerHTML = (oc || {}).html || (this.isRemoteOpen ? '<p style=\"color:#a1927c\">กำลังโหลด...</p>' : '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'); el._loadedId = key; this.enrichRead(el); if (this.isRemoteOpen && (oc || {}).html) this.armViewTimer(this.state.openStoryId, this.state.openChapterId, (oc || {}).html || ''); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
+          shareLinkOpen: !!this.state.shareLinkOpen,
+          shareLinkUrl: this.state.shareLinkUrl || '',
+          shareLinkTitle: this.state.shareLinkTitle || '',
+          shareLinkCopy: () => {
+            if (this.copyText(this.state.shareLinkUrl || '')) this.showToast('คัดลอกลิงก์แล้ว');
+            this.setState({ shareLinkOpen: false });
+          },
+          shareLinkClose: () => this.setState({ shareLinkOpen: false }),
           crShowSave: this.isRemoteOpen,
           crSaveLabel: this.crInspiredNow ? 'เก็บไว้แล้ว' : 'เก็บไว้ในแรงบันดาลใจ',
           crSaveFill: this.crInspiredNow ? '#c05f39' : 'none',
