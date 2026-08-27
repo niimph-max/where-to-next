@@ -24,7 +24,8 @@
       "overlaysWebView": false
     },
     "Keyboard": {
-      "resize": "native"
+      "resize": "native",
+      "resizeOnFullScreen": true
     }
   },
   "server": {
