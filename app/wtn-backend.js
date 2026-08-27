@@ -57,6 +57,12 @@ async function boot() {
   });
   const secs = t => (t ? { seconds: Math.floor(new Date(t).getTime() / 1000) } : null);
   const dataUrlToBlob = async d => (await fetch(d)).blob();
+  // ลายนิ้วมือสั้นของก้อนข้อมูล — ใช้เทียบว่าเนื้อเปลี่ยนจริงไหมก่อนเขียนขึ้นคลาวด์
+  const hash32 = (s) => {
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+    return h.toString(36);
+  };
   const countsOf = (obj) => {
     const dd = (obj && obj.data) || {};
     const n = (k) => { try { return (JSON.parse(dd[k] || "[]") || []).length; } catch (e) { return 0; } };
@@ -368,11 +374,15 @@ async function boot() {
       const blob = JSON.stringify(obj);
       if (blob.length > 4000000) { const e = new Error("backup ใหญ่เกิน 4MB"); e.code = "backup/too-large"; throw e; }
       const at = obj._at || Date.now();
+      // เนื้อหาไม่เปลี่ยน = ไม่ต้องเขียนซ้ำ (ลด Disk IO/Egress ของ Supabase)
+      const sig = blob.length + ":" + hash32(blob);
+      if (this._lastSig === sig) { this._seenAt = Math.max(this._seenAt || 0, at); return; }
       ok(await T(SB.from("backups").upsert({ user_id: this._uid, blob, at, updated_at: new Date().toISOString() }), 90000, "pushBackup"));
+      this._lastSig = sig;
       this._seenAt = Math.max(this._seenAt || 0, at);
-      // เก็บเวอร์ชันย้อนหลัง 7 ชุด ไม่ถี่กว่า 10 นาที
+      // เก็บเวอร์ชันย้อนหลัง 7 ชุด ไม่ถี่กว่า 6 ชั่วโมง (เดิม 10 นาที — เขียนก้อนเต็มบ่อยเกิน)
       let verList = null;
-      if (!this._lastVerAt || at - this._lastVerAt >= 600000) {
+      if (!this._lastVerAt || at - this._lastVerAt >= 21600000) {
         this._lastVerAt = at;
         try {
           await SB.from("backup_versions").upsert({ user_id: this._uid, at, blob, ...countsOf(obj) });
