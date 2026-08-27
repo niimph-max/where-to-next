@@ -20,10 +20,7 @@ workflows:
         XCODE_WORKSPACE: "capacitor/ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
         BUNDLE_ID: "net.onevela.app"
-      ios_signing:
-        # ต้องเชื่อม Teams > Integrations > Apple Developer Portal ก่อน
-        distribution_type: app_store
-        bundle_identifier: net.onevela.app
+      # ไม่ใช้ ios_signing เพราะมันหา profile ที่มีอยู่เดิมเท่านั้น — เราสร้างเองในสคริปต์ข้างล่าง
     scripts:
       - name: เช็คว่ามีตัวเว็บอยู่จริง
         script: |
@@ -64,6 +61,16 @@ workflows:
         script: |
           cd capacitor/ios/App
           pod install
+      - name: เตรียม keychain
+        script: keychain initialize
+      - name: สร้าง/ดึง signing files (สร้าง App ID + cert + profile ให้เองถ้ายังไม่มี)
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --platform IOS \
+            --create
+      - name: ใส่ cert เข้า keychain
+        script: keychain add-certificates
       - name: ตั้ง build number
         script: |
           cd capacitor/ios/App
