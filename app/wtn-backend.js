@@ -109,9 +109,25 @@ async function boot() {
       ok(await SB.auth.signInWithOAuth({ provider: "google", options: { redirectTo } }));
       return null; // เบราว์เซอร์จะ redirect ออกไป แล้วกลับมาพร้อม session
     },
+    async apple() {
+      const redirectTo = location.origin + location.pathname;
+      ok(await SB.auth.signInWithOAuth({ provider: "apple", options: { redirectTo } }));
+      return null;
+    },
     async resetPassword(email) {
       ok(await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }));
       return true;
+    },
+    async updatePassword(pass) {
+      ok(await SB.auth.updateUser({ password: pass }));
+      return true;
+    },
+    // มาจากลิงก์รีเซ็ตรหัสผ่านในอีเมลหรือเปล่า (supabase ใส่ token ไว้ใน hash)
+    isRecoveryLink() {
+      try {
+        const h = location.hash || "", q = location.search || "";
+        return /type=recovery/.test(h) || /type=recovery/.test(q);
+      } catch (e) { return false; }
     },
     logout() { return SB.auth.signOut(); },
 
