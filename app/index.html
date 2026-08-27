@@ -1767,6 +1767,16 @@
       <!-- ========== CHAPTER EDIT ========== -->
       <sc-if value="{{ sChapterEdit }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="display:flex;flex-direction:column;height:100%">
+          <sc-if value="{{ ceHeadSlim }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+              <button onClick="{{ openCeHead }}" title="แสดงหัวเรื่อง" style="width:34px;height:34px;flex:none;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:10px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 15l6-6 6 6"></path></svg></button>
+              <span style="flex:1;min-width:0;font:600 14.5px 'Anuphan';color:#5c5347;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ceTitleSlim }}</span>
+              <button onClick="{{ zenAi }}" title="AI เรียบเรียงจากโมเมนต์วันนี้" style="width:36px;height:34px;flex:none;border:1px solid rgba(192,95,57,.3);background:#fbeee6;border-radius:10px;color:#c05f39;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"></path></svg></button>
+              <button onClick="{{ ceDone }}" style="flex:none;min-height:34px;border:none;background:#2b241f;color:#f6efe2;font:600 14px 'Anuphan';padding:0 13px;border-radius:10px;cursor:pointer">เสร็จ</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ceHeadOpen }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ ceHeadOpen }}" hint-placeholder-val="{{ true }}">
           <div style="flex:none;padding:14px 20px 10px">
             <input value="{{ ceTitle }}" onInput="{{ setCeTitle }}" placeholder="ชื่อตอน" style="width:100%;box-sizing:border-box;border:none;background:transparent;font-family:'Chonburi',serif;font-size:22px;color:#2b241f;outline:none">
           </div>
@@ -1776,6 +1786,7 @@
             <span style="flex:1"></span>
             <span onClick="{{ toggleChPublish }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;flex:none"><span style="font:600 14px 'Anuphan';color:#5c5347">เผยแพร่สู่สาธารณะ</span><span style="width:46px;height:26px;border-radius:15px;position:relative;flex:none;{{ cePubTrack }}"><span style="position:absolute;top:3px;{{ cePubKnob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)"></span></span></span>
           </div>
+          </sc-if>
           <div class="wtn-s" style="flex:none;display:flex;align-items:center;gap:1px;overflow-x:auto;padding:7px 12px;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08);background:#fffaf0">
             <button onMouseDown="{{ rtUndo }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 7L4 12l5 5"></path><path d="M4 12h11a5 5 0 0 1 0 10h-3"></path></svg></button>
             <button onMouseDown="{{ rtRedo }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15 7l5 5-5 5"></path><path d="M20 12H9a5 5 0 0 0 0 10h3"></path></svg></button>
@@ -1803,11 +1814,13 @@
             <sc-if value="{{ pastePlainOff }}" hint-placeholder-val="{{ false }}"><button onClick="{{ togglePastePlain }}" title="วางแล้วเก็บรูปแบบเดิมไว้ (กดเพื่อเปิดใช้ตัวหนังสือของแอป)" style="min-width:38px;height:34px;border:none;background:transparent;border-radius:8px;color:#b3a897;font:700 13px 'Anuphan';cursor:pointer;flex:none">Aa</button></sc-if>
             <button onClick="{{ cleanChFormat }}" title="ล้างรูปแบบที่ติดมาจากการวาง" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h11"></path><path d="M9 7l-2 12"></path><path d="M13 7l-1 6"></path><path d="M15 15l6 6M21 15l-6 6"></path></svg></button>
           </div>
+          <sc-if value="{{ ceHeadOpen }}" hint-placeholder-val="{{ true }}">
           <div style="flex:none;display:flex;align-items:center;gap:9px;padding:9px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
             <button onClick="{{ runAiCh }}" style="display:inline-flex;align-items:center;gap:7px;min-height:40px;border:1px solid rgba(192,95,57,.35);background:#fbeee6;color:#c05f39;font:700 14.5px 'Anuphan';padding:0 14px;border-radius:11px;cursor:pointer;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M18 15l.9 2.4L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.6L18 15z"/></svg>{{ aiChLabel }}</button>
             <button onClick="{{ toggleAiBrief }}" style="min-height:40px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:0 12px;border-radius:11px;cursor:pointer;flex:none">{{ aiBriefBtn }}</button>
             <span style="font:500 12.5px/1.4 'Anuphan';color:#a99e8e;min-width:0">{{ aiChSource }}</span>
           </div>
+          </sc-if>
           <sc-if value="{{ aiBriefOpen }}" hint-placeholder-val="{{ false }}">
             <div style="flex:none;padding:11px 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
               <div style="font:600 12.5px 'Anuphan';color:#a99e8e;letter-spacing:.3px;margin-bottom:8px">อยากให้ตอนนี้เน้นอะไร</div>
@@ -1835,7 +1848,7 @@
             </div>
           </sc-if>
           <div class="wtn-s" style="flex:1;overflow-y:auto">
-            <div ref="{{ chEditorRef }}" contenteditable="true" onInput="{{ onChInput }}" onPaste="{{ onChPaste }}" onClick="{{ onChClick }}" class="wtn-rte" data-ph="เริ่มเขียนเรื่องราวของวันนี้…  แทรกรูป/คลิปตรงไหนก็ได้จากไอคอนบนแถบเครื่องมือ" style="min-height:calc(100% - 40px);padding:18px 22px 70px;color:#2f2a24;outline:none"></div>
+            <div ref="{{ chEditorRef }}" contenteditable="true" onInput="{{ onChInput }}" onPaste="{{ onChPaste }}" onClick="{{ onChClick }}" onFocus="{{ onChFocus }}" onBlur="{{ onChBlur }}" class="wtn-rte" data-ph="เริ่มเขียนเรื่องราวของวันนี้…  แทรกรูป/คลิปตรงไหนก็ได้จากไอคอนบนแถบเครื่องมือ" style="min-height:calc(100% - 40px);padding:18px 22px 70px;color:#2f2a24;outline:none"></div>
           </div>
           <div style="flex:none;display:flex;align-items:center;gap:10px;padding:11px 16px;border-top:1px solid rgba(43,36,32,.1);background:#f6efe2">
             <div style="flex:1;min-width:0"><div style="font:500 13px 'Anuphan';color:#8a7d6f">{{ ceChars }} ตัวอักษร · {{ ceWords }} คำ</div><div style="font:500 12px 'Anuphan';color:#b3a897">{{ ceSavedAt }}</div></div>
@@ -1862,7 +1875,7 @@
               </div>
             </sc-if>
             <sc-if value="{{ crHasYt }}" hint-placeholder-val="{{ false }}">
-              <div style="position:relative;border-radius:14px;overflow:hidden;margin-top:22px;aspect-ratio:16/9;background:#1a1613"><iframe src="https://www.youtube.com/embed/{{ crYtId }}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen></iframe></div>
+              <div style="position:relative;border-radius:14px;overflow:hidden;margin-top:22px;aspect-ratio:16/9;background:#1a1613"><iframe src="{{ crYtSrc }}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>
             </sc-if>
             <sc-if value="{{ crHasClipLink }}" hint-placeholder-val="{{ false }}">
               <a href="{{ crClipUrl }}" target="_blank" style="display:flex;align-items:center;gap:10px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px;padding:13px 15px;margin-top:22px;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:#c05f39;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ดูคลิปของวันนี้</span></a>
@@ -4469,6 +4482,28 @@ class Component extends DCLogic {
     else { this.forceUpdate(); this.back(); }
   }
   editStop(origin, si, s) { const w = this.stopWhen(s); this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', sePeriod: w.period, seTime: w.time, seTitle: s.title || '', seNote: s.note || '' }); }
+  // ที่มาของ iframe คลิป — บนแอป (capacitor://) YouTube ปฏิเสธการฝัง (Error 153) จึงฝานผ่านหน้าเล่นคลิปบนโดเมนจริง
+  // เลื่อนให้บรรทัดที่กำลังพิมพ์อยู่ในสายตาเสมอ (ไม่ให้โดนแป้นพิมพ์/แถบล่างบัง)
+  _ceCaretIn() {
+    const el = this._chEl, box = el && el.parentElement;
+    if (!box) return;
+    const sel = window.getSelection && window.getSelection();
+    if (!sel || !sel.rangeCount) return;
+    const rects = sel.getRangeAt(0).getClientRects();
+    const r = rects && rects.length ? rects[rects.length - 1] : null;
+    if (!r || (!r.top && !r.bottom)) return;
+    const b = box.getBoundingClientRect(), pad = 34;
+    if (r.bottom > b.bottom - pad) box.scrollTop += (r.bottom - b.bottom + pad);
+    else if (r.top < b.top + pad) box.scrollTop -= (b.top + pad - r.top);
+  }
+  ytSrc(id) {
+    const clean = String(id || '').replace(/[^A-Za-z0-9_-]/g, '');
+    const Cap = window.Capacitor;
+    const nat = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+    return nat
+      ? 'https://onevela.net/app/yt.html?v=' + clean
+      : 'https://www.youtube-nocookie.com/embed/' + clean + '?playsinline=1&rel=0&modestbranding=1';
+  }
   ytInfo(u) {
     const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
     return m ? { id: m[1], short: /\/shorts\//.test(String(u)) } : null;
@@ -4479,7 +4514,7 @@ class Component extends DCLogic {
       const id = sp.getAttribute('data-yt');
       const w = document.createElement('div');
       w.className = 'wtn-embed-yt';
-      w.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '" allowfullscreen loading="lazy"></iframe>';
+      w.innerHTML = '<iframe src="' + this.ytSrc(id) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>';
       sp.replaceWith(w);
     });
     const rx = /https?:\/\/[^\s<>()"']+/g;
@@ -4516,7 +4551,7 @@ class Component extends DCLogic {
       if (!y) return;
       const w = document.createElement('div');
       w.className = 'wtn-embed-yt' + (y.short ? ' wtn-yt-short' : '');
-      w.innerHTML = '<iframe src="https://www.youtube.com/embed/' + y.id + '" allowfullscreen loading="lazy"></iframe>';
+      w.innerHTML = '<iframe src="' + this.ytSrc(y.id) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe>';
       p.replaceWith(w);
     });
   }
@@ -4693,8 +4728,8 @@ class Component extends DCLogic {
     if (this._map && this._map.getContainer() !== el) { this._map.remove(); this._map = null; }
     if (!this._map) {
       const m = L.map(el, { zoomControl: false, attributionControl: true });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }).addTo(m);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
       const pts = this.kzRoute.map(r => r.ll);
       L.polyline(pts, { color: '#c05f39', weight: 3, dashArray: '6 8' }).addTo(m);
       this.kzRoute.forEach(r => {
@@ -4788,8 +4823,8 @@ class Component extends DCLogic {
     const pts = this.memoryPoints();
     if (!this._fmap) {
       const m = L.map(el, { zoomControl: false, attributionControl: true });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd', maxZoom: 19, attribution: '© OpenStreetMap · © CARTO' }).addTo(m);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
       m.setView([13.75, 100.5], 3);
       this._fmap = m;
       setTimeout(() => m.invalidateSize(), 60);
@@ -5931,6 +5966,45 @@ class Component extends DCLogic {
     d.querySelectorAll('a').forEach(a => { if (a.querySelector('img')) a.replaceWith(...Array.from(a.childNodes)); });
     return this.sanitizeHtml(d.innerHTML);
   }
+  // ดึง REST ของ WordPress.com — บนแอป iOS/Android ยิงผ่าน native (เลี่ยง CORS ของ capacitor://) ถ้าไม่ได้ค่อยถอยไป JSONP
+  async wpFetch(url) {
+    const Cap = window.Capacitor, CH = Cap && Cap.Plugins && Cap.Plugins.CapacitorHttp;
+    const native = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+    if (native && CH) {
+      try {
+        const r = await CH.get({ url, headers: { Accept: 'application/json' }, responseType: 'json' });
+        const h = r.headers || {};
+        let data = r.data;
+        if (typeof data === 'string') { try { data = JSON.parse(data); } catch (e) {} }
+        return {
+          ok: r.status >= 200 && r.status < 300, status: r.status,
+          headers: { get: k => h[k] ?? h[String(k).toLowerCase()] ?? null },
+          json: async () => data
+        };
+      } catch (e) { console.warn('[wtn] wp native http', e); }
+    }
+    try { return await fetch(url); }
+    catch (e) {
+      const d = await this.wpJsonp(url);
+      if (d) return { ok: true, status: 200, headers: { get: () => null }, json: async () => d };
+      throw e;
+    }
+  }
+  wpJsonp(url) {                                        // WordPress.com รองรับ callback (v1.1) / _jsonp (wp/v2)
+    const p = /\/wp\/v2\//.test(url) ? '_jsonp=' : (/\/rest\/v1\.1\//.test(url) ? 'callback=' : '');
+    if (!p) return Promise.resolve(null);
+    return new Promise(res => {
+      const cb = 'wtnwp' + Date.now() + Math.floor(Math.random() * 1e4);
+      const s = document.createElement('script');
+      let t = 0;
+      const done = d => { clearTimeout(t); try { delete window[cb]; } catch (e) {} s.remove(); res(d); };
+      t = setTimeout(() => done(null), 12000);
+      window[cb] = d => done(d);
+      s.onerror = () => done(null);
+      s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + p + cb;
+      document.head.appendChild(s);
+    });
+  }
   // หมวดหมู่ของบล็อก = ทวีป → ประเทศ → ทริป (ใช้เดินหาโพสต์เก่าแทนการค้นหาด้วยคำ)
   async wpLoadCats() {
     if ((this.state.wpCats || []).length || this.state.wpCatsBusy) return;
@@ -5939,7 +6013,7 @@ class Component extends DCLogic {
     try {
       let all = [];
       for (let page = 1; page <= 5; page++) {
-        const r = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?per_page=100&orderby=name&order=asc&_fields=id,name,slug,parent,count&page=' + page);
         if (!r.ok) break;
         const d = await r.json();
@@ -5948,7 +6022,7 @@ class Component extends DCLogic {
         if (d.length < 100) break;
       }
       if (!all.length) {                                  // สำรอง: v1.1 (บางไซต์ปิด wp/v2)
-        const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?number=1000');
         if (r.ok) {
           const d = await r.json();
@@ -5976,7 +6050,7 @@ class Component extends DCLogic {
       // 1) ถามด้วยรหัสหมวด (wp/v2) — แม่นกว่า slug ที่อาจไม่ตรง
       if (catId) {
         try {
-          const r2 = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + host
+          const r2 = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + host
             + '/posts?per_page=20&page=' + page + '&categories=' + catId
             + '&_fields=id,title,date,link,jetpack_featured_media_url'
             + (q ? '&search=' + encodeURIComponent(q) : ''));
@@ -5998,7 +6072,7 @@ class Component extends DCLogic {
           + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
           + (cat ? '&category=' + encodeURIComponent(cat) : '')
           + (q ? '&search=' + encodeURIComponent(q) : '');
-        const r = await fetch(url);
+        const r = await this.wpFetch(url);
         if (!r.ok && !posts) throw new Error('HTTP ' + r.status);
         if (r.ok) {
           const d = await r.json();
@@ -6030,7 +6104,7 @@ class Component extends DCLogic {
       for (let i = 0; i < picked.length; i++) {
         const p = picked[i];
         try {
-          const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
+          const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
             + '/posts/' + p.id + '?fields=ID,title,date,content,featured_image,URL');
           if (!r.ok) throw new Error('HTTP ' + r.status);
           const d = await r.json();
@@ -6943,7 +7017,7 @@ class Component extends DCLogic {
   shareMoment(m) {
     const who = m.author || 'nimjourney';
     const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · Vela';
-    const url = (location.href.split('#')[0]) + '#moment-' + m.id;
+    const url = this.webBase() + '#moment-' + m.id;
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
   }
@@ -7154,7 +7228,16 @@ class Component extends DCLogic {
       return String(cfg.shareBase).replace(/\/+$/, '') +
         '/' + encodeURIComponent(sid || '') + '/' + encodeURIComponent(cid || '');
     }
-    return location.href.split('#')[0].split('?')[0] + q;   // ลิงก์ตรงเข้าแอป
+    return this.webBase() + q;
+  }
+  // ฐานลิงก์ที่แชร์ออกไปได้จริง — ในแอป native ที่อยู่หน้าเว็บเป็น capacitor://localhost
+  // เอามาต่อเป็นลิงก์ไม่ได้ ต้องบังคับเป็นโดเมนจริง
+  webBase() {
+    try {
+      const b = location.href.split('#')[0].split('?')[0];
+      if (/^https?:\/\//i.test(b) && !/localhost|127\.0\.0\.1/i.test(b)) return b;
+    } catch (e) {}
+    return 'https://onevela.net/app/';
   }
   // คัดลอกข้อความให้ได้ทุกที่ — ใน WKWebView ของแอป native ไม่มี navigator.clipboard
   // (ต้องเป็น secure context) ต้องถอยไปใช้ textarea + execCommand
@@ -8170,8 +8253,7 @@ class Component extends DCLogic {
     const s0 = Math.floor(top / 256), s1 = Math.floor((top + H) / 256);
     const jobs = [];
     for (let tx = t0; tx <= t1; tx++) for (let ty = s0; ty <= s1; ty++) {
-      const sub = 'abcd'[Math.abs(tx + ty) % 4];
-      const url = 'https://' + sub + '.basemaps.cartocdn.com/rastertiles/voyager/' + z + '/' + ((tx % Math.pow(2, z)) + Math.pow(2, z)) % Math.pow(2, z) + '/' + ty + '@2x.png';
+      const url = 'https://tile.openstreetmap.org/' + z + '/' + ((tx % Math.pow(2, z)) + Math.pow(2, z)) % Math.pow(2, z) + '/' + ty + '.png';
       jobs.push(this.loadImgForCanvas(url).then(im => ({ im, x: tx * 256 - left, y: ty * 256 - top })));
     }
     (await Promise.all(jobs)).forEach(r => { if (r.im) g.drawImage(r.im, r.x, r.y, 256, 256); });
@@ -10947,7 +11029,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27n',
+      appVersion: '2026.08.27r',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -12858,7 +12940,17 @@ class Component extends DCLogic {
           rtPara: this.rt('formatBlock', '<p>'), rtQuote: this.rt('formatBlock', '<blockquote>'),
           rtOL: this.rt('insertOrderedList'), rtUL: this.rt('insertUnorderedList'), rtHR: this.rt('insertHorizontalRule'),
           saveChSelFn: () => this.saveChSel(),
-          insertChImage: e => this.insertChImage(e), onChInput: () => this.updateCounts(),
+          insertChImage: e => this.insertChImage(e), onChInput: () => { this.updateCounts(); this._ceCaretIn(); },
+          // โหมดเขียน: ขณะพิมพ์ยุบหัวเรื่อง/ปก/แถบ AI เหลือแถบบางๆ เพื่อให้เห็นเนื้อเรื่องมากที่สุด
+          ceHeadOpen: !(this.state.ceFocus && !this.state.ceHeadPin),
+          ceHeadSlim: !!(this.state.ceFocus && !this.state.ceHeadPin),
+          ceTitleSlim: (this.state.chTitleDraft || '').trim() || 'ตอนใหม่',
+          openCeHead: () => this.setState({ ceHeadPin: true }),
+          zenAi: () => { this.setState({ ceHeadPin: true }); this.aiArrangeDay(); },
+          ceDone: () => { try { if (this._chEl) this._chEl.blur(); } catch (e) {} this.setState({ ceFocus: false, ceHeadPin: false }); },
+          onChFocus: () => { if (!this.state.ceFocus) this.setState({ ceFocus: true }); },
+          onChBlur: () => { if (this.state.ceFocus) this.setState({ ceFocus: false, ceHeadPin: false }); },
+
           onChPaste: e => this.onChPaste(e), cleanChFormat: () => this.cleanChFormat(),
           pastePlainOn: this.pastePlain, pastePlainOff: !this.pastePlain,
           togglePastePlain: () => this.togglePastePlain(),
@@ -12901,6 +12993,7 @@ class Component extends DCLogic {
             return srcs.map((src, pi) => ({ src, on: () => this.openLightbox(srcs, pi) })); })(),
           crHasPhotos: (((oc || {}).photos) || []).length > 0,
           crYtId: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : ''; })(),
+          crYtSrc: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? this.ytSrc(m[1]) : ''; })(),
           crHasYt: (() => { const m = (((oc || {}).clip) || '').match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return !!m; })(),
           crClipUrl: ((oc || {}).clip) || '', crHasClipLink: (() => { const u = ((oc || {}).clip) || ''; return !!u && !/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/.test(u); })(),
           oCover: os.cover || '', oHasCover: !!os.cover, oCategory: os.category,

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="origin">
+<title>Vela · คลิป</title>
+<style>
+  html,body{margin:0;height:100%;background:#1a1613;overflow:hidden}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#f6efe2;font:600 14px/1.5 -apple-system,system-ui,sans-serif;text-align:center;padding:20px}
+  .fb a{color:#e9b48a}
+</style>
+</head>
+<body>
+<script>
+  // หน้าเล่นคลิปในแอป — แอปฝังหน้านี้เพื่อให้ YouTube เห็น referrer เป็นโดเมนจริง (แก้ Error 153 บน iOS/Android)
+  var q = new URLSearchParams(location.search);
+  var id = (q.get('v') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
+  var t = parseInt(q.get('t') || '0', 10) || 0;
+  if (id) {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id
+      + '?playsinline=1&rel=0&modestbranding=1&fs=1' + (t ? '&start=' + t : '');
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+    f.setAttribute('allowfullscreen', '');
+    f.referrerPolicy = 'origin';
+    document.body.appendChild(f);
+  } else {
+    document.body.innerHTML = '<div class="fb">ไม่พบคลิป</div>';
+  }
+</script>
+</body>
+</html>
