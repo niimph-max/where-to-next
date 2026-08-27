@@ -3,8 +3,8 @@
   "appName": "Vela",
   "webDir": "www",
   "ios": {
-    "contentInset": "always",
-    "scrollEnabled": true,
+    "contentInset": "never",
+    "scrollEnabled": false,
     "backgroundColor": "#f6efe2"
   },
   "android": {
