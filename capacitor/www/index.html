@@ -113,7 +113,7 @@
   body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
   .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important}
-  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;transition:height .12s ease}
+  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:env(safe-area-inset-top)!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
@@ -7640,14 +7640,22 @@ class Component extends DCLogic {
     } catch (e) {}
     // ขอ persistent storage — ลดโอกาส iOS/เบราว์เซอร์ล้างที่เก็บข้อมูล (เนื้อตอนใน IDB)
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
+    // หดตัวแอปตามแป้นพิมพ์ — เฉพาะตอนกำลังพิมพ์จริง (ไม่ให้แถบที่อยู่ของเบราว์เซอร์มาทำให้หน้าขยับ)
     this._kb = () => {
       try {
-        const vv = window.visualViewport; if (!vv) return;
-        const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
-        document.documentElement.style.setProperty('--wtn-kb', (kb > 80 ? kb : 0) + 'px');
-        if (kb > 80) this._ceCaretIn(true);
+        const vv = window.visualViewport;
+        const a = document.activeElement;
+        const typing = !!(a && (a.isContentEditable || a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'));
+        let kb = 0;
+        if (vv && typing) {
+          const d = Math.round(window.innerHeight - vv.height - vv.offsetTop);
+          if (d > 140 && d < window.innerHeight * 0.62) kb = d;
+        }
+        document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
+        if (kb) this._ceCaretIn(true);
       } catch (e) {}
     };
+    document.addEventListener('focusout', () => setTimeout(this._kb, 60), true);
     if (window.visualViewport) { window.visualViewport.addEventListener('resize', this._kb); window.visualViewport.addEventListener('scroll', this._kb); }
     this.applyTypo();
     this.wpStuckWatch();
@@ -10907,7 +10915,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27y',
+      appVersion: '2026.08.27z',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
