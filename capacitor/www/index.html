@@ -192,7 +192,7 @@
     </sc-if>
 
     <sc-if value="{{ pwResetShow }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:60;background:linear-gradient(155deg,#c9663f,#7a4028 55%,#2b241f);display:flex;flex-direction:column;justify-content:center;padding:34px 26px">
+      <div style="position:fixed;inset:0;z-index:60;box-sizing:border-box;background:linear-gradient(155deg,#c9663f,#7a4028 55%,#2b241f);display:flex;flex-direction:column;justify-content:center;padding:calc(34px + env(safe-area-inset-top)) 26px calc(34px + env(safe-area-inset-bottom))">
         <div style="font:600 13px 'Anuphan';color:#e9b48a;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">Vela</div>
         <div style="font-family:'Chonburi',serif;font-weight:400;font-size:27px;line-height:1.2;color:#fff;margin-bottom:9px">ตั้งรหัสผ่านใหม่</div>
         <div style="font:500 15px/1.65 'Anuphan';color:#d9c6ab;margin-bottom:20px">ใส่รหัสผ่านใหม่ที่อยากใช้ แล้วเราจะพาเข้าแอปให้เลย</div>
@@ -207,7 +207,7 @@
     </sc-if>
 
     <sc-if value="{{ sDeepLoading }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:34px;text-align:center">
+      <div style="position:fixed;inset:0;z-index:40;box-sizing:border-box;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(34px + env(safe-area-inset-top)) 34px calc(34px + env(safe-area-inset-bottom));text-align:center">
         <img src="logo.png" alt="" style="width:64px;height:64px;border-radius:18px">
         <sc-if value="{{ deepErrShow }}" hint-placeholder-val="{{ false }}">
           <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">เปิดเรื่องนี้ไม่ได้</div>
@@ -2661,8 +2661,8 @@
 
     <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
-        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+      <div style="position:fixed;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
+        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:calc(13px + env(safe-area-inset-top)) 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
           <button onClick="{{ toggleCiForm }}" title="ปิด" style="width:38px;height:38px;flex:none;border:none;background:#efe4d3;color:#2b241f;border-radius:50%;cursor:pointer;font:700 16px 'Anuphan';display:flex;align-items:center;justify-content:center">✕</button>
           <div style="font:400 19px 'Chonburi',serif;color:#2b241f">บันทึกโมเมนต์</div>
         </div>
@@ -7148,13 +7148,13 @@ class Component extends DCLogic {
   chapterShareUrl(sid, cid) {
     const q = '?st=' + encodeURIComponent(sid || '') + '&ch=' + encodeURIComponent(cid || '');
     const cfg = window.WTN_SUPABASE || {};
-    // ลิงก์สวยผ่าน Cloudflare Worker: onevela.net/s/<story>/<chapter>
+    // ถ้าวันหลังทำ Cloudflare Worker แล้ว ตั้ง shareBase ใน supabase-config.js
+    // จะได้การ์ดปก+ชื่อตอนบน Facebook (ดู supabase/SHARE-CARD.md)
     if (cfg.shareBase) {
       return String(cfg.shareBase).replace(/\/+$/, '') +
         '/' + encodeURIComponent(sid || '') + '/' + encodeURIComponent(cid || '');
     }
-    if (cfg.url) return String(cfg.url).replace(/\/+$/, '') + '/functions/v1/share' + q;
-    return location.href.split('#')[0].split('?')[0] + q;   // สำรอง: ลิงก์ตรง (ไม่มีปกเฉพาะตอน)
+    return location.href.split('#')[0].split('?')[0] + q;   // ลิงก์ตรงเข้าแอป
   }
   // คัดลอกข้อความให้ได้ทุกที่ — ใน WKWebView ของแอป native ไม่มี navigator.clipboard
   // (ต้องเป็น secure context) ต้องถอยไปใช้ textarea + execCommand
@@ -10947,7 +10947,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27k',
+      appVersion: '2026.08.27n',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
