@@ -25,12 +25,10 @@
   }, 120);
   setTimeout(function () { clearInterval(t); hideSplash(); }, 6000);
 
-  // ปุ่มย้อนกลับของ Android → ถอยหน้าในแอป, ถ้าอยู่หน้าแรกให้ย่อแอป (ไม่ปิดทิ้ง)
+  // ปุ่มย้อนกลับของ Android → ถอยหน้าในแอป, อยู่หน้าแรกแล้วค่อยย่อแอป (ไม่ปิดทิ้ง)
   try {
-    P.App && P.App.addListener('backButton', function (e) {
-      var back = document.querySelector('[data-nav-back]');
-      if (back) { back.click(); return; }
-      if (e && e.canGoBack) { window.history.back(); return; }
+    P.App && P.App.addListener('backButton', function () {
+      if (window.__velaBack && window.__velaBack()) return;
       P.App.minimizeApp && P.App.minimizeApp();
     });
   } catch (e) {}
