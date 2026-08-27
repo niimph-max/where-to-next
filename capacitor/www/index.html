@@ -6943,7 +6943,7 @@ class Component extends DCLogic {
   shareMoment(m) {
     const who = m.author || 'nimjourney';
     const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · Vela';
-    const url = (location.href.split('#')[0]) + '#moment-' + m.id;
+    const url = this.webBase() + '#moment-' + m.id;
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
   }
@@ -7154,7 +7154,16 @@ class Component extends DCLogic {
       return String(cfg.shareBase).replace(/\/+$/, '') +
         '/' + encodeURIComponent(sid || '') + '/' + encodeURIComponent(cid || '');
     }
-    return location.href.split('#')[0].split('?')[0] + q;   // ลิงก์ตรงเข้าแอป
+    return this.webBase() + q;
+  }
+  // ฐานลิงก์ที่แชร์ออกไปได้จริง — ในแอป native ที่อยู่หน้าเว็บเป็น capacitor://localhost
+  // เอามาต่อเป็นลิงก์ไม่ได้ ต้องบังคับเป็นโดเมนจริง
+  webBase() {
+    try {
+      const b = location.href.split('#')[0].split('?')[0];
+      if (/^https?:\/\//i.test(b) && !/localhost|127\.0\.0\.1/i.test(b)) return b;
+    } catch (e) {}
+    return 'https://onevela.net/app/';
   }
   // คัดลอกข้อความให้ได้ทุกที่ — ใน WKWebView ของแอป native ไม่มี navigator.clipboard
   // (ต้องเป็น secure context) ต้องถอยไปใช้ textarea + execCommand
@@ -10947,7 +10956,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27n',
+      appVersion: '2026.08.27p',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
