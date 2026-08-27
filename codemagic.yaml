@@ -1,5 +1,5 @@
 # Vela — บิลด์ iOS จาก Windows โดยไม่ต้องมี Mac
-# วางไฟล์นี้ที่ราก repo (ระดับเดียวกับ capacitor/) แล้วต่อ repo เข้า codemagic.io
+# วางไฟล์นี้ที่ราก repo (ระดับเดียวกับ index.html) แล้วต่อ repo เข้า codemagic.io
 # ฟรี 500 นาที/เดือน — บิลด์ iOS หนึ่งครั้งกินราว 8-14 นาที
 
 workflows:
@@ -7,6 +7,9 @@ workflows:
     name: Vela iOS · TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 45
+    # ชื่อ key ต้องตรงกับที่ตั้งไว้ใน Codemagic UI (Teams > Integrations > App Store Connect)
+    integrations:
+      app_store_connect: Vela ASC
     environment:
       xcode: latest
       cocoapods: default
@@ -16,11 +19,18 @@ workflows:
         XCODE_SCHEME: "App"
         BUNDLE_ID: "net.onevela.app"
       ios_signing:
-        # ตั้งใน Codemagic UI: Teams > Integrations > Apple Developer Portal
-        # แล้วสร้าง automatic code signing — ไม่ต้องยุ่งกับ certificate เอง
+        # ต้องเชื่อม Teams > Integrations > Apple Developer Portal ก่อน
         distribution_type: app_store
         bundle_identifier: net.onevela.app
     scripts:
+      - name: เช็คว่ามีตัวเว็บอยู่จริง
+        script: |
+          cd capacitor
+          if [ ! -f "www/index.html" ]; then
+            echo "❌ ไม่พบ capacitor/www/index.html — ต้องก็อปตัวแอปลง capacitor/www ก่อน push"
+            exit 1
+          fi
+          echo "✅ พบ www/index.html ($(wc -c < www/index.html) bytes)"
       - name: ติดตั้ง dependencies
         script: |
           cd capacitor
@@ -28,16 +38,36 @@ workflows:
       - name: เตรียม iOS platform
         script: |
           cd capacitor
-          if [ ! -d "ios" ]; then npx cap add ios; fi
+          # ถ้าโฟลเดอร์ ios มีแต่ไม่มี xcodeproj (กรณี commit มาไม่ครบ) ให้สร้างใหม่
+          # แต่เก็บไอคอน/สแปลช/AppDelegate ที่คัสตอมไว้
+          if [ ! -f "ios/App/App.xcodeproj/project.pbxproj" ]; then
+            echo "ℹ️ ไม่พบ xcodeproj — สร้าง iOS platform ใหม่"
+            rm -rf /tmp/ios-keep && mkdir -p /tmp/ios-keep
+            [ -d "ios/App/App/Assets.xcassets" ] && cp -R ios/App/App/Assets.xcassets /tmp/ios-keep/
+            [ -f "ios/App/App/AppDelegate.swift" ] && cp ios/App/App/AppDelegate.swift /tmp/ios-keep/
+            rm -rf ios
+            npx cap add ios
+            if [ -d "/tmp/ios-keep/Assets.xcassets" ]; then
+              rm -rf ios/App/App/Assets.xcassets
+              cp -R /tmp/ios-keep/Assets.xcassets ios/App/App/
+              echo "✅ คืนไอคอน/สแปลชเดิม"
+            fi
+            if [ -f "/tmp/ios-keep/AppDelegate.swift" ]; then
+              cp /tmp/ios-keep/AppDelegate.swift ios/App/App/AppDelegate.swift
+              echo "✅ คืน AppDelegate.swift เดิม"
+            fi
+          fi
           npx cap sync ios
       - name: pod install
         script: |
           cd capacitor/ios/App
           pod install
-      - name: ตั้ง build number จากเลขบิลด์ของ Codemagic
+      - name: ตั้ง build number
         script: |
           cd capacitor/ios/App
-          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0) + 1))
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          [ -z "$LATEST" ] && LATEST=0
+          agvtool new-version -all $((LATEST + 1)) || echo "⚠️ ตั้ง build number ไม่สำเร็จ — ใช้ค่าเดิม"
       - name: บิลด์ ipa
         script: |
           cd capacitor/ios/App
@@ -48,7 +78,6 @@ workflows:
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
-        # ตั้งใน Codemagic UI: App Store Connect API key (Issuer ID + Key ID + .p8)
         auth: integration
         submit_to_testflight: true
         # เปิดบรรทัดล่างเมื่อพร้อมส่งขึ้นขายจริง
