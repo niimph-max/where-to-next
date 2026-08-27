@@ -63,11 +63,26 @@ workflows:
           pod install
       - name: เตรียม keychain
         script: keychain initialize
-      - name: สร้าง/ดึง signing files (สร้าง App ID + cert + profile ให้เองถ้ายังไม่มี)
+      - name: สร้าง/ดึง signing files (สร้าง cert + profile ให้เองถ้ายังไม่มี)
         script: |
+          if [ -n "$CERTIFICATE_PRIVATE_KEY" ]; then
+            echo "✅ ใช้ private key เดิมจาก env var"
+            printf '%s' "$CERTIFICATE_PRIVATE_KEY" > /tmp/cert_key.pem
+          else
+            echo "ℹ️ ยังไม่มี CERTIFICATE_PRIVATE_KEY — สร้างใหม่"
+            openssl genrsa -out /tmp/cert_key.pem 2048
+            echo ""
+            echo "==================== คัดลอกคีย์ข้างล่างนี้ ===================="
+            echo "เอาไปใส่เป็น env var ชื่อ CERTIFICATE_PRIVATE_KEY (ติ๊ก Secure, group appstore)"
+            echo "เพื่อให้บิลด์ครั้งต่อไปใช้ certificate เดิม ไม่สร้างใหม่ทุกรอบ"
+            echo "=============================================================="
+            cat /tmp/cert_key.pem
+            echo "=============================================================="
+          fi
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --platform IOS \
+            --certificate-key=@file:/tmp/cert_key.pem \
             --create
       - name: ใส่ cert เข้า keychain
         script: keychain add-certificates
