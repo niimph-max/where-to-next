@@ -119,8 +119,8 @@
     /* เว้นที่ให้แถบสถานะ (นาฬิกา/แบต) ของเครื่อง — ไม่ให้หัวข้อไปซ้อน */
     box-sizing:border-box!important;padding-top:env(safe-area-inset-top)!important}
   /* พื้นครีมของแถบสถานะ ทับพื้นเข้มของ body ไม่ให้โผล่ */
-  .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:#f6efe2;z-index:1;pointer-events:none}
-  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;transition:height .12s ease}
+  .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:max(env(safe-area-inset-top),var(--wtn-top,0px));background:#f6efe2;z-index:1;pointer-events:none}
+  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:max(env(safe-area-inset-top),var(--wtn-top,0px))!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
@@ -6022,7 +6022,7 @@ class Component extends DCLogic {
     try {
       let all = [];
       for (let page = 1; page <= 5; page++) {
-        const r = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?per_page=100&orderby=name&order=asc&_fields=id,name,slug,parent,count&page=' + page);
         if (!r.ok) break;
         const d = await r.json();
@@ -6031,7 +6031,7 @@ class Component extends DCLogic {
         if (d.length < 100) break;
       }
       if (!all.length) {                                  // สำรอง: v1.1 (บางไซต์ปิด wp/v2)
-        const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?number=1000');
         if (r.ok) {
           const d = await r.json();
@@ -6059,7 +6059,7 @@ class Component extends DCLogic {
       // 1) ถามด้วยรหัสหมวด (wp/v2) — แม่นกว่า slug ที่อาจไม่ตรง
       if (catId) {
         try {
-          const r2 = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + host
+          const r2 = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + host
             + '/posts?per_page=20&page=' + page + '&categories=' + catId
             + '&_fields=id,title,date,link,jetpack_featured_media_url'
             + (q ? '&search=' + encodeURIComponent(q) : ''));
@@ -6081,7 +6081,7 @@ class Component extends DCLogic {
           + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
           + (cat ? '&category=' + encodeURIComponent(cat) : '')
           + (q ? '&search=' + encodeURIComponent(q) : '');
-        const r = await this.wpFetch(url);
+        const r = await fetch(url);
         if (!r.ok && !posts) throw new Error('HTTP ' + r.status);
         if (r.ok) {
           const d = await r.json();
@@ -6113,7 +6113,7 @@ class Component extends DCLogic {
       for (let i = 0; i < picked.length; i++) {
         const p = picked[i];
         try {
-          const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
+          const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
             + '/posts/' + p.id + '?fields=ID,title,date,content,featured_image,URL');
           if (!r.ok) throw new Error('HTTP ' + r.status);
           const d = await r.json();
@@ -7834,14 +7834,39 @@ class Component extends DCLogic {
     this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); } else this.flushCloudPush(); };
     document.addEventListener('visibilitychange', this._visSync);
     // iOS: ปิดคีย์บอร์ดแล้ว document มักค้างอยู่ตำแหน่งที่ถูกดันขึ้น → ดึงกลับที่ 0
-    this._kb = () => {
+    // หดตัวแอปตามแป้นพิมพ์ — เฉพาะตอนกำลังพิมพ์จริง (ไม่ให้แถบที่อยู่ของเบราว์เซอร์มาทำให้หน้าขยับ)
+    // บางบิลด์ของแอป WebView คืน safe-area-inset-top = 0 แล้วหัวไปทับนาฬิกา → วัดเองแล้วเติมให้
+    this._topInset = () => {
       try {
-        const vv = window.visualViewport; if (!vv) return;
-        const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
-        document.documentElement.style.setProperty('--wtn-kb', (kb > 80 ? kb : 0) + 'px');
-        if (kb > 80) this._ceCaretIn(true);
+        const p = document.createElement('div');
+        p.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:env(safe-area-inset-top);pointer-events:none;opacity:0';
+        document.body.appendChild(p);
+        const got = p.offsetHeight; p.remove();
+        const Cap = window.Capacitor;
+        const nat = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+        const stand = window.matchMedia && window.matchMedia('(display-mode:standalone)').matches;
+        if (got > 4 || !(nat || stand)) { document.documentElement.style.setProperty('--wtn-top', '0px'); return; }
+        const h = Math.max(window.screen.height, window.screen.width);
+        document.documentElement.style.setProperty('--wtn-top', (h >= 896 ? 54 : h >= 812 ? 47 : 20) + 'px');
       } catch (e) {}
     };
+    this._topInset();
+    window.addEventListener('orientationchange', () => setTimeout(this._topInset, 250));
+    this._kb = () => {
+      try {
+        const vv = window.visualViewport;
+        const a = document.activeElement;
+        const typing = !!(a && (a.isContentEditable || a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'));
+        let kb = 0;
+        if (vv && typing) {
+          const d = Math.round(window.innerHeight - vv.height - vv.offsetTop);
+          if (d > 140 && d < window.innerHeight * 0.62) kb = d;
+        }
+        document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
+        if (kb) this._ceCaretIn(true);
+      } catch (e) {}
+    };
+    document.addEventListener('focusout', () => setTimeout(this._kb, 60), true);
     if (window.visualViewport) { window.visualViewport.addEventListener('resize', this._kb); window.visualViewport.addEventListener('scroll', this._kb); }
     this._unscroll = () => { try { if (window.scrollY || window.pageYOffset) window.scrollTo(0, 0); } catch (e) {} };
     document.addEventListener('focusout', this._unscroll, true);
@@ -11052,7 +11077,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.27y',
+      appVersion: '2026.08.28b',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -12977,7 +13002,6 @@ class Component extends DCLogic {
             setTimeout(() => this._ceCaretIn(true), 420);
           },
           onChBlur: () => { if (this.state.ceFocus) this.setState({ ceFocus: false, ceHeadPin: false }); },
-
           onChPaste: e => this.onChPaste(e), cleanChFormat: () => this.cleanChFormat(),
           pastePlainOn: this.pastePlain, pastePlainOff: !this.pastePlain,
           togglePastePlain: () => this.togglePastePlain(),
