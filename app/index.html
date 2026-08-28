@@ -2457,6 +2457,10 @@
                     <sc-if value="{{ bodyCanClean }}" hint-placeholder-val="{{ false }}">
                       <button onClick="{{ cleanBodiesBtn }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyCleanLabel }}</button>
                     </sc-if>
+                    <sc-if value="{{ bodyCanPush }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ pushBodiesBtn }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดันเนื้อขึ้นคลาวด์ใหม่ (ทุกตอน)</button>
+                      <div style="font:500 12px/1.5 'Anuphan';color:#a1927c">ใช้เมื่อเนื้อในเครื่องเบาแล้ว แต่ก้อนบนคลาวด์ยังเป็นฉบับเก่าที่อ้วน</div>
+                    </sc-if>
                   </div>
                 </div>
               </sc-if>
@@ -9764,6 +9768,22 @@ class Component extends DCLogic {
     const after = (this.state.bodyRows || []).filter(r => rows.some(x => x.cid === r.cid)).reduce((s, r) => s + r.kb, 0);
     this.setState({ bodyMsg: 'เสร็จแล้ว — จาก ' + before + ' KB เหลือ ' + after + ' KB' });
   }
+  // เนื้อในเครื่องเบาแล้ว แต่ก้อนบนคลาวด์ยังเป็นฉบับเก่าที่อ้วน (ไม่มีอะไรไปเขียนทับ)
+  // → ดันเนื้อฉบับปัจจุบันขึ้นทับทุกตอน ก้อนบนคลาวด์จะเล็กลงตามของในเครื่อง
+  async pushAllBodies() {
+    this.setState({ bodyBusy: true, bodyMsg: 'กำลังดันขึ้นคลาวด์…' });
+    let n = 0;
+    try {
+      for (const st of (this.stories || [])) {
+        for (const c of (st.chapters || [])) {
+          if (!c || !c.id) continue;
+          this.setState({ bodyMsg: 'กำลังดันขึ้นคลาวด์: ' + (c.title || c.id) });
+          try { await this.pushChapterCloud(st.id, c.id); n++; } catch (e) {}
+        }
+      }
+    } catch (e) { console.warn('[wtn] pushAllBodies', e); }
+    this.setState({ bodyBusy: false, bodyMsg: 'ดันขึ้นคลาวด์ใหม่แล้ว ' + n + ' ตอน — ก้อนบนคลาวด์จะเท่ากับฉบับในเครื่องแล้ว' });
+  }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
     let n = 0;
@@ -11079,6 +11099,8 @@ class Component extends DCLogic {
           bodyCleanLabel: 'ล้างรูปฝังในเนื้อ (' + heavy.length + ' ตอน · ' + b64kb.toLocaleString() + ' KB)',
           scanBodiesBtn: () => this.scanBodies(),
           cleanBodiesBtn: () => this.cleanBodies(),
+          bodyCanPush: !!this.state.bodyScanned && !this.state.bodyBusy,
+          pushBodiesBtn: () => this.pushAllBodies(),
         };
       })(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
@@ -11176,7 +11198,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.28d',
+      appVersion: '2026.08.28e',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
