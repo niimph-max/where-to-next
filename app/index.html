@@ -2437,6 +2437,29 @@
                   <button onClick="{{ rehostImgs }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ rehostLabel }}</button>
                 </div>
               </sc-if>
+              <sc-if value="{{ showBodyTool }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:11px">
+                  <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">เนื้อเรื่องที่หนัก</div>
+                  <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px">ตอนที่มีรูปฝังในเนื้อจะโหลดช้าและกิน egress ทุกครั้งที่เปิด — ตรวจแล้วล้างครั้งเดียวจบ</div>
+                  <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px">
+                    <sc-for list="{{ bodyRowsList }}" as="b" hint-placeholder-count="0">
+                      <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:11px;padding:9px 11px">
+                        <div style="display:flex;justify-content:space-between;gap:10px;font:600 13.5px 'Anuphan';color:#2b241f"><span style="flex:1;min-width:0">{{ b.title }}</span><span style="flex:none;color:#c05f39">{{ b.size }}</span></div>
+                        <div style="font:500 12px 'Anuphan';color:#a1927c;margin-top:2px">{{ b.detail }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ bodyHasMsg }}" hint-placeholder-val="{{ false }}">
+                    <div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f;background:#fffaf0;border-radius:10px;padding:8px 10px;margin-bottom:9px">{{ bodyMsg }}</div>
+                  </sc-if>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <button onClick="{{ scanBodiesBtn }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyScanLabel }}</button>
+                    <sc-if value="{{ bodyCanClean }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ cleanBodiesBtn }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyCleanLabel }}</button>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ — เลือกได้ว่าจะรวมรูปไปด้วยหรือไม่</div>
               <sc-if value="{{ bkOpen }}" hint-placeholder-val="{{ false }}">
                 <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:14px;padding:13px 14px;margin-bottom:11px">
@@ -9689,6 +9712,58 @@ class Component extends DCLogic {
     };
     requestAnimationFrame(tick);
   }
+  // ---------- เครื่องมือแอดมิน: ตรวจ/ล้างรูป base64 ที่ฝังในเนื้อเรื่อง ----------
+  // ทำไมต้องมี: เนื้อตอนที่มีรูป base64 ฝังอยู่โตได้หลาย MB → ทุกครั้งที่เปิดตอน
+  // (และทุกครั้งที่ crawler ดูดการ์ดแชร์) จะโหลดก้อนนั้นทั้งก้อน กิน egress หนัก
+  async scanBodies() {
+    this.setState({ bodyBusy: true, bodyMsg: '' });
+    const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+\/=]+/g;
+    const rows = [];
+    try {
+      for (const st of (this.stories || [])) {
+        for (const c of (st.chapters || [])) {
+          let h = c.html || '';
+          if (!h && c.hRef) {
+            h = (this._hMem || {})[c.hRef] || '';
+            if (!h && String(c.hRef).indexOf('idb:') === 0) {
+              try { h = (await this.idbGet(String(c.hRef).slice(4))) || ''; } catch (e) {}
+            }
+          }
+          if (!h || h.length < 150000) continue;   // สนใจแค่ตอนที่หนักเกิน ~150 KB
+          let b64 = 0, n = 0;
+          (h.match(re) || []).forEach(d => { b64 += d.length; n++; });
+          rows.push({
+            sid: st.id, cid: c.id,
+            title: c.title || '(ไม่มีชื่อ)',
+            kb: Math.round(h.length / 1024),
+            b64kb: Math.round(b64 / 1024),
+            n,
+          });
+        }
+      }
+    } catch (e) { console.warn('[wtn] scanBodies', e); }
+    rows.sort((a, b) => b.kb - a.kb);
+    this.setState({
+      bodyBusy: false, bodyRows: rows, bodyScanned: true,
+      bodyMsg: rows.length ? '' : 'ไม่มีตอนไหนหนักเกิน 150 KB — ไม่มีอะไรต้องล้าง',
+    });
+  }
+  async cleanBodies() {
+    const rows = (this.state.bodyRows || []).filter(r => r.n > 0);
+    if (!rows.length) return;
+    this.setState({ bodyBusy: true, bodyMsg: 'กำลังยกรูปขึ้นคลาวด์…' });
+    try {
+      await this.hoistImages();                       // ยกรูป base64 → ลิงก์คลาวด์ + เขียนเนื้อกลับ
+      for (const r of rows) {                          // ดันเนื้อใหม่ (ที่เบาแล้ว) ขึ้นคลาวด์ทับของเดิม
+        this.setState({ bodyMsg: 'กำลังอัปเดตคลาวด์: ' + r.title });
+        try { await this.pushChapterCloud(r.sid, r.cid); } catch (e) {}
+      }
+    } catch (e) { console.warn('[wtn] cleanBodies', e); }
+    const before = rows.reduce((s, r) => s + r.kb, 0);
+    await this.scanBodies();
+    const after = (this.state.bodyRows || []).filter(r => rows.some(x => x.cid === r.cid)).reduce((s, r) => s + r.kb, 0);
+    this.setState({ bodyMsg: 'เสร็จแล้ว — จาก ' + before + ' KB เหลือ ' + after + ' KB' });
+  }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
     let n = 0;
@@ -10983,6 +11058,29 @@ class Component extends DCLogic {
           rehostImgs: () => this.rehostLegacyImages()
         };
       })(),
+      ...(() => {
+        const rows = this.state.bodyRows || [];
+        const heavy = rows.filter(r => r.n > 0);
+        const b64kb = heavy.reduce((s, r) => s + r.b64kb, 0);
+        return {
+          showBodyTool: this.isAdmin && !!(window.WTNBackend && window.WTNBackend._uid),
+          bodyBusy: !!this.state.bodyBusy,
+          bodyMsg: this.state.bodyMsg || '',
+          bodyHasMsg: !!this.state.bodyMsg,
+          bodyRowsList: rows.map(r => ({
+            title: r.title,
+            size: r.kb.toLocaleString() + ' KB',
+            detail: r.n > 0
+              ? ('รูปฝังในเนื้อ ' + r.n + ' รูป · ' + r.b64kb.toLocaleString() + ' KB')
+              : 'ไม่มีรูปฝัง — เนื้อยาวจริง',
+          })),
+          bodyScanLabel: this.state.bodyBusy ? 'กำลังทำ…' : (this.state.bodyScanned ? 'ตรวจอีกครั้ง' : 'ตรวจเนื้อเรื่อง'),
+          bodyCanClean: heavy.length > 0 && !this.state.bodyBusy,
+          bodyCleanLabel: 'ล้างรูปฝังในเนื้อ (' + heavy.length + ' ตอน · ' + b64kb.toLocaleString() + ' KB)',
+          scanBodiesBtn: () => this.scanBodies(),
+          cleanBodiesBtn: () => this.cleanBodies(),
+        };
+      })(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
       adminTotal: (this.state.adminStats && this.state.adminStats.total != null) ? this.state.adminStats.total : '—',
       adminPremium: (this.state.adminStats && this.state.adminStats.premium != null) ? this.state.adminStats.premium : '—',
@@ -11078,7 +11176,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.28c',
+      appVersion: '2026.08.28d',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
