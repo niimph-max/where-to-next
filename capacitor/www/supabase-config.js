@@ -8,7 +8,7 @@ window.WTN_SUPABASE = {
   // ค่าว่าง = ใช้ลิงก์ supabase ตรง ๆ (การ์ดถูกอยู่แล้ว แค่ลิงก์ยาว)
   // ใส่ "https://onevela.net/s" เมื่อทำ Worker + route เสร็จแล้วเท่านั้น
   // (ใส่ก่อน = ลิงก์แชร์ 404 เพราะ GitHub Pages ไม่มี path นี้)
-  shareBase: ""
+  shareBase: "https://onevela.net/s"
 };
 // true = ใช้คลาวด์, false = โหมด local อย่างเดียว
 window.WTN_BACKEND_ENABLED = true;

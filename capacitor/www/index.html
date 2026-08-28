@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vela</title>
 <meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
@@ -111,8 +111,15 @@
   @keyframes wtnToast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
   /* full-screen by default (any device/webview) */
   body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
+  /* ล็อกไม่ให้ document เลื่อนเอง — บน iOS คีย์บอร์ดดันหน้าขึ้นแล้วค้าง
+     ทำให้เห็นพื้นสีเข้มด้านล่างและหัวข้อถูกตัดด้านบน (สกรอลล์จริงอยู่ที่ .wtn-s) */
+  html,body{height:100%!important;overflow:hidden!important;overscroll-behavior:none}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
-  .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important}
+  .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important;
+    /* เว้นที่ให้แถบสถานะ (นาฬิกา/แบต) ของเครื่อง — ไม่ให้หัวข้อไปซ้อน */
+    box-sizing:border-box!important;padding-top:env(safe-area-inset-top)!important}
+  /* พื้นครีมของแถบสถานะ ทับพื้นเข้มของ body ไม่ให้โผล่ */
+  .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:max(env(safe-area-inset-top),var(--wtn-top,0px));background:#f6efe2;z-index:1;pointer-events:none}
   .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:max(env(safe-area-inset-top),var(--wtn-top,0px))!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
   @media (display-mode:standalone),(display-mode:minimal-ui){
@@ -166,6 +173,15 @@
   }
 </style>
 <script src="photo-pick.js"></script>
+<script>
+  /* ต้องมี viewport-fit=cover ไม่งั้น env(safe-area-inset-*) = 0 ทุกที่
+     (นี่คือเหตุที่หัวข้อไปซ้อนนาฬิกา และแถบล่างชิดขอบเกินไป) */
+  (function(){
+    var m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+    if (!/viewport-fit/.test(m.content || '')) m.content = 'width=device-width, initial-scale=1, viewport-fit=cover';
+  })();
+</script>
 </helmet>
 <div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
@@ -176,8 +192,23 @@
       </div>
     </sc-if>
 
+    <sc-if value="{{ pwResetShow }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;inset:0;z-index:60;box-sizing:border-box;background:linear-gradient(155deg,#c9663f,#7a4028 55%,#2b241f);display:flex;flex-direction:column;justify-content:center;padding:calc(34px + env(safe-area-inset-top)) 26px calc(34px + env(safe-area-inset-bottom))">
+        <div style="font:600 13px 'Anuphan';color:#e9b48a;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px">Vela</div>
+        <div style="font-family:'Chonburi',serif;font-weight:400;font-size:27px;line-height:1.2;color:#fff;margin-bottom:9px">ตั้งรหัสผ่านใหม่</div>
+        <div style="font:500 15px/1.65 'Anuphan';color:#d9c6ab;margin-bottom:20px">ใส่รหัสผ่านใหม่ที่อยากใช้ แล้วเราจะพาเข้าแอปให้เลย</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <input value="{{ pwNew }}" onInput="{{ setPwNew }}" type="password" placeholder="รหัสผ่านใหม่ (6 ตัวขึ้นไป)" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 16px 'Anuphan';color:#fff;outline:none">
+          <input value="{{ pwNew2 }}" onInput="{{ setPwNew2 }}" type="password" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 16px 'Anuphan';color:#fff;outline:none">
+          <sc-if value="{{ pwErr }}" hint-placeholder-val="{{ false }}"><div style="font:500 14px 'Anuphan';color:#f0a08a">{{ pwErr }}</div></sc-if>
+          <button onClick="{{ pwSubmit }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';border-radius:14px;cursor:pointer">{{ pwCta }}</button>
+          <div onClick="{{ pwCancel }}" style="text-align:center;font:500 14.5px 'Anuphan';color:#c9b79b;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center">ข้ามไปก่อน</div>
+        </div>
+      </div>
+    </sc-if>
+
     <sc-if value="{{ sDeepLoading }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:34px;text-align:center">
+      <div style="position:fixed;inset:0;z-index:40;box-sizing:border-box;background:#f6efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(34px + env(safe-area-inset-top)) 34px calc(34px + env(safe-area-inset-bottom));text-align:center">
         <img src="logo.png" alt="" style="width:64px;height:64px;border-radius:18px">
         <sc-if value="{{ deepErrShow }}" hint-placeholder-val="{{ false }}">
           <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">เปิดเรื่องนี้ไม่ได้</div>
@@ -221,6 +252,17 @@
                 <!-- สมัครด้วยเบอร์มือถือ: ซ่อนไว้ก่อน (reCAPTCHA/OTP ยังมีปัญหา) โค้ดยังอยู่ครบ เปิดกลับได้
                 <button onClick="{{ startPhone }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>สมัครด้วยเบอร์มือถือ</button>
                 -->
+                <sc-if value="{{ socialAuth }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ authGoogle }}" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:50px;border:none;background:#fffaf0;color:#2b241f;font:600 16.5px 'Anuphan';border-radius:14px;cursor:pointer">
+                    <svg width="19" height="19" viewBox="0 0 48 48" style="flex:none"><path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.2-.4-4.7H24v8.9h11.8c-.5 2.7-2.1 5-4.4 6.5v5.4h7.1c4.1-3.8 6.6-9.4 6.6-16.1z"/><path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.4c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.1H4.3v5.6C7.9 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.6 28.2c-.4-1.3-.7-2.7-.7-4.2s.3-2.9.7-4.2v-5.6H4.3C2.8 17.1 2 20.4 2 24s.8 6.9 2.3 9.8l7.3-5.6z"/><path fill="#EA4335" d="M24 10.3c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 3.8 30 1.8 24 1.8 15.4 1.8 7.9 6.7 4.3 14.2l7.3 5.6c1.7-5.2 6.6-9.5 12.4-9.5z"/></svg>เข้าด้วย Google</button>
+                  <button onClick="{{ authApple }}" style="display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:50px;border:none;background:#000;color:#fff;font:600 16.5px 'Anuphan';border-radius:14px;cursor:pointer">
+                    <svg width="17" height="20" viewBox="0 0 17 20" fill="#fff" style="flex:none"><path d="M14.2 10.6c0-2.3 1.4-3.5 1.5-3.6-.8-1.2-2.1-1.4-2.5-1.4-1.4-.1-2.6.8-3.3.8-.7 0-1.7-.8-2.8-.8-1.5 0-2.8.9-3.6 2.2C1.8 10.5 2.6 15 4.2 17.3c.8 1.1 1.7 2.3 3 2.3 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.1.8s2.1-1.2 2.9-2.3c.6-.9.9-1.4 1.3-2.4-3.3-1.2-3.4-4.2-3.4-4.3zM11.9 3.8c.6-.8 1.1-1.9 1-3-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.6 2.9-1.4z"/></svg>เข้าด้วย Apple</button>
+                  <div style="display:flex;align-items:center;gap:11px;margin:2px 0">
+                    <span style="flex:1;height:1px;background:rgba(246,239,226,.22)"></span>
+                    <span style="font:500 13px 'Anuphan';color:#b8a68c">หรือ</span>
+                    <span style="flex:1;height:1px;background:rgba(246,239,226,.22)"></span>
+                  </div>
+                </sc-if>
                 <button onClick="{{ showSignup }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';border-radius:14px;cursor:pointer">สมัครด้วยอีเมล</button>
               </div>
               <div onClick="{{ showLogin }}" style="text-align:center;font:500 14.5px 'Anuphan';color:#c9b79b;margin-top:16px;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center">มีบัญชีอยู่แล้ว? <span style="color:#e9b48a;font-weight:600;margin-left:5px">เข้าสู่ระบบ</span></div>
@@ -234,7 +276,11 @@
                 <input value="{{ authEmail }}" onInput="{{ setAuthEmail }}" type="email" placeholder="อีเมล" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 16px 'Anuphan';color:#fff;outline:none">
                 <input value="{{ authPass }}" onInput="{{ setAuthPass }}" type="password" placeholder="รหัสผ่าน (6 ตัวขึ้นไป)" style="width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(246,239,226,.25);background:rgba(246,239,226,.1);border-radius:14px;padding:0 15px;font:500 16px 'Anuphan';color:#fff;outline:none">
                 <sc-if value="{{ authErr }}" hint-placeholder-val="{{ false }}"><div style="font:500 14px 'Anuphan';color:#f0a08a">{{ authErr }}</div></sc-if>
+                <sc-if value="{{ authMsg }}" hint-placeholder-val="{{ false }}"><div style="font:500 14px/1.55 'Anuphan';color:#bfe0b8;background:rgba(246,239,226,.1);border-radius:12px;padding:11px 13px">{{ authMsg }}</div></sc-if>
                 <button onClick="{{ authSubmit }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';border-radius:14px;cursor:pointer">{{ authCta }}</button>
+                <sc-if value="{{ authLoginMode }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ authForgot }}" style="text-align:center;font:500 14.5px 'Anuphan';color:#e9b48a;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center">{{ forgotCta }}</div>
+                </sc-if>
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
                   <span onClick="{{ authBack }}" style="font:600 14.5px 'Anuphan';color:#c9b79b;cursor:pointer;min-height:44px;display:inline-flex;align-items:center">← กลับ</span>
                   <span onClick="{{ authSwitch }}" style="font:500 14.5px 'Anuphan';color:#c9b79b;cursor:pointer;min-height:44px;display:inline-flex;align-items:center">{{ authSwitchQ }} <span style="color:#e9b48a;font-weight:600;margin-left:5px">{{ authSwitchCta }}</span></span>
@@ -2314,15 +2360,6 @@
             </sc-if>
           </div>
           <div>
-            <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">การเดินทาง</div>
-            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
-              <div style="font:500 16px 'Anuphan';color:#2b241f;margin-bottom:3px">สนามบินต้นทาง</div>
-              <div style="font:500 13px/1.5 'Anuphan';color:#a1927c;margin-bottom:10px">ใช้เป็นต้นทางตั้งต้นตอนกดหาตั๋วเครื่องบินจากแผนทริป</div>
-              <input value="{{ homeAirDraft }}" onInput="{{ setHomeAir }}" onBlur="{{ blurHomeAir }}" placeholder="BKK" maxlength="3" style="width:110px;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:700 17px 'Anuphan';letter-spacing:1.5px;text-transform:uppercase;color:#2b241f;outline:none">
-              <div style="font:500 12.5px/1.5 'Anuphan';color:#a1927c;margin-top:8px">ใส่รหัสสนามบิน 3 ตัว เช่น BKK (กรุงเทพ) · DMK (ดอนเมือง) · CNX (เชียงใหม่) · HKT (ภูเก็ต)</div>
-            </div>
-          </div>
-          <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;overflow:hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:0 15px">
@@ -2398,6 +2435,33 @@
                   <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">ดูแลรูปภาพ</div>
                   <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px">{{ legacyImgNote }}</div>
                   <button onClick="{{ rehostImgs }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ rehostLabel }}</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ showBodyTool }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:11px">
+                  <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">เนื้อเรื่องที่หนัก</div>
+                  <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px">ตอนที่มีรูปฝังในเนื้อจะโหลดช้าและกิน egress ทุกครั้งที่เปิด — ตรวจแล้วล้างครั้งเดียวจบ</div>
+                  <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px">
+                    <sc-for list="{{ bodyRowsList }}" as="b" hint-placeholder-count="0">
+                      <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:11px;padding:9px 11px">
+                        <div style="display:flex;justify-content:space-between;gap:10px;font:600 13.5px 'Anuphan';color:#2b241f"><span style="flex:1;min-width:0">{{ b.title }}</span><span style="flex:none;color:#c05f39">{{ b.size }}</span></div>
+                        <div style="font:500 12px 'Anuphan';color:#a1927c;margin-top:2px">{{ b.detail }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <sc-if value="{{ bodyHasMsg }}" hint-placeholder-val="{{ false }}">
+                    <div style="font:500 12.5px/1.5 'Anuphan';color:#8a7d6f;background:#fffaf0;border-radius:10px;padding:8px 10px;margin-bottom:9px">{{ bodyMsg }}</div>
+                  </sc-if>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <button onClick="{{ scanBodiesBtn }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyScanLabel }}</button>
+                    <sc-if value="{{ bodyCanClean }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ cleanBodiesBtn }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ bodyCleanLabel }}</button>
+                    </sc-if>
+                    <sc-if value="{{ bodyCanPush }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ pushBodiesBtn }}" style="width:100%;min-height:46px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ดันเนื้อขึ้นคลาวด์ใหม่ (ทุกตอน)</button>
+                      <div style="font:500 12px/1.5 'Anuphan';color:#a1927c">ใช้เมื่อเนื้อในเครื่องเบาแล้ว แต่ก้อนบนคลาวด์ยังเป็นฉบับเก่าที่อ้วน</div>
+                    </sc-if>
+                  </div>
                 </div>
               </sc-if>
               <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ดาวน์โหลดไฟล์สำรอง (.json) ไว้กันหาย นำเข้ากลับได้ทุกเมื่อ — เลือกได้ว่าจะรวมรูปไปด้วยหรือไม่</div>
@@ -2637,8 +2701,8 @@
 
     <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
-        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+      <div style="position:fixed;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
+        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:calc(13px + env(safe-area-inset-top)) 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
           <button onClick="{{ toggleCiForm }}" title="ปิด" style="width:38px;height:38px;flex:none;border:none;background:#efe4d3;color:#2b241f;border-radius:50%;cursor:pointer;font:700 16px 'Anuphan';display:flex;align-items:center;justify-content:center">✕</button>
           <div style="font:400 19px 'Chonburi',serif;color:#2b241f">บันทึกโมเมนต์</div>
         </div>
@@ -2682,8 +2746,8 @@
       </div>
     </sc-if>
 
-      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" style="position:absolute;right:18px;bottom:146px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>โมเมนต์</button>
-      <button onClick="{{ goAskAi }}" style="position:absolute;right:18px;bottom:84px;z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
+      <button onClick="{{ goCheckIn }}" title="บันทึกโมเมนต์" class="wtn-fab wtn-fab-2" style="position:absolute;right:18px;bottom:calc(158px + env(safe-area-inset-bottom));z-index:5;display:flex;align-items:center;gap:7px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 10px 22px -6px rgba(43,36,32,.55);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f6efe2" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>โมเมนต์</button>
+      <button onClick="{{ goAskAi }}" class="wtn-fab wtn-fab-1" style="position:absolute;right:18px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:5;display:flex;align-items:center;gap:7px;border:none;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:600 15px 'Anuphan';padding:12px 16px;border-radius:26px;box-shadow:0 8px 20px -6px rgba(192,95,57,.6);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><path d="M18 14l.9 2.6L21.5 17l-2.6.9L18 20.5l-.9-2.6L14.5 17l2.6-.9z"/></svg>ถาม AI</button>
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
     <div class="wtn-tabbar" style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
@@ -2754,6 +2818,20 @@
     </div>
   </div>
 </sc-if>
+<sc-if value="{{ shareLinkOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:9700;background:rgba(20,16,13,.72);display:flex;flex-direction:column;justify-content:flex-end">
+    <div style="background:#f6efe2;border-radius:22px 22px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:13px">
+      <div style="font:400 20px 'Chonburi',serif;color:#2b241f">คัดลอกลิงก์เอง</div>
+      <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f">เครื่องนี้เปิดแผงแชร์ให้ไม่ได้ — แตะช่องด้านล่างเพื่อเลือกทั้งหมด แล้วคัดลอก</div>
+      <input value="{{ shareLinkUrl }}" readonly="readonly" onClick="{{ shareLinkCopy }}" style="width:100%;box-sizing:border-box;min-height:50px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;border-radius:13px;padding:0 14px;font:500 14px 'Anuphan';color:#2b241f;outline:none">
+      <div style="display:flex;gap:10px">
+        <button onClick="{{ shareLinkClose }}" style="flex:none;min-height:50px;padding:0 20px;border:1px solid rgba(43,36,32,.16);background:transparent;color:#5c5347;font:600 16px 'Anuphan';border-radius:13px;cursor:pointer">ปิด</button>
+        <button onClick="{{ shareLinkCopy }}" style="flex:1;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:13px;cursor:pointer">คัดลอกลิงก์</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ lbClose }}" style="position:fixed;inset:0;z-index:9800;background:rgba(20,16,13,.96);display:flex;flex-direction:column">
     <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px">
@@ -2896,7 +2974,10 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
 class Component extends DCLogic {
-  state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '',
+  state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authMsg: '',
+    // มาจากลิงก์ "ตั้งรหัสผ่านใหม่" ในอีเมล → เปิดหน้าตั้งรหัสใหม่ทับทุกอย่าง
+    pwReset: (() => { try { return /type=recovery/.test((location.hash || '') + (location.search || '')); } catch (e) { return false; } })(),
+    pwNew: '', pwNew2: '', pwErr: '',
     screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
@@ -2915,6 +2996,35 @@ class Component extends DCLogic {
     this.setState({ auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '' });
     this.setTab('plan');
   }
+  async authForgot() {
+    const email = (this.state.authEmail || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return this.setState({ authErr: 'กรอกอีเมลที่ใช้สมัครในช่องด้านบนก่อน แล้วกดลืมรหัสผ่านอีกครั้ง', authMsg: '' });
+    const be = window.WTNBackend;
+    if (!be || !be.resetPassword) return this.setState({ authErr: 'ยังเชื่อมต่อระบบไม่ได้ ลองใหม่อีกครั้ง', authMsg: '' });
+    this.setState({ authBusy: true, authErr: '', authMsg: '' });
+    try {
+      await be.resetPassword(email);
+      this.setState({ authBusy: false, authMsg: 'ส่งลิงก์ตั้งรหัสใหม่ไปที่ ' + email + ' แล้ว — เปิดอีเมลแล้วกดลิงก์ในนั้น (ถ้าไม่เจอ ลองดูในถังขยะ/สแปม)' });
+    } catch (e) {
+      this.setState({ authBusy: false, authErr: this.authErrMsg ? this.authErrMsg(e) : ((e && e.message) || 'ส่งลิงก์ไม่สำเร็จ ลองอีกครั้ง') });
+    }
+  }
+  async pwSubmit() {
+    const a = this.state.pwNew || '', b = this.state.pwNew2 || '';
+    if (a.length < 6) return this.setState({ pwErr: 'รหัสผ่านต้องมี 6 ตัวขึ้นไป' });
+    if (a !== b) return this.setState({ pwErr: 'รหัสผ่านสองช่องไม่ตรงกัน' });
+    const be = window.WTNBackend;
+    if (!be || !be.updatePassword) return this.setState({ pwErr: 'ยังเชื่อมต่อระบบไม่ได้ ลองใหม่อีกครั้ง' });
+    this.setState({ pwBusy: true, pwErr: '' });
+    try {
+      await be.updatePassword(a);
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+      this.setState({ pwBusy: false, pwReset: false, pwNew: '', pwNew2: '' });
+      this.setTab('plan');
+    } catch (e) {
+      this.setState({ pwBusy: false, pwErr: (e && e.message) || 'ตั้งรหัสใหม่ไม่สำเร็จ ลิงก์อาจหมดอายุ — ขอลิงก์ใหม่อีกครั้ง' });
+    }
+  }
   async authSubmit() {
     const s = this.state, signup = s.auth === 'signup';
     const email = s.authEmail.trim(), name = s.authName.trim();
@@ -2932,7 +3042,7 @@ class Component extends DCLogic {
   }
   async oauth(kind) {
     const be = window.WTNBackend;
-    if (!be) { this.signIn(kind, 'Nim', kind === 'google' ? 'nim@gmail.com' : 'nim@facebook.com'); return; }
+    if (!be) { this.signIn(kind, 'Nim', kind === 'google' ? 'nim@gmail.com' : kind === 'apple' ? 'nim@icloud.com' : 'nim@facebook.com'); return; }
     this.setState({ authErr: '' });
     try { await be[kind](); } catch (e) { this.setState({ authErr: this.authErrMsg(e) }); }
   }
@@ -5939,7 +6049,7 @@ class Component extends DCLogic {
     try {
       let all = [];
       for (let page = 1; page <= 5; page++) {
-        const r = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?per_page=100&orderby=name&order=asc&_fields=id,name,slug,parent,count&page=' + page);
         if (!r.ok) break;
         const d = await r.json();
@@ -5948,7 +6058,7 @@ class Component extends DCLogic {
         if (d.length < 100) break;
       }
       if (!all.length) {                                  // สำรอง: v1.1 (บางไซต์ปิด wp/v2)
-        const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
+        const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(this.wpSiteHost)
           + '/categories?number=1000');
         if (r.ok) {
           const d = await r.json();
@@ -5976,7 +6086,7 @@ class Component extends DCLogic {
       // 1) ถามด้วยรหัสหมวด (wp/v2) — แม่นกว่า slug ที่อาจไม่ตรง
       if (catId) {
         try {
-          const r2 = await this.wpFetch('https://public-api.wordpress.com/wp/v2/sites/' + host
+          const r2 = await fetch('https://public-api.wordpress.com/wp/v2/sites/' + host
             + '/posts?per_page=20&page=' + page + '&categories=' + catId
             + '&_fields=id,title,date,link,jetpack_featured_media_url'
             + (q ? '&search=' + encodeURIComponent(q) : ''));
@@ -5998,7 +6108,7 @@ class Component extends DCLogic {
           + '/posts/?number=20&page=' + page + '&fields=ID,title,date,URL,featured_image'
           + (cat ? '&category=' + encodeURIComponent(cat) : '')
           + (q ? '&search=' + encodeURIComponent(q) : '');
-        const r = await this.wpFetch(url);
+        const r = await fetch(url);
         if (!r.ok && !posts) throw new Error('HTTP ' + r.status);
         if (r.ok) {
           const d = await r.json();
@@ -6030,7 +6140,7 @@ class Component extends DCLogic {
       for (let i = 0; i < picked.length; i++) {
         const p = picked[i];
         try {
-          const r = await this.wpFetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
+          const r = await fetch('https://public-api.wordpress.com/rest/v1.1/sites/' + encodeURIComponent(host)
             + '/posts/' + p.id + '?fields=ID,title,date,content,featured_image,URL');
           if (!r.ok) throw new Error('HTTP ' + r.status);
           const d = await r.json();
@@ -6943,7 +7053,7 @@ class Component extends DCLogic {
   shareMoment(m) {
     const who = m.author || 'nimjourney';
     const txt = (m.text || m.place || 'โมเมนต์การเดินทาง') + ' — ' + who + ' · Vela';
-    const url = (location.href.split('#')[0]) + '#moment-' + m.id;
+    const url = this.webBase() + '#moment-' + m.id;
     try { if (navigator.share) { navigator.share({ text: txt, url }); return; } } catch (e) {}
     try { navigator.clipboard.writeText(txt + ' ' + url); this.showToast('คัดลอกลิงก์แล้ว'); } catch (e) { this.showToast('แชร์ไม่ได้บนอุปกรณ์นี้'); }
   }
@@ -7143,13 +7253,63 @@ class Component extends DCLogic {
     try { localStorage.setItem('wtn-comments', JSON.stringify(all)); } catch (e) {}
     this.setState({ commentDraft: '' });
   }
-  shareChapter() {
+  // ลิงก์แชร์: ส่งผ่านฟังก์ชัน share ของ Supabase เพื่อให้ Facebook/LINE เห็นปกกับหัวข้อของตอนนั้นจริง
+  // (crawler ไม่รัน JS — ลิงก์ตรงไปที่แอปจะได้ปกกลางของ Vela ทุกลิงก์)
+  chapterShareUrl(sid, cid) {
+    const q = '?st=' + encodeURIComponent(sid || '') + '&ch=' + encodeURIComponent(cid || '');
+    const cfg = window.WTN_SUPABASE || {};
+    // ถ้าวันหลังทำ Cloudflare Worker แล้ว ตั้ง shareBase ใน supabase-config.js
+    // จะได้การ์ดปก+ชื่อตอนบน Facebook (ดู supabase/SHARE-CARD.md)
+    if (cfg.shareBase) {
+      return String(cfg.shareBase).replace(/\/+$/, '') +
+        '/' + encodeURIComponent(sid || '') + '/' + encodeURIComponent(cid || '');
+    }
+    return this.webBase() + q;
+  }
+  // ฐานลิงก์ที่แชร์ออกไปได้จริง — ในแอป native ที่อยู่หน้าเว็บเป็น capacitor://localhost
+  // เอามาต่อเป็นลิงก์ไม่ได้ ต้องบังคับเป็นโดเมนจริง
+  webBase() {
+    try {
+      const b = location.href.split('#')[0].split('?')[0];
+      if (/^https?:\/\//i.test(b) && !/localhost|127\.0\.0\.1/i.test(b)) return b;
+    } catch (e) {}
+    return 'https://onevela.net/app/';
+  }
+  // คัดลอกข้อความให้ได้ทุกที่ — ใน WKWebView ของแอป native ไม่มี navigator.clipboard
+  // (ต้องเป็น secure context) ต้องถอยไปใช้ textarea + execCommand
+  copyText(txt) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt);
+        return true;
+      }
+    } catch (e) {}
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, txt.length);   // iOS ต้องสั่งช่วงเลือกเอง
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+  async shareChapter() {
     const t = (this.openChapter || {}).title || 'เรื่องเล่า';
-    const base = location.href.split('#')[0].split('?')[0];
-    const url = base + '?st=' + encodeURIComponent(this.state.openStoryId || '') + '&ch=' + encodeURIComponent(this.state.openChapterId || '');
-    try { if (navigator.share) { navigator.share({ title: t, url }); return; } } catch (e) {}
-    try { navigator.clipboard && navigator.clipboard.writeText(url); } catch (e) {}
-    alert('คัดลอกลิงก์ตอน "' + t + '" แล้ว');
+    const url = this.chapterShareUrl(this.state.openStoryId, this.state.openChapterId);
+    // แอป native: เรียกแผงแชร์ของ iOS/Android ผ่านปลั๊กอินก่อน (navigator.share มักไม่มีใน WKWebView)
+    try {
+      const S = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Share;
+      if (S && S.share) { await S.share({ title: t, text: t, url, dialogTitle: 'แชร์เรื่องเล่า' }); return; }
+    } catch (e) { if (e && /cancel/i.test(e.message || '')) return; }
+    try { if (navigator.share) { await navigator.share({ title: t, url }); return; } }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+    // ไม่มีแผงแชร์ → คัดลอกลิงก์ให้ แล้วบอกด้วยทับข้อความ (ไม่ใช้ alert — ใน webview บางทีถูกบล็อก)
+    if (this.copyText(url)) this.showToast('คัดลอกลิงก์ตอน "' + t + '" แล้ว');
+    else this.setState({ shareLinkOpen: true, shareLinkUrl: url, shareLinkTitle: t });
   }
   esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   defaultDocs() {
@@ -7640,40 +7800,6 @@ class Component extends DCLogic {
     } catch (e) {}
     // ขอ persistent storage — ลดโอกาส iOS/เบราว์เซอร์ล้างที่เก็บข้อมูล (เนื้อตอนใน IDB)
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
-    // หดตัวแอปตามแป้นพิมพ์ — เฉพาะตอนกำลังพิมพ์จริง (ไม่ให้แถบที่อยู่ของเบราว์เซอร์มาทำให้หน้าขยับ)
-    // บางบิลด์ของแอป WebView คืน safe-area-inset-top = 0 แล้วหัวไปทับนาฬิกา → วัดเองแล้วเติมให้
-    this._topInset = () => {
-      try {
-        const p = document.createElement('div');
-        p.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:env(safe-area-inset-top);pointer-events:none;opacity:0';
-        document.body.appendChild(p);
-        const got = p.offsetHeight; p.remove();
-        const Cap = window.Capacitor;
-        const nat = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
-        const stand = window.matchMedia && window.matchMedia('(display-mode:standalone)').matches;
-        if (got > 4 || !(nat || stand)) { document.documentElement.style.setProperty('--wtn-top', '0px'); return; }
-        const h = Math.max(window.screen.height, window.screen.width);
-        document.documentElement.style.setProperty('--wtn-top', (h >= 896 ? 54 : h >= 812 ? 47 : 20) + 'px');
-      } catch (e) {}
-    };
-    this._topInset();
-    window.addEventListener('orientationchange', () => setTimeout(this._topInset, 250));
-    this._kb = () => {
-      try {
-        const vv = window.visualViewport;
-        const a = document.activeElement;
-        const typing = !!(a && (a.isContentEditable || a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'));
-        let kb = 0;
-        if (vv && typing) {
-          const d = Math.round(window.innerHeight - vv.height - vv.offsetTop);
-          if (d > 140 && d < window.innerHeight * 0.62) kb = d;
-        }
-        document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
-        if (kb) this._ceCaretIn(true);
-      } catch (e) {}
-    };
-    document.addEventListener('focusout', () => setTimeout(this._kb, 60), true);
-    if (window.visualViewport) { window.visualViewport.addEventListener('resize', this._kb); window.visualViewport.addEventListener('scroll', this._kb); }
     this.applyTypo();
     this.wpStuckWatch();
     this._heroTimer = setInterval(() => {
@@ -7734,6 +7860,46 @@ class Component extends DCLogic {
     window.addEventListener('offline', this._onOff);
     this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); } else this.flushCloudPush(); };
     document.addEventListener('visibilitychange', this._visSync);
+    // iOS: ปิดคีย์บอร์ดแล้ว document มักค้างอยู่ตำแหน่งที่ถูกดันขึ้น → ดึงกลับที่ 0
+    // หดตัวแอปตามแป้นพิมพ์ — เฉพาะตอนกำลังพิมพ์จริง (ไม่ให้แถบที่อยู่ของเบราว์เซอร์มาทำให้หน้าขยับ)
+    // บางบิลด์ของแอป WebView คืน safe-area-inset-top = 0 แล้วหัวไปทับนาฬิกา → วัดเองแล้วเติมให้
+    this._topInset = () => {
+      try {
+        const p = document.createElement('div');
+        p.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:env(safe-area-inset-top);pointer-events:none;opacity:0';
+        document.body.appendChild(p);
+        const got = p.offsetHeight; p.remove();
+        const Cap = window.Capacitor;
+        const nat = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+        const stand = window.matchMedia && window.matchMedia('(display-mode:standalone)').matches;
+        if (got > 4 || !(nat || stand)) { document.documentElement.style.setProperty('--wtn-top', '0px'); return; }
+        const h = Math.max(window.screen.height, window.screen.width);
+        document.documentElement.style.setProperty('--wtn-top', (h >= 896 ? 54 : h >= 812 ? 47 : 20) + 'px');
+      } catch (e) {}
+    };
+    this._topInset();
+    window.addEventListener('orientationchange', () => setTimeout(this._topInset, 250));
+    this._kb = () => {
+      try {
+        const vv = window.visualViewport;
+        const a = document.activeElement;
+        const typing = !!(a && (a.isContentEditable || a.tagName === 'INPUT' || a.tagName === 'TEXTAREA'));
+        let kb = 0;
+        if (vv && typing) {
+          const d = Math.round(window.innerHeight - vv.height - vv.offsetTop);
+          if (d > 140 && d < window.innerHeight * 0.62) kb = d;
+        }
+        document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
+        if (kb) this._ceCaretIn(true);
+      } catch (e) {}
+    };
+    document.addEventListener('focusout', () => setTimeout(this._kb, 60), true);
+    if (window.visualViewport) { window.visualViewport.addEventListener('resize', this._kb); window.visualViewport.addEventListener('scroll', this._kb); }
+    this._unscroll = () => { try { if (window.scrollY || window.pageYOffset) window.scrollTo(0, 0); } catch (e) {} };
+    document.addEventListener('focusout', this._unscroll, true);
+    window.addEventListener('orientationchange', this._unscroll);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', this._unscroll);
+    this._unscrollTimer = setInterval(this._unscroll, 1200);
     // iOS พักแท็บทันทีที่สลับออก/ล็อกจอ → ต้องดันข้อมูลค้างก่อนโดนพัก
     this._pageHide = () => this.flushCloudPush();
     window.addEventListener('pagehide', this._pageHide);
@@ -7761,7 +7927,8 @@ class Component extends DCLogic {
           const go = () => this.resolveDeepLink(sid, cid);
           go();
           if (!window.WTNBackend) window.addEventListener('wtn-backend-ready', go, { once: true });
-          setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 9000);
+          // 28 ส.ค.: เนื้อตอนบางตอนโต 2-3 MB (รูป base64 ฝังในเนื้อ) โหลดไม่ทัน 9 วิ → ขยายเป็น 30
+          setTimeout(() => { if (!this._deepDone) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 30000);
         }
       }
     } catch (e) {}
@@ -7940,6 +8107,12 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     try { clearInterval(this._heroTimer); } catch (e) {}
+    try {
+      clearInterval(this._unscrollTimer);
+      document.removeEventListener('focusout', this._unscroll, true);
+      window.removeEventListener('orientationchange', this._unscroll);
+      if (window.visualViewport) window.visualViewport.removeEventListener('resize', this._unscroll);
+    } catch (e) {}
     window.removeEventListener('photopick-change', this._pp);
     if (this._ppSync) window.removeEventListener('photopick-change', this._ppSync);
     if (this._visSync) document.removeEventListener('visibilitychange', this._visSync);
@@ -9543,6 +9716,74 @@ class Component extends DCLogic {
     };
     requestAnimationFrame(tick);
   }
+  // ---------- เครื่องมือแอดมิน: ตรวจ/ล้างรูป base64 ที่ฝังในเนื้อเรื่อง ----------
+  // ทำไมต้องมี: เนื้อตอนที่มีรูป base64 ฝังอยู่โตได้หลาย MB → ทุกครั้งที่เปิดตอน
+  // (และทุกครั้งที่ crawler ดูดการ์ดแชร์) จะโหลดก้อนนั้นทั้งก้อน กิน egress หนัก
+  async scanBodies() {
+    this.setState({ bodyBusy: true, bodyMsg: '' });
+    const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+\/=]+/g;
+    const rows = [];
+    try {
+      for (const st of (this.stories || [])) {
+        for (const c of (st.chapters || [])) {
+          let h = c.html || '';
+          if (!h && c.hRef) {
+            h = (this._hMem || {})[c.hRef] || '';
+            if (!h && String(c.hRef).indexOf('idb:') === 0) {
+              try { h = (await this.idbGet(String(c.hRef).slice(4))) || ''; } catch (e) {}
+            }
+          }
+          if (!h || h.length < 150000) continue;   // สนใจแค่ตอนที่หนักเกิน ~150 KB
+          let b64 = 0, n = 0;
+          (h.match(re) || []).forEach(d => { b64 += d.length; n++; });
+          rows.push({
+            sid: st.id, cid: c.id,
+            title: c.title || '(ไม่มีชื่อ)',
+            kb: Math.round(h.length / 1024),
+            b64kb: Math.round(b64 / 1024),
+            n,
+          });
+        }
+      }
+    } catch (e) { console.warn('[wtn] scanBodies', e); }
+    rows.sort((a, b) => b.kb - a.kb);
+    this.setState({
+      bodyBusy: false, bodyRows: rows, bodyScanned: true,
+      bodyMsg: rows.length ? '' : 'ไม่มีตอนไหนหนักเกิน 150 KB — ไม่มีอะไรต้องล้าง',
+    });
+  }
+  async cleanBodies() {
+    const rows = (this.state.bodyRows || []).filter(r => r.n > 0);
+    if (!rows.length) return;
+    this.setState({ bodyBusy: true, bodyMsg: 'กำลังยกรูปขึ้นคลาวด์…' });
+    try {
+      await this.hoistImages();                       // ยกรูป base64 → ลิงก์คลาวด์ + เขียนเนื้อกลับ
+      for (const r of rows) {                          // ดันเนื้อใหม่ (ที่เบาแล้ว) ขึ้นคลาวด์ทับของเดิม
+        this.setState({ bodyMsg: 'กำลังอัปเดตคลาวด์: ' + r.title });
+        try { await this.pushChapterCloud(r.sid, r.cid); } catch (e) {}
+      }
+    } catch (e) { console.warn('[wtn] cleanBodies', e); }
+    const before = rows.reduce((s, r) => s + r.kb, 0);
+    await this.scanBodies();
+    const after = (this.state.bodyRows || []).filter(r => rows.some(x => x.cid === r.cid)).reduce((s, r) => s + r.kb, 0);
+    this.setState({ bodyMsg: 'เสร็จแล้ว — จาก ' + before + ' KB เหลือ ' + after + ' KB' });
+  }
+  // เนื้อในเครื่องเบาแล้ว แต่ก้อนบนคลาวด์ยังเป็นฉบับเก่าที่อ้วน (ไม่มีอะไรไปเขียนทับ)
+  // → ดันเนื้อฉบับปัจจุบันขึ้นทับทุกตอน ก้อนบนคลาวด์จะเล็กลงตามของในเครื่อง
+  async pushAllBodies() {
+    this.setState({ bodyBusy: true, bodyMsg: 'กำลังดันขึ้นคลาวด์…' });
+    let n = 0;
+    try {
+      for (const st of (this.stories || [])) {
+        for (const c of (st.chapters || [])) {
+          if (!c || !c.id) continue;
+          this.setState({ bodyMsg: 'กำลังดันขึ้นคลาวด์: ' + (c.title || c.id) });
+          try { await this.pushChapterCloud(st.id, c.id); n++; } catch (e) {}
+        }
+      }
+    } catch (e) { console.warn('[wtn] pushAllBodies', e); }
+    this.setState({ bodyBusy: false, bodyMsg: 'ดันขึ้นคลาวด์ใหม่แล้ว ' + n + ' ตอน — ก้อนบนคลาวด์จะเท่ากับฉบับในเครื่องแล้ว' });
+  }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
     let n = 0;
@@ -10837,6 +11078,31 @@ class Component extends DCLogic {
           rehostImgs: () => this.rehostLegacyImages()
         };
       })(),
+      ...(() => {
+        const rows = this.state.bodyRows || [];
+        const heavy = rows.filter(r => r.n > 0);
+        const b64kb = heavy.reduce((s, r) => s + r.b64kb, 0);
+        return {
+          showBodyTool: this.isAdmin && !!(window.WTNBackend && window.WTNBackend._uid),
+          bodyBusy: !!this.state.bodyBusy,
+          bodyMsg: this.state.bodyMsg || '',
+          bodyHasMsg: !!this.state.bodyMsg,
+          bodyRowsList: rows.map(r => ({
+            title: r.title,
+            size: r.kb.toLocaleString() + ' KB',
+            detail: r.n > 0
+              ? ('รูปฝังในเนื้อ ' + r.n + ' รูป · ' + r.b64kb.toLocaleString() + ' KB')
+              : 'ไม่มีรูปฝัง — เนื้อยาวจริง',
+          })),
+          bodyScanLabel: this.state.bodyBusy ? 'กำลังทำ…' : (this.state.bodyScanned ? 'ตรวจอีกครั้ง' : 'ตรวจเนื้อเรื่อง'),
+          bodyCanClean: heavy.length > 0 && !this.state.bodyBusy,
+          bodyCleanLabel: 'ล้างรูปฝังในเนื้อ (' + heavy.length + ' ตอน · ' + b64kb.toLocaleString() + ' KB)',
+          scanBodiesBtn: () => this.scanBodies(),
+          cleanBodiesBtn: () => this.cleanBodies(),
+          bodyCanPush: !!this.state.bodyScanned && !this.state.bodyBusy,
+          pushBodiesBtn: () => this.pushAllBodies(),
+        };
+      })(),
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
       adminTotal: (this.state.adminStats && this.state.adminStats.total != null) ? this.state.adminStats.total : '—',
       adminPremium: (this.state.adminStats && this.state.adminStats.premium != null) ? this.state.adminStats.premium : '—',
@@ -10932,7 +11198,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.28a',
+      appVersion: '2026.08.28e',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
@@ -11298,12 +11564,12 @@ class Component extends DCLogic {
       authSwitchCta: this.state.auth === 'signup' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก',
       authName: this.state.authName, authEmail: this.state.authEmail, authPass: this.state.authPass, authErr: this.state.authErr,
       setAuthName: e => this.setState({ authName: e.target.value, authErr: '' }),
-      setAuthEmail: e => this.setState({ authEmail: e.target.value, authErr: '' }),
-      setAuthPass: e => this.setState({ authPass: e.target.value, authErr: '' }),
-      showSignup: () => this.setState({ auth: 'signup', authErr: '' }),
-      showLogin: () => this.setState({ auth: 'login', authErr: '' }),
-      authSwitch: () => this.setState({ auth: this.state.auth === 'signup' ? 'login' : 'signup', authErr: '' }),
-      authBack: () => this.setState({ auth: 'choice', authErr: '' }),
+      setAuthEmail: e => this.setState({ authEmail: e.target.value, authErr: '', authMsg: '' }),
+      setAuthPass: e => this.setState({ authPass: e.target.value, authErr: '', authMsg: '' }),
+      showSignup: () => this.setState({ auth: 'signup', authErr: '', authMsg: '' }),
+      showLogin: () => this.setState({ auth: 'login', authErr: '', authMsg: '' }),
+      authSwitch: () => this.setState({ auth: this.state.auth === 'signup' ? 'login' : 'signup', authErr: '', authMsg: '' }),
+      authBack: () => this.setState({ auth: 'choice', authErr: '', authMsg: '' }),
       authSubmit: () => this.authSubmit(),
       ...(() => {
         const dest = this.state.dest || 'kz', cat = this.state.destCat || 'place';
@@ -11463,7 +11729,23 @@ class Component extends DCLogic {
         try { ['wtn-auth', 'wtn-links', 'wtn-pass'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
         this.setState({ delConfirm: false, screen: 'onboard', history: [], auth: 'choice' });
       },
+      authLoginMode: this.state.auth === 'login',
+      authMsg: this.state.authMsg || '',
+      forgotCta: this.state.authBusy ? 'กำลังส่งลิงก์…' : 'ลืมรหัสผ่าน?',
+      authForgot: () => this.authForgot(),
+      pwResetShow: !!this.state.pwReset,
+      pwNew: this.state.pwNew || '', pwNew2: this.state.pwNew2 || '',
+      pwErr: this.state.pwErr || '',
+      pwCta: this.state.pwBusy ? 'กำลังบันทึก…' : 'บันทึกรหัสผ่านใหม่',
+      setPwNew: e => this.setState({ pwNew: e.target.value, pwErr: '' }),
+      setPwNew2: e => this.setState({ pwNew2: e.target.value, pwErr: '' }),
+      pwSubmit: () => this.pwSubmit(),
+      pwCancel: () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} this.setState({ pwReset: false, pwNew: '', pwNew2: '', pwErr: '' }); },
       authGoogle: () => this.oauth('google'),
+      authApple: () => this.oauth('apple'),
+      // ปุ่ม Google/Apple: ปิดไว้จนกว่าจะตั้งค่า provider ใน Supabase เสร็จ
+      // (ดู supabase/OAUTH-SETUP.md) — เปิดคืนโดยเปลี่ยนเป็น !this.isNativeApp
+      socialAuth: false,
       authFb: () => this.oauth('facebook'),
       authBusy: !!this.state.authBusy,
       cloudShow: this.state.cloud === 'error', // ซิงก์ปกติทำเงียบๆ เบื้องหลัง — โชว์เฉพาะตอนมีปัญหาจริง
@@ -12841,7 +13123,6 @@ class Component extends DCLogic {
             setTimeout(() => this._ceCaretIn(true), 420);
           },
           onChBlur: () => { if (this.state.ceFocus) this.setState({ ceFocus: false, ceHeadPin: false }); },
-
           onChPaste: e => this.onChPaste(e), cleanChFormat: () => this.cleanChFormat(),
           pastePlainOn: this.pastePlain, pastePlainOff: !this.pastePlain,
           togglePastePlain: () => this.togglePastePlain(),
@@ -12865,6 +13146,14 @@ class Component extends DCLogic {
           chReaderRef: el => { const key = this.state.openChapterId + ':' + (((oc || {}).html) ? 'y' : 'n'); if (el && el._loadedId !== key) { el.innerHTML = (oc || {}).html || (this.isRemoteOpen ? '<p style=\"color:#a1927c\">กำลังโหลด...</p>' : '<p style=\"color:#a1927c\">ยังไม่มีเนื้อหาในตอนนี้</p>'); el._loadedId = key; this.enrichRead(el); if (this.isRemoteOpen && (oc || {}).html) this.armViewTimer(this.state.openStoryId, this.state.openChapterId, (oc || {}).html || ''); } },
           crEditFromRead: () => this.openChapterEdit(this.state.openChapterId),
           crShare: () => this.shareChapter(),
+          shareLinkOpen: !!this.state.shareLinkOpen,
+          shareLinkUrl: this.state.shareLinkUrl || '',
+          shareLinkTitle: this.state.shareLinkTitle || '',
+          shareLinkCopy: () => {
+            if (this.copyText(this.state.shareLinkUrl || '')) this.showToast('คัดลอกลิงก์แล้ว');
+            this.setState({ shareLinkOpen: false });
+          },
+          shareLinkClose: () => this.setState({ shareLinkOpen: false }),
           crShowSave: this.isRemoteOpen,
           crSaveLabel: this.crInspiredNow ? 'เก็บไว้แล้ว' : 'เก็บไว้ในแรงบันดาลใจ',
           crSaveFill: this.crInspiredNow ? '#c05f39' : 'none',
