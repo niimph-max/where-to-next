@@ -2118,7 +2118,7 @@
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profTripCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profStoryCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profMomentCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">โมเมนต์</span></div></div>
           </div>
           <div style="padding:16px 20px 0">
-            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px"><span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">โลกของฉัน</span><span style="font:600 13.5px 'Anuphan';color:#c05f39">เคยไป {{ beenCount }} ประเทศ</span></div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px"><span style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">โลกของฉัน</span><span style="font:600 13.5px 'Anuphan';color:#c05f39" data-no-i18n="1">{{ beenCountLine }}</span></div>
             <div style="position:relative;width:100%;aspect-ratio:5/2;border-radius:16px;overflow:hidden;border:1px solid rgba(43,36,32,.12);background:#efe5d3">
               <svg viewBox="-10 -6 1020 412" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;display:block">
                 <sc-for list="{{ beenShapes }}" as="s" hint-placeholder-count="0"><path d="{{ s.d }}" fill="{{ s.fill }}" stroke="#fdf8ee" stroke-width="0.6" stroke-linejoin="round"></path></sc-for>
@@ -2358,6 +2358,16 @@
                 <div style="display:flex;gap:8px"><button onClick="{{ toggleAcctEdit }}" style="flex:1;min-height:44px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveAcctName }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกชื่อ</button></div>
               </div>
             </sc-if>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 15px">
+            <div style="min-width:0">
+              <div style="font:600 15px 'Anuphan';color:#2b241f">ภาษา</div>
+              <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">Language · เปลี่ยนแล้วแอปจะโหลดใหม่</div>
+            </div>
+            <div style="display:flex;gap:5px;background:#f6efe2;border-radius:12px;padding:4px;flex:none" data-no-i18n="1">
+              <button onClick="{{ setLangTh }}" style="{{ langThStyle }}">ไทย</button>
+              <button onClick="{{ setLangEn }}" style="{{ langEnStyle }}">EN</button>
+            </div>
           </div>
           <div>
             <div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin-bottom:8px">บัญชีและรหัสผ่าน</div>
@@ -4078,12 +4088,108 @@ class Component extends DCLogic {
     this.scheduleCloudPush && this.scheduleCloudPush();
   }
   setPrepNote(v) { const p = this.packing; p.note = v; this.savePacking(p); }
-  thMonths() { return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.']; }
+  thMonths() {
+    return this.lang === 'en'
+      ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+      : ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  }
+
+  // ---------- ภาษา (ไทย/อังกฤษ) ----------
+  // แปลตอนแสดงผล: กวาด text node แล้วสลับคำตามพจนานุกรม i18n-en.js
+  // ข้อดี = ไม่ต้องรื้อ markup 13,000 บรรทัด · คำที่ยังไม่มีในพจนานุกรมคงเป็นไทยไว้ (ไม่พัง)
+  get LC() { return this.lang === 'en' ? 'en-US' : 'th-TH'; }
+  get lang() {
+    if (this._lang) return this._lang;
+    try { this._lang = localStorage.getItem('wtn-lang') === 'en' ? 'en' : 'th'; } catch (e) { this._lang = 'th'; }
+    return this._lang;
+  }
+  setLang(l) {
+    const v = l === 'en' ? 'en' : 'th';
+    if (v === this.lang) return;
+    try { localStorage.setItem('wtn-lang', v); } catch (e) {}
+    location.reload();
+  }
+  T(s) {
+    if (this.lang !== 'en' || typeof s !== 'string') return s;
+    const D = this._i18nDict; if (!D) return s;
+    const t = s.trim();
+    return D[t] !== undefined ? s.replace(t, D[t]) : s;
+  }
+  async i18nBoot() {
+    if (this.lang !== 'en') return;
+    try { document.documentElement.lang = 'en'; } catch (e) {}
+    if (!window.WTN_EN) {
+      await new Promise(res => {
+        const sc = document.createElement('script');
+        sc.src = './i18n-en.js?v=2026.08.29d'; sc.onload = res; sc.onerror = res;
+        document.head.appendChild(sc);
+      });
+    }
+    this._i18nDict = window.WTN_EN || {};
+    this._i18nRules = (window.WTN_EN_RULES || []).map(r => [new RegExp(r[0]), r[1]]);
+    // alert/confirm ก็แปลด้วย (ข้อความพวกนี้อยู่ในโค้ด ไม่ใช่ DOM)
+    const A = window.alert.bind(window), C = window.confirm.bind(window);
+    window.alert = (m) => A(this.T(m));
+    window.confirm = (m) => C(this.T(m));
+    this.i18nSweep(document.body);
+    const mo = new MutationObserver(recs => {
+      const q = this._i18nQ || (this._i18nQ = new Set());
+      recs.forEach(r => {
+        if (r.type === 'characterData') q.add(r.target);
+        else r.addedNodes.forEach(n => q.add(n));
+      });
+      if (this._i18nRaf) return;
+      this._i18nRaf = requestAnimationFrame(() => {
+        this._i18nRaf = 0;
+        const list = [...q]; q.clear();
+        list.forEach(n => {
+          if (n.nodeType === 3) this.i18nNode(n);
+          else if (n.nodeType === 1) this.i18nSweep(n);
+        });
+      });
+    });
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+    this.forceUpdate();
+  }
+  i18nNode(n) {
+    const D = this._i18nDict; if (!D || !n || !n.nodeValue) return;
+    const p = n.parentNode;
+    if (p && (p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return;
+    if (p && p.closest && p.closest('[data-no-i18n]')) return;
+    const v = n.nodeValue;
+    if (!/[\u0E00-\u0E7F]/.test(v)) return;
+    const t = v.trim(); if (!t) return;
+    const en = D[t];
+    if (en !== undefined && en !== t) { n.nodeValue = v.replace(t, en); return; }
+    const R = this._i18nRules || [];
+    for (let i = 0; i < R.length; i++) {
+      if (R[i][0].test(t)) { n.nodeValue = v.replace(t, t.replace(R[i][0], R[i][1])); return; }
+    }
+  }
+  i18nSweep(root) {
+    const D = this._i18nDict; if (!D || !root) return;
+    if (root.nodeType === 3) { this.i18nNode(root); return; }
+    if (root.nodeType !== 1) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const hits = [];
+    for (let n = w.nextNode(); n; n = w.nextNode()) hits.push(n);
+    hits.forEach(n => this.i18nNode(n));
+    const A = ['placeholder', 'title', 'aria-label', 'alt'];
+    const els = root.querySelectorAll('[placeholder],[title],[aria-label],[alt]');
+    const all = root.matches && root.matches('[placeholder],[title],[aria-label],[alt]') ? [root, ...els] : [...els];
+    all.forEach(el => A.forEach(a => {
+      const v = el.getAttribute(a);
+      if (!v || !/[\u0E00-\u0E7F]/.test(v)) return;
+      const en = D[v.trim()];
+      if (en !== undefined) el.setAttribute(a, en);
+    }));
+  }
   fmtRange(a, b) {
     const M = this.thMonths();
     const f = s => { if (!s) return null; const p = String(s).split('-'); if (p.length < 3) return null; return { d: +p[2], m: +p[1] - 1, y: +p[0] }; };
     const A = f(a), B = f(b);
-    const yr = o => o ? String((o.y + 543) % 100).padStart(2, '0') : '';
+    const YB = this.lang === 'en' ? 0 : 543;
+    const yr = o => o ? String((o.y + YB) % 100).padStart(2, '0') : '';
     if (A && B) return A.d + ' ' + M[A.m] + ' ' + yr(A) + ' – ' + B.d + ' ' + M[B.m] + ' ' + yr(B);
     if (A) return A.d + ' ' + M[A.m] + ' ' + yr(A);
     if (B) return B.d + ' ' + M[B.m] + ' ' + yr(B);
@@ -4881,7 +4987,7 @@ class Component extends DCLogic {
       const dot = p.kind === 'moment' ? '#c05f39' : '#e07a3f';
       const icon = L.divIcon({ className: '', iconSize: [20, 20], iconAnchor: [10, 10],
         html: '<div style="width:20px;height:20px;border-radius:50%;background:' + dot + ';border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>' });
-      const when = p.at ? new Date(p.at).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : '';
+      const when = p.at ? new Date(p.at).toLocaleDateString(this.LC, { day: 'numeric', month: 'short', year: '2-digit' }) : '';
       const img = p.photo ? '<img src="' + esc(p.photo) + '" style="width:100%;max-width:180px;border-radius:8px;display:block;margin-top:6px">' : '';
       L.marker([p.lat, p.lng], { icon }).addTo(this._fmapLayer)
         .bindPopup('<div style="font:600 14px Anuphan,sans-serif;color:#2b241f">' + esc(p.title) +
@@ -4935,7 +5041,7 @@ class Component extends DCLogic {
   async askLLMParts(promptText, files) {
     if (!this.aiAvailable()) throw new Error(this.AI_PREMIUM_MSG);
     if ((files || []).length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
-    return await this.aiViaVela(window.WTNBackend, promptText);
+    return await this.aiViaVela(window.WTNBackend, promptText + this.aiLangLine());
   }
   addImpFiles(ev) {
     const files = Array.from(ev.target.files || []); ev.target.value = '';
@@ -5012,7 +5118,13 @@ class Component extends DCLogic {
   AI_PREMIUM_MSG = 'ผู้ช่วย AI เป็นฟีเจอร์ของพรีเมียม — เปิดใช้แล้วให้ AI ช่วยจัดวัน เรียบเรียงเรื่องเล่า และแยกโปรแกรมทัวร์ได้เลย';
   async askLLM(prompt) {
     if (!this.aiAvailable()) throw new Error(this.AI_PREMIUM_MSG);
-    return await this.aiViaVela(window.WTNBackend, prompt);
+    return await this.aiViaVela(window.WTNBackend, prompt + this.aiLangLine());
+  }
+  // โหมดอังกฤษ: พรอมต์ต้นเขียนสั่งเป็นไทย — ทับท้ายด้วยคำสั่งนี้ให้ตอบอังกฤษ
+  aiLangLine() {
+    return this.lang === 'en'
+      ? '\n\nIMPORTANT: Write your entire answer in natural English. Ignore any instruction above asking for Thai.'
+      : '';
   }
   dayContext() {
     const dd = this.days, d = dd[this.state.day] || {};
@@ -5311,7 +5423,7 @@ class Component extends DCLogic {
   photoMetaLabel(ex) {
     if (!ex) return '';
     const parts = [];
-    if (ex.at) parts.push(new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
+    if (ex.at) parts.push(new Date(ex.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }));
     if (ex.lat != null) parts.push('มีพิกัด');
     return parts.join(' · ');
   }
@@ -5319,7 +5431,7 @@ class Component extends DCLogic {
     const ex = this.photoMeta(url);
     if (!ex) { this.showToast('รูปนี้ไม่มีวัน-เวลาติดมากับไฟล์ (หากส่งมาทางแชท/HEIC มักจะถูกตัดทิ้ง)'); return; }
     const patch = {};
-    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
     if (ex.lat != null) { patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) }; patch.ciGeoStatus = 'ok'; }
     this.setState(patch);
     this.showToast('✓ ใช้เวลาจากรูปนี้: ' + this.photoMetaLabel(ex));
@@ -5341,7 +5453,7 @@ class Component extends DCLogic {
     try { ex = await this.exifOf(file); } catch (e) {}
     if (!ex) return;
     const patch = {};
-    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+    if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
     if (ex.lat != null && !(this.state.ciPos && this.state.ciPos.lat != null)) {
       patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) };
       patch.ciGeoStatus = 'ok';
@@ -5355,7 +5467,7 @@ class Component extends DCLogic {
     const pos = this.state.ciPos || {};
     const ei = this.state.ciEditIdx;
     const cts = this.state.ciAt || this.dayTs(this.state.day);
-    const tLabel = new Date(cts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    const tLabel = new Date(cts).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
     // เวลาที่ระบุอาจไม่ใช่วันที่เปิดอยู่ (แก้เวลาเอง / ดึงจากรูป) → ลงวันที่ตรงกับเวลานั้น
     const oldK = this.ciKey;
     const di = this.dayIndexForTs(cts);
@@ -6458,7 +6570,7 @@ class Component extends DCLogic {
     if (s < 3600) return Math.floor(s / 60) + ' นาทีที่แล้ว';
     if (s < 86400) return Math.floor(s / 3600) + ' ชม.ที่แล้ว';
     if (s < 604800) return Math.floor(s / 86400) + ' วันก่อน';
-    try { return new Date(ts).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
+    try { return new Date(ts).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
   }
   // ลิงก์คลิปในเนื้อโมเมนต์ (วางลิงก์ YouTube / TikTok / Instagram ไว้ในบันทึกได้เลย)
   clipOf(text) {
@@ -6503,8 +6615,8 @@ class Component extends DCLogic {
     const d = new Date(ts);
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const sameDay = d >= today && d < new Date(today.getTime() + 86400000);
-    const t = d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-    return sameDay ? t : (d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' + t);
+    const t = d.toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
+    return sameDay ? t : (d.toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }) + ' ' + t);
   }
   async postMoment() {
     const text = (this.state.mpText || '').trim();
@@ -6540,7 +6652,7 @@ class Component extends DCLogic {
     const mid = 'm' + Date.now() + Math.floor(Math.random() * 1000);
     const name = (this.state.mpPlace || '').trim() || (o.text.split('\n')[0] || '').slice(0, 40) || 'โมเมนต์';
     const c = { mid, name, note: o.text, photos: o.photos, at: o.at, published: true,
-      t: new Date(o.at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) };
+      t: new Date(o.at).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' }) };
     if (o.pos) { c.lat = o.pos.lat; c.lng = o.pos.lng; }
     all[k] = [...(all[k] || []), c];
     this.saveCheckins(all);
@@ -6920,7 +7032,7 @@ class Component extends DCLogic {
     Object.keys(all).forEach(k => (all[k] || []).forEach(c => {
       if (c.mid === id) {
         c.note = text; touched = true;
-        if (at) { c.at = at; c.t = new Date(at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }); }
+        if (at) { c.at = at; c.t = new Date(at).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' }); }
       }
     }));
     if (touched) this.saveCheckins(all);
@@ -7020,8 +7132,8 @@ class Component extends DCLogic {
       const when = (() => {
         const d = new Date(m.at || Date.now());
         if (isNaN(d)) return '';
-        return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' +
-          d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleDateString(this.LC, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' +
+          d.toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
       })();
       const wx = m.wx && m.wx.t != null ? (m.wx.t + '°C' + (this.wxLabel(m.wx.code) ? ' · ' + this.wxLabel(m.wx.code) : '')) : '';
       const meta = [when, wx].filter(Boolean).join('  ·  ');
@@ -7505,7 +7617,7 @@ class Component extends DCLogic {
       const st = new Date(t.start + 'T00:00:00');
       if (!isNaN(st)) {
         const dd = new Date(st.getTime() + i * 86400000);
-        dateLabel = dd.toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long' });
+        dateLabel = dd.toLocaleDateString(this.LC, { weekday: 'long', day: 'numeric', month: 'long' });
         dk = this.dkey(dd.getTime());
       }
     }
@@ -7517,7 +7629,7 @@ class Component extends DCLogic {
     if (dk) this.moments.forEach(m => {
       if (seen[m.id]) return;
       if (this.dkey(m.at) !== dk) return;
-      items.push({ at: m.at || 0, t: new Date(m.at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+      items.push({ at: m.at || 0, t: new Date(m.at).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' }),
         name: m.place || '', note: m.text || '' });
     });
     items.sort((a, b) => (a.at || 0) - (b.at || 0));
@@ -7657,8 +7769,8 @@ class Component extends DCLogic {
 
   expCats = ['ที่พัก', 'เดินทาง', 'กิจกรรม', 'อาหาร', 'ช้อป / อื่นๆ'];
   defaultPlan = { 'ที่พัก': 34200, 'เดินทาง': 16200, 'กิจกรรม': 16000, 'อาหาร': 2900, 'ช้อป / อื่นๆ': 1000 };
-  fmtB(n) { return '฿' + Math.round(n).toLocaleString('th-TH'); }
-  fmtNum(n) { return Number(n).toLocaleString('th-TH', { maximumFractionDigits: 2 }); }
+  fmtB(n) { return '฿' + Math.round(n).toLocaleString(this.LC); }
+  fmtNum(n) { return Number(n).toLocaleString(this.LC, { maximumFractionDigits: 2 }); }
   defaultFx = { kazakh: { cur: 'เทงเก (₸)', rate: 15.5 } };
   get fxCfg() {
     try {
@@ -7695,8 +7807,8 @@ class Component extends DCLogic {
     const list = this.expenses;
     const d = new Date(ts || Date.now());
     list.push({ id: 'e' + Date.now() + Math.floor(Math.random() * 1000), cat, amt, note, at: d.getTime(),
-      t: d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }) + ' ' +
-         d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) });
+      t: d.toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }) + ' ' +
+         d.toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' }) });
     this.saveExpenses(list);
   }
   get actualByCat() {
@@ -7762,7 +7874,7 @@ class Component extends DCLogic {
   TYPO_SIZES = { s: { name: 'เล็ก', z: 0.94 }, m: { name: 'มาตรฐาน', z: 1 }, l: { name: 'ใหญ่', z: 1.1 }, xl: { name: 'ใหญ่มาก', z: 1.22 } };
   HOME_TABS = { plan: 'แผนของฉัน', today: 'Today', stories: 'Feed', me: 'ฉัน' };
   get homeTab() { try { const t = localStorage.getItem('wtn-home-tab'); return this.HOME_TABS[t] ? t : 'plan'; } catch (e) { return 'plan'; } }
-  setHomeTab(t) { try { localStorage.setItem('wtn-home-tab', t); } catch (e) {} this.showToast('✓ เปิดแอปครั้งหน้าจะเริ่มที่ "' + this.HOME_TABS[t] + '"'); this.forceUpdate(); }
+  setHomeTab(t) { try { localStorage.setItem('wtn-home-tab', t); } catch (e) {} this.showToast(this.lang === 'en' ? ('✓ Next launch opens on "' + this.T(this.HOME_TABS[t] || '') + '"') : ('✓ เปิดแอปครั้งหน้าจะเริ่มที่ "' + this.HOME_TABS[t] + '"')); this.forceUpdate(); }
   get typoFont() { try { return this.TYPO_FONTS[localStorage.getItem('wtn-font')] ? localStorage.getItem('wtn-font') : 'plex'; } catch (e) { return 'plex'; } }
   get typoSize() { try { return this.TYPO_SIZES[localStorage.getItem('wtn-fontsize')] ? localStorage.getItem('wtn-fontsize') : 'm'; } catch (e) { return 'm'; } }
   setTypo(k, v) {
@@ -7802,6 +7914,7 @@ class Component extends DCLogic {
     return a;
   }
   componentDidMount() {
+    this.i18nBoot();
     // ซ่อนแถบ ^ v ✓ เหนือแป้นพิมพ์ (มีแต่ในแอป native — บนเบราว์เซอร์เป็นของ Safari เอง ปิดไม่ได้)
     try {
       const K = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Keyboard;
@@ -8138,7 +8251,7 @@ class Component extends DCLogic {
       if (!t.start) return 'วันที่ ' + (i + 1);
       const d = new Date(t.start + 'T12:00:00');
       d.setDate(d.getDate() + i);
-      return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'long' });
+      return d.toLocaleDateString(this.LC, { day: 'numeric', month: 'long' });
     } catch (e) { return 'วันที่ ' + (i + 1); }
   }
   // เล่มผูกกับทริปของเรื่องเล่าที่เปิดอยู่ ไม่ใช่ทริปที่เลือกค้างไว้ในแอป
@@ -8284,7 +8397,7 @@ class Component extends DCLogic {
     this.ebExpenses(trip).forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + (Number(e.amt) || 0); });
     const rows = Object.keys(cats).filter(k => cats[k] > 0).sort((a, b) => cats[b] - cats[a]);
     const total = rows.reduce((s, k) => s + cats[k], 0);
-    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + 543) || ''; } catch (e) { return ''; } })();
+    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + (this.lang === 'en' ? 0 : 543)) || ''; } catch (e) { return ''; } })();
     const ttl = (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
     return {
       title: ttl,
@@ -9276,7 +9389,7 @@ class Component extends DCLogic {
       return (all.find(s => s.r >= 1.15) || all[0] || {}).u || '';
     })();
     const cover = await this.resolvePhoto(this.coverOf('wtn-pb-cover-' + trip, '') || this.coverOf('wtn-eb-cover-' + trip, '') || this.coverOf('wtn-cover-' + trip, '') || '') || auto;
-    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + 543) || ''; } catch (e) { return ''; } })();
+    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + (this.lang === 'en' ? 0 : 543)) || ''; } catch (e) { return ''; } })();
     const ttl = (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
     return { title: ttl,
       sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
@@ -10663,7 +10776,7 @@ class Component extends DCLogic {
       let eb = null, pb = null;
       try { eb = this.ebEstimate(t.id); pb = this.pbEstimate(t.id); } catch (e) {} finally { this._ebTripOverride = prev; }
       const ttl = String(t.name || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
-      const yr = (() => { const y = +String(t.start || '').slice(0, 4); return y ? y + 543 : ''; })();
+      const yr = (() => { const y = +String(t.start || '').slice(0, 4); return y ? y + (this.lang === 'en' ? 0 : 543) : ''; })();
       const sub = [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · ');
       const when = this.fmtRange(t.start, t.end) || '';
       const author = this.profile.name || 'นักเดินทาง';
@@ -11067,9 +11180,9 @@ class Component extends DCLogic {
         return {
           planName: plan === 'year' ? 'รายปี' : 'Trip Pass',
           planUntil: !until ? 'ใช้ได้ต่อเนื่อง'
-            : plan === 'year' ? ('ต่ออายุอัตโนมัติ ' + new Date(until).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }))
+            : plan === 'year' ? ('ต่ออายุอัตโนมัติ ' + new Date(until).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }))
             : days <= 0 ? 'หมดอายุแล้ว'
-            : ('เหลืออีก ' + days + ' วัน · ถึง ' + new Date(until).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })),
+            : ('เหลืออีก ' + days + ' วัน · ถึง ' + new Date(until).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' })),
           planActionLabel: plan === 'year' ? 'จัดการ' : 'ต่ออายุ',
         };
       })(),
@@ -11080,7 +11193,9 @@ class Component extends DCLogic {
           hasLegacyImgs: (n > 0 || tn > 0) && !!(window.WTNBackend && window.WTNBackend._uid) && this.isAdmin,   // เครื่องมือดูแลข้อมูล — โชว์แค่แอดมิน ผู้ใช้ทั่วไปไม่ต้องเห็น
           legacyImgNote: n > 0
             ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
-            : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก'),
+            : (this.lang === 'en'
+                ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter')
+                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก')),
           rehostLabel: this.state.rehostBusy
             ? ('กำลังทำ… ' + (this.state.rehostPct || 0) + '%')
             : (n > 0 ? 'ย้ายรูปขึ้นคลาวด์ใหม่' : 'สร้างรูปย่อ'),
@@ -11207,18 +11322,32 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.29a',
+      appVersion: '2026.08.29i',
+      langIsEn: this.lang === 'en',
+      langIsTh: this.lang !== 'en',
+      setLangTh: () => this.setLang('th'),
+      setLangEn: () => this.setLang('en'),
+      langThStyle: 'min-height:38px;padding:0 15px;border:none;border-radius:9px;cursor:pointer;font:600 14px \'Anuphan\';background:' +
+        (this.lang !== 'en' ? '#fffaf0' : 'transparent') + ';color:' + (this.lang !== 'en' ? '#c05f39' : '#8a7d6f') +
+        ';box-shadow:' + (this.lang !== 'en' ? '0 1px 4px rgba(43,36,32,.12)' : 'none'),
+      langEnStyle: 'min-height:38px;padding:0 15px;border:none;border-radius:9px;cursor:pointer;font:600 14px \'Anuphan\';background:' +
+        (this.lang === 'en' ? '#fffaf0' : 'transparent') + ';color:' + (this.lang === 'en' ? '#c05f39' : '#8a7d6f') +
+        ';box-shadow:' + (this.lang === 'en' ? '0 1px 4px rgba(43,36,32,.12)' : 'none'),
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
-        const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';
-        if (this.state.cloud === 'error') return 'ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · สำเร็จล่าสุด ' + t;
-        return 'ซิงก์กับคลาวด์สำเร็จล่าสุด ' + t;
+        const EN = this.lang === 'en';
+        const t = at ? new Date(at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + (EN ? '' : ' น.') : (EN ? 'never' : 'ยังไม่เคย');
+        if (this.state.cloud === 'error') return (EN ? 'Sync failed (' : 'ซิงก์ไม่สำเร็จ (') + (this.state.cloudErr || '?') + (EN ? ') · last success ' : ') · สำเร็จล่าสุด ') + t;
+        return (EN ? 'Last successful cloud sync ' : 'ซิงก์กับคลาวด์สำเร็จล่าสุด ') + t;
       })(),
       syncLineColor: this.state.cloud === 'error' ? '#b3563a' : '#8a9b7d',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
-        return 'ข้อมูลคลาวด์ · วันนี้ ' + mb(o.bytes || 0) + ' (' + ((o.pulls || 0) + (o.pushes || 0)) + ' ครั้ง) · เดือนนี้ ' + mb(o.mBytes || 0);
+        const c = (o.pulls || 0) + (o.pushes || 0);
+        return this.lang === 'en'
+          ? ('Cloud data · today ' + mb(o.bytes || 0) + ' (' + c + ' calls) · this month ' + mb(o.mBytes || 0))
+          : ('ข้อมูลคลาวด์ · วันนี้ ' + mb(o.bytes || 0) + ' (' + c + ' ครั้ง) · เดือนนี้ ' + mb(o.mBytes || 0));
       })(),
       ...(() => {
         this._appVer = '2026.08.16j';
@@ -11232,7 +11361,7 @@ class Component extends DCLogic {
           kindLabel: kName(t.kind || 'other'),
           badgeStyle: 'font:600 12px \'Anuphan\';padding:4px 10px;border-radius:12px;background:' +
             (t.status === 'done' ? '#e6e2d8;color:#8a7d6f' : 'rgba(192,95,57,.12);color:#c05f39'),
-          when: (() => { try { return new Date(t.created_at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } })(),
+          when: (() => { try { return new Date(t.created_at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } })(),
           who: [t.name, t.email].filter(Boolean).join(' · ') || 'ไม่ระบุผู้ส่ง',
           hasDiag: !!t.diag, diagText: t.diag ? JSON.stringify(t.diag) : '',
           mailto: 'mailto:' + (t.email || '') + '?subject=' + encodeURIComponent('Re: [Vela] ' + kName(t.kind || 'other')),
@@ -11807,7 +11936,7 @@ class Component extends DCLogic {
         const sel = this.state.wpSel || {}, list = this.state.wpList || [];
         const n = list.filter(p => sel[p.id]).length;
         const imp = !!this.state.wpImporting;
-        const fmt = d => { const x = new Date(d); return isNaN(x) ? '' : x.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }); };
+        const fmt = d => { const x = new Date(d); return isNaN(x) ? '' : x.toLocaleDateString(this.LC, { day: 'numeric', month: 'short', year: 'numeric' }); };
         return {
           goWpImport: () => this.go('wpImport'),
           wpSite: this.state.wpSite == null ? 'lunarroom.wordpress.com' : this.state.wpSite,
@@ -11898,7 +12027,7 @@ class Component extends DCLogic {
         };
       })(),
       versionsBusy: !!this.state.versionsBusy, noVersions: !this.state.versionsBusy && (this.state.versionsList || []).length === 0,
-      versionsList: (this.state.versionsList || []).map(v => ({ id: v.id, when: new Date(v.at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), summary: (v.trips || 0) + ' ทริป · ' + (v.moments || 0) + ' โมเมนต์', restore: () => this.restoreVersion(v.id) })),
+      versionsList: (this.state.versionsList || []).map(v => ({ id: v.id, when: new Date(v.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }), summary: (v.trips || 0) + ' ทริป · ' + (v.moments || 0) + ' โมเมนต์', restore: () => this.restoreVersion(v.id) })),
       doRestore: e => this.importBackup(e),
       goCreate: () => this.openCreate(null),
       goCompose: () => this.openStoryEdit(null),
@@ -12142,12 +12271,12 @@ class Component extends DCLogic {
       ...(() => {
         const off = this.state.tdOffset || 0;
         const d0 = this.tdDate(), [rs, re] = this.tdRange();
-        const fmt = ts => new Date(ts).toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-        const heading = off === 0 ? 'Today' : (off === 1 ? 'เมื่อวาน' : new Date(rs).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }));
+        const fmt = ts => new Date(ts).toLocaleDateString(this.LC, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        const heading = off === 0 ? 'Today' : (off === 1 ? 'เมื่อวาน' : new Date(rs).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }));
         const ms = this.moments.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
         const cats = this.mcats;
         const catName = i => cats[i] || cats[0] || '';
-        const tHour = ts => new Date(ts).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        const tHour = ts => new Date(ts).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
         const mkRow = m => ({ title: (m.text || '').trim().slice(0, 70) || (m.place || 'โมเมนต์'),
           meta: [tHour(m.at || 0), m.place || '', catName(m.cat || 0)].filter(Boolean).join(' · '),
           hasPhoto: !!(m.photos || []).length, photo: (m.photos || [])[0] ? this.pxT((m.photos || [])[0]) : '',
@@ -12237,6 +12366,9 @@ class Component extends DCLogic {
         const q = (this.state.beenSearch || '').trim().toLowerCase();
         const opts = W.filter(c => !q || c[0].toLowerCase().includes(q)).map(c => { const isAuto = !!auto[c[0]], checked = isOn(c); return { name: c[0], flag: c[1], checked, isAuto, autoNote: 'จากทริป', toggle: isAuto ? () => this.showToast('ปักอัตโนมัติจากทริปแล้ว') : () => this.toggleBeen(c[0]), rowStyle: 'display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;border-bottom:1px solid rgba(43,36,32,.06);' + (checked ? 'background:rgba(192,95,57,.08)' : ''), checkStyle: 'width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;' + (checked ? 'background:#c05f39;color:#fff' : 'border:1.5px solid rgba(43,36,32,.22);color:transparent') }; });
         return { beenCount: onList.length, beenEmpty: onList.length === 0, beenPins: pins,
+          beenCountLine: this.lang === 'en'
+            ? (onList.length === 1 ? '1 country visited' : onList.length + ' countries visited')
+            : ('เคยไป ' + onList.length + ' ประเทศ'),
           beenShapes, beenLoading: !this._geo,
           beenPickerOpen: !!this.state.beenPickerOpen, beenPickerLabel: this.state.beenPickerOpen ? 'เสร็จแล้ว' : '＋ เพิ่มประเทศที่เคยไป',
           toggleBeenPicker: () => this.setState(s => ({ beenPickerOpen: !s.beenPickerOpen })),
@@ -12343,8 +12475,8 @@ class Component extends DCLogic {
           const av = m.authorAvatar || '';
           const ci = Math.max(0, Math.min(cats.length - 1, m.cat || 0));
           const _dt = new Date(m.at || Date.now());
-          const dateStr = isNaN(_dt) ? '' : _dt.toLocaleDateString('th-TH', { weekday: 'short', day: 'numeric', month: 'short' });
-          const timeStr = isNaN(_dt) ? '' : _dt.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = isNaN(_dt) ? '' : _dt.toLocaleDateString(this.LC, { weekday: 'short', day: 'numeric', month: 'short' });
+          const timeStr = isNaN(_dt) ? '' : _dt.toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
           const _pos = m.pos && typeof m.pos.lat === 'number' ? m.pos : null;
           const _clip = this.clipOf(m.text);
           const _body = this.clipBody(m.text, _clip);
@@ -12408,10 +12540,10 @@ class Component extends DCLogic {
             dot: 'position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:' + (sel ? '#fff' : '#c05f39'),
             on: () => this.setState(s => ({ calDay: s.calDay === k ? null : k })), style: st });
         }
-        const calDow = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'].map(n => ({ n }));
-        const calLabel = new Date(cy, cmo - 1, 1).toLocaleDateString('th-TH', { month: 'long', year: 'numeric' });
+        const calDow = (this.lang === 'en' ? ['S', 'M', 'T', 'W', 'T', 'F', 'S'] : ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส']).map(n => ({ n }));
+        const calLabel = new Date(cy, cmo - 1, 1).toLocaleDateString(this.lang === 'en' ? 'en-US' : 'th-TH', { month: 'long', year: 'numeric' });
         const shiftMonth = delta => { const d = new Date(cy, cmo - 1 + delta, 1); this.setState({ calMonth: d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') }); };
-        const calDayLabel = calDay ? (() => { const p = calDay.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }); })() : '';
+        const calDayLabel = calDay ? (() => { const p = calDay.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }); })() : '';
         // ---- categories ----
         const chipBase = 'display:inline-flex;align-items:center;gap:6px;font:600 14px \'Anuphan\';padding:6px 12px;border-radius:20px;border:1px solid;cursor:pointer';
         const catChips = cats.map((c, i) => ({ name: c, on: () => this.setState({ mpCat: i }),
@@ -12973,7 +13105,9 @@ class Component extends DCLogic {
               + (i === hi ? '#c05f39' : 'rgba(43,36,32,.2)') + ';transition:width .25s'
           })),
           heroPickMode: pickMode, heroPickOff: !pickMode,
-          heroPickLabel: pickMode ? 'เสร็จ' : (chosen.length ? 'เปลี่ยนรูปเด่น (' + chosen.length + ')' : 'เลือกรูปเด่นเอง'),
+          heroPickLabel: this.lang === 'en'
+            ? (pickMode ? 'Done' : (chosen.length ? 'Featured stories (' + chosen.length + ')' : 'Pick featured stories'))
+            : (pickMode ? 'เสร็จ' : (chosen.length ? 'เรื่องเด่น (' + chosen.length + ')' : 'เลือกรูปเด่นเอง')),
           toggleHeroPickMode: () => this.setState(s => ({ heroPickMode: !s.heroPickMode })),
           heroPickHint: 'แตะปกที่อยากให้ขึ้นเป็นรูปเด่น ได้ถึง 3 เรื่อง' + (chosen.length ? ' · เลือกแล้ว ' + chosen.length : ' · ตอนนี้สุ่มให้เอง'),
           arcSecs: secs, hasArcSecs: secs.length > 0
@@ -12988,7 +13122,7 @@ class Component extends DCLogic {
       goCompose: () => this.openStoryEdit(null),
       goDayNote: () => this.openDayChapter(),
       ...(() => {
-        const fmtD = t => { try { return new Date(t).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }); } catch (e) { return ''; } };
+        const fmtD = t => { try { return new Date(t).toLocaleDateString(this.LC, { day: 'numeric', month: 'short', year: '2-digit' }); } catch (e) { return ''; } };
         const bk = this.tripStoryExisting;
         if (!bk) return { bookExists: false, bookNo: true, bookChapters: [], startBook: () => this.openStoryEdit(null) };
         const chs = bk.chapters || [];
@@ -13009,8 +13143,8 @@ class Component extends DCLogic {
         };
       })(),
       ...(() => {
-        const fmtDT = t => { try { return new Date(t).toLocaleString('th-TH', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + ' น.'; } catch (e) { return ''; } };
-        const fmtD = t => { try { return new Date(t).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; } };
+        const fmtDT = t => { try { return new Date(t).toLocaleString(this.LC, { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) + (this.lang === 'en' ? '' : ' น.'); } catch (e) { return ''; } };
+        const fmtD = t => { try { return new Date(t).toLocaleDateString(this.LC, { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; } };
         const os = this.openStory, oc = this.openChapter;
         if (!os) return { hasStory: false, hasOpenStory: false, notOpenStory: true, seChapters: [], oChapters: [], seTags: [] };
         const chs = os.chapters || [];
