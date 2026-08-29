@@ -195,19 +195,42 @@ async function boot() {
     },
 
     // ---------- STORAGE (รูป/ไฟล์) ----------
+    // ที่เก็บหลัก = Cloudflare R2 (อ่านฟรี) ผ่าน Worker vela-media
+    // ถ้า R2 ล่ม/ยังไม่ได้ตั้งค่า → ตกกลับไปใช้ Supabase Storage เหมือนเดิม
+    async _r2Put(path, body) {
+      const base = (window.WTN_SUPABASE && window.WTN_SUPABASE.mediaBase) || "";
+      if (!base) return null;
+      try {
+        const { data } = await SB.auth.getSession();
+        const tok = data && data.session && data.session.access_token;
+        if (!tok) return null;
+        const r = await fetch(base + "/u?k=" + encodeURIComponent(path), {
+          method: "POST",
+          headers: { authorization: "Bearer " + tok, "content-type": body.type || "image/jpeg" },
+          body
+        });
+        if (!r.ok) return null;
+        const j = await r.json();
+        return (j && j.url) || null;
+      } catch (e) { return null; }
+    },
     async uploadImage(blobOrDataUrl, name) {
       if (!this._uid) throw new Error("ต้องล็อกอินก่อน");
       const path = `users/${this._uid}/img/${Date.now()}_${(name || "f").replace(/[^\w.\-]/g, "_")}`;
       const body = typeof blobOrDataUrl === "string" ? await dataUrlToBlob(blobOrDataUrl) : blobOrDataUrl;
+      const r2 = await this._r2Put(path, body);
+      if (r2) return r2;
       ok(await SB.storage.from("media").upload(path, body, { contentType: body.type || "image/jpeg", upsert: true }));
       return SB.storage.from("media").getPublicUrl(path).data.publicUrl;
     },
     // อัปโหลดรูปย่อไปไว้คู่กับตัวเต็ม — ชื่อไฟล์เดียวกันแค่เติม _t ก่อนนามสกุล (แอปเดาลิงก์เองได้)
     async uploadThumbFor(fullUrl, blob) {
       if (!this._uid || !fullUrl) return null;
-      const m = /\/media\/(users\/[^?]+)$/.exec(fullUrl);
+      const m = /\/(?:media|i)\/(users\/[^?]+)$/.exec(fullUrl);
       if (!m) return null;
       const path = m[1].replace(/(\.[a-z0-9]+)$/i, "_t$1");
+      const r2 = await this._r2Put(path, blob);
+      if (r2) return r2;
       try {
         ok(await SB.storage.from("media").upload(path, blob, { contentType: "image/jpeg", upsert: true }));
         return SB.storage.from("media").getPublicUrl(path).data.publicUrl;
