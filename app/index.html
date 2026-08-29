@@ -3235,8 +3235,17 @@ class Component extends DCLogic {
     return ref;
   }
   // คืน src ที่ใช้กับ <img> จากค่าที่เก็บไว้ (data url / ลิงก์คลาวด์ / ref ของ IDB)
+  // รูปคลาวด์เสิร์ฟผ่าน Cloudflare R2 (onevela.net/i/...) แทน Supabase Storage
+  // ลิงก์เก่าที่เก็บไว้ในข้อมูลไม่ต้องแก้ — แปลงตอนแสดงผล แล้ว Worker ย้ายรูปให้เอง
+  cdn(s) {
+    if (typeof s !== 'string') return s || '';
+    const base = (window.WTN_SUPABASE && window.WTN_SUPABASE.mediaBase) || '';
+    if (!base) return s;
+    const i = s.indexOf('/storage/v1/object/public/media/');
+    return i === -1 ? s : base + '/' + s.slice(i + 32);
+  }
   px(p) {
-    if (typeof p !== 'string' || p.indexOf('idb:') !== 0) return p || '';
+    if (typeof p !== 'string' || p.indexOf('idb:') !== 0) return this.cdn(p || '');
     const c = this._idbCache || (this._idbCache = {});
     if (c[p]) return c[p];
     if (c[p] === undefined) {
@@ -3253,7 +3262,7 @@ class Component extends DCLogic {
     // รูปที่นำเข้าจาก WordPress เก็บลิงก์ไว้ที่ w=1200 (ขนาดสำหรับอ่านเต็มจอ)
     // แต่ฟีด/ชั้นวางแสดงแค่ ~180px — ขอ 640 พอ ลดข้อมูลที่ต้องโหลดลงหลายเท่า
     if (/(^|\.)files\.wordpress\.com\//.test(s)) return s.replace(/([?&])w=\d+/i, '$1w=640');
-    if (s.indexOf('/storage/v1/object/public/media/') === -1) return s;
+    if (s.indexOf('/storage/v1/object/public/media/') === -1 && s.indexOf('/i/users/') === -1) return s;
     return s.replace(/(\.[a-z0-9]+)(\?|$)/i, '_t$1$2');
   }
   // ทำรูปย่อ JPEG จาก data url / Image — ด้านยาวสุด 640px
@@ -7836,7 +7845,7 @@ class Component extends DCLogic {
       const im = e.target;
       if (!im || im.tagName !== 'IMG' || im.dataset.tFallback) return;
       const s = im.currentSrc || im.src || '';
-      if (s.indexOf('/storage/v1/object/public/media/') !== -1 && /_t\.[a-z0-9]+(\?|$)/i.test(s)) {
+      if ((s.indexOf('/storage/v1/object/public/media/') !== -1 || s.indexOf('/i/users/') !== -1) && /_t\.[a-z0-9]+(\?|$)/i.test(s)) {
         im.dataset.tFallback = '1';
         im.src = s.replace(/_t(\.[a-z0-9]+)(\?|$)/i, '$1$2');
         return;
@@ -11198,7 +11207,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.28e',
+      appVersion: '2026.08.29a',
       syncLine: (() => {
         const at = Number(localStorage.getItem('wtn-cloud-at') || 0);
         const t = at ? new Date(at).toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' น.' : 'ยังไม่เคย';

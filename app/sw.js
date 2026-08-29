@@ -1,6 +1,6 @@
 // where to next? — service worker
 // เป้าหมาย: ใช้งานได้เต็มรูปแบบตอนไม่มีเน็ต + ไม่ค้างตอนสัญญาณอ่อน (มีเน็ตแต่ช้ามาก)
-const CACHE = 'wtn-2026.08.28e';
+const CACHE = 'wtn-2026.08.29a';
 const MEDIA = 'wtn-media-v1'; // รูปจากคลาวด์ — เก็บถาวร ไม่ล้างตอนอัปเวอร์ชัน
 const NET_TIMEOUT = 2500; // สัญญาณอ่อน: รอเน็ตเท่านี้ ไม่มาก็ใช้ของในแคชทันที
 
@@ -58,9 +58,9 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   let url;
   try { url = new URL(req.url); } catch (err) { return; }
-  // รูปในคลาวด์ (Supabase Storage): ชื่อไฟล์ไม่ซ้ำ = ไม่เปลี่ยน → โหลดครั้งเดียวพอ
-  // ครั้งต่อไปตอบจากเครื่องทันที ไม่กินเน็ตซ้ำ (สัญญาณอ่อน/ออฟไลน์ก็เห็นรูป)
-  if (url.pathname.indexOf('/storage/v1/object/public/') !== -1 || /(^|\.)files\.wordpress\.com$/.test(url.hostname)) {
+  // รูปในคลาวด์ (Cloudflare R2 /i/... หรือ Supabase Storage): ชื่อไฟล์ไม่ซ้ำ = ไม่เปลี่ยน
+  // → โหลดครั้งเดียวพอ ครั้งต่อไปตอบจากเครื่องทันที (สัญญาณอ่อน/ออฟไลน์ก็เห็นรูป)
+  if (url.pathname.indexOf('/i/users/') === 0 || url.pathname.indexOf('/storage/v1/object/public/') !== -1 || /(^|\.)files\.wordpress\.com$/.test(url.hostname)) {
     e.respondWith(
       caches.open(MEDIA).then((c) => c.match(req).then((hit) => {
         if (hit) return hit;
