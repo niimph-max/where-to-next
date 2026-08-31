@@ -11125,7 +11125,7 @@ class Component extends DCLogic {
     const baseDay = this.days[active] || this.days[0];
     const curMerged = { ...baseDay, stops: [...baseDay.stops, ...curExtra] };
     const seSel = this.state.stopEdit || null;
-    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, t: this.stopTLabel(s), _rank: this.stopRank(s), hasNote: !!(s.note || '').trim(), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.delStop(origin, si) }; };
+    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, t: this.stopTLabel(s), _rank: this.stopRank(s), hasNote: !!(s.note || '').trim(), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.askConfirm('ลบ “' + ((s.name || '').trim() || 'รายการนี้') + '” ออกจากแผนวันนี้?', () => this.delStop(origin, si)) }; };
     const stopItems = (baseDay.stops || []).map((s, si) => mkStop(s, 'base', si)).concat((curExtra || []).map((s, si) => mkStop(s, 'added', si)));
     stopItems.sort((a, b) => a._rank - b._rank);
     const curWithStops = { ...curMerged, stops: stopItems };
@@ -11322,7 +11322,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.29k',
+      appVersion: '2026.08.31a',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
