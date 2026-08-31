@@ -2761,8 +2761,8 @@
     </sc-if>
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
     <div class="wtn-tabbar" style="flex:none;display:flex;justify-content:space-around;align-items:flex-end;padding:10px 6px 18px;background:rgba(246,239,226,.96);backdrop-filter:blur(10px);border-top:1px solid rgba(43,36,32,.08);position:relative;z-index:6">
-      <button onClick="{{ tabTodayFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cToday }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>Today</button>
-      <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Feed</button>
+      <button onClick="{{ tabTodayFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cToday }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>วันนี้</button>
+      <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ฟีด</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
       <button onClick="{{ tabMeFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
     </div>
@@ -7872,7 +7872,7 @@ class Component extends DCLogic {
     sarabun: { name: 'Sarabun', note: 'ทางการ อ่านง่าย', css: "'Sarabun',sans-serif" }
   };
   TYPO_SIZES = { s: { name: 'เล็ก', z: 0.94 }, m: { name: 'มาตรฐาน', z: 1 }, l: { name: 'ใหญ่', z: 1.1 }, xl: { name: 'ใหญ่มาก', z: 1.22 } };
-  HOME_TABS = { plan: 'แผนของฉัน', today: 'Today', stories: 'Feed', me: 'ฉัน' };
+  HOME_TABS = { plan: 'แผนของฉัน', today: 'วันนี้', stories: 'ฟีด', me: 'ฉัน' };
   get homeTab() { try { const t = localStorage.getItem('wtn-home-tab'); return this.HOME_TABS[t] ? t : 'plan'; } catch (e) { return 'plan'; } }
   setHomeTab(t) { try { localStorage.setItem('wtn-home-tab', t); } catch (e) {} this.showToast(this.lang === 'en' ? ('✓ Next launch opens on "' + this.T(this.HOME_TABS[t] || '') + '"') : ('✓ เปิดแอปครั้งหน้าจะเริ่มที่ "' + this.HOME_TABS[t] + '"')); this.forceUpdate(); }
   get typoFont() { try { return this.TYPO_FONTS[localStorage.getItem('wtn-font')] ? localStorage.getItem('wtn-font') : 'plex'; } catch (e) { return 'plex'; } }
@@ -11322,7 +11322,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.29i',
+      appVersion: '2026.08.29k',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
@@ -12272,7 +12272,7 @@ class Component extends DCLogic {
         const off = this.state.tdOffset || 0;
         const d0 = this.tdDate(), [rs, re] = this.tdRange();
         const fmt = ts => new Date(ts).toLocaleDateString(this.LC, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-        const heading = off === 0 ? 'Today' : (off === 1 ? 'เมื่อวาน' : new Date(rs).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }));
+        const heading = off === 0 ? 'วันนี้' : (off === 1 ? 'เมื่อวาน' : new Date(rs).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }));
         const ms = this.moments.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
         const cats = this.mcats;
         const catName = i => cats[i] || cats[0] || '';
@@ -12742,14 +12742,19 @@ class Component extends DCLogic {
           : 'background:#efe4d3;color:#5c5347;font:600 14px Anuphan;padding:8px 13px;border-radius:18px;border:none;cursor:pointer';
         return {
           budPlanTotal: this.fmtB(totP), budActualTotal: this.fmtB(totA),
-          budDiffText: totA === 0 ? 'ยังไม่มีรายจ่าย — กด "+ จดรายจ่าย" ได้เลย'
-            : (over ? 'เกินแผน ' + this.fmtB(-diff) : 'ยังเหลือจากแผน ' + this.fmtB(diff)),
+          budDiffText: this.lang === 'en'
+            ? (totA === 0 ? 'No spending yet — tap "+ Log spending"'
+              : (over ? 'Over plan by ' + this.fmtB(-diff) : this.fmtB(diff) + ' left from plan'))
+            : (totA === 0 ? 'ยังไม่มีรายจ่าย — กด "+ จดรายจ่าย" ได้เลย'
+              : (over ? 'เกินแผน ' + this.fmtB(-diff) : 'ยังเหลือจากแผน ' + this.fmtB(diff))),
           budDiffColor: totA === 0 ? '#c9b79b' : (over ? '#f0a08a' : '#8fce9b'),
           budDiffBg: over ? 'rgba(192,86,58,.22)' : 'rgba(143,206,155,.15)',
           exFormOpen: !!this.state.exFormOpen, exFormClosed: !this.state.exFormOpen,
           fxHasRate,
-          fxBarText: fxHasRate ? ('1 บาท = ' + this.fmtNum(fx.rate) + ' ' + fx.cur) : 'ยังไม่ได้ตั้งอัตราแลกเปลี่ยน',
-          fxEditLabel: fxHasRate ? 'แก้' : 'ตั้งค่า',
+          fxBarText: fxHasRate
+            ? ((this.lang === 'en' ? '1 THB = ' : '1 บาท = ') + this.fmtNum(fx.rate) + ' ' + fx.cur)
+            : (this.lang === 'en' ? 'No exchange rate set yet' : 'ยังไม่ได้ตั้งอัตราแลกเปลี่ยน'),
+          fxEditLabel: this.lang === 'en' ? (fxHasRate ? 'Edit' : 'Set') : (fxHasRate ? 'แก้' : 'ตั้งค่า'),
           fxEditOpen: !!this.state.fxEditOpen,
           toggleFxEdit: () => this.setState(s => ({ fxEditOpen: !s.fxEditOpen,
             fxCurDraft: fx.cur || '', fxRateDraft: fx.rate ? String(fx.rate) : '',
