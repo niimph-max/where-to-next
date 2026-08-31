@@ -336,7 +336,7 @@ if ('serviceWorker' in navigator) {
           <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">ในแอปไปที่แท็บ “ฉัน” → ช่วยเหลือ &amp; ติดต่อเรา เขียนมาได้เลย หรือส่งอีเมลมาที่ admin@onevela.net — เราตอบกลับทางอีเมลภายใน 1–2 วัน</p>
         </details>
       </div>
-      <div style="margin-top:22px;text-align:center;font-size:15px;line-height:1.8;color:#6c5f4f">ดูคำถามทั้งหมดและคู่มือใช้งานได้ที่ <a href="help.html" style="color:#c05f39;font-weight:600">ศูนย์ช่วยเหลือ</a> · หรือส่งมาที่ <a href="mailto:admin@onevela.net" style="color:#c05f39;font-weight:600">admin@onevela.net</a></div>
+      <div style="margin-top:22px;text-align:center;font-size:15px;line-height:1.8;color:#6c5f4f">ดูคำถามทั้งหมดและคู่มือใช้งานได้ที่ <a href="help.html" style="color:#c05f39;font-weight:600">ศูนย์ช่วยเหลือ</a> · หรือส่งมาที่ <a href="#" data-vela-mail="text" style="color:#c05f39;font-weight:600">ส่งอีเมลถึงเรา</a></div>
     </div>
   </section>
 
@@ -372,17 +372,27 @@ if ('serviceWorker' in navigator) {
         <a href="#faq" style="color:inherit">คำถาม</a>
         <a href="help.html" style="color:inherit">ช่วยเหลือ</a>
         <a href="privacy.html" style="color:inherit">ความเป็นส่วนตัว</a>
-        <a href="mailto:admin@onevela.net" style="color:inherit">ติดต่อ</a>
+        <a href="#" data-vela-mail="1" style="color:inherit">ติดต่อ</a>
         <a href="https://www.facebook.com/ourvela" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;color:inherit"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.19 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.75 8.44-4.92 8.44-9.94z"></path></svg>เพจ Facebook</a>
         <a href="app/" style="color:inherit">เปิดแอป</a>
       </div>
-      <div style="flex-basis:100%;font-size:13px;color:#a1927c">© 2026 Vela · onevela.net · admin@onevela.net</div>
+      <div style="flex-basis:100%;font-size:13px;color:#a1927c">© 2026 Vela · onevela.net · <span data-vela-mail="text"></span></div>
     </div>
   </footer>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
-class Component extends DCLogic {}
+class Component extends DCLogic {
+  componentDidMount() {
+    // Cloudflare Email Obfuscation แทนอีเมลใน HTML ด้วย [email protected]
+    // เลยประกอบที่อยู่ตอนรันไทม์ Cloudflare จึงมองไม่เห็น
+    const addr = ['admin', 'onevela.net'].join('@');
+    document.querySelectorAll('[data-vela-mail]').forEach(el => {
+      el.setAttribute('href', 'mail' + 'to:' + addr);
+      if (el.getAttribute('data-vela-mail') === 'text') el.textContent = addr;
+    });
+  }
+}
 </script>
 </body>
 </html>
