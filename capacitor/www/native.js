@@ -25,6 +25,28 @@
   }, 120);
   setTimeout(function () { clearInterval(t); hideSplash(); }, 6000);
 
+  // ตำแหน่ง: ถ้ามีปลั๊กอิน Geolocation ให้ถามผ่าน native (ขึ้นชื่อ "Vela" + เหตุผล)
+  // ไม่ใช้ navigator.geolocation ตรง ๆ เพราะ WebView จะขึ้นกล่อง "localhost" would like to use your location
+  try {
+    if (P.Geolocation && navigator.geolocation) {
+      var G = P.Geolocation;
+      navigator.geolocation.getCurrentPosition = function (okCb, errCb, opts) {
+        opts = opts || {};
+        G.checkPermissions()
+          .then(function (s) { return (s && s.location === 'granted') ? s : G.requestPermissions(); })
+          .then(function (s) {
+            if (s && s.location === 'denied') throw { code: 1, message: 'denied' };
+            return G.getCurrentPosition({
+              enableHighAccuracy: opts.enableHighAccuracy !== false,
+              timeout: opts.timeout || 10000
+            });
+          })
+          .then(function (p) { okCb && okCb({ coords: p.coords, timestamp: p.timestamp }); })
+          .catch(function (e) { errCb && errCb({ code: (e && e.code) || 2, message: (e && e.message) || 'position unavailable' }); });
+      };
+    }
+  } catch (e) {}
+
   // ปุ่มย้อนกลับของ Android → ถอยหน้าในแอป, อยู่หน้าแรกแล้วค่อยย่อแอป (ไม่ปิดทิ้ง)
   try {
     P.App && P.App.addListener('backButton', function () {
