@@ -2986,7 +2986,8 @@
 class Component extends DCLogic {
   state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authMsg: '',
     // มาจากลิงก์ "ตั้งรหัสผ่านใหม่" ในอีเมล → เปิดหน้าตั้งรหัสใหม่ทับทุกอย่าง
-    pwReset: (() => { try { return /type=recovery/.test((location.hash || '') + (location.search || '')); } catch (e) { return false; } })(),
+    // pkce: ลิงก์กลับมาเป็น ?code=... ไม่มี type=recovery → เช็คธงที่ปักไว้ตอนกด "ลืมรหัสผ่าน"
+    pwReset: (() => { try { const s = (location.hash || '') + (location.search || ''); if (/type=recovery/.test(s)) return true; if (!/[?&]code=/.test(location.search || '')) return false; const t = +(localStorage.getItem('wtn-pwreset') || 0); return t > 0 && Date.now() - t < 3600000; } catch (e) { return false; } })(),
     pwNew: '', pwNew2: '', pwErr: '',
     screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
@@ -3027,7 +3028,10 @@ class Component extends DCLogic {
     if (!be || !be.updatePassword) return this.setState({ pwErr: 'ยังเชื่อมต่อระบบไม่ได้ ลองใหม่อีกครั้ง' });
     this.setState({ pwBusy: true, pwErr: '' });
     try {
+      // ลิงก์แบบ token_hash/?code= ที่ยังไม่ถูกแลกเป็น session → แลกก่อนค่อยตั้งรหัสใหม่
+      try { if (be.consumeRecovery) { const { data } = await be._sb.auth.getSession(); if (!data || !data.session) await be.consumeRecovery(); } } catch (e) {}
       await be.updatePassword(a);
+      try { localStorage.removeItem('wtn-pwreset'); } catch (e) {}
       try { history.replaceState(null, '', location.pathname); } catch (e) {}
       this.setState({ pwBusy: false, pwReset: false, pwNew: '', pwNew2: '' });
       this.setTab('plan');
@@ -11322,7 +11326,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.08.31c',
+      appVersion: '2026.09.01a',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
@@ -11886,7 +11890,8 @@ class Component extends DCLogic {
       socialAuth: false,
       authFb: () => this.oauth('facebook'),
       authBusy: !!this.state.authBusy,
-      cloudShow: this.state.cloud === 'error', // ซิงก์ปกติทำเงียบๆ เบื้องหลัง — โชว์เฉพาะตอนมีปัญหาจริง
+      // อย่าเด้งทับหน้าเข้าสู่ระบบ — ป้ายลอยล่างจอบัง "ลืมรหัสผ่าน?"
+      cloudShow: this.state.cloud === 'error' && this.state.screen !== 'onboard' && !this.state.pwReset, // ซิงก์ปกติทำเงียบๆ เบื้องหลัง — โชว์เฉพาะตอนมีปัญหาจริง
       cloudText: this.state.cloud === 'error' ? ('ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ') · จะลองใหม่ให้') : 'กำลังซิงก์ขึ้นคลาวด์…',
       logout: () => { const be = window.WTNBackend; if (be) be.logout().catch(() => {}); this.clearLocalAppData(); try { localStorage.removeItem('wtn-auth'); localStorage.removeItem('wtn-cloud-uid'); } catch (e) {} this.setState({ screen: 'onboard', history: [], auth: 'choice' }); this.forceUpdate(); },
       doBackup: () => { this.countBackupPhotos(); this.setState({ bkOpen: true }); },
