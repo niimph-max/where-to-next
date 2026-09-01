@@ -1,0 +1,21 @@
+// where to next? — ตั้งค่า Supabase
+// เอาค่าจาก Supabase Dashboard → Project Settings → API
+// (anon key เปิดเผยได้ ปลอดภัยเพราะมี RLS คุมอยู่)
+window.WTN_SUPABASE = {
+  url: "https://glnpyzlbalxnqrqxdsuo.supabase.co",          // เช่น https://abcdefgh.supabase.co
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbnB5emxiYWx4bnFycXhkc3VvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMzYxMzAsImV4cCI6MjEwMTkxMjEzMH0.HjWl1LIm8KHWzC-srFe1RNzNeDvktLf4klAt09XCuOE",
+  // ลิงก์แชร์สวย ๆ ผ่าน Cloudflare Worker (ดู cloudflare/vela-share-worker.js)
+  // ค่าว่าง = ใช้ลิงก์ supabase ตรง ๆ (การ์ดถูกอยู่แล้ว แค่ลิงก์ยาว)
+  // ใส่ "https://onevela.net/s" เมื่อทำ Worker + route เสร็จแล้วเท่านั้น
+  // (ใส่ก่อน = ลิงก์แชร์ 404 เพราะ GitHub Pages ไม่มี path นี้)
+  shareBase: "https://onevela.net/s",
+  // รูปทั้งหมดวิ่งผ่าน Cloudflare R2 (ดู cloudflare/vela-media-worker.js)
+  // ค่าว่าง = ใช้ Supabase Storage ตรง ๆ เหมือนเดิม
+  mediaBase: "https://onevela.net/i",
+  // ปลายทางของลิงก์ในอีเมล (ตั้งรหัสผ่านใหม่ ฯลฯ)
+  // ในแอป iOS/Android origin คือ capacitor://localhost ซึ่ง Supabase ไม่ยอมรับ → ไม่ส่งอีเมลเลย
+  // จึงบังคับใช้ URL เว็บจริงแทน (ต้องอยู่ใน Auth → URL Configuration → Redirect URLs)
+  webBase: "https://onevela.net/app/"
+};
+// true = ใช้คลาวด์, false = โหมด local อย่างเดียว
+window.WTN_BACKEND_ENABLED = true;
