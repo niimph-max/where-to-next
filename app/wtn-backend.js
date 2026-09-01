@@ -47,6 +47,18 @@ async function boot() {
   };
   const ok = ({ data, error }) => { if (error) throw mapErr(error); return data; };
 
+  // ปลายทางลิงก์ในอีเมล: ในแอปเนทีฟ origin เป็น capacitor://localhost / https://localhost
+  // ซึ่งไม่อยู่ใน Redirect URLs ของ Supabase → คำขอถูกปฏิเสธ อีเมลไม่ถูกส่ง
+  const webBase = () => {
+    const fallback = (cfg.webBase || "").replace(/\/?$/, "/");
+    try {
+      const p = location.protocol, h = location.hostname;
+      const isWeb = (p === "https:" || p === "http:") && h && h !== "localhost" && h !== "127.0.0.1";
+      if (isWeb) return location.origin + location.pathname;
+    } catch (e) {}
+    return fallback || "https://onevela.net/app/";
+  };
+
   // ทำให้หน้าตา user เหมือนของเดิม (แอปอ่าน uid / displayName / email / providerData)
   const shapeUser = u => u && ({
     uid: u.id, email: u.email || "",
@@ -121,18 +133,44 @@ async function boot() {
       return null;
     },
     async resetPassword(email) {
-      ok(await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname }));
+      // flowType pkce → ลิงก์กลับมาเป็น ?code=... ไม่มี type=recovery ให้ดู
+      // จึงปักธงไว้ในเครื่องที่ขอ (เครื่องเดียวกับที่มี code_verifier อยู่แล้ว)
+      try { localStorage.setItem("wtn-pwreset", String(Date.now())); } catch (e) {}
+      ok(await SB.auth.resetPasswordForEmail(email, { redirectTo: webBase() }));
       return true;
     },
     async updatePassword(pass) {
+      const { data } = await SB.auth.getSession();
+      if (!data || !data.session) {
+        const e = new Error("ลิงก์หมดอายุหรือถูกใช้ไปแล้ว — ขอลิงก์ตั้งรหัสใหม่อีกครั้ง");
+        e.code = "auth/no-recovery-session";
+        throw e;
+      }
       ok(await SB.auth.updateUser({ password: pass }));
+      try { localStorage.removeItem("wtn-pwreset"); } catch (e) {}
       return true;
     },
-    // มาจากลิงก์รีเซ็ตรหัสผ่านในอีเมลหรือเปล่า (supabase ใส่ token ไว้ใน hash)
+    // ลิงก์แบบ token_hash (เทมเพลตอีเมลที่ใช้ {{ .TokenHash }}) — แลกเป็น session เอง
+    async consumeRecovery() {
+      try {
+        const p = new URLSearchParams(location.search);
+        const h = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+        const th = p.get("token_hash") || h.get("token_hash");
+        const type = p.get("type") || h.get("type");
+        if (th && type === "recovery") { ok(await SB.auth.verifyOtp({ token_hash: th, type: "recovery" })); return true; }
+        const code = p.get("code");
+        if (code) { await SB.auth.exchangeCodeForSession(code); return true; }
+      } catch (e) { console.warn("[wtn] consumeRecovery", e && e.message); }
+      return false;
+    },
+    // มาจากลิงก์รีเซ็ตรหัสผ่านหรือเปล่า (hash แบบ implicit, token_hash, หรือ ?code= ของ pkce)
     isRecoveryLink() {
       try {
-        const h = location.hash || "", q = location.search || "";
-        return /type=recovery/.test(h) || /type=recovery/.test(q);
+        const s = (location.hash || "") + (location.search || "");
+        if (/type=recovery/.test(s)) return true;
+        if (!/[?&]code=/.test(location.search || "")) return false;
+        const t = +(localStorage.getItem("wtn-pwreset") || 0);
+        return t > 0 && Date.now() - t < 3600000;
       } catch (e) { return false; }
     },
     logout() { return SB.auth.signOut(); },

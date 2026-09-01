@@ -11,7 +11,11 @@ window.WTN_SUPABASE = {
   shareBase: "https://onevela.net/s",
   // รูปทั้งหมดวิ่งผ่าน Cloudflare R2 (ดู cloudflare/vela-media-worker.js)
   // ค่าว่าง = ใช้ Supabase Storage ตรง ๆ เหมือนเดิม
-  mediaBase: "https://onevela.net/i"
+  mediaBase: "https://onevela.net/i",
+  // ปลายทางของลิงก์ในอีเมล (ตั้งรหัสผ่านใหม่ ฯลฯ)
+  // ในแอป iOS/Android origin คือ capacitor://localhost ซึ่ง Supabase ไม่ยอมรับ → ไม่ส่งอีเมลเลย
+  // จึงบังคับใช้ URL เว็บจริงแทน (ต้องอยู่ใน Auth → URL Configuration → Redirect URLs)
+  webBase: "https://onevela.net/app/"
 };
 // true = ใช้คลาวด์, false = โหมด local อย่างเดียว
 window.WTN_BACKEND_ENABLED = true;
