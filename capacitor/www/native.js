@@ -47,6 +47,15 @@
     }
   } catch (e) {}
 
+  // แถบ ^ v ✓ เหนือคีย์บอร์ดของ iOS (input accessory bar) — ปิดทิ้ง
+  // เราไม่ได้ใช้ (ฟอร์มเป็นช่องเดี่ยว ไม่ต้องกดขึ้น/ลง) และมันกินที่พิมพ์ไปฟรี ๆ ~45 pt
+  // iOS เท่านั้น · Android ไม่มีแถบนี้
+  try {
+    if (P.Keyboard && P.Keyboard.setAccessoryBarVisible && Cap.getPlatform() === 'ios') {
+      P.Keyboard.setAccessoryBarVisible({ isVisible: false });
+    }
+  } catch (e) {}
+
   // ปุ่มย้อนกลับของ Android → ถอยหน้าในแอป, อยู่หน้าแรกแล้วค่อยย่อแอป (ไม่ปิดทิ้ง)
   try {
     P.App && P.App.addListener('backButton', function () {

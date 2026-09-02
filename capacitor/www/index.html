@@ -21,6 +21,7 @@
 <meta name="twitter:description" content="วางแผนรายวัน จดงบ เที่ยว แล้วเปลี่ยนเป็นเรื่องเล่า">
 <meta name="twitter:image" content="https://onevela.net/app/og-image.png">
 <script src="./support.js"></script>
+  <script src="native.js"></script>
 </head>
 <body>
 <x-dc>
@@ -41,7 +42,7 @@
 <meta name="color-scheme" content="light">
 <link rel="manifest" href="manifest.webmanifest">
 <script>
-  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.Capacitor) {
     window.addEventListener('load', function () {
       // แอปอยู่ที่ /app/ — ถอน service worker เก่าที่ scope กว้างกว่า (เช่น / จากโครงเดิม)
       // ไม่งั้นตัวเก่าจะดักหน้าเราแล้วเสิร์ฟบิลด์เดิมจากแคชค้างไปเรื่อยๆ
@@ -359,7 +360,7 @@
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">Subscription ใช้งานอยู่</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminSubs }}</div></div>
           </div>
           <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:18px;margin-top:12px;color:#fff"><div style="font:500 13.5px 'Anuphan';color:#f2ddcd;margin-bottom:6px">รายได้เดือนนี้</div><div style="font-family:'Chonburi',serif;font-size:34px;color:#fff">{{ adminRevenue }}</div></div>
-          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:16px">ตัวเลขเรียลไทม์จาก Firebase + Stripe · เฉพาะแอดมินเห็นหน้านี้</div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:16px">ตัวเลขเรียลไทม์จาก Supabase + Stripe · เฉพาะแอดมินเห็นหน้านี้</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">กล่องรับเรื่อง</div><button onClick="{{ loadTickets }}" style="border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:7px 14px;border-radius:18px;cursor:pointer">{{ ticketsLabel }}</button></div>
           <sc-if value="{{ noTickets }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:24px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px">{{ ticketsEmpty }}</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -2402,9 +2403,11 @@
               <div style="padding:15px;display:flex;flex-direction:column;gap:11px">
                 <div style="font:600 16px 'Anuphan';color:#b3402a">ลบบัญชีถาวร?</div>
                 <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f">ข้อมูลบัญชี ทริป และเรื่องเล่าทั้งหมดจะถูกลบ และกู้คืนไม่ได้</div>
+                <div style="font:500 14px/1.6 'Anuphan';color:#8a7d6f">พิมพ์ <b style="color:#b3402a;letter-spacing:.04em">DELETE</b> เพื่อยืนยัน</div>
+                <input value="{{ delText }}" onInput="{{ setDelText }}" placeholder="DELETE" autoCapitalize="characters" autoCorrect="off" spellCheck="{{ false }}" style="min-height:46px;border:1px solid rgba(43,36,32,.15);background:#fff;color:#2b241f;font:600 15.5px 'Anuphan';letter-spacing:.06em;border-radius:12px;padding:0 14px;outline:none;width:100%;box-sizing:border-box" />
                 <div style="display:flex;gap:8px">
                   <button onClick="{{ cancelDelete }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button>
-                  <button onClick="{{ confirmDelete }}" style="flex:1;min-height:46px;border:none;background:#b3402a;color:#fff;font:600 15.5px 'Anuphan';border-radius:12px;cursor:pointer">ยืนยันลบบัญชี</button>
+                  <button onClick="{{ confirmDelete }}" disabled="{{ delLocked }}" style="{{ delBtnStyle }}">ยืนยันลบบัญชี</button>
                 </div>
               </div>
             </sc-if>
@@ -2890,7 +2893,8 @@
       <sc-if value="{{ ebHasUrl }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ showEbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">อ่านเล่มได้ในแอปเลย · อยากได้ไฟล์ กด "บันทึก PDF" มุมขวาบน</div>
+      <button onClick="{{ runEpub }}" style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:9px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5" opacity=".5"/><path d="M9 13h6M9 16.5h4" opacity=".7"/></svg>{{ epLabel }}</button>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">อ่านเล่มได้ในแอปเลย · อยากได้ PDF กด "บันทึก PDF" ในเล่ม · EPUB คือไฟล์อีบุ๊กมาตรฐาน เปิดใน Apple Books / Play Books ได้</div>
     </div>
   </div>
 </sc-if>
@@ -3762,7 +3766,7 @@ class Component extends DCLogic {
     const base = this._getBase() || {};
     this._applyingCloud = true;
     try {
-      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 };
       const toDel = [];
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
       toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
@@ -3859,7 +3863,7 @@ class Component extends DCLogic {
       }
       this._applyingCloud = true;
       try {
-        const keep = { 'wtn-auth': 1, 'wtn-img-map': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+        const keep = { 'wtn-auth': 1, 'wtn-img-map': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 };
         const toDel = [];
         for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
         toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
@@ -3978,7 +3982,7 @@ class Component extends DCLogic {
       if (!bk || !bk.data) { alert('เปิดเวอร์ชันนี้ไม่ได้'); this.setState({ restoreBusy: false }); return; }
       this._applyingCloud = true;
       try {
-        const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+        const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 };
         const toDel = [];
         for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && !(k in bk.data)) toDel.push(k); }
         toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
@@ -7917,13 +7921,25 @@ class Component extends DCLogic {
     }
     return a;
   }
-  componentDidMount() {
-    this.i18nBoot();
-    // ซ่อนแถบ ^ v ✓ เหนือแป้นพิมพ์ (มีแต่ในแอป native — บนเบราว์เซอร์เป็นของ Safari เอง ปิดไม่ได้)
+  _hideKbBar() {
     try {
       const K = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Keyboard;
       if (K && K.setAccessoryBarVisible) K.setAccessoryBarVisible({ isVisible: false });
     } catch (e) {}
+  }
+  componentDidMount() {
+    this.i18nBoot();
+    // ซ่อนแถบ ^ v ✓ เหนือแป้นพิมพ์ (มีแต่ในแอป native — บนเบราว์เซอร์เป็นของ Safari เอง ปิดไม่ได้)
+    // เรียกตอนเปิดแอปครั้งเดียวไม่พอ: บางที WKWebView สร้าง accessory view ใหม่หลังกลับเข้าแอป
+    // → ย้ำอีกทีตอนโฟกัสช่องพิมพ์ 3 ครั้งแรก และตอนกลับมาหน้าจอ
+    this._kbBarTries = 0;
+    this._hideKbBar();
+    document.addEventListener('focusin', this._kbBarOnFocus = () => {
+      if (this._kbBarTries >= 3) return;
+      this._kbBarTries++;
+      this._hideKbBar();
+    }, true);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) this._hideKbBar(); });
     // ขอ persistent storage — ลดโอกาส iOS/เบราว์เซอร์ล้างที่เก็บข้อมูล (เนื้อตอนใน IDB)
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) {}
     this.applyTypo();
@@ -8984,10 +9000,11 @@ class Component extends DCLogic {
     const pos = f.x + '% ' + f.y + '%';
     return 'object-position:' + pos + (f.z > 1.001 ? (';transform:scale(' + f.z + ');transform-origin:' + pos) : '');
   }
-  // ── โหมดไฟล์: "อ่านบนจอ" บีบรูปให้ส่งต่อได้จริง · "สำหรับพิมพ์" ใช้ความละเอียดเต็มที่เก็บไว้ ──
+  // ── โหมดไฟล์: "อ่านบนจอ" บีบรูปให้ส่งต่อได้จริง · "ส่งโรงพิมพ์" ใส่ตัดตก+300 dpi ──
+  // (ตัด "พิมพ์เอง" ออก 2 ก.ย. 2026 — สามโหมดเยอะเกิน และมันคือของกลางๆ ที่ไม่ตอบอะไรชัด
+  //  คีย์เก่าที่เคยเก็บไว้จะตกกลับเป็น 'screen' เองผ่าน getter · ห้ามเพิ่มกลับโดยไม่ถาม)
   pbQualities = {
     screen: { label: 'อ่านบนจอ', note: 'บีบรูปให้ไฟล์เล็ก ส่งไลน์/อีเมลผ่าน', max: 1200, q: 0.62 },
-    print: { label: 'พิมพ์เอง', note: 'ความละเอียดเต็มที่เก็บไว้ · ขนาดพอดีขอบ A5 · ไฟล์ใหญ่', max: 0, q: 0 },
     press: { label: 'ส่งโรงพิมพ์', note: 'รูปละ 300 dpi + ตัดตก 3 มม. รอบด้าน + จำนวนหน้าหาร 4 ลงตัว · กระดาษที่ตั้งตอนพิมพ์ 216×154 มม.', max: 0, q: 0, press: true }
   };
   get pbQuality() { try { const k = localStorage.getItem('wtn-pb-quality'); return this.pbQualities[k] ? k : 'screen'; } catch (e) { return 'screen'; } }
@@ -9666,6 +9683,314 @@ class Component extends DCLogic {
     } finally {
       this._ebBusy = false;
       this.setState({ ebBusy: false });
+    }
+  }
+  // ---------- EPUB (ไฟล์อีบุ๊กมาตรฐาน อ่านใน Apple Books / Play Books / Kobo) ----------
+  // เขียน zip เองแบบ store (ไม่บีบอัด) — mimetype ต้องเป็นไฟล์แรกและไม่ถูกบีบอัดตามสเปก EPUB
+  _crcT() {
+    if (this.__crcT) return this.__crcT;
+    const t = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c >>> 0; }
+    return (this.__crcT = t);
+  }
+  _crc32(u8) {
+    const t = this._crcT();
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < u8.length; i++) c = t[(c ^ u8[i]) & 255] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  _zipStore(files) {
+    const enc = new TextEncoder();
+    const items = files.map(f => ({ name: enc.encode(f.name), data: typeof f.data === 'string' ? enc.encode(f.data) : f.data }));
+    let total = 22;
+    items.forEach(it => { it.crc = this._crc32(it.data); total += 30 + it.name.length + it.data.length + 46 + it.name.length; });
+    const buf = new Uint8Array(total), dv = new DataView(buf.buffer);
+    let off = 0;
+    const u16 = v => { dv.setUint16(off, v, true); off += 2; };
+    const u32 = v => { dv.setUint32(off, v, true); off += 4; };
+    const raw = b => { buf.set(b, off); off += b.length; };
+    items.forEach(it => {
+      it.at = off;
+      u32(0x04034b50); u16(10); u16(0); u16(0); u16(0); u16(0);
+      u32(it.crc); u32(it.data.length); u32(it.data.length); u16(it.name.length); u16(0);
+      raw(it.name); raw(it.data);
+    });
+    const cd = off;
+    items.forEach(it => {
+      u32(0x02014b50); u16(20); u16(10); u16(0); u16(0); u16(0); u16(0);
+      u32(it.crc); u32(it.data.length); u32(it.data.length);
+      u16(it.name.length); u16(0); u16(0); u16(0); u16(0); u32(0); u32(it.at);
+      raw(it.name);
+    });
+    const cdSize = off - cd;   // ต้องจับค่าไว้ก่อน — off เดินหน้าไปแล้วตอนเขียนหัว EOCD
+    u32(0x06054b50); u16(0); u16(0); u16(items.length); u16(items.length); u32(cdSize); u32(cd); u16(0);
+    return new Blob([buf], { type: 'application/epub+zip' });
+  }
+  // รูปทุกใบ → ไฟล์จริงในแพ็กเกจ (data: URL อ่านผ่าน fetch ได้ · รูปที่โหลดไม่ได้ข้ามไป เล่มไม่ล่ม)
+  async _epubAssets(urls) {
+    const map = new Map(), files = [];
+    let n = 0;
+    for (const u of urls) {
+      if (!u || map.has(u)) continue;
+      try {
+        const b = await (await fetch(u)).blob();
+        const mime = (b.type || 'image/jpeg').toLowerCase();
+        const ext = mime.indexOf('png') >= 0 ? 'png' : mime.indexOf('webp') >= 0 ? 'webp' : mime.indexOf('gif') >= 0 ? 'gif' : 'jpg';
+        const href = 'img/p' + (++n) + '.' + ext;
+        files.push({ name: 'OEBPS/' + href, data: new Uint8Array(await b.arrayBuffer()) });
+        map.set(u, { href, id: 'im' + n, mime: 'image/' + (ext === 'jpg' ? 'jpeg' : ext) });
+      } catch (e) { /* รูปนี้ข้ามไป */ }
+    }
+    return { map, files };
+  }
+  _xhtml(title, body, cls) {
+    return '<?xml version="1.0" encoding="utf-8"?>\n' +
+      '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="th" xml:lang="th">' +
+      '<head><meta charset="utf-8"/><title>' + this._esc(title) + '</title>' +
+      '<link rel="stylesheet" type="text/css" href="style.css"/></head>' +
+      '<body' + (cls ? ' class="' + cls + '"' : '') + '>' + body + '</body></html>';
+  }
+  // ปกของไฟล์ EPUB = รูปที่มีตัวหนังสืออยู่บนตัวมันเอง
+  // (ชั้นหนังสือของ Apple Books/Play Books โชว์แค่ "รูปปก" ล้วน ๆ ไม่ได้เรนเดอร์หน้าปกที่เราจัด
+  //  ถ้าปล่อยเป็นรูปเปล่า เล่มจะไม่มีชื่อเรื่องเลยตอนอยู่บนชั้น)
+  async _epubCover(D) {
+    try { await document.fonts.ready; } catch (e) {}
+    const W = 1400, H = 2100, k = W / 1000;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const cx = cv.getContext('2d');
+    let im = null;
+    try { if (D.cover) im = await this.loadImgForCanvas(D.cover); } catch (e) {}
+    if (im && im.naturalWidth) {
+      const s = Math.max(W / im.naturalWidth, H / im.naturalHeight);
+      const w = im.naturalWidth * s, h = im.naturalHeight * s;
+      cx.drawImage(im, (W - w) / 2, (H - h) / 2 * 0.72, w, h);   // เอียงกรอบขึ้นเล็กน้อย — คนในรูปมักอยู่ครึ่งบน
+    } else {
+      const g0 = cx.createLinearGradient(0, 0, W, H);
+      g0.addColorStop(0, '#8f7b62'); g0.addColorStop(.55, '#5b4c3d'); g0.addColorStop(1, '#2b241f');
+      cx.fillStyle = g0; cx.fillRect(0, 0, W, H);
+    }
+    const g1 = cx.createLinearGradient(0, H * 0.3, 0, H);        // ฉากมืดล่าง ให้ตัวหนังสืออ่านออกทุกรูป (รูปสว่างจ้าก็ยังอ่านได้)
+    g1.addColorStop(0, 'rgba(20,16,13,0)'); g1.addColorStop(.4, 'rgba(20,16,13,.55)');
+    g1.addColorStop(.7, 'rgba(20,16,13,.82)'); g1.addColorStop(1, 'rgba(20,16,13,.95)');
+    cx.fillStyle = g1; cx.fillRect(0, H * 0.3, W, H * 0.7);
+    const g2 = cx.createLinearGradient(0, 0, 0, H * 0.2);
+    g2.addColorStop(0, 'rgba(20,16,13,.5)'); g2.addColorStop(1, 'rgba(20,16,13,0)');
+    cx.fillStyle = g2; cx.fillRect(0, 0, W, H * 0.2);
+    const M = 88 * k;
+    const sp = v => { try { cx.letterSpacing = v; } catch (e) {} };
+    cx.textAlign = 'left'; cx.textBaseline = 'alphabetic';
+    cx.shadowColor = 'rgba(20,16,13,.55)'; cx.shadowBlur = 18 * k; cx.shadowOffsetY = 2 * k;
+    // ตราหัวปก
+    cx.fillStyle = '#c05f39'; cx.fillRect(M, 86 * k, 26 * k, 26 * k);
+    sp((7 * k) + 'px');
+    cx.fillStyle = 'rgba(255,250,240,.94)'; cx.font = '700 ' + (30 * k) + "px 'Anuphan', sans-serif";
+    cx.fillText('VELA', M + 44 * k, 108 * k);
+    // ท้ายปก: คำโปรย → ชื่อเรื่อง → เส้น → คนบันทึก → เว็บ
+    let y = H - 150 * k;
+    sp('0px');
+    cx.fillStyle = 'rgba(255,250,240,.72)'; cx.font = '600 ' + (28 * k) + "px 'Anuphan', sans-serif";
+    const by = (D.when || '') + (D.author ? (D.when ? '  ·  ' : '') + 'บันทึกโดย ' + D.author : '');
+    (this._cvWrap(cx, by, W - M * 2, 2) || []).slice(0, 2).reverse().forEach((l, i) => cx.fillText(l, M, y - i * 42 * k));
+    y -= (Math.min(2, this._cvWrap(cx, by, W - M * 2, 2).length) - 1) * 42 * k + 62 * k;
+    cx.fillStyle = '#c05f39'; cx.fillRect(M, y - 18 * k, 96 * k, 6 * k);
+    y -= 62 * k;
+    cx.fillStyle = '#fffaf0'; cx.font = (86 * k) + "px 'Chonburi', serif";
+    const tl = this._cvWrap(cx, D.title || 'ทริปของฉัน', W - M * 2, 3), lh = 118 * k;
+    tl.slice().reverse().forEach((l, i) => cx.fillText(l, M, y - i * lh));
+    y -= (tl.length - 1) * lh + 82 * k;   // เว้นให้พ้นหัวตัวอักษรไทย (สระบน/วรรณยุกต์) ไม่ให้ชนคำโปรย
+    if (D.sub) {
+      sp((5 * k) + 'px');
+      cx.fillStyle = '#e9b48a'; cx.font = '600 ' + (30 * k) + "px 'Anuphan', sans-serif";
+      cx.fillText(String(D.sub).toUpperCase(), M, y);
+      sp('0px');
+    }
+    cx.fillStyle = 'rgba(255,250,240,.6)'; cx.font = '600 ' + (26 * k) + "px 'Anuphan', sans-serif";
+    cx.textAlign = 'right';
+    cx.fillText('onevela.net', W - M, H - 62 * k);
+    cx.textAlign = 'left';
+    cx.shadowColor = 'transparent'; cx.shadowBlur = 0; cx.shadowOffsetY = 0;
+    return cv.toDataURL('image/jpeg', 0.9);
+  }
+  async epubFiles(D, map) {
+    const E = s => this._esc(s);
+    const urls = [];
+    const add = u => { if (u && urls.indexOf(u) < 0) urls.push(u); };
+    let cov = '';
+    try { cov = await this._epubCover(D); } catch (e) { cov = D.cover || ''; }
+    add(cov);
+    D.days.forEach(d => {
+      if (d.story) { add(d.story.cover); (d.story.inserts || []).forEach(x => add(x.u)); (d.story.photos || []).forEach(add); }
+      (d.items || []).forEach(it => (it.photos || []).forEach(add));
+    });
+    if (map) add(map.url);
+    const A = await this._epubAssets(urls);
+    const fig = (u, cap, cls) => {
+      const a = A.map.get(u);
+      if (!a) return '';
+      return '<div class="fig' + (cls ? ' ' + cls : '') + '"><img src="' + a.href + '" alt=""/>' +
+        (cap ? '<p class="cap">' + E(cap) + '</p>' : '') + '</div>';
+    };
+    const wm = this.isPremium ? '' : '<p class="wm">สร้างด้วย Vela · onevela.net</p>';
+    const docs = [];   // {id, href, title, xhtml, nav}
+    // ปก — รูปปกมีตัวหนังสืออยู่แล้ว หน้าปกจึงเป็นรูปเต็มหน้าเดียว ๆ (ไม่ซ้อนข้อความอีกชั้น)
+    const coverA = A.map.get(cov);
+    docs.push({ id: 'cover', href: 'cover.xhtml', title: D.title, nav: false,
+      xhtml: this._xhtml(D.title, coverA
+        ? '<div class="cvimg" epub:type="cover"><img src="' + coverA.href + '" alt="' + E(D.title) + '"/></div>'
+        : '<div class="cvtx">' + (D.sub ? '<p class="kick">' + E(D.sub) + '</p>' : '') +
+          '<h1 class="cvt">' + E(D.title) + '</h1><hr class="rule"/>' +
+          '<p class="by">' + E(D.when) + (D.author ? ' · บันทึกโดย ' + E(D.author) : '') + '</p></div>', 'cover') });
+    // ตอน
+    D.days.forEach((d, di) => {
+      const kick = d.label ? 'วันที่ ' + String(d.n).padStart(2, '0') + ' · ' + E(d.label) : 'ตอนที่ ' + d.n;
+      const hero = (d.story && (d.story.cover || (d.story.photos || [])[0])) || '';
+      let b = '<section epub:type="chapter">' +
+        '<p class="kick">' + kick + '</p><h1>' + E(d.title) + '</h1><hr class="rule"/>' +
+        (hero ? fig(hero, '', 'hero') : '');
+      if (d.story) {
+        const ins = d.story.inserts || [];
+        const drawIns = k => ins.filter(x => x.after === k).forEach(x => { b += fig(x.u, x.cap || '', x.size === 'small' ? 'small' : ''); });
+        drawIns(-1);
+        (d.story.paras || []).forEach((p, pi) => {
+          b += '<p' + (pi === 0 ? ' class="lead"' : '') + '>' + E(p) + '</p>';
+          drawIns(pi);
+        });
+      }
+      const items = (d.items || []).filter(it => (it.name || it.note || (it.photos || []).length));
+      if (items.length) {
+        b += '<h2 class="sect">จากสมุดระหว่างวัน</h2>';
+        items.forEach(it => {
+          const head = [it.t || '', it.name || ''].filter(Boolean).join(' · ');
+          if (head) b += '<h3 class="mo">' + E(head) + '</h3>';
+          if ((it.note || '').trim()) b += '<p class="note">' + E(it.note.trim()) + '</p>';
+          (it.photos || []).filter(Boolean).forEach(u => { b += fig(u, ''); });
+        });
+      }
+      const plate = (d.story ? (d.story.photos || []) : []).filter(u => u && u !== hero);
+      if (plate.length) {
+        b += '<h2 class="sect">ภาพจากวันนี้</h2>';
+        plate.forEach(u => { b += fig(u, ''); });
+      }
+      b += wm + '</section>';
+      docs.push({ id: 'ch' + (di + 1), href: 'ch' + (di + 1) + '.xhtml', title: d.title, nav: true, xhtml: this._xhtml(d.title, b) });
+    });
+    // แผนที่เส้นทาง
+    if (map && A.map.get(map.url)) {
+      docs.push({ id: 'route', href: 'route.xhtml', title: 'เส้นทางทั้งหมด', nav: true, xhtml: this._xhtml('เส้นทางทั้งหมด',
+        '<h1>เส้นทางทั้งหมด</h1><hr class="rule"/>' + fig(map.url, '', 'hero') +
+        '<ol class="stops">' + (map.stops || []).map(s => '<li>' + E(s.name || '') + '</li>').join('') + '</ol>' + wm) });
+    }
+    // ค่าใช้จ่าย
+    if (D.expense && D.expense.total) {
+      const rows = D.expense.rows.map(r => '<tr><td>' + E(r.k) + '</td><td class="n">' + r.v.toLocaleString() + '</td><td class="n">' + r.pct + '%</td></tr>').join('');
+      docs.push({ id: 'money', href: 'money.xhtml', title: 'สรุปค่าใช้จ่าย', nav: true, xhtml: this._xhtml('สรุปค่าใช้จ่าย',
+        '<h1>สรุปค่าใช้จ่าย</h1><hr class="rule"/><table class="ex"><tbody>' + rows +
+        '<tr class="tot"><td>รวมทั้งทริป</td><td class="n">' + D.expense.total.toLocaleString() + '</td><td class="n"></td></tr>' +
+        '</tbody></table>' + wm) });
+    }
+    // หน้าท้าย
+    docs.push({ id: 'colophon', href: 'colophon.xhtml', title: 'ท้ายเล่ม', nav: true, xhtml: this._xhtml('ท้ายเล่ม',
+      '<div class="end"><h1>' + E(D.title) + '</h1><hr class="rule"/>' +
+      '<p>' + D.stats.chapters + ' ตอน · ' + D.stats.days + ' วัน · ' + D.stats.cis + ' เช็คอิน · ' + D.stats.photos + ' รูป</p>' +
+      '<p>' + E(D.when) + (D.author ? '<br/>บันทึกโดย ' + E(D.author) : '') + '</p>' +
+      '<p class="mark">Vela · onevela.net</p></div>', 'cover') });
+    const nav = this._xhtml('สารบัญ', '<nav epub:type="toc" id="toc"><h1>สารบัญ</h1><ol>' +
+      docs.filter(x => x.nav).map(x => '<li><a href="' + x.href + '">' + E(x.title) + '</a></li>').join('') +
+      '</ol></nav>');
+    const uid = 'urn:uuid:' + (D.tripId || 'vela') + '-' + Date.now().toString(36);
+    const mod = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+    const manifest = [
+      '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
+      '<item id="css" href="style.css" media-type="text/css"/>'
+    ].concat(docs.map(x => '<item id="' + x.id + '" href="' + x.href + '" media-type="application/xhtml+xml"/>'))
+     .concat([...A.map.values()].map(a => '<item id="' + a.id + '" href="' + a.href + '" media-type="' + a.mime + '"' +
+        (coverA && a.href === coverA.href ? ' properties="cover-image"' : '') + '/>')).join('');
+    const opf = '<?xml version="1.0" encoding="utf-8"?>\n' +
+      '<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bid" xml:lang="th">' +
+      '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">' +
+      '<dc:identifier id="bid">' + E(uid) + '</dc:identifier>' +
+      '<dc:title>' + E(D.title) + '</dc:title>' +
+      '<dc:creator>' + E(D.author || 'นักเดินทาง') + '</dc:creator>' +
+      '<dc:language>th</dc:language>' +
+      '<dc:publisher>Vela · onevela.net</dc:publisher>' +
+      (D.sub ? '<dc:description>' + E(D.sub + ' · ' + D.when) + '</dc:description>' : '') +
+      '<meta property="dcterms:modified">' + mod + '</meta>' +
+      (coverA ? '<meta name="cover" content="' + coverA.id + '"/>' : '') +
+      '</metadata><manifest>' + manifest + '</manifest><spine>' +
+      docs.map(x => '<itemref idref="' + x.id + '"/>').join('') + '</spine></package>';
+    return [
+      { name: 'mimetype', data: 'application/epub+zip' },
+      { name: 'META-INF/container.xml', data: '<?xml version="1.0" encoding="utf-8"?>\n' +
+        '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">' +
+        '<rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>' },
+      { name: 'OEBPS/content.opf', data: opf },
+      { name: 'OEBPS/nav.xhtml', data: nav },
+      { name: 'OEBPS/style.css', data: this._epubCss() }
+    ].concat(docs.map(x => ({ name: 'OEBPS/' + x.href, data: x.xhtml }))).concat(A.files);
+  }
+  _epubCss() {
+    return '@charset "utf-8";\n' +
+      'body{margin:0 5%;font-family:"Anuphan","Sarabun","Noto Sans Thai",sans-serif;line-height:1.85;color:#2b241f;text-align:left;widows:2;orphans:2}\n' +
+      'h1{font-size:1.55em;line-height:1.4;margin:.5em 0 .3em;font-weight:700}\n' +
+      'h2.sect{font-size:1.05em;margin:1.9em 0 .5em;color:#8a5a3c;letter-spacing:.02em}\n' +
+      'h3.mo{font-size:.98em;margin:1.4em 0 .2em;color:#5c5347;font-weight:700}\n' +
+      'p{margin:0 0 .85em;text-indent:0}\n' +
+      'p.kick{margin:0;font-size:.82em;letter-spacing:.14em;text-transform:uppercase;color:#a08a72}\n' +
+      'p.lead:first-letter{font-size:1.6em;line-height:1;font-weight:700;color:#c05f39}\n' +
+      'p.note{color:#3a332c}\n' +
+      'p.cap{margin:.35em 0 0;font-size:.8em;color:#8a7d6f;text-align:center}\n' +
+      'p.wm{margin:2.4em 0 0;font-size:.72em;color:#a99e8e;text-align:center}\n' +
+      'p.by{color:#8a7d6f;font-size:.9em}\n' +
+      'hr.rule{border:0;border-top:2px solid #c05f39;width:2.2em;margin:.6em 0 1.1em;text-align:left}\n' +
+      'div.fig{margin:1.2em 0;text-align:center;page-break-inside:avoid;break-inside:avoid}\n' +
+      'div.fig img{max-width:100%;height:auto}\n' +
+      'div.fig.small img{max-width:58%}\n' +
+      'div.fig.hero{margin:.4em 0 1.4em}\n' +
+      'body.cover{margin:0;text-align:center}\n' +
+      'div.cvimg img{width:100%;height:auto;display:block}\n' +
+      'div.cvtx{padding:1.4em 8% 2em}\n' +
+      'h1.cvt{font-size:2em;margin:.2em 0 .1em}\n' +
+      'div.cvtx hr.rule{margin-left:auto;margin-right:auto}\n' +
+      'div.end{padding:22% 8%}\n' +
+      'p.mark{margin-top:2.4em;font-size:.8em;letter-spacing:.16em;color:#a08a72}\n' +
+      'ol.stops{color:#5c5347;padding-left:1.4em}\n' +
+      'table.ex{width:100%;border-collapse:collapse;font-size:.95em}\n' +
+      'table.ex td{padding:.5em 0;border-bottom:1px solid rgba(43,36,32,.12)}\n' +
+      'table.ex td.n{text-align:right;font-variant-numeric:tabular-nums}\n' +
+      'table.ex tr.tot td{font-weight:700;border-bottom:0;border-top:2px solid rgba(43,36,32,.3)}\n';
+  }
+  async makeEpub() {
+    if (this._epBusy) return;
+    this._epBusy = true;
+    this.setState({ epBusy: true, epPct: 6 });
+    try {
+      const D = await this.ebGather();
+      if (!D.days.length) { this.showToast('ยังไม่มีบันทึกในทริปนี้'); return; }
+      this.setState({ epPct: 40 });
+      let map = null;
+      try { map = await this.ebMapImage(1000, 700); } catch (e) {}
+      this.setState({ epPct: 62 });
+      const files = await this.epubFiles(D, map);
+      this.setState({ epPct: 88 });
+      const blob = this._zipStore(files);
+      const name = (D.title || 'vela-book').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) + '.epub';
+      this.setState({ epPct: 100 });
+      const file = new File([blob], name, { type: 'application/epub+zip' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: D.title }); return; }
+        catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
+      this.showToast('บันทึกไฟล์ EPUB แล้ว (' + this.fmtBytes(blob.size) + ') — เปิดใน Apple Books / Play Books ได้เลย');
+    } catch (e) {
+      console.warn('[wtn] epub', e);
+      this.showToast('ทำไฟล์ EPUB ไม่สำเร็จ — ลองใหม่อีกครั้ง');
+    } finally {
+      this._epBusy = false;
+      this.setState({ epBusy: false });
     }
   }
   // ประเมินจำนวนหน้าด้วยตัวจัดหน้าชุดเดียวกับตอนสร้างจริง (ตัวเลขในชีตต้องตรงกับเล่ม)
@@ -11326,7 +11651,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.01a',
+      appVersion: '2026.09.02d',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
@@ -11433,6 +11758,9 @@ class Component extends DCLogic {
           showEbBook: () => this.setState({ bvUrl: this.state.ebUrl || '', bvTitle: 'เล่ม' }),
           ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
           runEbook: () => this.makeEbook(),
+          epBusy: !!this.state.epBusy,
+          epLabel: this.state.epBusy ? 'กำลังทำไฟล์ EPUB… ' + (this.state.epPct || 0) + '%' : 'บันทึกไฟล์ EPUB',
+          runEpub: () => this.makeEpub(),
           ...(() => {
             const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
             return {
@@ -11865,11 +12193,20 @@ class Component extends DCLogic {
       setPassB: e => this.setState({ passB: e.target.value, passErr: '' }),
       savePass: () => this.savePass(),
       delConfirm: !!this.state.delConfirm, notDelConfirm: !this.state.delConfirm,
-      askDelete: () => this.setState({ delConfirm: true }),
-      cancelDelete: () => this.setState({ delConfirm: false }),
+      askDelete: () => this.setState({ delConfirm: true, delText: '' }),
+      cancelDelete: () => this.setState({ delConfirm: false, delText: '' }),
+      delText: this.state.delText || '',
+      setDelText: e => this.setState({ delText: e.target.value }),
+      delLocked: (this.state.delText || '').trim().toUpperCase() !== 'DELETE',
+      delBtnStyle: (() => {
+        const okd = (this.state.delText || '').trim().toUpperCase() === 'DELETE';
+        return 'flex:1;min-height:46px;border:none;border-radius:12px;font:600 15.5px \'Anuphan\';'
+          + (okd ? 'background:#b3402a;color:#fff;cursor:pointer' : 'background:rgba(179,64,42,.22);color:rgba(255,255,255,.85);cursor:not-allowed');
+      })(),
       confirmDelete: () => {
+        if ((this.state.delText || '').trim().toUpperCase() !== 'DELETE') return;
         try { ['wtn-auth', 'wtn-links', 'wtn-pass'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
-        this.setState({ delConfirm: false, screen: 'onboard', history: [], auth: 'choice' });
+        this.setState({ delConfirm: false, delText: '', screen: 'onboard', history: [], auth: 'choice' });
       },
       authLoginMode: this.state.auth === 'login',
       authMsg: this.state.authMsg || '',
