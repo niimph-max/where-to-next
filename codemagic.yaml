@@ -75,7 +75,10 @@ workflows:
       - name: pod install
         script: |
           cd capacitor/ios/App
-          pod install
+          rm -rf Pods Podfile.lock
+          pod install --repo-update
+          echo "— ปลั๊กอินที่ลงจริง —"
+          grep -i "capacitor" Podfile.lock | sort -u
       - name: เตรียม keychain
         script: keychain initialize
       - name: สร้าง/ดึง signing files (สร้าง cert + profile ให้เองถ้ายังไม่มี)
