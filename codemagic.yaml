@@ -3,6 +3,44 @@
 # ฟรี 500 นาที/เดือน — บิลด์ iOS หนึ่งครั้งกินราว 8-14 นาที
 
 workflows:
+  android-test:
+    name: Vela Android · APK ทดสอบ
+    instance_type: linux_x2
+    max_build_duration: 40
+    environment:
+      java: 17
+      node: 20
+    scripts:
+      - name: เช็คว่ามีตัวเว็บอยู่จริง
+        script: |
+          cd capacitor
+          if [ ! -f "www/index.html" ]; then
+            echo "❌ ไม่พบ capacitor/www/index.html"
+            exit 1
+          fi
+      - name: ติดตั้ง dependencies
+        script: |
+          cd capacitor
+          npm ci || npm install
+      - name: เตรียม Android platform
+        script: |
+          cd capacitor
+          npx cap add android 2>/dev/null || true
+          npx cap sync android
+      - name: บิลด์ APK
+        script: |
+          cd capacitor/android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+    artifacts:
+      - capacitor/android/app/build/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - admin@onevela.net
+        notify:
+          success: true
+          failure: true
   ios-release:
     name: Vela iOS · TestFlight
     instance_type: mac_mini_m2
