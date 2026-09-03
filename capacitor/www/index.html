@@ -2794,6 +2794,10 @@
   </div>
 </div>
 
+<sc-if value="{{ kbDoneShow }}" hint-placeholder-val="{{ false }}">
+  <button onClick="{{ kbDone }}" style="position:fixed;right:14px;bottom:calc(var(--wtn-kb,0px) + 12px);z-index:9990;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#2b241f;color:#fff;font:600 14.5px 'Anuphan';box-shadow:0 10px 24px -8px rgba(43,36,32,.6);cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2.1"><path d="M7 10l5 5 5-5"/><path d="M4 20h16" opacity=".55"/></svg>เสร็จ</button>
+</sc-if>
+
 <sc-if value="{{ a2hsShow }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:0;right:0;bottom:0;z-index:9500;padding:0 12px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none">
     <div style="pointer-events:auto;width:100%;max-width:402px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:20px;box-shadow:0 18px 44px -10px rgba(43,36,32,.45);padding:16px 16px 14px">
@@ -8127,6 +8131,11 @@ class Component extends DCLogic {
         // คีย์บอร์ดขึ้นแล้วไม่มี home indicator ให้เลี่ยง — ตัดระยะ safe-area ทิ้ง
         // ไม่งั้นแถบเมนูล่างจะลอยเหนือคีย์บอร์ดโดยมีช่องว่างครีมคาอยู่ ~34px
         document.documentElement.classList.toggle('wtn-kb-up', !!kb);
+        // ปิดแถบ ^ v ✓ ของ iOS ไปแล้ว → ไม่มีปุ่ม ✓ ให้กดปิดคีย์บอร์ดอีก
+        // ช่องพิมพ์หลายบรรทัด (โน้ต/เรื่องเล่า) กด Enter ก็ได้แค่ขึ้นบรรทัดใหม่
+        // → ต้องมีปุ่ม "เสร็จ" ของเราเองลอยเหนือคีย์บอร์ด
+        const up = !!kb && typing;
+        if (!!this.state.kbUp !== up) this.setState({ kbUp: up });
         if (kb) this._ceCaretIn(true);
       } catch (e) {}
     };
@@ -11786,7 +11795,12 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.03b',
+      appVersion: '2026.09.03c',
+      kbDoneShow: !!this.state.kbUp,
+      kbDone: () => {
+        try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
+        this.setState({ kbUp: false });
+      },
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
