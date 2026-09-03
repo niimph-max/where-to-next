@@ -107,7 +107,7 @@ workflows:
           LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
           [ -z "$LATEST" ] && LATEST=0
           agvtool new-version -all $((LATEST + 1)) || echo "⚠️ ตั้ง build number ไม่สำเร็จ — ใช้ค่าเดิม"
-sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.0.1;/g' App.xcodeproj/project.pbxproj
+          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.0.1;/g' App.xcodeproj/project.pbxproj
           grep -m1 MARKETING_VERSION App.xcodeproj/project.pbxproj
           
       - name: บิลด์ ipa
