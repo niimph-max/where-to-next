@@ -8117,6 +8117,20 @@ class Component extends DCLogic {
     };
     this._topInset();
     window.addEventListener('orientationchange', () => setTimeout(this._topInset, 250));
+    // คีย์บอร์ดขึ้น/ลง: ตัดระยะ safe-area ของแถบล่าง + โชว์ปุ่ม "เสร็จ"
+    this._kbSet = (open, px) => {
+      document.documentElement.classList.toggle('wtn-kb-up', !!open);
+      if (px != null) document.documentElement.style.setProperty('--wtn-kb-h', px + 'px');
+      if (!!this.state.kbUp !== !!open) this.setState({ kbUp: !!open });
+    };
+    // แอป native: ปลั๊กอินคีย์บอร์ดยิงอีเวนต์นี้บน window (เชื่อถือได้กว่า visualViewport
+    // เพราะ WebView ถูกย่อไปแล้ว ทำให้คำนวณความสูงคีย์บอร์ดเองไม่ได้)
+    ['keyboardWillShow', 'keyboardDidShow'].forEach(n => window.addEventListener(n, () => {
+      this._kbFromNative = true; this._kbSet(true, 0);
+    }));
+    ['keyboardWillHide', 'keyboardDidHide'].forEach(n => window.addEventListener(n, () => {
+      this._kbFromNative = true; this._kbSet(false, 0);
+    }));
     this._kb = () => {
       try {
         const vv = window.visualViewport;
@@ -8130,12 +8144,10 @@ class Component extends DCLogic {
         document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
         // คีย์บอร์ดขึ้นแล้วไม่มี home indicator ให้เลี่ยง — ตัดระยะ safe-area ทิ้ง
         // ไม่งั้นแถบเมนูล่างจะลอยเหนือคีย์บอร์ดโดยมีช่องว่างครีมคาอยู่ ~34px
-        document.documentElement.classList.toggle('wtn-kb-up', !!kb);
-        // ปิดแถบ ^ v ✓ ของ iOS ไปแล้ว → ไม่มีปุ่ม ✓ ให้กดปิดคีย์บอร์ดอีก
-        // ช่องพิมพ์หลายบรรทัด (โน้ต/เรื่องเล่า) กด Enter ก็ได้แค่ขึ้นบรรทัดใหม่
-        // → ต้องมีปุ่ม "เสร็จ" ของเราเองลอยเหนือคีย์บอร์ด
-        const up = !!kb && typing;
-        if (!!this.state.kbUp !== up) this.setState({ kbUp: up });
+        // ⚠️ บนแอป native คีย์บอร์ดย่อ WebView ให้เลย → สูตรข้างบนอ่านได้ 0 ตลอด
+        // ตัวชี้ว่า "คีย์บอร์ดขึ้น" บน native จึงมาจากอีเวนต์ของปลั๊กอินคีย์บอร์ดแทน
+        // (ห้ามให้ตัวนี้ไปล้างค่าที่อีเวนต์ native ตั้งไว้ — เช็ก _kbFromNative ก่อน)
+        if (!this._kbFromNative) this._kbSet(!!kb && typing, kb);
         if (kb) this._ceCaretIn(true);
       } catch (e) {}
     };
@@ -11795,7 +11807,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.03c',
+      appVersion: '2026.09.03d',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
