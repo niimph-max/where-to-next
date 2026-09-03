@@ -123,6 +123,8 @@
   .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:max(env(safe-area-inset-top),var(--wtn-top,0px));background:#f6efe2;z-index:1;pointer-events:none}
   .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:max(env(safe-area-inset-top),var(--wtn-top,0px))!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+  .wtn-kb-up .wtn-tabbar{padding-bottom:8px!important}
+  .wtn-kb-up .wtn-sticky-bottom{padding-bottom:8px!important}
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
   }
@@ -8122,6 +8124,9 @@ class Component extends DCLogic {
           if (d > 140 && d < window.innerHeight * 0.62) kb = d;
         }
         document.documentElement.style.setProperty('--wtn-kb', kb + 'px');
+        // คีย์บอร์ดขึ้นแล้วไม่มี home indicator ให้เลี่ยง — ตัดระยะ safe-area ทิ้ง
+        // ไม่งั้นแถบเมนูล่างจะลอยเหนือคีย์บอร์ดโดยมีช่องว่างครีมคาอยู่ ~34px
+        document.documentElement.classList.toggle('wtn-kb-up', !!kb);
         if (kb) this._ceCaretIn(true);
       } catch (e) {}
     };
@@ -11781,7 +11786,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.03a',
+      appVersion: '2026.09.03b',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
