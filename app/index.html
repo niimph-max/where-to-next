@@ -123,6 +123,8 @@
   .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:max(env(safe-area-inset-top),var(--wtn-top,0px))!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
   .wtn-kb-up .wtn-tabbar{padding-bottom:8px!important}
+  /* กำลังพิมพ์อยู่ ปุ่มลอย (+ โมเมนต์ / ถาม AI) กดไม่ได้อยู่ดี และไปทับปุ่ม "เสร็จ" */
+  .wtn-kb-up .wtn-fab{display:none!important}
   .wtn-kb-up .wtn-sticky-bottom{padding-bottom:8px!important}
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
@@ -2794,7 +2796,7 @@
 </div>
 
 <sc-if value="{{ kbDoneShow }}" hint-placeholder-val="{{ false }}">
-  <button onClick="{{ kbDone }}" style="position:fixed;right:14px;bottom:calc(var(--wtn-kb,0px) + 12px);z-index:9990;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#2b241f;color:#fff;font:600 14.5px 'Anuphan';box-shadow:0 10px 24px -8px rgba(43,36,32,.6);cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2.1"><path d="M7 10l5 5 5-5"/><path d="M4 20h16" opacity=".55"/></svg>เสร็จ</button>
+  <button onClick="{{ kbDone }}" style="position:fixed;right:14px;bottom:calc(var(--wtn-kb,0px) + 86px);z-index:9990;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#2b241f;color:#fff;font:600 14.5px 'Anuphan';box-shadow:0 10px 24px -8px rgba(43,36,32,.6);cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2.1"><path d="M7 10l5 5 5-5"/><path d="M4 20h16" opacity=".55"/></svg>เสร็จ</button>
 </sc-if>
 
 <sc-if value="{{ a2hsShow }}" hint-placeholder-val="{{ false }}">
@@ -11806,7 +11808,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.03d',
+      appVersion: '2026.09.03f',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
