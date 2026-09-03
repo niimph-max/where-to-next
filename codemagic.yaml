@@ -124,7 +124,7 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        submit_to_testflight: false
         # เปิดบรรทัดล่างเมื่อพร้อมส่งขึ้นขายจริง
         # submit_to_app_store: false
       email:
