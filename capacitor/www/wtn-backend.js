@@ -218,18 +218,41 @@ async function boot() {
     },
 
     // ---------- ADMIN ----------
+    // ตัวเลขต้อง "ตรงจริง": แยกคนจ่ายเงินจริง (มี stripe_customer) ออกจากคนที่เซ็ตพรีเมียมด้วยมือ
+    // (บัญชีแอดมิน / บัญชีให้ Apple reviewer ทดสอบ) และไม่นับคนที่หมดอายุแล้วแต่ธง premium ยังค้าง
     async adminStats() {
+      const now = new Date().toISOString();
       const n = async (q) => { const { count } = await q; return count || 0; };
       const P = () => SB.from("profiles").select("id", { count: "exact", head: true });
+      // ยังใช้สิทธิ์อยู่จริง = premium true และ (ไม่มีวันหมด หรือวันหมดยังไม่ถึง)
+      const live = (q) => q.eq("premium", true).or("premium_until.is.null,premium_until.gt." + now);
       const total = await n(P());
-      const premium = await n(P().eq("premium", true));
-      const activeSubs = await n(P().eq("premium", true).eq("plan", "year"));
-      let revenue = 0;
+      const paid = await n(live(P()).not("stripe_customer", "is", null));
+      const granted = await n(live(P()).is("stripe_customer", null));
+      const expired = await n(P().eq("premium", true).lt("premium_until", now));
+      const activeSubs = await n(
+        P().eq("premium", true).eq("plan", "year").not("stripe_customer", "is", null).gt("premium_until", now)
+      );
+      let revenue = 0, revenueMonth = 0, recent = [];
       try {
-        const { data } = await SB.from("payments").select("amount").eq("status", "paid");
-        revenue = (data || []).reduce((s, r) => s + (Number(r.amount) || 0), 0);
+        const { data } = await SB.from("payments")
+          .select("id,user_id,plan,amount,currency,at").eq("status", "paid")
+          .order("at", { ascending: false }).limit(500);
+        const rows = data || [];
+        const m0 = new Date(); m0.setDate(1); m0.setHours(0, 0, 0, 0);
+        for (const r of rows) {
+          const a = Number(r.amount) || 0;
+          revenue += a;
+          if (r.at && new Date(r.at).getTime() >= m0.getTime()) revenueMonth += a;
+        }
+        recent = rows.slice(0, 8);
       } catch (e) {}
-      return { total, premium, free: Math.max(0, total - premium), activeSubs, revenue };
+      const premium = paid + granted;
+      return {
+        total, premium, paid, granted, expired,
+        free: Math.max(0, total - premium),
+        activeSubs, revenue, revenueMonth, recent
+      };
     },
 
     // ---------- STORAGE (รูป/ไฟล์) ----------

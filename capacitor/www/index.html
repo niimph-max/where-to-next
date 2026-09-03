@@ -21,7 +21,7 @@
 <meta name="twitter:description" content="วางแผนรายวัน จดงบ เที่ยว แล้วเปลี่ยนเป็นเรื่องเล่า">
 <meta name="twitter:image" content="https://onevela.net/app/og-image.png">
 <script src="./support.js"></script>
-  <script src="native.js"></script>
+<script src="native.js"></script>
 </head>
 <body>
 <x-dc>
@@ -42,7 +42,7 @@
 <meta name="color-scheme" content="light">
 <link rel="manifest" href="manifest.webmanifest">
 <script>
-  if ('serviceWorker' in navigator && location.protocol === 'https:' && !window.Capacitor) {
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
     window.addEventListener('load', function () {
       // แอปอยู่ที่ /app/ — ถอน service worker เก่าที่ scope กว้างกว่า (เช่น / จากโครงเดิม)
       // ไม่งั้นตัวเก่าจะดักหน้าเราแล้วเสิร์ฟบิลด์เดิมจากแคชค้างไปเรื่อยๆ
@@ -355,12 +355,30 @@
           <sc-if value="{{ adminErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.09);border:1px solid rgba(192,86,58,.22);border-radius:14px;padding:13px 15px;font:500 14.5px/1.55 'Anuphan';color:#b3402a;margin-bottom:14px">{{ adminErr }}</div></sc-if>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">สมาชิกทั้งหมด</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminTotal }}</div></div>
-            <div style="background:#2b241f;border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#c9b79b;margin-bottom:6px">พรีเมียม</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#e9b48a">{{ adminPremium }}</div></div>
+            <div style="background:#2b241f;border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#c9b79b;margin-bottom:6px">จ่ายเงินจริง</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#e9b48a">{{ adminPaid }}</div><div style="font:500 12px 'Anuphan';color:#9c8b74;margin-top:3px">มีประวัติจ่ายผ่าน Stripe</div></div>
             <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">ฟรี</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminFree }}</div></div>
-            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">Subscription ใช้งานอยู่</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminSubs }}</div></div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">Subscription ต่ออายุอยู่</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#2b241f">{{ adminSubs }}</div><div style="font:500 12px 'Anuphan';color:#a1927c;margin-top:3px">รายปี · ยังไม่หมดอายุ</div></div>
+            <div style="background:#fffaf0;border:1px dashed rgba(43,36,32,.18);border-radius:16px;padding:16px"><div style="font:500 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:6px">แจกมือ / แอดมิน</div><div style="font-family:'Chonburi',serif;font-size:30px;color:#8a7d6f">{{ adminGranted }}</div><div style="font:500 12px 'Anuphan';color:#a1927c;margin-top:3px">ไม่ใช่รายได้</div></div>
           </div>
-          <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:18px;margin-top:12px;color:#fff"><div style="font:500 13.5px 'Anuphan';color:#f2ddcd;margin-bottom:6px">รายได้เดือนนี้</div><div style="font-family:'Chonburi',serif;font-size:34px;color:#fff">{{ adminRevenue }}</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+            <div style="background:linear-gradient(135deg,#c05f39,#8a3f24);border-radius:16px;padding:18px;color:#fff"><div style="font:500 13px 'Anuphan';color:#f2ddcd;margin-bottom:6px">รายได้เดือนนี้</div><div style="font-family:'Chonburi',serif;font-size:28px;color:#fff">{{ adminRevenueMonth }}</div></div>
+            <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:18px"><div style="font:500 13px 'Anuphan';color:#8a7d6f;margin-bottom:6px">รวมทั้งหมด</div><div style="font-family:'Chonburi',serif;font-size:28px;color:#2b241f">{{ adminRevenue }}</div></div>
+          </div>
+          <sc-if value="{{ adminHasExpired }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.08);border:1px solid rgba(192,86,58,.2);border-radius:14px;padding:12px 14px;font:500 13.5px/1.6 'Anuphan';color:#8a3f24;margin-top:12px">{{ adminExpiredText }}</div></sc-if>
           <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;text-align:center;margin-top:16px">ตัวเลขเรียลไทม์จาก Supabase + Stripe · เฉพาะแอดมินเห็นหน้านี้</div>
+          <div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f;margin:26px 0 12px">การจ่ายเงินล่าสุด</div>
+          <sc-if value="{{ adminNoPay }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:22px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px">ยังไม่มีรายการจ่ายเงิน</div></sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ adminPays }}" as="pay" hint-placeholder-count="0">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <div style="min-width:0">
+                  <div style="font:600 14.5px 'Anuphan';color:#2b241f">{{ pay.planLabel }}</div>
+                  <div style="font:500 12.5px 'Anuphan';color:#a1927c">{{ pay.when }} · {{ pay.who }}</div>
+                </div>
+                <div style="font-family:'Chonburi',serif;font-size:19px;color:#c05f39;white-space:nowrap">{{ pay.amount }}</div>
+              </div>
+            </sc-for>
+          </div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px"><div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f">กล่องรับเรื่อง</div><button onClick="{{ loadTickets }}" style="border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:7px 14px;border-radius:18px;cursor:pointer">{{ ticketsLabel }}</button></div>
           <sc-if value="{{ noTickets }}" hint-placeholder-val="{{ true }}"><div style="text-align:center;padding:24px 20px;font:500 14.5px/1.7 'Anuphan';color:#a1927c;background:#fffaf0;border:1px dashed rgba(43,36,32,.15);border-radius:14px">{{ ticketsEmpty }}</div></sc-if>
           <div style="display:flex;flex-direction:column;gap:10px">
@@ -2893,8 +2911,8 @@
       <sc-if value="{{ ebHasUrl }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ showEbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
-      <button onClick="{{ runEpub }}" style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:9px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5" opacity=".5"/><path d="M9 13h6M9 16.5h4" opacity=".7"/></svg>{{ epLabel }}</button>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">อ่านเล่มได้ในแอปเลย · อยากได้ PDF กด "บันทึก PDF" ในเล่ม · EPUB คือไฟล์อีบุ๊กมาตรฐาน เปิดใน Apple Books / Play Books ได้</div>
+      <button onClick="{{ runEpub }}" style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:9px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5" opacity=".5"/><path d="M9 13h6M9 16.5h4" opacity=".7"/></svg>{{ epLabel }}<sc-if value="{{ epLocked }}" hint-placeholder-val="{{ false }}"><span style="font:600 11.5px 'Anuphan';color:#8a3f24;background:rgba(192,95,57,.13);border-radius:8px;padding:3px 7px">พรีเมียม</span></sc-if></button>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">{{ epubNote }}</div>
     </div>
   </div>
 </sc-if>
@@ -7955,11 +7973,21 @@ class Component extends DCLogic {
     }
     return a;
   }
+  // ⚠️ ห้ามพึ่ง Capacitor.Plugins.Keyboard เพียงทางเดียว — www ของโปรเจกต์นี้ไม่ได้ bundle
+  // ตัวเชื่อม JS ของปลั๊กอินมาด้วย จึงมักเป็น undefined ทั้งที่ฝั่ง native มีปลั๊กอินอยู่
+  // → ต้องยิงผ่านสะพาน native (nativePromise/toNative) เป็นทางหลัก
   _hideKbBar() {
+    const C = window.Capacitor;
+    if (!C || !C.isNativePlatform || !C.isNativePlatform()) return;
+    const args = { isVisible: false };
     try {
-      const K = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Keyboard;
-      if (K && K.setAccessoryBarVisible) K.setAccessoryBarVisible({ isVisible: false });
+      const K = C.Plugins && C.Plugins.Keyboard;
+      if (K && K.setAccessoryBarVisible) { K.setAccessoryBarVisible(args); return; }
     } catch (e) {}
+    try {
+      if (typeof C.nativePromise === 'function') { C.nativePromise('Keyboard', 'setAccessoryBarVisible', args); return; }
+    } catch (e) {}
+    try { if (typeof C.toNative === 'function') C.toNative('Keyboard', 'setAccessoryBarVisible', { options: args }); } catch (e) {}
   }
   // iPhone: ถ้าผู้ใช้กางนิ้วขยายหน้าจอ WKWebView จะค้างที่ระดับซูมนั้น หุบกลับไม่ลง
   // (ต้องปิดแอปเปิดใหม่) — แอปนี้เป็นเลย์เอาต์มือถือ ไม่ต้องซูมหน้าอยู่แล้ว จึงปิดการซูมหน้า
@@ -8281,6 +8309,20 @@ class Component extends DCLogic {
     const u = (window.WTNBackend && window.WTNBackend._uid) || (this.acct && this.acct.uid);
     const em = ((this.acct && this.acct.email) || '').trim().toLowerCase();
     return u === 'ABu9cHcecbPpFBJgwrbR6rf8sa83' || u === 'E9wuPSIdQQOuPwvnSoW6Y427PrA3' || em === 'niimph@gmail.com';
+  }
+  _adminPayRows() {
+    const rows = (this.state.adminStats && this.state.adminStats.recent) || [];
+    const me = (window.WTNBackend && window.WTNBackend._uid) || '';
+    return rows.map(r => {
+      const d = r.at ? new Date(r.at) : null;
+      return {
+        key: r.id,
+        planLabel: r.plan === 'year' ? 'พรีเมียมรายปี' : r.plan === 'trip' ? 'Trip Pass' : 'ไม่ระบุแพ็ก',
+        amount: '฿' + (Number(r.amount) || 0).toLocaleString(),
+        when: d ? d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' }) : '—',
+        who: r.user_id === me ? 'บัญชีคุณเอง' : String(r.user_id || '').slice(0, 8)
+      };
+    });
   }
   async loadAdminStats() {
     const be = window.WTNBackend;
@@ -10021,8 +10063,17 @@ class Component extends DCLogic {
       'table.ex td.n{text-align:right;font-variant-numeric:tabular-nums}\n' +
       'table.ex tr.tot td{font-weight:700;border-bottom:0;border-top:2px solid rgba(43,36,32,.3)}\n';
   }
+  EPUB_PREMIUM_MSG = 'ไฟล์ EPUB เป็นฟีเจอร์ของพรีเมียม — อ่านเล่มในแอปและบันทึก PDF ยังใช้ได้ฟรีเต็มที่';
+  epubGate() {
+    if (this.isPremium) return true;
+    if (this.isNativeApp) { this.showToast(this.EPUB_PREMIUM_MSG + ' · เปิดใช้ได้ที่ onevela.net'); return false; }
+    this.showToast(this.EPUB_PREMIUM_MSG);
+    this.go('premium');
+    return false;
+  }
   async makeEpub() {
     if (this._epBusy) return;
+    if (!this.epubGate()) return;
     this._epBusy = true;
     this.setState({ epBusy: true, epPct: 6 });
     try {
@@ -11625,9 +11676,16 @@ class Component extends DCLogic {
       adminBusy: !!this.state.adminBusy, adminErr: this.state.adminErr || '',
       adminTotal: (this.state.adminStats && this.state.adminStats.total != null) ? this.state.adminStats.total : '—',
       adminPremium: (this.state.adminStats && this.state.adminStats.premium != null) ? this.state.adminStats.premium : '—',
+      adminPaid: (this.state.adminStats && this.state.adminStats.paid != null) ? this.state.adminStats.paid : '—',
+      adminGranted: (this.state.adminStats && this.state.adminStats.granted != null) ? this.state.adminStats.granted : '—',
       adminFree: (this.state.adminStats && this.state.adminStats.free != null) ? this.state.adminStats.free : '—',
       adminSubs: (this.state.adminStats && this.state.adminStats.activeSubs != null) ? this.state.adminStats.activeSubs : '—',
       adminRevenue: (this.state.adminStats && this.state.adminStats.revenue != null) ? ('฿' + Number(this.state.adminStats.revenue).toLocaleString()) : '—',
+      adminRevenueMonth: (this.state.adminStats && this.state.adminStats.revenueMonth != null) ? ('฿' + Number(this.state.adminStats.revenueMonth).toLocaleString()) : '—',
+      adminHasExpired: !!(this.state.adminStats && this.state.adminStats.expired > 0),
+      adminExpiredText: 'มี ' + ((this.state.adminStats && this.state.adminStats.expired) || 0) + ' บัญชีที่หมดอายุแล้วแต่ธงพรีเมียมยังค้างอยู่ — ไม่ถูกนับในตัวเลขข้างบน',
+      adminPays: this._adminPayRows(),
+      adminNoPay: !(this.state.adminStats && (this.state.adminStats.recent || []).length),
       pickPlanTrip: () => this.setState({ premiumPlan: 'trip' }), pickPlanYear: () => this.setState({ premiumPlan: 'year' }),
       tripSel: (this.state.premiumPlan || 'trip') === 'trip', yearSel: (this.state.premiumPlan || 'trip') === 'year',
       canBuyHere: !this.isNativeApp, buyOnWeb: this.isNativeApp,
@@ -11723,7 +11781,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.02j',
+      appVersion: '2026.09.03a',
       langIsEn: this.lang === 'en',
       langIsTh: this.lang !== 'en',
       setLangTh: () => this.setLang('th'),
@@ -11833,6 +11891,10 @@ class Component extends DCLogic {
           epBusy: !!this.state.epBusy,
           epLabel: this.state.epBusy ? 'กำลังทำไฟล์ EPUB… ' + (this.state.epPct || 0) + '%' : 'บันทึกไฟล์ EPUB',
           runEpub: () => this.makeEpub(),
+          epLocked: !this.isPremium,
+          epubNote: this.isPremium
+            ? 'อ่านเล่มได้ในแอปเลย · อยากได้ PDF กด "บันทึก PDF" ในเล่ม · EPUB คือไฟล์อีบุ๊กมาตรฐาน เปิดใน Apple Books / Play Books ได้'
+            : 'อ่านเล่มในแอปและบันทึก PDF ใช้ได้ฟรีเต็มที่ · ไฟล์ EPUB (เปิดใน Apple Books / Play Books) เป็นของพรีเมียม',
           ...(() => {
             const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
             return {
