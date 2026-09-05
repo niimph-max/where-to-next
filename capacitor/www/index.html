@@ -544,7 +544,24 @@
           <button onClick="{{ saveTrip }}" style="width:100%;margin-top:20px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer">{{ ncSaveLabel }}</button>
           <sc-if value="{{ ncEditing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTrip }}" style="width:100%;margin-top:10px;border:none;background:transparent;color:#b23b2a;font:600 15.5px 'Anuphan';padding:10px;cursor:pointer">ลบทริปนี้</button></sc-if>
           <div style="display:flex;align-items:center;gap:12px;margin:22px 0 16px"><div style="flex:1;height:1px;background:rgba(43,36,32,.1)"></div><div style="font:500 14px 'Anuphan';color:#a99e90">หรือ</div><div style="flex:1;height:1px;background:rgba(43,36,32,.1)"></div></div>
-          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์/รูป แล้ว AI แยกเป็นรายวันให้</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div onClick="{{ toggleVela }}" style="display:flex;align-items:center;gap:13px;background:#fffaf0;border:1.5px solid #c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:#f6e7dc;display:flex;align-items:center;justify-content:center;flex:none;font:400 20px 'Chonburi',serif;color:#c05f39">V</span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#2b241f">สร้างทริปจากแผน Vela</div><div style="font:500 14px 'Anuphan';color:#8a7d6f">เพื่อนแชร์แผนมาให้? วางข้อความ ได้ครบทุกวันทันที · ไม่ใช้ AI</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2" style="flex:none;transform:{{ vpChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
+          <sc-if value="{{ vpOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:16px;padding:15px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px">
+              <textarea value="{{ vpText }}" onInput="{{ setVpText }}" placeholder="วางข้อความแผนที่เพื่อนแชร์มาจาก Vela ทั้งก้อน (ท้ายข้อความมีบรรทัด “วางแผนด้วย Vela”)" rows="5" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:500 16px/1.6 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:vertical"></textarea>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button onClick="{{ pasteVela }}" style="flex:1;min-width:150px;border:1px solid rgba(43,36,32,.15);background:#fff;color:#5c5347;font:600 15.5px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer">วางจากคลิปบอร์ด</button>
+                <button onClick="{{ importVelaFn }}" style="flex:1.3;min-width:170px;border:none;background:#c05f39;color:#fff;font:600 16.5px 'Anuphan';padding:15px;border-radius:14px;cursor:pointer">สร้างทริปจากแผนนี้</button>
+              </div>
+              <sc-if value="{{ vpHasErr }}" hint-placeholder-val="{{ false }}">
+                <div style="font:600 14px/1.6 'Anuphan';color:#b23b2a">{{ vpErr }}</div>
+              </sc-if>
+              <sc-if value="{{ vpFallback }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ velaToAI }}" style="width:100%;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15.5px 'Anuphan';padding:13px;border-radius:14px;cursor:pointer">ส่งข้อความนี้ให้ AI แยกวันแทน ›</button>
+              </sc-if>
+              <div style="font:500 13.5px/1.6 'Anuphan';color:#a99e90">ได้ทุกกิจกรรม เวลา โน้ต ที่พัก และชื่อ/ประเทศ/วัน/งบ ของทริป — แก้ต่อได้ทั้งหมด</div>
+            </div>
+          </sc-if>
+          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์/รูป แล้ว AI แยกเป็นรายวันให้ · แผนที่แชร์จาก Vela วางแล้วเข้าครบทันที</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
           <sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
             <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:16px;padding:15px;margin-bottom:14px">
               <textarea value="{{ impText }}" onInput="{{ setImpText }}" placeholder="วางโปรแกรมทัวร์ที่นี่ (ก็อปจากอีเมล/ไลน์)… เช่น&#10;วันที่ 1 บินไปอัลมาตี&#10;วันที่ 2 เที่ยวเมือง…" rows="5" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:500 16px/1.6 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:vertical"></textarea>
@@ -3008,6 +3025,24 @@
     </div>
   </div>
 </sc-if>
+<sc-if value="{{ hasShareSheet }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeShareSheet }}" style="position:fixed;inset:0;z-index:9600;background:rgba(29,24,20,.55);display:flex;align-items:flex-end;justify-content:center">
+    <div onClick="{{ stopProp }}" style="width:100%;max-width:460px;background:#fffaf0;border-radius:22px 22px 0 0;padding:18px 16px 22px;box-shadow:0 -8px 30px rgba(0,0,0,.2);max-height:82vh;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="flex:1">
+          <div style="font:600 17px 'Anuphan';color:#2b241f">แชร์แผนทริปนี้</div>
+          <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f">ก็อปข้อความนี้ส่งให้เพื่อนได้เลย — เขาวางกลับใน Vela แล้วได้แผนครบทุกวัน</div>
+        </div>
+        <button onClick="{{ closeShareSheet }}" style="width:34px;height:34px;flex:none;border:none;border-radius:50%;background:#f0e6d6;color:#6f6558;font:700 17px 'Anuphan';cursor:pointer">✕</button>
+      </div>
+      <textarea data-share-text="1" readonly="readonly" value="{{ shareSheetText }}" rows="9" style="width:100%;box-sizing:border-box;flex:1;min-height:180px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:500 14px/1.65 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:none"></textarea>
+      <button onClick="{{ copyShareSheet }}" style="width:100%;border:none;background:#c05f39;color:#fff;font:600 16.5px 'Anuphan';padding:15px;border-radius:14px;cursor:pointer">{{ copyShareLabel }}</button>
+      <sc-if value="{{ hasShareHint }}" hint-placeholder-val="{{ false }}">
+        <div style="font:600 13.5px/1.55 'Anuphan';color:{{ shareHintColor }};text-align:center">{{ shareHint }}</div>
+      </sc-if>
+    </div>
+  </div>
+</sc-if>
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:9500;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 20px;border-radius:22px;box-shadow:0 10px 26px -8px rgba(43,36,32,.6);max-width:86vw;text-align:center;animation:wtnToast .28s ease">{{ toast }}</div>
 </sc-if>
@@ -5090,10 +5125,39 @@ class Component extends DCLogic {
       else { const rd = new FileReader(); rd.onload = () => this.setState(s => ({ impFiles: [...(s.impFiles || []), rd.result].slice(0, 6) })); rd.readAsDataURL(f); }
     });
   }
+  // ดึง JSON ออกจากคำตอบ AI แบบทนทาน: ตัดรั้ว ``` / ข้อความนำ-ท้าย และซ่อมกรณีคำตอบถูกตัดกลางทาง
+  _impJSON(raw) {
+    let s = String(raw || '').trim().replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '');
+    const i = s.indexOf('{');
+    if (i < 0) return null;
+    s = s.slice(i);
+    const j = s.lastIndexOf('}');
+    if (j > 0) { try { return JSON.parse(s.slice(0, j + 1)); } catch (e) {} }
+    return this._repairJSON(s);
+  }
+  // คำตอบยาวเกินจนถูกตัดท้าย → ตัดถึง object ที่ปิดครบล่าสุด แล้วปิดวงเล็บที่ค้างให้เอง
+  _repairJSON(s) {
+    let inStr = false, esc = false, cut = -1, cutStack = null;
+    const stack = [];
+    for (let k = 0; k < s.length; k++) {
+      const c = s[k];
+      if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+      if (c === '"') { inStr = true; continue; }
+      if (c === '{' || c === '[') stack.push(c);
+      else if (c === '}' || c === ']') { stack.pop(); if (stack.length) { cut = k; cutStack = stack.slice(); } }
+    }
+    if (cut < 0 || !cutStack) return null;
+    let t = s.slice(0, cut + 1);
+    for (let k = cutStack.length - 1; k >= 0; k--) t += (cutStack[k] === '{' ? '}' : ']');
+    try { return JSON.parse(t); } catch (e) { return null; }
+  }
   async importProgram() {
     const text = (this.state.impText || '').trim();
     const files = this.state.impFiles || [];
     if (!text && !files.length) { this.setState({ impErr: 'วางข้อความ หรือแนบไฟล์โปรแกรมก่อน' }); return; }
+    // ข้อความที่แชร์มาจาก Vela → อ่านตรงได้เลย ครบทุกกิจกรรม/เวลา/โน้ต ไม่ต้องใช้ AI
+    const vp = this.velaParse(text);
+    if (vp) { this.setState({ impErr: '' }); this.importVelaPlan(vp); return; }
     if (!this.aiGate()) return;
     this.setState({ impBusy: true, impErr: '' });
     const prompt = 'คุณคือตัวช่วยแยกโปรแกรมทัวร์เป็นแผนรายวันของแอปท่องเที่ยว\n' +
@@ -5105,9 +5169,13 @@ class Component extends DCLogic {
       'ใช้ภาษาไทย จำนวน days ให้ตรงกับโปรแกรมจริง ช่องที่ไม่มีข้อมูลใส่ "" ' +
       (text ? ('\n\nข้อความโปรแกรม:\n' + text) : '');
     try {
-      const raw = await this.askLLMParts(prompt, files);
-      const jsonStr = (raw.match(/\{[\s\S]*\}/) || [raw])[0];
-      const data = JSON.parse(jsonStr);
+      let raw = await this.askLLMParts(prompt, files);
+      let data = this._impJSON(raw);
+      if (!data) {
+        raw = await this.askLLMParts(prompt + '\n\nย้ำ: ตอบเป็น JSON ล้วนเท่านั้น เริ่มด้วย { และจบด้วย } ห้ามมีข้อความอื่นหรือรั้วโค้ดนอก JSON', files);
+        data = this._impJSON(raw);
+      }
+      if (!data) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ · ลองกดอีกครั้ง หรือแบ่งวางโปรแกรมเป็นช่วงสั้นลง');
       const M = this.thMonths();
       const start = this.state.ncStart ? new Date(this.state.ncStart) : null;
       const days = (data.days || []).map((d, i) => {
@@ -8218,14 +8286,171 @@ class Component extends DCLogic {
     lines.push('วางแผนด้วย Vela');
     return lines.join('\n');
   }
+  // ---------- แชร์แผนแบบเต็ม → ผู้รับวางกลับเข้า Vela ได้ครบ ไม่ต้องใช้ AI ----------
+  VELA_MARK = '[vela-plan v1';
+  velaPlanText() {
+    const info = this.tripInfo;
+    const EN = this.lang === 'en';
+    const L = [];
+    L.push('✦ ' + (info.title || (EN ? 'My trip' : 'ทริปของฉัน')));
+    const sub = [info.m1, info.m2].filter(Boolean).join(' · ');
+    if (sub) L.push(sub);
+    this.days.forEach((d, i) => {
+      const key = this.state.trip + ':' + i;
+      L.push('');
+      L.push('▸ ' + (EN ? 'Day ' : 'วันที่ ') + (d.n || (i + 1)) + ' (' + (d.date || '') + ')' + (d.city ? ' · ' + d.city : ''));
+      if (d.summary) L.push('» ' + d.summary);
+      [...(d.stops || []), ...(((this.state.added || {})[key]) || [])].forEach(s => {
+        const w = this.whenOfStop(s);
+        const when = w.time || w.period || '';
+        L.push('· ' + (when ? '[' + when + '] ' : '') + (s.kind ? s.kind + ' — ' : '') + (s.title || ''));
+        if (s.note) L.push('  ↳ ' + s.note);
+      });
+      if (d.stayName && d.stayName !== 'ยังไม่ได้เลือกที่พัก' && d.stayName !== 'No stay picked yet') L.push('⌂ ' + d.stayName + (d.stayMeta ? ' · ' + d.stayMeta : ''));
+    });
+    L.push('');
+    L.push(EN
+      ? 'Want this whole plan to edit yourself? Copy this text → open onevela.net/app → tap "Create a trip" → on the "Create a trip from a Vela plan" card, paste it and tap "Create trip from this plan" — every day lands instantly, free.'
+      : 'อยากได้แผนนี้ทั้งก้อนไปแก้ต่อ? ก็อปข้อความนี้ทั้งหมด → เปิด onevela.net/app → กด "สร้างทริปใหม่" → ที่การ์ด "สร้างทริปจากแผน Vela" วางข้อความนี้ แล้วกด "สร้างทริปจากแผนนี้" — ได้ครบทุกวันทันที ฟรี');
+    // แนบข้อมูลหัวทริป (ประเทศ/เมือง/วัน/งบ) ท้ายเครื่องหมาย — ฝั่งผู้รับจะได้ฟอร์มกรอกครบเอง
+    const ut = this.userTrips.find(x => x.id === this.state.trip) || {};
+    const meta = [ut.country || '', ut.city || '', ut.start || '', ut.end || '', ut.budget || ''].map(v => String(v).replace(/[|\]]/g, ' ').trim());
+    L.push((EN ? 'Planned with Vela · ' : 'วางแผนด้วย Vela · ') + this.VELA_MARK + (meta.some(Boolean) ? '|' + meta.join('|') : '') + ']');
+    return L.join('\n');
+  }
+  whenOfStop(s) {
+    const p = this.normPeriod(s.period), t = this.normHHMM(s.time);
+    if (p || t) return { period: p, time: t };
+    return this.parseLegacyT(s.t);
+  }
+  // อ่านข้อความที่แชร์ออกจาก Vela กลับเป็นแผน — ตรงตัว ไม่ผ่าน AI จึงครบและไม่มีค่าใช้จ่าย
+  velaParse(text) {
+    const src = String(text || '');
+    // ปกติดูจากเครื่องหมายท้ายข้อความ — แต่ถ้าบรรทัดท้ายหายไป (ตัดก็อปมาไม่ครบ) ยังอ่านจากรูปแบบได้
+    const looksVela = /(^|\n)\s*▸\s*(วันที่|Day)\s/.test(src) && /(^|\n)\s*·\s/.test(src);
+    if (src.indexOf(this.VELA_MARK) === -1 && !looksVela) return null;
+    const days = []; let cur = null, name = '';
+    src.split(/\r?\n/).forEach(raw => {
+      const ln = raw.trim();
+      if (!ln) return;
+      if (ln.indexOf('✦') === 0) { name = ln.slice(1).trim(); return; }
+      if (ln.indexOf('▸') === 0) {
+        const m = ln.slice(1).trim().match(/^(?:วันที่|Day)\s*([^\s(]+)\s*(?:\(([^)]*)\))?\s*(?:·\s*([\s\S]*))?$/);
+        const n = (m && m[1]) || String(days.length + 1);
+        const date = ((m && m[2]) || '').trim();
+        const dayWord = this.lang === 'en' ? 'Day ' : 'วันที่ ';
+        cur = { n, date, tag: dayWord + n + (date ? ' · ' + date : ''),
+          city: ((m && m[3]) || '').trim() || dayWord + n, summary: '', stops: [], stayName: '', stayMeta: '' };
+        days.push(cur); return;
+      }
+      if (!cur) return;
+      if (ln.indexOf('»') === 0) { cur.summary = ln.slice(1).trim(); return; }
+      if (ln.indexOf('⌂') === 0) {
+        const p = ln.slice(1).trim().split(' · ');
+        cur.stayName = (p.shift() || '').trim(); cur.stayMeta = p.join(' · ').trim(); return;
+      }
+      if (ln.indexOf('↳') === 0) { const s = cur.stops[cur.stops.length - 1]; if (s) s.note = ln.slice(1).trim(); return; }
+      if (ln.indexOf('·') === 0) {
+        let body = ln.slice(1).trim(), when = '';
+        const wm = body.match(/^\[([^\]]*)\]\s*/);
+        if (wm) { when = wm[1].trim(); body = body.slice(wm[0].length); }
+        let kind = '', title = body;
+        const parts = body.split(' — ');
+        if (parts.length > 1) { kind = parts.shift().trim(); title = parts.join(' — ').trim(); }
+        if (!title && !kind) return;
+        cur.stops.push({ ...this.mkWhen(this.normPeriod(when), /^\d{1,2}:\d{2}$/.test(when) ? when : ''), kind, title, note: '' });
+      }
+    });
+    if (!days.length) return null;
+    days.forEach(d => { if (!d.stayName) d.stayName = this.lang === 'en' ? 'No stay picked yet' : 'ยังไม่ได้เลือกที่พัก'; });
+    let meta = null;
+    const mm = src.match(/\[vela-plan v1\|([^\]]*)\]/);
+    if (mm) {
+      const p = mm[1].split('|').map(x => x.trim());
+      meta = { country: p[0] || '', city: p[1] || '', start: p[2] || '', end: p[3] || '', budget: p[4] || '' };
+    }
+    return { name, days, meta };
+  }
+  toggleVela() { this.setState(s => ({ vpOpen: !(s.vpOpen !== false), vpErr: '' })); }
+  async pasteVela() {
+    try {
+      const t = await navigator.clipboard.readText();
+      if (!t || !t.trim()) { this.setState({ vpErr: 'คลิปบอร์ดว่าง — ก็อปข้อความแผนจากแชตก่อน' }); return; }
+      this.setState({ vpText: t, vpErr: '' });
+      const vp = this.velaParse(t);
+      if (vp) this.importVelaText(t);
+    } catch (e) {
+      this.setState({ vpErr: 'เบราว์เซอร์ไม่ให้อ่านคลิปบอร์ด — กดค้างในกล่องข้างบนแล้วเลือก “วาง” เอง' });
+    }
+  }
+  // ข้อความไม่ใช่ของ Vela → ย้ายไปช่อง AI ให้เลย ไม่ต้องก็อปใหม่
+  velaToAI() {
+    this.setState({ impText: this.state.vpText || '', impOpen: true, impErr: '', vpText: '', vpErr: '', vpFallback: false, vpOpen: false });
+    this.showToast('ย้ายข้อความไปช่อง AI แล้ว — กด “ให้ AI แยกเป็นรายวัน”');
+  }
+  importVelaText(override) {
+    const t = String(override != null ? override : (this.state.vpText || '')).trim();
+    if (!t) { this.setState({ vpErr: 'วางข้อความแผนที่แชร์มาจาก Vela ก่อน' }); return; }
+    const vp = this.velaParse(t);
+    if (!vp) { this.setState({ vpErr: 'ข้อความนี้ไม่ใช่แผนที่แชร์จาก Vela — ช่องนี้อ่านได้เฉพาะแผนจากแอป (จึงครบและไม่ใช้ AI) · ถ้าเป็นโปรแกรมทัวร์ทั่วไป ให้ AI แยกวันให้ได้', vpFallback: true }); return; }
+    this.setState({ vpText: '', vpErr: '' });
+    this.importVelaPlan(vp);
+  }
+  importVelaPlan(vp) {
+    const days = vp.days;
+    const id = 't' + Date.now();
+    const meta = vp.meta || {};
+    // ช่องที่ผู้รับกรอกเองมาก่อน ถ้าเว้นไว้ก็ใช้ของเจ้าของแผน
+    const startStr = this.state.ncStart || meta.start || '';
+    const start = startStr ? new Date(startStr) : null;
+    if (start && !isNaN(start)) {
+      const M = this.thMonths();
+      days.forEach((d, i) => {
+        const dt = new Date(start.getTime() + i * 86400000);
+        d.date = dt.getDate() + ' ' + M[dt.getMonth()];
+        d.tag = (this.lang === 'en' ? 'Day ' : 'วันที่ ') + d.n + ' · ' + d.date;
+      });
+    }
+    const end = start && !isNaN(start) ? new Date(start.getTime() + (days.length - 1) * 86400000) : null;
+    const rec = { id, name: (this.state.ncName || '').trim() || vp.name || (this.lang === 'en' ? 'Trip from Vela' : 'ทริปจาก Vela'),
+      country: (this.state.ncCountry || '').trim() || meta.country || '',
+      city: (this.state.ncCity || '').trim() || meta.city || '',
+      start: startStr, end: this.state.ncEnd || meta.end || (end ? end.toISOString().slice(0, 10) : ''),
+      budget: parseInt((this.state.ncBudget || '').replace(/[^0-9]/g, ''), 10) || parseInt(String(meta.budget).replace(/[^0-9]/g, ''), 10) || 0 };
+    this.saveUserTrips([rec, ...this.userTrips]);
+    this.saveItinerary(id, days);
+    const stops = days.reduce((a, d) => a + (d.stops || []).length, 0);
+    this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
+    this.showToast('✓ นำเข้าแผนจาก Vela · ' + days.length + ' วัน · ' + stops + ' กิจกรรม');
+    this.openTrip(id);
+  }
   async shareOverview() {
-    const text = this.overviewText();
+    const text = this.velaPlanText();
     const title = (this.tripInfo.title || 'ทริปของฉัน');
     try {
       if (navigator.share) { await navigator.share({ title, text }); return; }
     } catch (e) { if (e && e.name === 'AbortError') return; }
-    try { await navigator.clipboard.writeText(text); alert('คัดลอกภาพรวมทริปแล้ว — เอาไปวางแชร์ได้เลย'); }
-    catch (e) { alert(text); }
+    // ไม่มีชีตแชร์ของระบบ (เดสก์ท็อป/ในเฟรม) → เปิดชีตของแอปเอง ให้ก็อปได้ชัวร์
+    this.setState({ shareSheet: text, shareCopied: false, shareCopyFail: false });
+  }
+  closeShareSheet() { this.setState({ shareSheet: '', shareCopied: false, shareCopyFail: false }); }
+  async copyShareSheet() {
+    const text = this.state.shareSheet || '';
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    if (!ok) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch (e) {}
+    }
+    if (ok) this.setState({ shareCopied: true, shareCopyFail: false });
+    else {
+      this.setState({ shareCopied: false, shareCopyFail: true });
+      try { const ta = document.querySelector('[data-share-text]'); if (ta) { ta.focus(); ta.select(); } } catch (e) {}
+    }
   }
   exportOverviewPdf() {
     document.body.setAttribute('data-wtn-print', 'overview');
@@ -10099,6 +10324,45 @@ class Component extends DCLogic {
     this.go('premium');
     return false;
   }
+  // ยิงปลั๊กอิน native ตรง ๆ (www ไม่ผ่าน bundler → Cap.Plugins.X มักเป็น undefined)
+  _np(name, method, args) {
+    if (window.__velaNP) return window.__velaNP(name, method, args || {});
+    const C = window.Capacitor;
+    try {
+      const pl = C && C.Plugins && C.Plugins[name];
+      if (pl && typeof pl[method] === 'function') return Promise.resolve(pl[method](args || {}));
+    } catch (e) {}
+    try { if (C && typeof C.nativePromise === 'function') return C.nativePromise(name, method, args || {}); } catch (e) {}
+    return Promise.reject(new Error(name + '.' + method + ' ไม่พร้อม'));
+  }
+  _blobB64(blob) {
+    return new Promise((ok, no) => {
+      const r = new FileReader();
+      r.onload = () => ok(String(r.result).split(',')[1] || '');
+      r.onerror = no;
+      r.readAsDataURL(blob);
+    });
+  }
+  // แอนดรอยด์: share sheet ของ Web Share ให้แต่ "แอปที่เปิด epub ได้" ไม่มีทางเซฟไฟล์
+  // และ <a download> ใน WebView ก็ไม่ทำงาน → ต้องเขียนไฟล์ลงเครื่องผ่านปลั๊กอิน Filesystem
+  // (ถ้าปลั๊กอินไม่ได้ลง จะ reject แล้วตกไปใช้ทางเดิม)
+  async _saveFileNative(blob, name, title) {
+    const data = await this._blobB64(blob);
+    for (const directory of ['DOCUMENTS', 'EXTERNAL', 'CACHE']) {
+      try {
+        const r = await this._np('Filesystem', 'writeFile', { path: 'Vela/' + name, data, directory, recursive: true });
+        const uri = (r && (r.uri || r.path)) || '';
+        if (directory === 'CACHE') {
+          await this._np('Share', 'share', { title, url: uri, dialogTitle: 'บันทึกไฟล์ EPUB' });
+          return true;
+        }
+        const where = directory === 'DOCUMENTS' ? 'Documents/Vela' : 'Vela';
+        this.showToast('บันทึกไฟล์แล้ว: ' + where + '/' + name + ' — เปิดจากแอปไฟล์ หรือ Play Books ได้เลย');
+        return true;
+      } catch (e) {}
+    }
+    return false;
+  }
   async makeEpub() {
     if (this._epBusy) return;
     if (!this.epubGate()) return;
@@ -10117,6 +10381,8 @@ class Component extends DCLogic {
       const name = (D.title || 'vela-book').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) + '.epub';
       this.setState({ epPct: 100 });
       const file = new File([blob], name, { type: 'application/epub+zip' });
+      const plat = (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()) || 'web';
+      if (plat === 'android' && await this._saveFileNative(blob, name, D.title)) return;
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], title: D.title }); return; }
         catch (e) { if (e && e.name === 'AbortError') return; }
@@ -11809,7 +12075,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.03f',
+      appVersion: '2026.09.05a',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -12555,7 +12821,15 @@ class Component extends DCLogic {
       addImpFiles: e => this.addImpFiles(e),
       importProgramFn: () => this.importProgram(),
       impBusy: !!this.state.impBusy,
-      impBtnLabel: this.state.impBusy ? 'กำลังแยกวัน…' : 'ให้ AI แยกเป็นรายวัน',
+      impBtnLabel: this.state.impBusy ? 'กำลังแยกวัน…'
+        : (String(this.state.impText || '').indexOf(this.VELA_MARK) !== -1 ? 'นำเข้าแผนนี้ (ไม่ใช้ AI)' : 'ให้ AI แยกเป็นรายวัน'),
+      vpOpen: this.state.vpOpen !== false,
+      vpChevron: this.state.vpOpen !== false ? 'rotate(180deg)' : 'none',
+      vpText: this.state.vpText ?? '', setVpText: e => this.setState({ vpText: e.target.value, vpErr: '', vpFallback: false }),
+      vpErr: this.state.vpErr || '', vpHasErr: !!this.state.vpErr,
+      vpFallback: !!this.state.vpFallback, velaToAI: () => this.velaToAI(),
+      toggleVela: () => this.toggleVela(), pasteVela: () => this.pasteVela(),
+      importVelaFn: () => this.importVelaText(),
       impBtnOpacity: this.state.impBusy ? '.6' : '1',
       impErr: this.state.impErr || '', impHasErr: !!this.state.impErr,
       ncName: this.state.ncName ?? '', setNcName: e => this.setState({ ncName: e.target.value }),
@@ -12699,6 +12973,14 @@ class Component extends DCLogic {
       retryCiGeo: () => this.grabCiPos(),
       recenterMe: () => this.recenterMe(),
       toast: this.state.toast || '', hasToast: !!this.state.toast,
+      hasShareSheet: !!this.state.shareSheet, shareSheetText: this.state.shareSheet || '',
+      closeShareSheet: () => this.closeShareSheet(), copyShareSheet: () => this.copyShareSheet(),
+      copyShareLabel: this.state.shareCopied ? '✓ คัดลอกแล้ว' : (this.state.shareCopyFail ? 'ลองคัดลอกอีกครั้ง' : 'คัดลอกข้อความ'),
+      hasShareHint: !!(this.state.shareCopied || this.state.shareCopyFail),
+      shareHint: this.state.shareCopied ? 'คัดลอกแล้ว — เอาไปวางในแชตได้เลย'
+        : 'เบราว์เซอร์นี้ไม่ให้ก็อปอัตโนมัติ · เลือกข้อความในกล่องไว้ให้แล้ว กด Ctrl/⌘+C (มือถือ: กดค้าง → คัดลอก)',
+      shareHintColor: this.state.shareCopied ? '#5f7d58' : '#b23b2a',
+      stopProp: e => { if (e && e.stopPropagation) e.stopPropagation(); },
       cfOpen: !!this.state.cfMsg, cfMsg: this.state.cfMsg || '', cfOkLabel: this.state.cfOkLabel || 'ลบ',
       cfCancel: () => this.setState({ cfMsg: '', cfFn: null }),
       cfOk: () => { const fn = this.state.cfFn; this.setState({ cfMsg: '', cfFn: null }); if (typeof fn === 'function') fn(); },

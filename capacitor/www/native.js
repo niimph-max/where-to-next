@@ -23,6 +23,7 @@
     return Promise.reject(new Error(name + '.' + method + ' ไม่พร้อม'));
   }
   function np(name, method, args) { return NP(name, method, args).catch(function () {}); }
+  window.__velaNP = NP;   // ให้แอปเรียกปลั๊กอิน (Filesystem/Share) ได้ผ่านสะพานเดียวกัน
   // ฟังอีเวนต์ของปลั๊กอิน — ทางหลักคือสะพาน native เช่นเดียวกัน
   function NL(name, event, cb) {
     try {
