@@ -1,0 +1,164 @@
+# Vela — บิลด์ iOS จาก Windows โดยไม่ต้องมี Mac
+# วางไฟล์นี้ที่ราก repo (ระดับเดียวกับ capacitor/)
+# ฟรี 500 นาที/เดือน — บิลด์ iOS หนึ่งครั้งกินราว 8-14 นาที
+#
+# ตอนนี้ตั้งเป็น "บิลด์ทดสอบแบบไม่เซ็นชื่อ" เพื่อพิสูจน์ว่าสายพานทำงาน
+# ใช้ได้เลยโดยยังไม่ต้องมีบัญชี Apple ที่อนุมัติแล้ว
+#
+# ▶ พอ Apple อนุมัติแล้วให้ทำ 3 อย่าง (ดูหมายเหตุท้ายไฟล์):
+#   1) ใน Codemagic UI ต่อ Apple Developer Portal + App Store Connect API key
+#   2) เปิดคอมเมนต์บล็อก ios_signing / integrations / publishing
+#   3) ลบ CODE_SIGNING_ALLOWED=NO ออกจากคำสั่งบิลด์
+
+workflows:
+  # ─── Android · ไฟล์ .aab สำหรับ Play Store ─────────────────
+  # เครื่อง Linux ราคาถูก บิลด์ราว 5-8 นาที
+  # ต้องตั้งค่าใน Codemagic UI ก่อน:
+  #   Teams/App settings → Code signing identities → Android keystore
+  #   อัปโหลด vela-release.keystore + รหัส + alias  แล้วตั้งชื่อ reference = vela_keystore
+  android-release:
+    name: Vela Android · .aab
+    instance_type: linux_x2
+    max_build_duration: 40
+    environment:
+      java: 17
+      node: 20
+      android_signing:
+        - vela_keystore
+    scripts:
+      - name: ติดตั้ง dependencies
+        script: |
+          cd capacitor
+          npm install
+      - name: เตรียม Android platform
+        script: |
+          cd capacitor
+          npx cap add android 2>/dev/null || true
+          npx cap sync android
+      - name: ตั้งเลขบิลด์
+        script: |
+          cd capacitor/android
+          echo "versionCode = $(($PROJECT_BUILD_NUMBER + 1))"
+      - name: บิลด์ .aab
+        script: |
+          cd capacitor/android
+          chmod +x gradlew
+          ./gradlew bundleRelease
+    artifacts:
+      - capacitor/android/app/build/outputs/**/*.aab
+      - capacitor/android/app/build/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - admin@onevela.net
+        notify:
+          success: true
+          failure: true
+
+  ios-test:
+    name: Vela iOS · บิลด์ทดสอบ (ยังไม่เซ็นชื่อ)
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    environment:
+      xcode: latest
+      cocoapods: default
+      node: 20
+      vars:
+        VELA_VERSION: "1.0.2"        # ← เลขเวอร์ชันที่จะปล่อย แก้ที่นี่ที่เดียว
+    scripts:
+      - name: ติดตั้ง dependencies
+        script: |
+          cd capacitor
+          npm install
+      - name: เตรียม iOS platform
+        script: |
+          cd capacitor
+          npx cap sync ios
+      - name: pod install
+        script: |
+          cd capacitor/ios/App
+          pod install
+      - name: ตั้งเวอร์ชัน + เลขบิลด์
+        script: |
+          cd capacitor/ios/App
+          # เลขที่ผู้ใช้เห็นใน App Store — แก้ค่า VELA_VERSION ด้านบนของ workflow
+          agvtool new-marketing-version "$VELA_VERSION" || /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VELA_VERSION" App/Info.plist
+          # เลขบิลด์ต้องมากกว่าครั้งก่อนเสมอ — ใช้ตัวนับของ Codemagic
+          agvtool new-version -all "$BUILD_NUMBER" || /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" App/Info.plist
+      - name: บิลด์ (ไม่เซ็นชื่อ — แค่ดูว่าคอมไพล์ผ่าน)
+        script: |
+          cd capacitor/ios/App
+          xcodebuild \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/App.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            archive
+    artifacts:
+      - capacitor/ios/App/build/**/*.xcarchive
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - admin@onevela.net
+        notify:
+          success: true
+          failure: true
+
+# ─────────────────────────────────────────────────────────────
+# ▶ เวอร์ชันจริง (ใช้หลัง Apple อนุมัติ)
+# เอาบล็อกล่างนี้ไปแทน workflow ด้านบน แล้วเปลี่ยนชื่อ integration
+# ให้ตรงกับที่ตั้งไว้ใน Codemagic UI
+#
+# workflows:
+#   ios-release:
+#     name: Vela iOS · TestFlight
+#     instance_type: mac_mini_m2
+#     max_build_duration: 45
+#     integrations:
+#       app_store_connect: Vela ASC key      # ← ชื่อ key ที่ตั้งใน Codemagic UI
+#     environment:
+#       xcode: latest
+#       cocoapods: default
+#       node: 20
+#       vars:
+#         VELA_VERSION: "1.0.2"
+#       ios_signing:
+#         distribution_type: app_store
+#         bundle_identifier: net.onevela.app
+#     scripts:
+#       - name: ติดตั้ง dependencies
+#         script: |
+#           cd capacitor
+#           npm install
+#       - name: เตรียม iOS platform
+#         script: |
+#           cd capacitor
+#           npx cap sync ios
+#       - name: pod install
+#         script: |
+#           cd capacitor/ios/App
+#           pod install
+#       - name: ตั้งเวอร์ชัน + เลขบิลด์
+#         script: |
+#           cd capacitor/ios/App
+#           agvtool new-marketing-version "$VELA_VERSION"
+#           agvtool new-version -all "$BUILD_NUMBER"
+#       - name: บิลด์ ipa
+#         script: |
+#           cd capacitor/ios/App
+#           xcode-project use-profiles
+#           xcode-project build-ipa --workspace "App.xcworkspace" --scheme "App"
+#     artifacts:
+#       - capacitor/ios/App/build/ios/ipa/*.ipa
+#       - /tmp/xcodebuild_logs/*.log
+#     publishing:
+#       app_store_connect:
+#         auth: integration
+#         submit_to_testflight: true
+#       email:
+#         recipients:
+#           - admin@onevela.net
