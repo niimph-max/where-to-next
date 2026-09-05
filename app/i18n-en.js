@@ -1734,3 +1734,37 @@ Object.assign(window.WTN_EN, {
   "Vela · เวอร์ชัน": "Vela · version",
   "พบรูป": "Found"
 });
+
+Object.assign(window.WTN_EN, {
+  // ── นำเข้าแผนจาก Vela / แชร์แผน (ก.ย. 2026) ──
+  "สร้างทริปจากแผน Vela": "Create a trip from a Vela plan",
+  "เพื่อนแชร์แผนมาให้? วางข้อความ ได้ครบทุกวันทันที · ไม่ใช้ AI": "A friend shared their plan? Paste it and every day lands instantly · no AI",
+  "วางจากคลิปบอร์ด": "Paste from clipboard",
+  "สร้างทริปจากแผนนี้": "Create trip from this plan",
+  "ได้ทุกกิจกรรม เวลา โน้ต ที่พัก และชื่อ/ประเทศ/วัน/งบ ของทริป — แก้ต่อได้ทั้งหมด": "You get every activity, time, note and stay, plus the trip name, country, dates and budget — all editable afterwards.",
+  "ส่งข้อความนี้ให้ AI แยกวันแทน ›": "Let AI split this into days instead ›",
+  "วางข้อความแผนที่เพื่อนแชร์มาจาก Vela ทั้งก้อน (ท้ายข้อความมีบรรทัด “วางแผนด้วย Vela”)": "Paste the whole plan your friend shared from Vela (it ends with a “Planned with Vela” line)",
+  "วางข้อความแผนที่แชร์มาจาก Vela ก่อน": "Paste the plan shared from Vela first",
+  "คลิปบอร์ดว่าง — ก็อปข้อความแผนจากแชตก่อน": "Clipboard is empty — copy the plan from your chat first",
+  "เบราว์เซอร์ไม่ให้อ่านคลิปบอร์ด — กดค้างในกล่องข้างบนแล้วเลือก “วาง” เอง": "This browser blocks clipboard reading — long-press the box above and choose “Paste”",
+  "ข้อความนี้ไม่ใช่แผนที่แชร์จาก Vela — ช่องนี้อ่านได้เฉพาะแผนจากแอป (จึงครบและไม่ใช้ AI) · ถ้าเป็นโปรแกรมทัวร์ทั่วไป ให้ AI แยกวันให้ได้": "This isn't a plan shared from Vela — this box only reads plans from the app (that's why it's complete and needs no AI) · for a regular tour itinerary, let AI split it into days",
+  "ย้ายข้อความไปช่อง AI แล้ว — กด “ให้ AI แยกเป็นรายวัน”": "Moved to the AI box — now tap “Let AI split it into days”",
+  "นำเข้าแผนนี้ (ไม่ใช้ AI)": "Import this plan (no AI)",
+  "วางข้อความ หรือแนบไฟล์/รูป แล้ว AI แยกเป็นรายวันให้ · แผนที่แชร์จาก Vela วางแล้วเข้าครบทันที": "Paste text or attach a file/photo and AI splits it into days · a plan shared from Vela lands complete instantly",
+  "AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ · ลองกดอีกครั้ง หรือแบ่งวางโปรแกรมเป็นช่วงสั้นลง": "AI's answer came back incomplete or unreadable · tap again, or paste the itinerary in shorter parts",
+  // ── ชีตแชร์แผน ──
+  "แชร์แผนทริปนี้": "Share this trip plan",
+  "ก็อปข้อความนี้ส่งให้เพื่อนได้เลย — เขาวางกลับใน Vela แล้วได้แผนครบทุกวัน": "Copy this and send it to a friend — pasting it back into Vela gives them every day of the plan",
+  "คัดลอกข้อความ": "Copy text",
+  "✓ คัดลอกแล้ว": "✓ Copied",
+  "ลองคัดลอกอีกครั้ง": "Try copying again",
+  "คัดลอกแล้ว — เอาไปวางในแชตได้เลย": "Copied — paste it into any chat",
+  "เบราว์เซอร์นี้ไม่ให้ก็อปอัตโนมัติ · เลือกข้อความในกล่องไว้ให้แล้ว กด Ctrl/⌘+C (มือถือ: กดค้าง → คัดลอก)": "This browser blocks auto-copy · the text is already selected — press Ctrl/⌘+C (on mobile: long-press → Copy)",
+  "ยังไม่ได้เลือกที่พัก": "No stay picked yet",
+  "ทริปจาก Vela": "Trip from Vela"
+});
+
+window.WTN_EN_RULES = (window.WTN_EN_RULES || []).concat([
+  ["^✓ นำเข้าแผนจาก Vela · (\\d+) วัน · (\\d+) กิจกรรม$", "✓ Plan imported from Vela · $1 days · $2 activities"],
+  ["^✓ โหลดโปรแกรม (\\d+) วันแล้ว$", "✓ Itinerary loaded · $1 days"]
+]);
