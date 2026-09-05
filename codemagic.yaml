@@ -58,6 +58,7 @@ workflows:
         XCODE_WORKSPACE: "capacitor/ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
         BUNDLE_ID: "net.onevela.app"
+        VELA_VERSION: "1.0.2"
       # ไม่ใช้ ios_signing เพราะมันหา profile ที่มีอยู่เดิมเท่านั้น — เราสร้างเองในสคริปต์ข้างล่าง
     scripts:
       - name: เช็คว่ามีตัวเว็บอยู่จริง
@@ -148,7 +149,7 @@ workflows:
           LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
           [ -z "$LATEST" ] && LATEST=0
           agvtool new-version -all $((LATEST + 1)) || echo "⚠️ ตั้ง build number ไม่สำเร็จ — ใช้ค่าเดิม"
-          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.0.1;/g' App.xcodeproj/project.pbxproj
+          sed -i '' "s/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = $VELA_VERSION;/g" App.xcodeproj/project.pbxproj
           grep -m1 MARKETING_VERSION App.xcodeproj/project.pbxproj
           
       - name: บิลด์ ipa
