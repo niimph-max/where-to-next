@@ -3539,6 +3539,45 @@ class Component extends DCLogic {
     window.dispatchEvent(new Event('photopick-change'));
     this.forceUpdate();
   }
+  // ไฟล์แนบ (ตั๋ว/PDF/รูปเอกสาร) เก็บเป็น data URL ในเครื่อง → ยกขึ้น R2 แล้วแทนด้วยลิงก์
+  // ทำให้ไฟล์แนบขึ้นคลาวด์ได้จริง (เดิม PDF ไม่เคยถูกยก และก้อนใหญ่เกินโควตาจะถูกตัดตอนส่ง)
+  async hoistDocs() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || !be.uploadImage) return;
+    let all = null;
+    try { all = JSON.parse(localStorage.getItem('wtn-docs') || 'null'); } catch (e) {}
+    if (!all || typeof all !== 'object') return;
+    const extOf = u => {
+      const m = /^data:([^;,]+)/.exec(u || '');
+      const t = (m && m[1] || '').toLowerCase();
+      if (t.indexOf('pdf') !== -1) return '.pdf';
+      if (t === 'image/png') return '.png';
+      if (t === 'image/webp') return '.webp';
+      if (t === 'image/heic' || t === 'image/heif') return '.jpg';
+      return '.jpg';
+    };
+    let changed = false;
+    for (const tid of Object.keys(all)) {
+      const list = all[tid];
+      if (!Array.isArray(list)) continue;
+      for (let i = 0; i < list.length; i++) {
+        const d = list[i];
+        if (!d || typeof d !== 'object') continue;
+        const u = d.url || '';
+        if (typeof u !== 'string' || u.indexOf('data:') !== 0) continue;
+        if (u.length > 12e6) continue;                       // ใหญ่เกิน ~9MB — ข้ามไว้ ไม่ให้ค้าง
+        const nm = String(d.name || 'doc').replace(/[^\w.\-]/g, '_').slice(0, 40) + extOf(u);
+        try {
+          const url = await be.uploadImage(u, nm);
+          if (url) { list[i] = { ...d, url, _m: Date.now() }; changed = true; }
+        } catch (e) { /* อัพไม่ได้ก็คงไฟล์ไว้ในเครื่อง รอบหน้าค่อยลองใหม่ */ }
+      }
+    }
+    if (!changed) return;
+    this._applyingCloud = true;
+    try { localStorage.setItem('wtn-docs', JSON.stringify(all)); } catch (e) {} finally { this._applyingCloud = false; }
+    this.forceUpdate();
+  }
   localHasData() {
     try {
       const t = JSON.parse(localStorage.getItem('wtn-trips') || '[]');
@@ -3936,6 +3975,7 @@ class Component extends DCLogic {
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
+      try { await this.hoistDocs(); } catch (e) { console.warn('[wtn] hoistDocs', e); }
       // ดึงก้อนเต็มจากคลาวด์เฉพาะเมื่อมันเปลี่ยนจริง — ไม่งั้นใช้สำเนาที่ดันขึ้นครั้งก่อน (ประหยัด egress)
       let remote = null;
       try {
@@ -12304,7 +12344,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.06d',
+      appVersion: '2026.09.06e',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
