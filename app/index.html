@@ -1186,9 +1186,9 @@
                 </span>
                 <div style="flex:1;min-width:0">
                   <div style="font:500 12.5px 'Anuphan';color:#ffe0c8">{{ tdNowKicker }}</div>
-                  <div style="font:600 15.5px 'Anuphan';color:#fff">{{ tdNowTitle }}</div>
+                  <div style="font:600 15.5px 'Anuphan';color:#fff;text-wrap:pretty">{{ tdNowTitle }}</div>
+                  <div style="font:600 13.5px 'Anuphan';color:#ffe0c8;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ tdNowSub }}</div>
                 </div>
-                <span style="font:600 13.5px 'Anuphan';color:#ffe0c8;flex:none">{{ tdNowSub }}</span>
               </div>
             </sc-if>
           </div>
@@ -2822,8 +2822,8 @@
       <div style="display:flex;align-items:flex-start;gap:12px">
         <img src="icon-192.png" alt="" style="width:46px;height:46px;border-radius:12px;flex:none;display:block">
         <div style="flex:1;min-width:0">
-          <div style="font:700 16px 'Anuphan';color:#2b241f">ติดตั้ง Vela ไว้ในเครื่อง</div>
-          <div style="font:500 13.5px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">เปิดเต็มจอ ไม่มีแถบเบราว์เซอร์ · ใช้ได้ตอนไม่มีเน็ต</div>
+          <div style="font:700 16px 'Anuphan';color:#2b241f">{{ a2hsTitle }}</div>
+          <div style="font:500 13.5px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">{{ a2hsSub }}</div>
         </div>
         <button onClick="{{ a2hsDismiss }}" aria-label="ปิด" style="flex:none;width:32px;height:32px;border:none;background:transparent;color:#b3a897;font:600 20px 'Anuphan';border-radius:8px;cursor:pointer;line-height:1">×</button>
       </div>
@@ -7996,6 +7996,19 @@ class Component extends DCLogic {
     this._bip = null;
     try { p.prompt(); p.userChoice && p.userChoice.then(r => { if (r && r.outcome === 'accepted') this.showToast && this.showToast('ติดตั้งแล้ว เปิดจากหน้าจอโฮมได้เลย'); }); } catch (e) {}
   }
+  // ชวนลงแอปตอนที่ผู้ใช้อินที่สุด — เพิ่งนำเข้าแผนของเพื่อนสำเร็จ (เว็บเท่านั้น)
+  nudgeInstall(why) {
+    if (this.isNativeApp) return;
+    const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    if (standalone || this.state.a2hsOff) return;
+    let dis = 0;
+    try { dis = +(localStorage.getItem('wtn-a2hs-off') || 0); } catch (e) {}
+    if (dis && Date.now() - dis < 14 * 864e5) return;
+    const ua = navigator.userAgent || '';
+    const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+    if (!this._bip && !ios) return;                       // ไม่มีทางติดตั้งให้กด ก็ไม่ต้องกวน
+    setTimeout(() => this.setState({ a2hsShow: true, a2hsIos: ios && !this._bip, a2hsWhy: why || '' }), 1400);
+  }
   a2hsClose(forever) {
     if (forever) { try { localStorage.setItem('wtn-a2hs-off', String(Date.now())); } catch (e) {} }
     this.setState({ a2hsShow: false, a2hsOff: true });
@@ -8422,6 +8435,7 @@ class Component extends DCLogic {
     this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
     this.showToast('✓ นำเข้าแผนจาก Vela · ' + days.length + ' วัน · ' + stops + ' กิจกรรม');
     this.openTrip(id);
+    this.nudgeInstall('import');
   }
   async shareOverview() {
     const text = this.velaPlanText();
@@ -12216,12 +12230,16 @@ class Component extends DCLogic {
       })(),
       goHome: () => this.setTab('plan'),
       a2hsShow: !!this.state.a2hsShow,
+      a2hsTitle: this.state.a2hsWhy === 'import' ? 'เก็บแผนนี้ไว้ในเครื่อง' : 'ติดตั้ง Vela ไว้ในเครื่อง',
+      a2hsSub: this.state.a2hsWhy === 'import'
+        ? 'ลงแอปไว้ เปิดแผนได้เร็วกว่า · แก้ต่อได้ตอนไม่มีเน็ต'
+        : 'เปิดเต็มจอ ไม่มีแถบเบราว์เซอร์ · ใช้ได้ตอนไม่มีเน็ต',
       a2hsIos: !!this.state.a2hsIos,
       a2hsCanPrompt: !!this.state.a2hsCan,
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.06a',
+      appVersion: '2026.09.06c',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
