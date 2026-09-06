@@ -530,16 +530,16 @@
             <div style="position:absolute;bottom:10px;left:12px;background:rgba(43,36,32,.62);color:#fff;font:600 13px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>แตะเพื่อเลือกรูปปก</div>
           </div>
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ชื่อทริป</div>
-          <input value="{{ ncName }}" onInput="{{ setNcName }}" placeholder="เช่น คาซัคสถาน หน้าร้อน" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
+          <input value="{{ ncName }}" onInput="{{ setNcName }}" placeholder="เช่น คาซัคสถาน หน้าร้อน" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
           <div style="display:flex;gap:10px;margin-top:13px">
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ประเทศ</div><input value="{{ ncCountry }}" onInput="{{ setNcCountry }}" placeholder="เช่น คาซัคสถาน" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">เมือง</div><input value="{{ ncCity }}" onInput="{{ setNcCity }}" placeholder="เช่น อัลมาตี" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ประเทศ</div><input value="{{ ncCountry }}" onInput="{{ setNcCountry }}" placeholder="เช่น คาซัคสถาน" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">เมือง</div><input value="{{ ncCity }}" onInput="{{ setNcCity }}" placeholder="เช่น อัลมาตี" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:13px">
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันเริ่ม</div><input type="date" value="{{ ncStart }}" onInput="{{ setNcStart }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันจบ</div><input type="date" value="{{ ncEnd }}" onInput="{{ setNcEnd }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันเริ่ม</div><input type="date" value="{{ ncStart }}" onInput="{{ setNcStart }}" style="width:100%;height:47px;-webkit-appearance:none;appearance:none;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันจบ</div><input type="date" value="{{ ncEnd }}" onInput="{{ setNcEnd }}" style="width:100%;height:47px;-webkit-appearance:none;appearance:none;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
-          <div style="margin-top:13px"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">งบประมาณ (บาท)</div><input inputmode="numeric" value="{{ ncBudget }}" onInput="{{ setNcBudget }}" placeholder="เช่น 70000" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+          <div style="margin-top:13px"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">งบประมาณ (บาท)</div><input inputmode="numeric" value="{{ ncBudget }}" onInput="{{ setNcBudget }}" placeholder="เช่น 70000" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           <sc-if value="{{ ncHasRange }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;font:500 14.5px 'Anuphan';color:#c05f39">{{ ncDayNote }}</div></sc-if>
           <button onClick="{{ saveTrip }}" style="width:100%;margin-top:20px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer">{{ ncSaveLabel }}</button>
           <sc-if value="{{ ncEditing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTrip }}" style="width:100%;margin-top:10px;border:none;background:transparent;color:#b23b2a;font:600 15.5px 'Anuphan';padding:10px;cursor:pointer">ลบทริปนี้</button></sc-if>
@@ -709,7 +709,7 @@
           </sc-for>
           <div class="wtn-ov-actions" style="display:flex;gap:10px;margin-top:18px">
             <button onClick="{{ shareOverview }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
-            <button onClick="{{ exportOverviewPdf }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>บันทึก PDF</button>
+            <button onClick="{{ exportOverviewPdf }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>โปรแกรมเดินทาง</button>
           </div>
         </div>
       </sc-if>
@@ -1187,9 +1187,9 @@
                 </span>
                 <div style="flex:1;min-width:0">
                   <div style="font:500 12.5px 'Anuphan';color:#ffe0c8">{{ tdNowKicker }}</div>
-                  <div style="font:600 15.5px 'Anuphan';color:#fff">{{ tdNowTitle }}</div>
+                  <div style="font:600 15.5px 'Anuphan';color:#fff;text-wrap:pretty">{{ tdNowTitle }}</div>
+                  <div style="font:600 13.5px 'Anuphan';color:#ffe0c8;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ tdNowSub }}</div>
                 </div>
-                <span style="font:600 13.5px 'Anuphan';color:#ffe0c8;flex:none">{{ tdNowSub }}</span>
               </div>
             </sc-if>
           </div>
@@ -2823,8 +2823,8 @@
       <div style="display:flex;align-items:flex-start;gap:12px">
         <img src="icon-192.png" alt="" style="width:46px;height:46px;border-radius:12px;flex:none;display:block">
         <div style="flex:1;min-width:0">
-          <div style="font:700 16px 'Anuphan';color:#2b241f">ติดตั้ง Vela ไว้ในเครื่อง</div>
-          <div style="font:500 13.5px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">เปิดเต็มจอ ไม่มีแถบเบราว์เซอร์ · ใช้ได้ตอนไม่มีเน็ต</div>
+          <div style="font:700 16px 'Anuphan';color:#2b241f">{{ a2hsTitle }}</div>
+          <div style="font:500 13.5px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">{{ a2hsSub }}</div>
         </div>
         <button onClick="{{ a2hsDismiss }}" aria-label="ปิด" style="flex:none;width:32px;height:32px;border:none;background:transparent;color:#b3a897;font:600 20px 'Anuphan';border-radius:8px;cursor:pointer;line-height:1">×</button>
       </div>
@@ -3540,6 +3540,45 @@ class Component extends DCLogic {
     window.dispatchEvent(new Event('photopick-change'));
     this.forceUpdate();
   }
+  // ไฟล์แนบ (ตั๋ว/PDF/รูปเอกสาร) เก็บเป็น data URL ในเครื่อง → ยกขึ้น R2 แล้วแทนด้วยลิงก์
+  // ทำให้ไฟล์แนบขึ้นคลาวด์ได้จริง (เดิม PDF ไม่เคยถูกยก และก้อนใหญ่เกินโควตาจะถูกตัดตอนส่ง)
+  async hoistDocs() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid || !be.uploadImage) return;
+    let all = null;
+    try { all = JSON.parse(localStorage.getItem('wtn-docs') || 'null'); } catch (e) {}
+    if (!all || typeof all !== 'object') return;
+    const extOf = u => {
+      const m = /^data:([^;,]+)/.exec(u || '');
+      const t = (m && m[1] || '').toLowerCase();
+      if (t.indexOf('pdf') !== -1) return '.pdf';
+      if (t === 'image/png') return '.png';
+      if (t === 'image/webp') return '.webp';
+      if (t === 'image/heic' || t === 'image/heif') return '.jpg';
+      return '.jpg';
+    };
+    let changed = false;
+    for (const tid of Object.keys(all)) {
+      const list = all[tid];
+      if (!Array.isArray(list)) continue;
+      for (let i = 0; i < list.length; i++) {
+        const d = list[i];
+        if (!d || typeof d !== 'object') continue;
+        const u = d.url || '';
+        if (typeof u !== 'string' || u.indexOf('data:') !== 0) continue;
+        if (u.length > 12e6) continue;                       // ใหญ่เกิน ~9MB — ข้ามไว้ ไม่ให้ค้าง
+        const nm = String(d.name || 'doc').replace(/[^\w.\-]/g, '_').slice(0, 40) + extOf(u);
+        try {
+          const url = await be.uploadImage(u, nm);
+          if (url) { list[i] = { ...d, url, _m: Date.now() }; changed = true; }
+        } catch (e) { /* อัพไม่ได้ก็คงไฟล์ไว้ในเครื่อง รอบหน้าค่อยลองใหม่ */ }
+      }
+    }
+    if (!changed) return;
+    this._applyingCloud = true;
+    try { localStorage.setItem('wtn-docs', JSON.stringify(all)); } catch (e) {} finally { this._applyingCloud = false; }
+    this.forceUpdate();
+  }
   localHasData() {
     try {
       const t = JSON.parse(localStorage.getItem('wtn-trips') || '[]');
@@ -3680,6 +3719,12 @@ class Component extends DCLogic {
   }
   _mergeVal(k, bs, ls, rs) {
     if (k === 'wtn-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ
+    if (k === 'wtn-itinerary') {
+      if (ls === undefined) return rs;
+      if (rs === undefined) return ls;
+      if (ls === rs) return ls;
+      return this._mergeItin(bs, ls, rs);
+    }
     const ARR = { 'wtn-moments': 1, 'wtn-stories': 1, 'wtn-trips': 1 };                      // array ตรงๆ มี id ต่อชิ้น
     const MAP = { 'wtn-checkins': 1, 'wtn-expenses': 1, 'wtn-docs': 1 };                     // object ต่อทริป → array มี id/mid
     if (ARR[k] || MAP[k]) {
@@ -3694,7 +3739,49 @@ class Component extends DCLogic {
     if (rs === undefined) return ls;   // ค่าที่มีอยู่ ไม่ถูกลบเพราะอีกฝั่งไม่มี (กันรูป/ค่าหาย)
     if (ls === bs) return rs;
     if (rs === bs) return ls;
-    return ls >= rs ? ls : rs;         // ขัดแย้งทั้งคู่ — เลือกแบบเดียวกันทุกเครื่อง (กันลูปเด้งไปมา)
+    // ขัดแย้งทั้งคู่ (มักเกิดตอน baseline หาย) — เลือกฝั่งที่ "มีของมากกว่า"
+    // เสียของที่เพิ่งเพิ่มคือกู้คืนไม่ได้ ส่วนของที่ลบแล้วโผล่กลับมา ผู้ใช้ลบซ้ำได้
+    const lz = (ls || '').length, rz = (rs || '').length;
+    if (lz !== rz) return lz > rz ? ls : rs;
+    return ls >= rs ? ls : rs;
+  }
+  // แผนรายวันทุกทริปอยู่ในคีย์เดียว (wtn-itinerary) — ต้อง merge ลึกถึงรายกิจกรรม
+  // ไม่งั้นเครื่องที่แผนต่างกันจะทับกันทั้งก้อน (ที่พัก/เที่ยวบินที่เพิ่งใส่หายไปเฉยๆ)
+  _mergeItin(bs, ls, rs) {
+    const b = this._parseJSON(bs) || {}, l = this._parseJSON(ls), r = this._parseJSON(rs);
+    if (!l || typeof l !== 'object' || Array.isArray(l)) return rs;
+    if (!r || typeof r !== 'object' || Array.isArray(r)) return ls;
+    const out = {};
+    new Set([...Object.keys(l), ...Object.keys(r)]).forEach(id => {
+      const ld = l[id], rd = r[id], bd = Array.isArray(b[id]) ? b[id] : [];
+      if (!Array.isArray(ld)) { out[id] = rd; return; }
+      if (!Array.isArray(rd)) { out[id] = ld; return; }
+      const n = Math.max(ld.length, rd.length), days = [];
+      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i]));
+      out[id] = days;
+    });
+    return JSON.stringify(out);
+  }
+  STAY_PH = /ยังไม่ได้เลือกที่พัก|No stay picked yet|ยังไม่มีชื่อวัน|No day name yet|เพิ่มได้ในโหมดแก้ไข|แตะ “แก้ไข”|Tap “Edit”/;
+  _mergeDay(bd, ld, rd) {
+    if (!ld) return rd;
+    if (!rd) return ld;
+    const key = s => [s.kind || '', s.title || '', s.time || s.t || '', s.period || ''].join('|');
+    const bk = new Set(((bd && bd.stops) || []).map(key));
+    const lk = new Set(((ld.stops) || []).map(key));
+    const stops = [...((ld.stops) || [])];
+    ((rd.stops) || []).forEach(s => { const k = key(s); if (!lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
+    const pick = (f, ph) => {
+      const lv = ld[f], rv = rd[f], bv = bd ? bd[f] : undefined;
+      if (lv === rv) return lv;
+      if (ph) { const isPh = v => !v || ph.test(String(v)); if (isPh(lv) && !isPh(rv)) return rv; if (isPh(rv) && !isPh(lv)) return lv; }
+      if (bv !== undefined) { if (lv === bv) return rv; if (rv === bv) return lv; }
+      return (lv !== undefined && lv !== '') ? lv : rv;
+    };
+    return { ...rd, ...ld, stops,
+      city: pick('city', this.STAY_PH), summary: pick('summary', this.STAY_PH),
+      stayName: pick('stayName', this.STAY_PH), stayMeta: pick('stayMeta', this.STAY_PH),
+      stayIn: pick('stayIn'), stayOut: pick('stayOut') };
   }
   _gatherRaw() {
     const data = {};
@@ -3751,9 +3838,22 @@ class Component extends DCLogic {
     let j = '';
     try { j = JSON.stringify(o); } catch (e) {}
     // สำเนานี้เป็นแค่ตัวเทียบ ทิ้งได้ — ใหญ่เกิน 300KB ให้อยู่ในแรมพอ ไม่กินพื้นที่หลัก
+    try { if (j) this.idbPut('sync-base', j); } catch (e) {}   // ตัวเทียบ 3 ทางต้องอยู่ข้ามการปิดแอป ไม่งั้น merge กลายเป็นทับกันทั้งก้อน
     if (!j || j.length > 300000) { try { localStorage.removeItem('wtn-sync-base'); } catch (e) {} return; }
     try { localStorage.setItem('wtn-sync-base', j); }
     catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }
+  }
+  // คืน baseline จาก IDB ก่อน merge รอบแรกหลังเปิดแอป
+  async _ensureBase() {
+    if (this._baseMem) return this._baseMem;
+    const ls = this._parseJSON(localStorage.getItem('wtn-sync-base'));
+    if (ls) { this._baseMem = ls; return ls; }
+    try {
+      const j = await this.idbGet('sync-base');
+      const o = this._parseJSON(j);
+      if (o) this._baseMem = o;
+      return o || null;
+    } catch (e) { return null; }
   }
   // ประตูเดียวที่โหลด blob เต็มตอน push — ถ้าเพิ่งโหลดไปไม่ถึง 2 นาที ใช้สำเนาในแรมแทน (กัน egress ระเบิด)
   // ── ตัวคุม egress: นับปริมาณข้อมูลที่คุยกับคลาวด์ + เพดานต่อวัน (เก็บนอกคีย์ wtn- เพื่อไม่ให้ถูกซิงก์) ──
@@ -3815,14 +3915,15 @@ class Component extends DCLogic {
   _writeLocal(map) {
     // ตาข่ายนิรภัย: ก่อนซิงก์เขียนทับรายการเรื่องเล่าในเครื่อง เก็บฉบับเดิมไว้ใน IDB 10 ชุดล่าสุด (กู้ได้เสมอ)
     try {
-      const oldSt = localStorage.getItem('wtn-stories');
-      if (oldSt && map['wtn-stories'] !== undefined && map['wtn-stories'] !== oldSt) {
-        this.idbGet('stories-hist').then(h => {
+      [['wtn-stories', 'stories-hist'], ['wtn-itinerary', 'itin-hist'], ['wtn-docs', 'docs-hist']].forEach(([lk, hk]) => {
+        const oldV = localStorage.getItem(lk);
+        if (!oldV || map[lk] === undefined || map[lk] === oldV) return;
+        this.idbGet(hk).then(h => {
           let a = []; try { a = JSON.parse(h) || []; } catch (e) {}
-          a.push({ at: Date.now(), v: oldSt }); while (a.length > 10) a.shift();
-          return this.idbPut('stories-hist', JSON.stringify(a));
+          a.push({ at: Date.now(), v: oldV }); while (a.length > 10) a.shift();
+          return this.idbPut(hk, JSON.stringify(a));
         }).catch(() => {});
-      }
+      });
     } catch (e) {}
     const base = this._getBase() || {};
     this._applyingCloud = true;
@@ -3871,9 +3972,11 @@ class Component extends DCLogic {
     }
     if (this._pushing) { this._pushAgain = true; return; }
     this._pushing = true; this._pendingPush = false;
+    await this._ensureBase();
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
+      try { await this.hoistDocs(); } catch (e) { console.warn('[wtn] hoistDocs', e); }
       // ดึงก้อนเต็มจากคลาวด์เฉพาะเมื่อมันเปลี่ยนจริง — ไม่งั้นใช้สำเนาที่ดันขึ้นครั้งก่อน (ประหยัด egress)
       let remote = null;
       try {
@@ -3991,6 +4094,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid || this._applyingCloud || this._pushing) return;
     if (navigator.onLine === false) return;
+    await this._ensureBase();
     try {
       const bk = await be.pullBackup();
       this._lastFullPull = Date.now();
@@ -4003,6 +4107,7 @@ class Component extends DCLogic {
     if (!be || !be._uid) return;
     if (navigator.onLine === false) { this.setState({ cloud: 'idle' }); return; }
     if (!this.isPremium && this._synced) { this.setState({ cloud: 'saved' }); return; }
+    await this._ensureBase();
     this._pulling = true;
     this.setState({ cloud: 'saving' });
     try {
@@ -7997,6 +8102,19 @@ class Component extends DCLogic {
     this._bip = null;
     try { p.prompt(); p.userChoice && p.userChoice.then(r => { if (r && r.outcome === 'accepted') this.showToast && this.showToast('ติดตั้งแล้ว เปิดจากหน้าจอโฮมได้เลย'); }); } catch (e) {}
   }
+  // ชวนลงแอปตอนที่ผู้ใช้อินที่สุด — เพิ่งนำเข้าแผนของเพื่อนสำเร็จ (เว็บเท่านั้น)
+  nudgeInstall(why) {
+    if (this.isNativeApp) return;
+    const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    if (standalone || this.state.a2hsOff) return;
+    let dis = 0;
+    try { dis = +(localStorage.getItem('wtn-a2hs-off') || 0); } catch (e) {}
+    if (dis && Date.now() - dis < 14 * 864e5) return;
+    const ua = navigator.userAgent || '';
+    const ios = /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && 'ontouchend' in document);
+    if (!this._bip && !ios) return;                       // ไม่มีทางติดตั้งให้กด ก็ไม่ต้องกวน
+    setTimeout(() => this.setState({ a2hsShow: true, a2hsIos: ios && !this._bip, a2hsWhy: why || '' }), 1400);
+  }
   a2hsClose(forever) {
     if (forever) { try { localStorage.setItem('wtn-a2hs-off', String(Date.now())); } catch (e) {} }
     this.setState({ a2hsShow: false, a2hsOff: true });
@@ -8423,6 +8541,7 @@ class Component extends DCLogic {
     this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
     this.showToast('✓ นำเข้าแผนจาก Vela · ' + days.length + ' วัน · ' + stops + ' กิจกรรม');
     this.openTrip(id);
+    this.nudgeInstall('import');
   }
   async shareOverview() {
     const text = this.velaPlanText();
@@ -8452,9 +8571,156 @@ class Component extends DCLogic {
       try { const ta = document.querySelector('[data-share-text]'); if (ta) { ta.focus(); ta.select(); } } catch (e) {}
     }
   }
-  exportOverviewPdf() {
-    document.body.setAttribute('data-wtn-print', 'overview');
-    setTimeout(() => { try { window.print(); } finally { setTimeout(() => document.body.removeAttribute('data-wtn-print'), 400); } }, 60);
+  // ---------- โปรแกรมการเดินทาง (เอกสาร A4 แบบที่ทัวร์ส่งให้ลูกค้า) ----------
+  // window.print() ใน WebView ของ iOS/Android ไม่ทำงาน → สร้างเอกสารเป็นไฟล์ HTML
+  // เปิดอ่านในแอปได้ทันที และเซฟไฟล์ไปพิมพ์/แชร์ต่อได้
+  async planDocData() {
+    const t = this.userTrips.find(x => x.id === this.state.trip) || {};
+    const info = this.tripInfo;
+    const EN = this.lang === 'en';
+    const title = String(t.name || info.title || (EN ? 'My trip' : 'ทริปของฉัน')).replace(/\s*·\s*\d+\s*(วัน|days?)\s*$/i, '');
+    let cover = '';
+    try { cover = await this.resolvePhoto(this.coverOf('wtn-cover-' + this.state.trip, '') || ''); } catch (e) {}
+    const days = this.days.map((d, i) => {
+      const key = this.state.trip + ':' + i;
+      const stops = [...(d.stops || []), ...(((this.state.added || {})[key]) || [])].map(s => {
+        const w = this.whenOfStop(s);
+        return { when: w.time || w.period || '', kind: s.kind || '', title: s.title || '', note: s.note || '' };
+      }).filter(s => s.title || s.kind);
+      const noStay = ['ยังไม่ได้เลือกที่พัก', 'No stay picked yet'];
+      return { n: d.n || (i + 1), date: d.date || '', city: d.city || '', summary: d.summary || '',
+        stops, stay: (d.stayName && noStay.indexOf(d.stayName) < 0) ? d.stayName : '', stayMeta: d.stayMeta || '' };
+    });
+    return { EN, title, cover, days,
+      country: t.country || '', city: t.city || '',
+      when: this.fmtRange(t.start, t.end) || [t.start, t.end].filter(Boolean).join(' – '),
+      budget: t.budget ? Number(t.budget).toLocaleString() : '',
+      author: (this.profile.name || '').trim(),
+      stopCount: days.reduce((a, d) => a + d.stops.length, 0) };
+  }
+  planDocHtml(D) {
+    const E = s => this._esc(s);
+    const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const EN = D.EN;
+    const L = EN
+      ? { doc: 'Travel itinerary', dest: 'Destination', when: 'Travel dates', len: 'Length', budget: 'Budget', acts: 'Activities',
+          day: 'Day', stay: 'Stay', days: 'days', items: 'items', print: 'Print / Save as PDF', save: 'Save file',
+          hint: 'On phone: save the file, then open it in your browser to print.', by: 'Planned by', foot: 'Made with Vela · onevela.net' }
+      : { doc: 'โปรแกรมการเดินทาง', dest: 'จุดหมาย', when: 'วันเดินทาง', len: 'จำนวนวัน', budget: 'งบประมาณ', acts: 'กิจกรรม',
+          day: 'วันที่', stay: 'ที่พัก', days: 'วัน', items: 'รายการ', print: 'สั่งพิมพ์ / บันทึกเป็น PDF', save: 'บันทึกไฟล์',
+          hint: 'บนมือถือ: กดบันทึกไฟล์ แล้วเปิดไฟล์ในเบราว์เซอร์เพื่อสั่งพิมพ์', by: 'วางแผนโดย', foot: 'จัดทำด้วย Vela · onevela.net' };
+    const fact = (k, v) => v ? '<div class="ft"><div class="fk">' + E(k) + '</div><div class="fv">' + E(v) + '</div></div>' : '';
+    const cover = D.cover ? '<img class="cvimg" src="' + E(D.cover) + '" alt="">' : '';
+    const dayBlocks = D.days.map(d => {
+      const rows = d.stops.map(s =>
+        '<tr><td class="tm">' + E(s.when || '·') + '</td><td class="tt">' +
+        (s.kind ? '<span class="tk">' + E(s.kind) + '</span>' : '') +
+        '<span class="tx">' + E(s.title) + '</span>' +
+        (s.note ? '<div class="tn">' + E(s.note) + '</div>' : '') +
+        '</td></tr>').join('');
+      return '<section class="day">' +
+        '<div class="dh"><div class="dn">' + E(L.day + ' ' + d.n) + '</div>' +
+        '<div class="dmeta"><div class="dc">' + E(d.city || '') + '</div>' +
+        (d.date ? '<div class="dd">' + E(d.date) + '</div>' : '') + '</div></div>' +
+        (d.summary ? '<div class="ds">' + E(d.summary) + '</div>' : '') +
+        (rows ? '<table class="tl">' + rows + '</table>' : '') +
+        (d.stay ? '<div class="stay"><b>' + E(L.stay) + '</b> ' + E(d.stay) + (d.stayMeta ? ' · ' + E(d.stayMeta) : '') + '</div>' : '') +
+        '</section>';
+    }).join('');
+    return '<!doctype html><html lang="' + (EN ? 'en' : 'th') + '"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>' + E(D.title) + ' — ' + E(L.doc) + '</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '@page{size:A4;margin:15mm 16mm}' +
+      '*{box-sizing:border-box}' +
+      'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.bar{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#2b241f;color:#f6efe2;padding:11px 16px;font:500 13.5px ' + A + '}' +
+      '.bar button{border:none;border-radius:20px;background:#c05f39;color:#fff;font:600 13.5px ' + A + ';padding:9px 16px;min-height:40px;cursor:pointer}' +
+      '.bar button.gh{background:rgba(246,239,226,.14);color:#f6efe2}' +
+      '.bar span{opacity:.75;flex:1;min-width:140px}' +
+      '.sheet{max-width:210mm;margin:16px auto;background:#fffdf8;padding:15mm 16mm;box-shadow:0 10px 40px rgba(43,36,32,.18)}' +
+      '.cover{border-bottom:2px solid #c05f39;padding-bottom:16px;margin-bottom:20px}' +
+      '.cvimg{display:block;width:100%;height:62mm;object-fit:cover;border-radius:10px;background:#e0d5c2;margin-bottom:16px}' +
+      '.kick{font:600 12px ' + A + ';letter-spacing:2.4px;text-transform:uppercase;color:#c05f39;margin-bottom:6px}' +
+      'h1{font:400 30px ' + C + ';margin:0 0 6px;line-height:1.28}' +
+      '.sub{font:500 15px ' + A + ';color:#7c7064;margin-bottom:16px}' +
+      '.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}' +
+      '.ft{border-top:1px solid rgba(43,36,32,.14);padding-top:7px}' +
+      '.fk{font:600 11.5px ' + A + ';letter-spacing:.8px;color:#a3968a;text-transform:uppercase}' +
+      '.fv{font:600 15px ' + A + ';color:#2b241f}' +
+      '.day{break-inside:avoid;page-break-inside:avoid;margin-bottom:20px}' +
+      '.dh{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(43,36,32,.16);padding-bottom:7px;margin-bottom:10px}' +
+      '.dn{font:600 14px ' + A + ';color:#fff;background:#c05f39;border-radius:14px;padding:4px 12px;flex:none}' +
+      '.dmeta{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:10px}' +
+      '.dc{font:600 17px ' + A + ';color:#2b241f}' +
+      '.dd{font:500 13px ' + A + ';color:#8a7d6f;flex:none}' +
+      '.ds{font:400 14.5px/1.65 ' + A + ';color:#5c5347;margin:0 0 10px}' +
+      '.tl{width:100%;border-collapse:collapse}' +
+      '.tl td{vertical-align:top;padding:7px 0;border-bottom:1px solid rgba(43,36,32,.08)}' +
+      '.tm{width:22mm;font:600 13px ' + A + ';color:#c05f39;white-space:nowrap;padding-right:8px!important}' +
+      '.tk{font:600 11.5px ' + A + ';color:#8a7d6f;background:#f2e9dc;border-radius:10px;padding:2px 8px;margin-right:7px;white-space:nowrap}' +
+      '.tx{font:500 14.5px ' + A + ';color:#2b241f}' +
+      '.tn{font:400 13.5px/1.6 ' + A + ';color:#7c7064;margin-top:3px}' +
+      '.stay{margin-top:9px;font:500 13.5px ' + A + ';color:#5c5347;background:#f6efe2;border-radius:9px;padding:8px 11px}' +
+      '.stay b{font-weight:600;color:#8a7d6f;margin-right:5px}' +
+      '.foot{margin-top:8px;border-top:1px solid rgba(43,36,32,.14);padding-top:12px;font:500 12.5px ' + A + ';color:#a3968a;display:flex;justify-content:space-between;gap:12px}' +
+      '@media print{.bar{display:none}body{background:#fff}.sheet{max-width:none;margin:0;padding:0;box-shadow:none;background:#fff}}' +
+      '@media(max-width:640px){.sheet{padding:20px 16px;margin:10px}.facts{grid-template-columns:1fr}h1{font-size:25px}.cvimg{height:190px}}' +
+      '</style></head><body>' +
+      '<div class="bar"><button onclick="window.print()">' + E(L.print) + '</button>' +
+      '<button class="gh" onclick="parent.postMessage({vela:\'save-plan-doc\'},\'*\')">' + E(L.save) + '</button>' +
+      '<span>' + E(L.hint) + '</span></div>' +
+      '<div class="sheet"><div class="cover">' + cover +
+      '<div class="kick">' + E(L.doc) + '</div><h1>' + E(D.title) + '</h1>' +
+      '<div class="sub">' + E([D.city, D.country].filter(Boolean).join(' · ')) + '</div>' +
+      '<div class="facts">' +
+      fact(L.dest, [D.city, D.country].filter(Boolean).join(', ')) +
+      fact(L.when, D.when) +
+      fact(L.len, D.days.length ? (D.days.length + ' ' + L.days) : '') +
+      fact(L.budget, D.budget ? '฿' + D.budget : '') +
+      fact(L.acts, D.stopCount ? (D.stopCount + ' ' + L.items) : '') +
+      fact(L.by, D.author) +
+      '</div></div>' + dayBlocks +
+      '<div class="foot"><span>' + E(D.title) + '</span><span>' + E(L.foot) + '</span></div>' +
+      '</div></body></html>';
+  }
+  async exportOverviewPdf() {
+    try {
+      const D = await this.planDocData();
+      const html = this.planDocHtml(D);
+      this._planDocHtml = html;
+      this._planDocName = (D.title || 'trip').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 48) +
+        (D.EN ? ' - itinerary.html' : ' - โปรแกรมเดินทาง.html');
+      if (!this._planDocListener) {
+        this._planDocListener = e => {
+          if (!e || !e.data || e.data.vela !== 'save-plan-doc' || !this._planDocHtml) return;
+          this.savePlanDoc();
+        };
+        window.addEventListener('message', this._planDocListener);
+      }
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      this.setState({ bvUrl: url, bvTitle: D.EN ? 'Itinerary' : 'โปรแกรมการเดินทาง' });
+    } catch (e) {
+      console.warn('[wtn] plan doc', e);
+      this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
+    }
+  }
+  async savePlanDoc() {
+    if (!this._planDocHtml) return;
+    const name = this._planDocName || 'itinerary.html';
+    const blob = new Blob([this._planDocHtml], { type: 'text/html' });
+    if (this.isNativeApp) {
+      try { await this._saveFileNative(blob, name, this.lang === 'en' ? 'Itinerary' : 'โปรแกรมการเดินทาง'); return; } catch (e) {}
+    }
+    try {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    } catch (e) {
+      this.showToast(this.lang === 'en' ? "Couldn't save the file" : 'บันทึกไฟล์ไม่สำเร็จ');
+    }
   }
   get acct() {
     try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; }
@@ -12070,12 +12336,16 @@ class Component extends DCLogic {
       })(),
       goHome: () => this.setTab('plan'),
       a2hsShow: !!this.state.a2hsShow,
+      a2hsTitle: this.state.a2hsWhy === 'import' ? 'เก็บแผนนี้ไว้ในเครื่อง' : 'ติดตั้ง Vela ไว้ในเครื่อง',
+      a2hsSub: this.state.a2hsWhy === 'import'
+        ? 'ลงแอปไว้ เปิดแผนได้เร็วกว่า · แก้ต่อได้ตอนไม่มีเน็ต'
+        : 'เปิดเต็มจอ ไม่มีแถบเบราว์เซอร์ · ใช้ได้ตอนไม่มีเน็ต',
       a2hsIos: !!this.state.a2hsIos,
       a2hsCanPrompt: !!this.state.a2hsCan,
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.05a',
+      appVersion: '2026.09.06e',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
