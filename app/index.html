@@ -529,16 +529,16 @@
             <div style="position:absolute;bottom:10px;left:12px;background:rgba(43,36,32,.62);color:#fff;font:600 13px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>แตะเพื่อเลือกรูปปก</div>
           </div>
           <div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ชื่อทริป</div>
-          <input value="{{ ncName }}" onInput="{{ setNcName }}" placeholder="เช่น คาซัคสถาน หน้าร้อน" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
+          <input value="{{ ncName }}" onInput="{{ setNcName }}" placeholder="เช่น คาซัคสถาน หน้าร้อน" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none">
           <div style="display:flex;gap:10px;margin-top:13px">
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ประเทศ</div><input value="{{ ncCountry }}" onInput="{{ setNcCountry }}" placeholder="เช่น คาซัคสถาน" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">เมือง</div><input value="{{ ncCity }}" onInput="{{ setNcCity }}" placeholder="เช่น อัลมาตี" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">ประเทศ</div><input value="{{ ncCountry }}" onInput="{{ setNcCountry }}" placeholder="เช่น คาซัคสถาน" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">เมือง</div><input value="{{ ncCity }}" onInput="{{ setNcCity }}" placeholder="เช่น อัลมาตี" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
           <div style="display:flex;gap:10px;margin-top:13px">
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันเริ่ม</div><input type="date" value="{{ ncStart }}" onInput="{{ setNcStart }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
-            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันจบ</div><input type="date" value="{{ ncEnd }}" onInput="{{ setNcEnd }}" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันเริ่ม</div><input type="date" value="{{ ncStart }}" onInput="{{ setNcStart }}" style="width:100%;height:47px;-webkit-appearance:none;appearance:none;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
+            <div style="flex:1"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">วันจบ</div><input type="date" value="{{ ncEnd }}" onInput="{{ setNcEnd }}" style="width:100%;height:47px;-webkit-appearance:none;appearance:none;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:11px 12px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none"></div>
           </div>
-          <div style="margin-top:13px"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">งบประมาณ (บาท)</div><input inputmode="numeric" value="{{ ncBudget }}" onInput="{{ setNcBudget }}" placeholder="เช่น 70000" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
+          <div style="margin-top:13px"><div style="font:600 14px 'Anuphan';color:#8a7d6f;margin-bottom:7px">งบประมาณ (บาท)</div><input inputmode="numeric" value="{{ ncBudget }}" onInput="{{ setNcBudget }}" placeholder="เช่น 70000" style="width:100%;height:47px;box-sizing:border-box;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:11px;padding:12px 13px;font:500 16px 'Anuphan';color:#2b241f;outline:none"></div>
           <sc-if value="{{ ncHasRange }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;font:500 14.5px 'Anuphan';color:#c05f39">{{ ncDayNote }}</div></sc-if>
           <button onClick="{{ saveTrip }}" style="width:100%;margin-top:20px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer">{{ ncSaveLabel }}</button>
           <sc-if value="{{ ncEditing }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTrip }}" style="width:100%;margin-top:10px;border:none;background:transparent;color:#b23b2a;font:600 15.5px 'Anuphan';padding:10px;cursor:pointer">ลบทริปนี้</button></sc-if>
@@ -708,7 +708,7 @@
           </sc-for>
           <div class="wtn-ov-actions" style="display:flex;gap:10px;margin-top:18px">
             <button onClick="{{ shareOverview }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
-            <button onClick="{{ exportOverviewPdf }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>บันทึก PDF</button>
+            <button onClick="{{ exportOverviewPdf }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>โปรแกรมเดินทาง</button>
           </div>
         </div>
       </sc-if>
@@ -8451,9 +8451,156 @@ class Component extends DCLogic {
       try { const ta = document.querySelector('[data-share-text]'); if (ta) { ta.focus(); ta.select(); } } catch (e) {}
     }
   }
-  exportOverviewPdf() {
-    document.body.setAttribute('data-wtn-print', 'overview');
-    setTimeout(() => { try { window.print(); } finally { setTimeout(() => document.body.removeAttribute('data-wtn-print'), 400); } }, 60);
+  // ---------- โปรแกรมการเดินทาง (เอกสาร A4 แบบที่ทัวร์ส่งให้ลูกค้า) ----------
+  // window.print() ใน WebView ของ iOS/Android ไม่ทำงาน → สร้างเอกสารเป็นไฟล์ HTML
+  // เปิดอ่านในแอปได้ทันที และเซฟไฟล์ไปพิมพ์/แชร์ต่อได้
+  async planDocData() {
+    const t = this.userTrips.find(x => x.id === this.state.trip) || {};
+    const info = this.tripInfo;
+    const EN = this.lang === 'en';
+    const title = String(t.name || info.title || (EN ? 'My trip' : 'ทริปของฉัน')).replace(/\s*·\s*\d+\s*(วัน|days?)\s*$/i, '');
+    let cover = '';
+    try { cover = await this.resolvePhoto(this.coverOf('wtn-cover-' + this.state.trip, '') || ''); } catch (e) {}
+    const days = this.days.map((d, i) => {
+      const key = this.state.trip + ':' + i;
+      const stops = [...(d.stops || []), ...(((this.state.added || {})[key]) || [])].map(s => {
+        const w = this.whenOfStop(s);
+        return { when: w.time || w.period || '', kind: s.kind || '', title: s.title || '', note: s.note || '' };
+      }).filter(s => s.title || s.kind);
+      const noStay = ['ยังไม่ได้เลือกที่พัก', 'No stay picked yet'];
+      return { n: d.n || (i + 1), date: d.date || '', city: d.city || '', summary: d.summary || '',
+        stops, stay: (d.stayName && noStay.indexOf(d.stayName) < 0) ? d.stayName : '', stayMeta: d.stayMeta || '' };
+    });
+    return { EN, title, cover, days,
+      country: t.country || '', city: t.city || '',
+      when: this.fmtRange(t.start, t.end) || [t.start, t.end].filter(Boolean).join(' – '),
+      budget: t.budget ? Number(t.budget).toLocaleString() : '',
+      author: (this.profile.name || '').trim(),
+      stopCount: days.reduce((a, d) => a + d.stops.length, 0) };
+  }
+  planDocHtml(D) {
+    const E = s => this._esc(s);
+    const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const EN = D.EN;
+    const L = EN
+      ? { doc: 'Travel itinerary', dest: 'Destination', when: 'Travel dates', len: 'Length', budget: 'Budget', acts: 'Activities',
+          day: 'Day', stay: 'Stay', days: 'days', items: 'items', print: 'Print / Save as PDF', save: 'Save file',
+          hint: 'On phone: save the file, then open it in your browser to print.', by: 'Planned by', foot: 'Made with Vela · onevela.net' }
+      : { doc: 'โปรแกรมการเดินทาง', dest: 'จุดหมาย', when: 'วันเดินทาง', len: 'จำนวนวัน', budget: 'งบประมาณ', acts: 'กิจกรรม',
+          day: 'วันที่', stay: 'ที่พัก', days: 'วัน', items: 'รายการ', print: 'สั่งพิมพ์ / บันทึกเป็น PDF', save: 'บันทึกไฟล์',
+          hint: 'บนมือถือ: กดบันทึกไฟล์ แล้วเปิดไฟล์ในเบราว์เซอร์เพื่อสั่งพิมพ์', by: 'วางแผนโดย', foot: 'จัดทำด้วย Vela · onevela.net' };
+    const fact = (k, v) => v ? '<div class="ft"><div class="fk">' + E(k) + '</div><div class="fv">' + E(v) + '</div></div>' : '';
+    const cover = D.cover ? '<img class="cvimg" src="' + E(D.cover) + '" alt="">' : '';
+    const dayBlocks = D.days.map(d => {
+      const rows = d.stops.map(s =>
+        '<tr><td class="tm">' + E(s.when || '·') + '</td><td class="tt">' +
+        (s.kind ? '<span class="tk">' + E(s.kind) + '</span>' : '') +
+        '<span class="tx">' + E(s.title) + '</span>' +
+        (s.note ? '<div class="tn">' + E(s.note) + '</div>' : '') +
+        '</td></tr>').join('');
+      return '<section class="day">' +
+        '<div class="dh"><div class="dn">' + E(L.day + ' ' + d.n) + '</div>' +
+        '<div class="dmeta"><div class="dc">' + E(d.city || '') + '</div>' +
+        (d.date ? '<div class="dd">' + E(d.date) + '</div>' : '') + '</div></div>' +
+        (d.summary ? '<div class="ds">' + E(d.summary) + '</div>' : '') +
+        (rows ? '<table class="tl">' + rows + '</table>' : '') +
+        (d.stay ? '<div class="stay"><b>' + E(L.stay) + '</b> ' + E(d.stay) + (d.stayMeta ? ' · ' + E(d.stayMeta) : '') + '</div>' : '') +
+        '</section>';
+    }).join('');
+    return '<!doctype html><html lang="' + (EN ? 'en' : 'th') + '"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>' + E(D.title) + ' — ' + E(L.doc) + '</title>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
+      '<style>' +
+      '@page{size:A4;margin:15mm 16mm}' +
+      '*{box-sizing:border-box}' +
+      'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
+      '.bar{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#2b241f;color:#f6efe2;padding:11px 16px;font:500 13.5px ' + A + '}' +
+      '.bar button{border:none;border-radius:20px;background:#c05f39;color:#fff;font:600 13.5px ' + A + ';padding:9px 16px;min-height:40px;cursor:pointer}' +
+      '.bar button.gh{background:rgba(246,239,226,.14);color:#f6efe2}' +
+      '.bar span{opacity:.75;flex:1;min-width:140px}' +
+      '.sheet{max-width:210mm;margin:16px auto;background:#fffdf8;padding:15mm 16mm;box-shadow:0 10px 40px rgba(43,36,32,.18)}' +
+      '.cover{border-bottom:2px solid #c05f39;padding-bottom:16px;margin-bottom:20px}' +
+      '.cvimg{display:block;width:100%;height:62mm;object-fit:cover;border-radius:10px;background:#e0d5c2;margin-bottom:16px}' +
+      '.kick{font:600 12px ' + A + ';letter-spacing:2.4px;text-transform:uppercase;color:#c05f39;margin-bottom:6px}' +
+      'h1{font:400 30px ' + C + ';margin:0 0 6px;line-height:1.28}' +
+      '.sub{font:500 15px ' + A + ';color:#7c7064;margin-bottom:16px}' +
+      '.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}' +
+      '.ft{border-top:1px solid rgba(43,36,32,.14);padding-top:7px}' +
+      '.fk{font:600 11.5px ' + A + ';letter-spacing:.8px;color:#a3968a;text-transform:uppercase}' +
+      '.fv{font:600 15px ' + A + ';color:#2b241f}' +
+      '.day{break-inside:avoid;page-break-inside:avoid;margin-bottom:20px}' +
+      '.dh{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(43,36,32,.16);padding-bottom:7px;margin-bottom:10px}' +
+      '.dn{font:600 14px ' + A + ';color:#fff;background:#c05f39;border-radius:14px;padding:4px 12px;flex:none}' +
+      '.dmeta{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:10px}' +
+      '.dc{font:600 17px ' + A + ';color:#2b241f}' +
+      '.dd{font:500 13px ' + A + ';color:#8a7d6f;flex:none}' +
+      '.ds{font:400 14.5px/1.65 ' + A + ';color:#5c5347;margin:0 0 10px}' +
+      '.tl{width:100%;border-collapse:collapse}' +
+      '.tl td{vertical-align:top;padding:7px 0;border-bottom:1px solid rgba(43,36,32,.08)}' +
+      '.tm{width:22mm;font:600 13px ' + A + ';color:#c05f39;white-space:nowrap;padding-right:8px!important}' +
+      '.tk{font:600 11.5px ' + A + ';color:#8a7d6f;background:#f2e9dc;border-radius:10px;padding:2px 8px;margin-right:7px;white-space:nowrap}' +
+      '.tx{font:500 14.5px ' + A + ';color:#2b241f}' +
+      '.tn{font:400 13.5px/1.6 ' + A + ';color:#7c7064;margin-top:3px}' +
+      '.stay{margin-top:9px;font:500 13.5px ' + A + ';color:#5c5347;background:#f6efe2;border-radius:9px;padding:8px 11px}' +
+      '.stay b{font-weight:600;color:#8a7d6f;margin-right:5px}' +
+      '.foot{margin-top:8px;border-top:1px solid rgba(43,36,32,.14);padding-top:12px;font:500 12.5px ' + A + ';color:#a3968a;display:flex;justify-content:space-between;gap:12px}' +
+      '@media print{.bar{display:none}body{background:#fff}.sheet{max-width:none;margin:0;padding:0;box-shadow:none;background:#fff}}' +
+      '@media(max-width:640px){.sheet{padding:20px 16px;margin:10px}.facts{grid-template-columns:1fr}h1{font-size:25px}.cvimg{height:190px}}' +
+      '</style></head><body>' +
+      '<div class="bar"><button onclick="window.print()">' + E(L.print) + '</button>' +
+      '<button class="gh" onclick="parent.postMessage({vela:\'save-plan-doc\'},\'*\')">' + E(L.save) + '</button>' +
+      '<span>' + E(L.hint) + '</span></div>' +
+      '<div class="sheet"><div class="cover">' + cover +
+      '<div class="kick">' + E(L.doc) + '</div><h1>' + E(D.title) + '</h1>' +
+      '<div class="sub">' + E([D.city, D.country].filter(Boolean).join(' · ')) + '</div>' +
+      '<div class="facts">' +
+      fact(L.dest, [D.city, D.country].filter(Boolean).join(', ')) +
+      fact(L.when, D.when) +
+      fact(L.len, D.days.length ? (D.days.length + ' ' + L.days) : '') +
+      fact(L.budget, D.budget ? '฿' + D.budget : '') +
+      fact(L.acts, D.stopCount ? (D.stopCount + ' ' + L.items) : '') +
+      fact(L.by, D.author) +
+      '</div></div>' + dayBlocks +
+      '<div class="foot"><span>' + E(D.title) + '</span><span>' + E(L.foot) + '</span></div>' +
+      '</div></body></html>';
+  }
+  async exportOverviewPdf() {
+    try {
+      const D = await this.planDocData();
+      const html = this.planDocHtml(D);
+      this._planDocHtml = html;
+      this._planDocName = (D.title || 'trip').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 48) +
+        (D.EN ? ' - itinerary.html' : ' - โปรแกรมเดินทาง.html');
+      if (!this._planDocListener) {
+        this._planDocListener = e => {
+          if (!e || !e.data || e.data.vela !== 'save-plan-doc' || !this._planDocHtml) return;
+          this.savePlanDoc();
+        };
+        window.addEventListener('message', this._planDocListener);
+      }
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      this.setState({ bvUrl: url, bvTitle: D.EN ? 'Itinerary' : 'โปรแกรมการเดินทาง' });
+    } catch (e) {
+      console.warn('[wtn] plan doc', e);
+      this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
+    }
+  }
+  async savePlanDoc() {
+    if (!this._planDocHtml) return;
+    const name = this._planDocName || 'itinerary.html';
+    const blob = new Blob([this._planDocHtml], { type: 'text/html' });
+    if (this.isNativeApp) {
+      try { await this._saveFileNative(blob, name, this.lang === 'en' ? 'Itinerary' : 'โปรแกรมการเดินทาง'); return; } catch (e) {}
+    }
+    try {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    } catch (e) {
+      this.showToast(this.lang === 'en' ? "Couldn't save the file" : 'บันทึกไฟล์ไม่สำเร็จ');
+    }
   }
   get acct() {
     try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; }
@@ -12074,7 +12221,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.05a',
+      appVersion: '2026.09.06a',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}

@@ -145,6 +145,7 @@ window.WTN_EN = {
   "คุณภาพไฟล์": "File quality",
   "ตรวจก่อนสั่งพิมพ์": "Check before printing",
   "บันทึก PDF": "Save PDF",
+  "โปรแกรมเดินทาง": "Itinerary",
   "บันทึกเป็น PDF": "Save as PDF",
   "บันทึกเป็น PDF / สั่งพิมพ์": "Save as PDF / print",
   "บันทึกลง": "Save to",
