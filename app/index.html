@@ -3679,6 +3679,12 @@ class Component extends DCLogic {
   }
   _mergeVal(k, bs, ls, rs) {
     if (k === 'wtn-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ
+    if (k === 'wtn-itinerary') {
+      if (ls === undefined) return rs;
+      if (rs === undefined) return ls;
+      if (ls === rs) return ls;
+      return this._mergeItin(bs, ls, rs);
+    }
     const ARR = { 'wtn-moments': 1, 'wtn-stories': 1, 'wtn-trips': 1 };                      // array ตรงๆ มี id ต่อชิ้น
     const MAP = { 'wtn-checkins': 1, 'wtn-expenses': 1, 'wtn-docs': 1 };                     // object ต่อทริป → array มี id/mid
     if (ARR[k] || MAP[k]) {
@@ -3693,7 +3699,49 @@ class Component extends DCLogic {
     if (rs === undefined) return ls;   // ค่าที่มีอยู่ ไม่ถูกลบเพราะอีกฝั่งไม่มี (กันรูป/ค่าหาย)
     if (ls === bs) return rs;
     if (rs === bs) return ls;
-    return ls >= rs ? ls : rs;         // ขัดแย้งทั้งคู่ — เลือกแบบเดียวกันทุกเครื่อง (กันลูปเด้งไปมา)
+    // ขัดแย้งทั้งคู่ (มักเกิดตอน baseline หาย) — เลือกฝั่งที่ "มีของมากกว่า"
+    // เสียของที่เพิ่งเพิ่มคือกู้คืนไม่ได้ ส่วนของที่ลบแล้วโผล่กลับมา ผู้ใช้ลบซ้ำได้
+    const lz = (ls || '').length, rz = (rs || '').length;
+    if (lz !== rz) return lz > rz ? ls : rs;
+    return ls >= rs ? ls : rs;
+  }
+  // แผนรายวันทุกทริปอยู่ในคีย์เดียว (wtn-itinerary) — ต้อง merge ลึกถึงรายกิจกรรม
+  // ไม่งั้นเครื่องที่แผนต่างกันจะทับกันทั้งก้อน (ที่พัก/เที่ยวบินที่เพิ่งใส่หายไปเฉยๆ)
+  _mergeItin(bs, ls, rs) {
+    const b = this._parseJSON(bs) || {}, l = this._parseJSON(ls), r = this._parseJSON(rs);
+    if (!l || typeof l !== 'object' || Array.isArray(l)) return rs;
+    if (!r || typeof r !== 'object' || Array.isArray(r)) return ls;
+    const out = {};
+    new Set([...Object.keys(l), ...Object.keys(r)]).forEach(id => {
+      const ld = l[id], rd = r[id], bd = Array.isArray(b[id]) ? b[id] : [];
+      if (!Array.isArray(ld)) { out[id] = rd; return; }
+      if (!Array.isArray(rd)) { out[id] = ld; return; }
+      const n = Math.max(ld.length, rd.length), days = [];
+      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i]));
+      out[id] = days;
+    });
+    return JSON.stringify(out);
+  }
+  STAY_PH = /ยังไม่ได้เลือกที่พัก|No stay picked yet|ยังไม่มีชื่อวัน|No day name yet|เพิ่มได้ในโหมดแก้ไข|แตะ “แก้ไข”|Tap “Edit”/;
+  _mergeDay(bd, ld, rd) {
+    if (!ld) return rd;
+    if (!rd) return ld;
+    const key = s => [s.kind || '', s.title || '', s.time || s.t || '', s.period || ''].join('|');
+    const bk = new Set(((bd && bd.stops) || []).map(key));
+    const lk = new Set(((ld.stops) || []).map(key));
+    const stops = [...((ld.stops) || [])];
+    ((rd.stops) || []).forEach(s => { const k = key(s); if (!lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
+    const pick = (f, ph) => {
+      const lv = ld[f], rv = rd[f], bv = bd ? bd[f] : undefined;
+      if (lv === rv) return lv;
+      if (ph) { const isPh = v => !v || ph.test(String(v)); if (isPh(lv) && !isPh(rv)) return rv; if (isPh(rv) && !isPh(lv)) return lv; }
+      if (bv !== undefined) { if (lv === bv) return rv; if (rv === bv) return lv; }
+      return (lv !== undefined && lv !== '') ? lv : rv;
+    };
+    return { ...rd, ...ld, stops,
+      city: pick('city', this.STAY_PH), summary: pick('summary', this.STAY_PH),
+      stayName: pick('stayName', this.STAY_PH), stayMeta: pick('stayMeta', this.STAY_PH),
+      stayIn: pick('stayIn'), stayOut: pick('stayOut') };
   }
   _gatherRaw() {
     const data = {};
@@ -3750,9 +3798,22 @@ class Component extends DCLogic {
     let j = '';
     try { j = JSON.stringify(o); } catch (e) {}
     // สำเนานี้เป็นแค่ตัวเทียบ ทิ้งได้ — ใหญ่เกิน 300KB ให้อยู่ในแรมพอ ไม่กินพื้นที่หลัก
+    try { if (j) this.idbPut('sync-base', j); } catch (e) {}   // ตัวเทียบ 3 ทางต้องอยู่ข้ามการปิดแอป ไม่งั้น merge กลายเป็นทับกันทั้งก้อน
     if (!j || j.length > 300000) { try { localStorage.removeItem('wtn-sync-base'); } catch (e) {} return; }
     try { localStorage.setItem('wtn-sync-base', j); }
     catch (e) { try { localStorage.removeItem('wtn-sync-base'); } catch (e2) {} }
+  }
+  // คืน baseline จาก IDB ก่อน merge รอบแรกหลังเปิดแอป
+  async _ensureBase() {
+    if (this._baseMem) return this._baseMem;
+    const ls = this._parseJSON(localStorage.getItem('wtn-sync-base'));
+    if (ls) { this._baseMem = ls; return ls; }
+    try {
+      const j = await this.idbGet('sync-base');
+      const o = this._parseJSON(j);
+      if (o) this._baseMem = o;
+      return o || null;
+    } catch (e) { return null; }
   }
   // ประตูเดียวที่โหลด blob เต็มตอน push — ถ้าเพิ่งโหลดไปไม่ถึง 2 นาที ใช้สำเนาในแรมแทน (กัน egress ระเบิด)
   // ── ตัวคุม egress: นับปริมาณข้อมูลที่คุยกับคลาวด์ + เพดานต่อวัน (เก็บนอกคีย์ wtn- เพื่อไม่ให้ถูกซิงก์) ──
@@ -3814,14 +3875,15 @@ class Component extends DCLogic {
   _writeLocal(map) {
     // ตาข่ายนิรภัย: ก่อนซิงก์เขียนทับรายการเรื่องเล่าในเครื่อง เก็บฉบับเดิมไว้ใน IDB 10 ชุดล่าสุด (กู้ได้เสมอ)
     try {
-      const oldSt = localStorage.getItem('wtn-stories');
-      if (oldSt && map['wtn-stories'] !== undefined && map['wtn-stories'] !== oldSt) {
-        this.idbGet('stories-hist').then(h => {
+      [['wtn-stories', 'stories-hist'], ['wtn-itinerary', 'itin-hist'], ['wtn-docs', 'docs-hist']].forEach(([lk, hk]) => {
+        const oldV = localStorage.getItem(lk);
+        if (!oldV || map[lk] === undefined || map[lk] === oldV) return;
+        this.idbGet(hk).then(h => {
           let a = []; try { a = JSON.parse(h) || []; } catch (e) {}
-          a.push({ at: Date.now(), v: oldSt }); while (a.length > 10) a.shift();
-          return this.idbPut('stories-hist', JSON.stringify(a));
+          a.push({ at: Date.now(), v: oldV }); while (a.length > 10) a.shift();
+          return this.idbPut(hk, JSON.stringify(a));
         }).catch(() => {});
-      }
+      });
     } catch (e) {}
     const base = this._getBase() || {};
     this._applyingCloud = true;
@@ -3870,6 +3932,7 @@ class Component extends DCLogic {
     }
     if (this._pushing) { this._pushAgain = true; return; }
     this._pushing = true; this._pendingPush = false;
+    await this._ensureBase();
     if (this.state.cloud !== 'saving') this.setState({ cloud: 'saving' });
     try {
       try { await this.hoistImages(); } catch (e) { console.warn('[wtn] hoist', e); }
@@ -3990,6 +4053,7 @@ class Component extends DCLogic {
     const be = window.WTNBackend;
     if (!be || !be._uid || this._applyingCloud || this._pushing) return;
     if (navigator.onLine === false) return;
+    await this._ensureBase();
     try {
       const bk = await be.pullBackup();
       this._lastFullPull = Date.now();
@@ -4002,6 +4066,7 @@ class Component extends DCLogic {
     if (!be || !be._uid) return;
     if (navigator.onLine === false) { this.setState({ cloud: 'idle' }); return; }
     if (!this.isPremium && this._synced) { this.setState({ cloud: 'saved' }); return; }
+    await this._ensureBase();
     this._pulling = true;
     this.setState({ cloud: 'saving' });
     try {
@@ -12239,7 +12304,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.06c',
+      appVersion: '2026.09.06d',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
