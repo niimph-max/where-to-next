@@ -1867,6 +1867,7 @@
             <button onMouseDown="{{ rtUndo }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 7L4 12l5 5"></path><path d="M4 12h11a5 5 0 0 1 0 10h-3"></path></svg></button>
             <button onMouseDown="{{ rtRedo }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#5c5347;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M15 7l5 5-5 5"></path><path d="M20 12H9a5 5 0 0 0 0 10h3"></path></svg></button>
             <span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span>
+            <sc-if value="{{ kbDoneShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ kbDone }}" aria-label="ปิดแป้นพิมพ์" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M7 10l5 5 5-5"/></svg></button><span style="width:1px;height:20px;background:rgba(43,36,32,.14);margin:0 4px;flex:none"></span></sc-if>
             <button onMouseDown="{{ rtBold }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:700 17px 'Anuphan';cursor:pointer;flex:none">B</button>
             <button onMouseDown="{{ rtItalic }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:italic 600 15px 'Anuphan';cursor:pointer;flex:none">I</button>
             <button onMouseDown="{{ rtUnderline }}" style="min-width:34px;height:34px;border:none;background:transparent;border-radius:8px;color:#2b241f;font:600 17px 'Anuphan';text-decoration:underline;cursor:pointer;flex:none">U</button>
@@ -2311,9 +2312,9 @@
                 <div style="padding-top:14px">
                   <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">โฟโต้บุ๊ก</div>
                   <div style="font:500 13px 'Anuphan';color:#a1927c;margin-top:3px;margin-bottom:16px">{{ shelfPbNote }}</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 12px;align-items:start">
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 12px;align-items:start">
                     <sc-for list="{{ shelfPb }}" as="b" hint-placeholder-count="3">
-                      <div>
+                      <div style="min-width:0">
                         <sc-if value="{{ b.isBook }}" hint-placeholder-val="{{ false }}">
                           <div onClick="{{ b.open }}" style="position:relative;width:100%;aspect-ratio:210/148;border-radius:1px 4px 4px 1px;overflow:hidden;cursor:pointer;box-shadow:0 7px 16px -5px rgba(43,36,32,.5),0 1px 4px rgba(43,36,32,.28)">
                             <img src="{{ b.cover }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
@@ -2343,9 +2344,9 @@
                 <div style="padding-top:30px;margin-top:10px;border-top:1px solid rgba(43,36,32,.09)">
                   <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">หนังสือ</div>
                   <div style="font:500 13px 'Anuphan';color:#a1927c;margin-top:3px;margin-bottom:16px">{{ shelfEbNote }}</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 12px;align-items:start">
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 12px;align-items:start">
                     <sc-for list="{{ shelfEb }}" as="b" hint-placeholder-count="3">
-                      <div>
+                      <div style="min-width:0">
                         <sc-if value="{{ b.isBook }}" hint-placeholder-val="{{ false }}">
                           <div onClick="{{ b.open }}" style="position:relative;width:100%;aspect-ratio:148/210;border-radius:1px 4px 4px 1px;overflow:hidden;cursor:pointer;box-shadow:0 7px 16px -5px rgba(43,36,32,.5),0 1px 4px rgba(43,36,32,.28)">
                             <img src="{{ b.cover }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
@@ -2808,9 +2809,6 @@
   </div>
 </div>
 
-<sc-if value="{{ kbDoneShow }}" hint-placeholder-val="{{ false }}">
-  <button onClick="{{ kbDone }}" style="position:fixed;right:14px;bottom:calc(var(--wtn-kb,0px) + 86px);z-index:9990;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#2b241f;color:#fff;font:600 14.5px 'Anuphan';box-shadow:0 10px 24px -8px rgba(43,36,32,.6);cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2.1"><path d="M7 10l5 5 5-5"/><path d="M4 20h16" opacity=".55"/></svg>เสร็จ</button>
-</sc-if>
 
 <sc-if value="{{ a2hsShow }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:0;right:0;bottom:0;z-index:9500;padding:0 12px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none">
@@ -8716,6 +8714,7 @@ class Component extends DCLogic {
   async _deliverFile(blob, name, title, mime) {
     if (this.isNativeApp) {
       try { if (await this._shareFileNative(blob, name, title)) return; } catch (e) {}
+      try { if (await this._saveToDeviceNative(blob, name)) return; } catch (e) {}
     }
     try {
       const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
@@ -8744,6 +8743,13 @@ class Component extends DCLogic {
   get isPremium() { if (this.isAdmin) return true; try { return localStorage.getItem('wtn-premium') === '1'; } catch (e) { return false; } }
   // รันอยู่ในแอป native (Capacitor) ไหม — ถ้าใช่ ต้องไม่โชว์การชำระเงินของเราเอง
   // (นโยบาย Google Play: สินค้าดิจิทัลในแอปต้องผ่าน Play Billing เท่านั้น)
+  get isAndroidApp() {
+    try {
+      const C = window.Capacitor;
+      if (C && C.getPlatform) return C.getPlatform() === 'android';
+      return /android/i.test(navigator.userAgent);
+    } catch (e) { return false; }
+  }
   get isNativeApp() {
     try {
       if (document.documentElement.classList.contains('is-native')) return true;
@@ -10287,7 +10293,7 @@ class Component extends DCLogic {
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
       const pbName = String(D.title || 'photobook').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 48) + ' - โฟโต้บุ๊ก.html';
       this._regDoc(url, html, pbName, (D.title || 'โฟโต้บุ๊ก'), () => this.pbHtml(D, true));
-      this.setState({ pbPct: 100, pbUrl: url, pbOpen: true, bvUrl: url, bvTitle: (D.title || 'โฟโต้บุ๊ก') });
+      this.setState({ pbPct: 100, pbUrl: url, pbOpen: !this._fromShelf, bvUrl: url, bvTitle: (D.title || 'โฟโต้บุ๊ก') });
     } catch (e) {
       console.warn('[wtn] photobook', e);
       this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -10313,7 +10319,7 @@ class Component extends DCLogic {
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
       const ebName = String(D.title || 'vela-book').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 48) + ' - เล่ม.html';
       this._regDoc(url, html, ebName, (D.title || 'เล่ม'), () => this.ebHtml(D, map, true));
-      this.setState({ ebPct: 100, ebUrl: url, ebOpen: true, bvUrl: url, bvTitle: (D.title || 'เล่ม') });
+      this.setState({ ebPct: 100, ebUrl: url, ebOpen: !this._fromShelf, bvUrl: url, bvTitle: (D.title || 'เล่ม') });
     } catch (e) {
       console.warn('[wtn] ebook', e);
       this.showToast('ทำเล่มไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -10664,6 +10670,20 @@ class Component extends DCLogic {
       await this._np('Filesystem', 'appendFile', { path, data: await this._blobB64(blob.slice(at, Math.min(at + CH, blob.size))), directory });
     }
     return r;
+  }
+  // Android: share sheet เซฟไฟล์ลงเครื่องไม่ได้ (ให้แต่ "ส่งต่อไปแอปอื่น")
+  // → เขียนลง Documents/Vela ให้เลย แล้วบอกที่อยู่ไฟล์ · แชร์แยกเป็นอีกปุ่ม (7 ก.ย. 69)
+  async _saveToDeviceNative(blob, name) {
+    for (const directory of ['DOCUMENTS', 'EXTERNAL', 'EXTERNAL_STORAGE']) {
+      try {
+        const r = await this._writeChunked('Vela/' + name, blob, directory);
+        if (!r) continue;
+        const where = directory === 'DOCUMENTS' ? 'Documents/Vela' : 'Vela';
+        this.showToast('บันทึกลงเครื่องแล้ว: ' + where + '/' + name);
+        return true;
+      } catch (e) {}
+    }
+    return false;
   }
   async _shareFileNative(blob, name, title) {
     let uri = '';
@@ -11434,7 +11454,7 @@ class Component extends DCLogic {
       this._recBlob = blob; this._recBlobUrl = url; this._recBlobName = name;
       this.setState({ recExportPct: 100, recReady: { url, name, size: this.fmtBytes(blob.size), ext } });
       if (this.isNativeApp) {
-        try { await this._deliverFile(blob, name, 'คลิปรีแคป', blob.type || 'video/mp4'); } catch (e) {}
+        try { if (!await this._saveToDeviceNative(blob, name)) await this._deliverFile(blob, name, 'คลิปรีแคป', blob.type || 'video/mp4'); } catch (e) {}
       }
       // ไม่ต้อง toast — กล่อง "คลิปพร้อมแล้ว" ที่มีปุ่มบันทึกโผล่อยู่ตรงหน้าแล้ว
     } catch (e) {
@@ -11845,8 +11865,9 @@ class Component extends DCLogic {
   }
   async shelfOpen(id, kind) {
     this._ebTripOverride = id;
+    this._fromShelf = true;
     try { if (kind === 'pb') await this.makePhotobook(); else await this.makeEbook(); }
-    finally { this._ebTripOverride = null; }
+    finally { this._ebTripOverride = null; this._fromShelf = false; }
   }
   // ── การ์ดโพสต์ 1080×1350: ปกเล่มตรงหน้า + คำโปรย (เอาไปลงโพสต์/ยิงแอด) ──
   async makeShareCard(tripId, kind) {
@@ -12391,8 +12412,8 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.07w',
-      kbDoneShow: !!this.state.kbUp,
+      appVersion: '2026.09.07ad',
+      kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
         this.setState({ kbUp: false });
@@ -14088,7 +14109,7 @@ class Component extends DCLogic {
               recReadyName: (this.state.recReady || {}).name || '',
               recReadyLabel: 'บันทึกคลิปลงเครื่อง' + ((this.state.recReady || {}).size ? ' · ' + this.state.recReady.size : ''),
               recCanShare: !!(this.state.recReady && (this.isNativeApp || navigator.canShare)),
-              recShareLabel: this.state.recSaving ? 'กำลังเตรียมไฟล์…' : 'บันทึก / แชร์คลิปที่เพิ่งทำ',
+              recShareLabel: this.state.recSaving ? 'กำลังเตรียมไฟล์…' : 'แชร์คลิปที่เพิ่งทำ',
               shareRecapFile: async () => {
                 if (!this._recBlob || this.state.recSaving) return;
                 this.setState({ recSaving: true });
