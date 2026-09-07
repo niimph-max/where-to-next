@@ -8742,12 +8742,9 @@ class Component extends DCLogic {
         }
       }
     }
-    if (!this.isNativeApp && !this.pdfBase) {
-      try {
-        const f = document.getElementById('wtn-book-frame');
-        if (f && f.contentWindow) { f.contentWindow.focus(); f.contentWindow.print(); return; }
-      } catch (e) {}
-    }
+    // เดิมเคยสั่งพิมพ์ iframe ตรงนี้ — แต่ Safari/iOS พิมพ์ "หน้าแอป" แทนตัวเล่ม
+    // ได้ PDF A4 65 หน้า มีหัว-ท้ายของเบราว์เซอร์ เล่มลอยอยู่ครึ่งหน้า (7 ก.ย. 69)
+    // → บันทึกเป็นไฟล์เอกสารเสมอ เปิดแล้วสั่งพิมพ์จากไฟล์เองได้ ขนาดหน้าถูกตาม @page
     await this._deliverFile(new Blob([d.html], { type: 'text/html' }), d.name, d.title, 'text/html');
   }
   // ส่งไฟล์ต่อให้ผู้ใช้: แอป = share sheet ของเครื่อง · เว็บมือถือ = Web Share · เว็บเดสก์ทอป = ดาวน์โหลด
@@ -12430,7 +12427,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.07f',
+      appVersion: '2026.09.07g',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
