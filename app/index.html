@@ -600,7 +600,7 @@
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
             </div>
           </div>
-          <div class="wtn-s" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
+          <div class="wtn-s" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
             <sc-for list="{{ dayPills }}" as="p" hint-placeholder-count="8">
               <button onClick="{{ p.on }}" style="{{ p.style }}"><span style="font:700 17px 'Anuphan';line-height:1">{{ p.n }}</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">{{ p.date }}</span></button>
             </sc-for>
@@ -5292,7 +5292,20 @@ class Component extends DCLogic {
       this.setState({ impBusy: false, impErr: 'อ่านโปรแกรมไม่สำเร็จ: ' + (e.message || e) });
     }
   }
-  componentDidUpdate() { this.initMap(); this.initFeedMap(); this._guardStoryScreens(); }
+  componentDidUpdate() { this.initMap(); this.initFeedMap(); this._guardStoryScreens(); this._centerDayPill(); }
+  // แถบวัน 1..N: เลื่อนให้วันที่กำลังดูอยู่โผล่เสมอ (ก่อนหน้านี้วันท้ายๆ ตกขอบขวา มองไม่เห็น)
+  _centerDayPill() {
+    const el = this._dayStrip;
+    if (!el || this.state.screen !== 'trip') return;
+    const i = this.state.day || 0;
+    if (this._dayPillAt === i) return;
+    const btn = el.children[i];
+    if (!btn) return;
+    this._dayPillAt = i;
+    const left = btn.offsetLeft - (el.clientWidth - btn.offsetWidth) / 2;
+    try { el.scrollTo({ left: Math.max(0, left), behavior: 'smooth' }); }
+    catch (e) { el.scrollLeft = Math.max(0, left); }
+  }
   _guardStoryScreens() {
     const sc = this.state.screen;
     if (sc !== 'chapterRead' && sc !== 'chapterEdit') return;
@@ -12378,7 +12391,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.07u',
+      appVersion: '2026.09.07w',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13412,6 +13425,7 @@ class Component extends DCLogic {
           tdMakeMoment: () => this.tdStartMoment(),
         };
       })(),
+      dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
