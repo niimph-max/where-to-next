@@ -21,6 +21,14 @@
   var CAM = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="3.2"/><path d="M8 7l1.5-2h5L16 7"/></svg>';
 
   class PhotoPick extends HTMLElement {
+    // React มักใช้ element เดิมซ้ำแล้วเปลี่ยนแค่ id (เช่นตอนลบทริปกลางลิสต์)
+    // ถ้าไม่โหลดใหม่ รูปจะค้างเป็นของรายการเก่า — เห็นเป็นรูปเลื่อนตำแหน่ง (7 ก.ย. 69)
+    static get observedAttributes() { return ['id', 'fallback']; }
+    attributeChangedCallback(name, oldV, newV) {
+      if (!this._built || oldV === newV) return;
+      this._imgEl = null; this._nat = null;
+      this._load();
+    }
     connectedCallback() {
       if (this._built) { this._render(); return; }
       this._built = true;
