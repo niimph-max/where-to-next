@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vela · ทริปหน้าไปไหน — วางแผนทริป แล้วเก็บไว้เป็นเรื่องเล่า</title>
-<meta name="description" content="วางแผนทริปรายวัน จดงบ เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — เปลี่ยนเป็นเรื่องเล่าของทริปนั้น — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
+<meta name="description" content="วางแผนทริปรายวัน จดงบ แชร์แผนให้เพื่อนวางกลับเข้าแอปได้ทั้งทริป เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
 <link rel="canonical" href="https://onevela.net/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vela">
 <meta property="og:url" content="https://onevela.net/">
 <meta property="og:locale" content="th_TH">
 <meta property="og:title" content="Vela — วางแผนทริป แล้วเก็บไว้เป็นเรื่องเล่า">
-<meta property="og:description" content="วางแผนทริปรายวัน จดงบ เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — เปลี่ยนเป็นเรื่องเล่าของทริปนั้น — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
+<meta property="og:description" content="วางแผนทริปรายวัน จดงบ แชร์แผนให้เพื่อนวางกลับเข้าแอปได้ทั้งทริป เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
 <meta property="og:image" content="https://onevela.net/og-image.png">
 <meta property="og:image:secure_url" content="https://onevela.net/og-image.png">
 <meta property="og:image:type" content="image/png">
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="แอป Vela ทริปหน้าไปไหน">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Vela — วางแผนทริป แล้วเก็บไว้เป็นเรื่องเล่า">
-<meta name="twitter:description" content="วางแผนทริปรายวัน จดงบ เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — เปลี่ยนเป็นเรื่องเล่าของทริปนั้น — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
+<meta name="twitter:description" content="วางแผนทริปรายวัน จดงบ แชร์แผนให้เพื่อนวางกลับเข้าแอปได้ทั้งทริป เก็บโมเมนต์ระหว่างทาง แล้วรวมเป็นหนังสือ โฟโต้บุ๊ก และคลิปสั้นได้ฟรี — ใช้ฟรี ไม่ต้องโหลดจากสโตร์">
 <meta name="twitter:image" content="https://onevela.net/og-image.png">
 <script src="./support.js"></script>
 </head>
@@ -211,13 +211,17 @@ if ('serviceWorker' in navigator) {
           <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">แผนที่ทริป</h3>
           <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">เห็นทุกจุดที่เช็คอินบนแผนที่ ย้อนดูเส้นทางที่เคยไปทั้งทริป</p>
         </div>
+        <div id="share" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
+          <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">แชร์แผนให้เพื่อน <span style="font-size:12.5px;font-weight:600;color:#a54e2c;background:rgba(192,95,57,.11);padding:2px 8px;border-radius:999px;vertical-align:middle">ทำได้ฟรี</span></h3>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">ส่งแผนทั้งทริปเป็นข้อความในไลน์ได้เลย เพื่อนวางกลับเข้า Vela แล้วได้แผนรายวัน ที่พัก และงบครบเหมือนกัน ไม่ต้องพิมพ์ใหม่ทีละวัน</p>
+        </div>
         <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
           <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">AI ช่วยคิด &amp; ช่วยเขียน <span style="font-size:12.5px;font-weight:600;color:#a54e2c;background:rgba(192,95,57,.11);padding:2px 8px;border-radius:999px;vertical-align:middle">พรีเมียม</span></h3>
           <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">วางโปรแกรมทัวร์ให้ AI แยกเป็นแผนรายวัน ถามทางระหว่างเที่ยว หรือให้ช่วยร่างเรื่องเล่าจากโมเมนต์จริง — ไม่ต้องหา API key เอง ใช้ AI ของ Vela ได้เลย</p>
         </div>
         <div id="book" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
           <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">รวมเป็นเล่ม <span style="font-size:12.5px;font-weight:600;color:#a54e2c;background:rgba(192,95,57,.11);padding:2px 8px;border-radius:999px;vertical-align:middle">ทำได้ฟรี</span></h3>
-          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">รวมทั้งทริปเป็นหนังสือเต็มเล่ม เลือกกรอบรูป เลย์เอาต์ และธีมสีเองได้ เปิดอ่านแบบพลิกหน้า บันทึกเป็น PDF หรือออกเป็นไฟล์ EPUB สำหรับ Apple Books / Play Books</p>
+          <p style="font-size:14.5px;line-height:1.7;color:#6c5f4f;margin:0">รวมทั้งทริปเป็นหนังสือเต็มเล่ม หรือโฟโต้บุ๊กที่ให้รูปเล่าเรื่อง เลือกกรอบรูปและเลย์เอาต์เองได้ เปิดอ่านแบบพลิกหน้าในแอป · พรีเมียมออกเป็นไฟล์ EPUB สำหรับ Apple Books / Play Books</p>
         </div>
         <div id="recap" style="background:#fffaf0;border:1px solid rgba(43,36,32,.07);border-radius:20px;padding:22px">
           <h3 style="font-size:17.5px;font-weight:700;margin:0 0 7px">คลิปสรุปทริป <span style="font-size:12.5px;font-weight:600;color:#a54e2c;background:rgba(192,95,57,.11);padding:2px 8px;border-radius:999px;vertical-align:middle">ทำได้ฟรี</span></h3>
@@ -249,7 +253,7 @@ if ('serviceWorker' in navigator) {
       <div style="flex:1 1 300px;min-width:260px">
         <div style="font-size:12.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#a1927c;margin-bottom:7px">หลังกลับจากทริป</div>
         <h3 style="font-family:'Chonburi',serif;font-weight:400;font-size:clamp(20px,2.4vw,27px);line-height:1.32;margin:0 0 9px;text-wrap:pretty">ทริปที่จดไว้ กลายเป็นเล่มได้</h3>
-        <p style="font-size:15.5px;line-height:1.75;color:#6c5f4f;margin:0 0 14px;text-wrap:pretty">รวมเป็น<b style="font-weight:700">หนังสือ</b>ที่มีเรื่องเล่าเป็นตอน หรือ<b style="font-weight:700">โฟโต้บุ๊ก</b>ที่ให้รูปเล่าเรื่อง เลือกวางรูปในเรื่องเองได้ทีละใบ เปิดอ่านแบบพลิกหน้าในแอป หรือบันทึกเป็น PDF ไปสั่งพิมพ์ — ทำได้ฟรี ไม่จำกัดจำนวนครั้ง</p>
+        <p style="font-size:15.5px;line-height:1.75;color:#6c5f4f;margin:0 0 14px;text-wrap:pretty">รวมเป็น<b style="font-weight:700">หนังสือ</b>ที่มีเรื่องเล่าเป็นตอน หรือ<b style="font-weight:700">โฟโต้บุ๊ก</b>ที่ให้รูปเล่าเรื่อง เลือกวางรูปในเรื่องเองได้ทีละใบ เปิดอ่านแบบพลิกหน้าในแอปได้เลย — ทำได้ฟรี ไม่จำกัดจำนวนครั้ง</p>
         <a href="help-book.html" style="font-size:14.5px;font-weight:600;color:#a54e2c">ดูวิธีทำ →</a>
       </div>
       <div style="flex:0 1 320px;min-width:240px;display:flex;align-items:flex-end;justify-content:center;gap:14px">
@@ -285,7 +289,8 @@ if ('serviceWorker' in navigator) {
             <span>แผนรายวัน · ที่พัก · งบทริป</span>
             <span>เช็คอิน รูป คลิป โน้ต</span>
             <span>เรื่องเล่า &amp; แกลเลอรี</span>
-            <span>หนังสือเต็มเล่ม · อ่านในแอป &amp; บันทึก PDF ได้</span>
+            <span>หนังสือ &amp; โฟโต้บุ๊กเต็มเล่ม · อ่านแบบพลิกหน้าในแอป</span>
+            <span>แชร์แผนทั้งทริปให้เพื่อนวางกลับเข้าแอปได้</span>
             <span>คลิปสรุปทริป 45–60 วิ · ทำกี่ครั้งก็ได้</span>
             <span>ใช้ออฟไลน์ · ล็อกอินแล้วสำรองแผนไว้ไม่ให้หาย</span>
             <span style="color:#a1927c">สำรองเฉพาะข้อความ · รูปอยู่ในเครื่องนี้เท่านั้น</span>
@@ -349,7 +354,7 @@ if ('serviceWorker' in navigator) {
         </details>
         <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
           <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">พรีเมียมได้อะไรเพิ่ม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>
-          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">สี่อย่าง: ผู้ช่วย AI (แยกโปรแกรมทัวร์ ร่างแผนวัน เรียบเรียงเรื่องเล่า) · ไฟล์ที่โหลดออกไม่มีชื่อ Vela ทั้งเล่มและคลิป · ออกเล่มเป็นไฟล์ EPUB สำหรับ Apple Books / Play Books (อ่านในแอปและบันทึก PDF ยังฟรี) · เลือกรูปและเรียงลำดับคลิปเอง ยาวเท่าไหร่ก็ได้ — บวกกับสำรองรูปขึ้นคลาวด์และซิงก์ข้ามเครื่อง</p>
+          <p style="font-size:15px;line-height:1.75;color:#6c5f4f;margin:11px 0 0">สี่อย่าง: ผู้ช่วย AI (แยกโปรแกรมทัวร์ ร่างแผนวัน เรียบเรียงเรื่องเล่า) · ไฟล์ที่โหลดออกไม่มีชื่อ Vela ทั้งเล่มและคลิป · ออกเล่มเป็นไฟล์ EPUB สำหรับ Apple Books / Play Books (อ่านเล่มในแอปยังฟรี) · เลือกรูปและเรียงลำดับคลิปเอง ยาวเท่าไหร่ก็ได้ — บวกกับสำรองรูปขึ้นคลาวด์และซิงก์ข้ามเครื่อง</p>
         </details>
         <details style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;padding:16px 20px">
           <summary style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:700;font-size:16.5px;list-style:none">จ่ายแล้วต้องต่ออัตโนมัติไหม?<span class="vl-plus" style="margin-left:auto;flex:none;color:#c05f39;font-size:20px;transition:transform .2s">+</span></summary>

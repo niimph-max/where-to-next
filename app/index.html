@@ -865,7 +865,7 @@
                   </sc-if>
                   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:11px">
                     <button onClick="{{ ci.toggleBook }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.bookStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h6"></path></svg>หนังสือ</button>
-                    <button onClick="{{ ci.togglePb }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.pbStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>โฟโต้บุ๊ก</button>
+                    <sc-if value="{{ pbOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ci.togglePb }}" style="display:inline-flex;align-items:center;gap:6px;font:600 12.5px 'Anuphan';padding:7px 11px;border-radius:12px;cursor:pointer;{{ ci.pbStyle }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>โฟโต้บุ๊ก</button></sc-if>
                   </div>
                   <div style="display:flex;align-items:center;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
                     <span onClick="{{ ci.togglePub }}" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer"><span style="width:40px;height:23px;border-radius:13px;position:relative;flex:none;{{ ci.pubTrack }}"><span style="position:absolute;top:3px;{{ ci.pubKnob }};width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span><span style="font:600 13.5px 'Anuphan';color:{{ ci.pubColor }}">{{ ci.pubLabel }}</span></span>
@@ -1117,8 +1117,10 @@
                   </sc-if>
                 </sc-if>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">{{ recapSizeNote }}</div>
+                <sc-if value="{{ pbOn }}" hint-placeholder-val="{{ false }}">
                 <button onClick="{{ openPbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.12);border-radius:14px;padding:13px 15px;cursor:pointer"><span style="width:36px;height:36px;border-radius:10px;background:#f3e7d6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><rect x="2.5" y="5.5" width="19" height="13" rx="1.6"></rect><path d="M2.5 15l5-4 4 3.2 3.5-3 6.5 5.3"></path><circle cx="16.6" cy="9.4" r="1.5"></circle></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#2b241f">ทำเป็นโฟโต้บุ๊ก</div><div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ pbCardNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin:9px 0 18px">เล่มแนวนอนจากรูปทั้งทริป — มีแค่หัวข้อวัน ไม่ต้องเขียนอะไรเพิ่ม</div>
+                </sc-if>
               </sc-if>
               <sc-if value="{{ recapEmpty }}" hint-placeholder-val="{{ true }}">
                 <div style="text-align:center;padding:34px 24px 22px">
@@ -2301,7 +2303,7 @@
               <sc-if value="{{ notPremium }}" hint-placeholder-val="{{ false }}">
                 <div style="margin-top:14px;background:#2b241f;border-radius:16px;padding:16px 17px">
                   <div style="font-family:'Chonburi',serif;font-size:17px;color:#f6efe2;margin-bottom:6px">ทำเล่มได้เลย ไม่ต้องจ่าย</div>
-                  <div style="font:500 13.5px/1.7 'Anuphan';color:#c9b79b;margin-bottom:13px">ทั้งหนังสือและโฟโต้บุ๊กเปิดให้ครบ — อ่านแบบพลิกหน้า บันทึกเป็น PDF ได้เต็มเล่ม · ไฟล์ที่โหลดออกจะมีบรรทัดเล็กๆ “สร้างด้วย Vela” มุมล่าง พรีเมียมเอาออกให้ + ได้ความละเอียดสำหรับสั่งพิมพ์</div>
+                  <div style="font:500 13.5px/1.7 'Anuphan';color:#c9b79b;margin-bottom:13px">หนังสือเปิดให้ครบ — อ่านแบบพลิกหน้าได้เต็มเล่ม · หน้าในเล่มจะมีบรรทัดเล็กๆ “สร้างด้วย Vela” มุมล่าง พรีเมียมเอาออกให้ + ได้ไฟล์ EPUB</div>
                   <button onClick="{{ goPremium }}" style="width:100%;min-height:46px;border:none;border-radius:13px;background:#c05f39;color:#fff;font:600 15px 'Anuphan';cursor:pointer">ดูแพ็กเกจ · Trip Pass ฿99</button>
                 </div>
               </sc-if>
@@ -2675,8 +2677,6 @@
       <sc-if value="{{ sPbFrame }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 40px">
           <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม</div>
-          <div style="font:600 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:8px">ธีมเล่ม</div>
-          <div style="display:flex;gap:8px;margin-bottom:22px"><sc-for list="{{ pbThemeChips }}" as="tc" hint-placeholder-count="3"><button onClick="{{ tc.on }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for></div>
           <div style="display:flex;flex-direction:column;gap:20px">
             <sc-for list="{{ pbPages }}" as="pg" hint-placeholder-count="4">
               <div>
@@ -2710,9 +2710,6 @@
               <div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px"><span style="flex:none;font:500 14px 'Anuphan';color:#8a7d6f">{{ st.k }}</span><span style="flex:1;min-width:0;font:600 14.5px 'Anuphan';color:#2b241f;text-align:right">{{ st.v }}</span></div>
             </sc-for>
           </div>
-          <div style="font:600 13.5px 'Anuphan';color:#8a7d6f;margin-bottom:8px">โหมดไฟล์</div>
-          <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pcQualityChips }}" as="qc" hint-placeholder-count="3"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
-          <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:18px">{{ pbQualityNote }}</div>
           <div style="display:flex;flex-direction:column;gap:10px">
             <sc-for list="{{ pcRows }}" as="r" hint-placeholder-count="5">
               <div style="{{ r.wrap }}"><span style="{{ r.dot }}">{{ r.mark }}</span><span style="flex:1;min-width:0"><b style="display:block;font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:2px">{{ r.title }}</b><span style="display:block;font:500 13px/1.65 'Anuphan';color:#7c7264;text-wrap:pretty">{{ r.note }}</span></span></div>
@@ -2744,7 +2741,7 @@
             </div>
           </sc-if>
           <button onClick="{{ pcMake }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">{{ pcMakeLabel }}</button>
-          <div style="font:500 12.5px/1.7 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px;text-wrap:pretty">เปิดไฟล์แล้วกด "บันทึกเป็น PDF" · ในหน้าพิมพ์ให้ตั้ง Scale 100% และปิด "Fit to page" ไม่งั้นตัดตกจะเพี้ยน</div>
+          <div style="font:500 12.5px/1.7 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px;text-wrap:pretty">ทำเสร็จแล้วอ่านแบบพลิกหน้าได้ในแอปเลย</div>
         </div>
       </sc-if>
     </div>
@@ -2787,7 +2784,7 @@
                     <div style="font:500 12.5px/1.6 'Anuphan';color:#a1927c;margin-bottom:10px">เลือกได้ทั้งสองอย่าง หรือไม่เลือกก็ได้ — อยู่ในไทม์ไลน์วันนี้เหมือนเดิม · หนังสือจะจัดรูปของโมเมนต์นี้ให้อยู่หน้าเดียวกัน เกิน 4 รูปจะเริ่มเล็ก</div>
                     <div style="display:flex;gap:9px;flex-wrap:wrap">
                       <button onClick="{{ ciToggleBook }}" style="flex:1;min-width:140px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;cursor:pointer;font:600 14.5px 'Anuphan';{{ ciBookStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 4h11l3 3v13H5z"></path><path d="M8 9h8M8 13h6"></path></svg>ลงในหนังสือ <span style="font-weight:500;opacity:.75">(ไม่เกิน 4 รูป)</span></button>
-                      <button onClick="{{ ciTogglePb }}" style="flex:1;min-width:140px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;cursor:pointer;font:600 14.5px 'Anuphan';{{ ciPbStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>ลงในโฟโต้บุ๊ก</button>
+                      <sc-if value="{{ pbOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ciTogglePb }}" style="flex:1;min-width:140px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:13px;cursor:pointer;font:600 14.5px 'Anuphan';{{ ciPbStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"></rect><circle cx="9" cy="12" r="2.4"></circle><path d="M13 16l3-3 5 4"></path></svg>ลงในโฟโต้บุ๊ก</button></sc-if>
                     </div>
                   </div>
                   <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
@@ -2920,9 +2917,6 @@
       </div>
       <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
       <photo-pick id="{{ ebCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:150px;border-radius:14px;margin-bottom:18px"></photo-pick>
-      <div style="font:600 14px 'Anuphan';color:#2b241f;margin:0 0 8px">คุณภาพไฟล์</div>
-      <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pbQualityChips }}" as="qc" hint-placeholder-count="2"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e">{{ pbQualityNote }}</div>
       <sc-if value="{{ ebBusy }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:16px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ ebBarStyle }}"></div></div>
         <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ ebBusyLabel }}</div></div>
@@ -2956,20 +2950,14 @@
         <div style="margin-top:4px"><div style="height:6px;background:#e2d6c0;border-radius:3px;overflow:hidden"><div style="{{ pbBarStyle }}"></div></div>
         <div style="font:500 13px 'Anuphan';color:#8a7d6f;text-align:center;margin-top:8px">{{ pbBusyLabel }}</div></div>
       </sc-if>
-      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">ธีมเล่ม</div>
-      <div style="display:flex;gap:8px;margin-bottom:18px"><sc-for list="{{ pbThemeChips }}" as="tc" hint-placeholder-count="3"><button onClick="{{ tc.on }}" style="{{ tc.style }}">{{ tc.label }}</button></sc-for></div>
-      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">คุณภาพไฟล์</div>
-      <div style="display:flex;gap:8px;margin-bottom:7px"><sc-for list="{{ pbQualityChips }}" as="qc" hint-placeholder-count="2"><button onClick="{{ qc.on }}" style="{{ qc.style }}">{{ qc.label }}</button></sc-for></div>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:10px">{{ pbQualityNote }}</div>
       <sc-if value="{{ pbIdle }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ openPbFrame }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M9 6v12M15 6v12" opacity=".45"/></svg>{{ pbFrameBtnLabel }}</button>
-        <button onClick="{{ openPbCheck }}" style="width:100%;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;margin-bottom:10px"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>ตรวจก่อนสั่งพิมพ์</button>
         <button onClick="{{ runPbook }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างโฟโต้บุ๊ก</button>
       </sc-if>
       <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ showPbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
-      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>อ่านในแอปได้เลย · กด "บันทึก PDF" ถ้าอยากได้ไฟล์</div>
+      <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>อ่านแบบพลิกหน้าได้ในแอปเลย</div>
     </div>
   </div>
 </sc-if>
@@ -2978,27 +2966,8 @@
     <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(max(env(safe-area-inset-top), 20px) + 8px) 10px 10px">
       <button onClick="{{ closeBook }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
       <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:rgba(246,239,226,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bvTitle }}</span>
-      <button onClick="{{ saveDoc }}" disabled="{{ bvBusy }}" style="flex:none;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"></path></svg>{{ bvSaveLabel }}</button>
     </div>
     <iframe id="wtn-book-frame" src="{{ bvUrl }}" title="เล่ม" style="flex:1;min-height:0;width:100%;border:none;background:#141310;display:block"></iframe>
-  </div>
-</sc-if>
-<sc-if value="{{ dpOpen }}" hint-placeholder-val="{{ false }}">
-  <div onClick="{{ dpCancel }}" style="position:fixed;inset:0;z-index:9950;background:rgba(20,16,13,.6);display:flex;align-items:flex-end;justify-content:center">
-    <div style="width:100%;max-width:402px;background:#f6efe2;border-radius:22px 22px 0 0;padding:22px 20px calc(env(safe-area-inset-bottom) + 22px)">
-      <div style="font-family:'Chonburi',serif;font-size:19px;color:#2b241f;margin-bottom:8px">บันทึกเล่มเป็น PDF</div>
-      <sc-if value="{{ dpCanPrint }}" hint-placeholder-val="{{ true }}">
-        <div style="font:500 14px/1.75 'Anuphan';color:#5c5347;margin-bottom:16px;text-wrap:pretty">กด “ทำ PDF เลย” จะเปิดหน้าต่างพิมพ์ของเครื่อง — ที่นั่นเลือก “บันทึกเป็น PDF / Save to Files” ได้เลย ขนาดหน้าจะตรงตามเล่ม ไม่มีหัว-ท้ายของเบราว์เซอร์</div>
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <button onClick="{{ dpPrint }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">ทำ PDF เลย</button>
-        </div>
-      </sc-if>
-      <sc-if value="{{ dpNative }}" hint-placeholder-val="{{ false }}">
-        <div style="font:500 14px/1.75 'Anuphan';color:#5c5347;margin-bottom:16px;text-wrap:pretty">เครื่องนี้สั่งพิมพ์จากแอปไม่ได้ — กดบันทึกไฟล์เล่มเก็บไว้ก่อน แล้วเอาไปเปิดในคอมพิวเตอร์ด้วย Chrome → Ctrl+P → Save as PDF (Margins: None · ติ๊ก Background graphics · ปิด Headers and footers)</div>
-        <button onClick="{{ dpSaveFile }}" style="width:100%;min-height:50px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">บันทึกไฟล์เล่ม</button>
-      </sc-if>
-      <button onClick="{{ dpCancel }}" style="width:100%;min-height:44px;margin-top:8px;border:none;background:transparent;color:#8a7d6f;font:600 14.5px 'Anuphan';cursor:pointer">ยกเลิก</button>
-    </div>
   </div>
 </sc-if>
 <sc-if value="{{ cfOpen }}" hint-placeholder-val="{{ false }}">
@@ -8262,7 +8231,6 @@ class Component extends DCLogic {
     // ปุ่มย้อนกลับของ Android เรียกผ่านตัวนี้ (native.js)
     window.__velaBack = () => {
       // ปิดของที่ทับอยู่ก่อนเสมอ ไม่งั้นผู้ใช้ติดอยู่ในหน้าอ่านเอกสาร (กดย้อนกลับแล้วไม่ไปไหน)
-      if (this.state.dpOpen) { this.setState({ dpOpen: false }); return true; }
       if (this.state.bvUrl) { this.closeDoc(); return true; }
       if ((this.state.lbList || []).length) { this.closeLightbox(); return true; }
       if (this.state.cfMsg) { this.setState({ cfMsg: '', cfFn: null }); return true; }
@@ -8712,7 +8680,9 @@ class Component extends DCLogic {
     if (!this._docByUrl) this._docByUrl = {};
     this._docByUrl[url] = { html, name, title, pdfHtml };
   }
-  closeDoc() { this._printClean(); this.setState({ bvUrl: '', bvBusy: false, dpOpen: false }); }
+  closeDoc() { this.setState({ bvUrl: '', bvBusy: false }); }
+  // โฟโต้บุ๊ก: เปิดใช้อยู่ — เป็นเล่มสำหรับ "เปิดดูพลิกหน้า" ไม่ใช่ของสำหรับพิมพ์ (7 ก.ย. 69)
+  get pbOn() { return true; }
   get pdfBase() { try { return String((window.WTN_SUPABASE || {}).pdfBase || ''); } catch (e) { return ''; } }
   async exportOverviewPdf() {
     try {
@@ -8728,94 +8698,6 @@ class Component extends DCLogic {
       console.warn('[wtn] plan doc', e);
       this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
     }
-  }
-  // ปุ่มเดียว: ทำ PDF จริง → เด้ง share sheet ของเครื่อง (ส่งต่อ/เก็บลงไฟล์/สั่งพิมพ์ เลือกเอง)
-  // เรนเดอร์ PDF ที่ Cloudflare (ดู cloudflare/vela-pdf-worker.js) — Chrome จริง
-  // จึงตัดหน้า/สระวรรณยุกต์ไทยถูกเหมือนกันทุกเครื่อง · ต่อเน็ตไม่ได้ → ตกไปใช้ไฟล์เอกสาร
-  // ปุ่มเดียวในหน้าอ่าน → ถามก่อนว่าจะทำ PDF ที่เครื่องนี้ หรือเก็บไฟล์ไปทำในคอมพ์
-  saveDoc() {
-    if (this.state.bvBusy) return;
-    const d = (this._docByUrl || {})[this.state.bvUrl || ''];
-    if (!d) return;
-    this.setState({ dpOpen: true });
-  }
-  // พิมพ์ "ตัวเล่ม" จากเอกสารหลักเลย — เมื่อก่อนสั่งพิมพ์ iframe แล้ว Safari พิมพ์หน้าแอปแทน
-  // ได้ A4 มีหัว-ท้าย · วิธีนี้ยกหน้าเล่ม + @page ของเล่มมาใส่เอกสารหลักชั่วคราว
-  printDocNow() {
-    const d = (this._docByUrl || {})[this.state.bvUrl || ''];
-    if (!d) return;
-    let html = '';
-    try { html = typeof d.pdfHtml === 'function' ? d.pdfHtml() : (d.pdfHtml || d.html); } catch (e) { html = d.html; }
-    if (!html) return;
-    this.setState({ dpOpen: false });
-    try {
-      const css = (html.match(/<style>([\s\S]*?)<\/style>/g) || [])
-        .map(s => s.replace(/^<style>/, '').replace(/<\/style>$/, '')).join('\n');
-      const b0 = html.indexOf('<body>'), b1 = html.lastIndexOf('</body>');
-      const body = (b0 < 0 ? html : html.slice(b0 + 6, b1 < 0 ? undefined : b1))
-        .replace(/<script[\s\S]*?<\/script>/gi, '');
-      this._printClean();
-      const host = document.createElement('div');
-      host.id = 'wtn-print-host';
-      host.innerHTML = body;
-      const sd = document.createElement('style');
-      sd.id = 'wtn-print-css';
-      sd.textContent = css;
-      const so = document.createElement('style');
-      so.id = 'wtn-print-css2';
-      so.textContent = '#wtn-print-host{display:none}' +
-        '@media print{html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important;height:auto!important}' +
-        'body>*{display:none!important}body>#wtn-print-host{display:block!important}' +
-        '#wtn-print-host .bar-print,#wtn-print-host #bkstage,#wtn-print-host #bkjump,#wtn-print-host #bkback{display:none!important}}';
-      document.head.appendChild(sd); document.head.appendChild(so); document.body.appendChild(host);
-      const done = () => { window.removeEventListener('afterprint', done); setTimeout(() => this._printClean(), 400); };
-      window.addEventListener('afterprint', done);
-      setTimeout(() => { try { window.print(); } catch (e) { this._printClean(); } setTimeout(done, 60000); }, 60);
-    } catch (e) {
-      console.warn('[wtn] print', e);
-      this._printClean();
-      this.showToast('สั่งพิมพ์ไม่สำเร็จ — บันทึกไฟล์เล่มไว้ทำในคอมพ์ได้');
-    }
-  }
-  _printClean() {
-    ['wtn-print-host', 'wtn-print-css', 'wtn-print-css2'].forEach(id => {
-      const el = document.getElementById(id); if (el && el.parentNode) el.parentNode.removeChild(el);
-    });
-  }
-  async saveDocFile() {
-    if (this.state.bvBusy) return;
-    const url = this.state.bvUrl || '';
-    const d = (this._docByUrl || {})[url];
-    if (!d) return;
-    this.setState({ dpOpen: false });
-    const base = String(d.name || 'vela.html').replace(/\.html?$/i, '');
-    if (this.pdfBase) {
-      let html = '';
-      try { html = typeof d.pdfHtml === 'function' ? d.pdfHtml() : (d.pdfHtml || d.html); } catch (e) { html = d.html; }
-      if (html && html.length <= 6500000) {
-        this.setState({ bvBusy: true });
-        try {
-          const r = await fetch(this.pdfBase, {
-            method: 'POST', headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ html, name: base + '.pdf' })
-          });
-          if (!r.ok) throw new Error('pdf ' + r.status);
-          const pdf = await r.blob();
-          if (!pdf || pdf.size < 800) throw new Error('pdf empty');
-          this.setState({ bvBusy: false });
-          await this._deliverFile(pdf, base + '.pdf', d.title, 'application/pdf');
-          return;
-        } catch (e) {
-          console.warn('[wtn] pdf', e);
-          this.setState({ bvBusy: false });
-          this.showToast(this.lang === 'en' ? "Couldn't make the PDF — saving the document file instead" : 'ทำ PDF ไม่สำเร็จ — บันทึกเป็นไฟล์เอกสารให้แทน');
-        }
-      }
-    }
-    // เดิมเคยสั่งพิมพ์ iframe ตรงนี้ — แต่ Safari/iOS พิมพ์ "หน้าแอป" แทนตัวเล่ม
-    // ได้ PDF A4 65 หน้า มีหัว-ท้ายของเบราว์เซอร์ เล่มลอยอยู่ครึ่งหน้า (7 ก.ย. 69)
-    // → บันทึกเป็นไฟล์เอกสารเสมอ เปิดแล้วสั่งพิมพ์จากไฟล์เองได้ ขนาดหน้าถูกตาม @page
-    await this._deliverFile(new Blob([d.html], { type: 'text/html' }), d.name, d.title, 'text/html');
   }
   // ส่งไฟล์ต่อให้ผู้ใช้: แอป = share sheet ของเครื่อง · เว็บมือถือ = Web Share · เว็บเดสก์ทอป = ดาวน์โหลด
   async _deliverFile(blob, name, title, mime) {
@@ -9004,7 +8886,7 @@ class Component extends DCLogic {
     clearTimeout(this._cloudT); clearTimeout(this._cloudRetry);
     clearInterval(this._recapTimer);
   }
-  // ---------- อีบุ๊ก: รวมทริปเป็นไฟล์ A5 พร้อมพิมพ์/บันทึกเป็น PDF ----------
+  // ---------- อีบุ๊ก: รวมทริปเป็นเล่ม A5 อ่านในแอป / ส่งออกเป็น EPUB ----------
   ebDayLabel(i) {
     try {
       const t = (this.userTrips || []).find(x => x.id === this.ebTripId()) || this.curTripRec() || {};
@@ -9743,9 +9625,9 @@ class Component extends DCLogic {
   // ── โหมดไฟล์: "อ่านบนจอ" บีบรูปให้ส่งต่อได้จริง · "ส่งโรงพิมพ์" ใส่ตัดตก+300 dpi ──
   // (ตัด "พิมพ์เอง" ออก 2 ก.ย. 2026 — สามโหมดเยอะเกิน และมันคือของกลางๆ ที่ไม่ตอบอะไรชัด
   //  คีย์เก่าที่เคยเก็บไว้จะตกกลับเป็น 'screen' เองผ่าน getter · ห้ามเพิ่มกลับโดยไม่ถาม)
+  // ตัด "ส่งโรงพิมพ์" ออก 7 ก.ย. 69 — เลิกสาย PDF/สิ่งพิมพ์ทั้งหมด (โค้ด pbPressPrep ยังอยู่ ไม่มีที่เรียก)
   pbQualities = {
-    screen: { label: 'อ่านบนจอ', note: 'บีบรูปให้ไฟล์เล็ก ส่งไลน์/อีเมลผ่าน', max: 1200, q: 0.62 },
-    press: { label: 'ส่งโรงพิมพ์', note: 'รูปละ 300 dpi + ตัดตก 3 มม. รอบด้าน + จำนวนหน้าหาร 4 ลงตัว · กระดาษที่ตั้งตอนพิมพ์ 216×154 มม.', max: 0, q: 0, press: true }
+    screen: { label: 'อ่านบนจอ', note: 'บีบรูปให้ไฟล์เล็ก อ่านลื่นทั้งมือถือและคอมพ์', max: 1200, q: 0.62 }
   };
   get pbQuality() { try { const k = localStorage.getItem('wtn-pb-quality'); return this.pbQualities[k] ? k : 'screen'; } catch (e) { return 'screen'; } }
   setPbQuality(k) { try { localStorage.setItem('wtn-pb-quality', k); } catch (e) {} this.forceUpdate(); }
@@ -9934,10 +9816,9 @@ class Component extends DCLogic {
   }
   _urlBytes(u) { return typeof u === 'string' && u.indexOf('data:') === 0 ? Math.round((u.length - u.indexOf(',') - 1) * 0.75) : 0; }
   fmtBytes(b) { if (!b) return ''; return b >= 1048576 ? (b / 1048576).toFixed(b > 10485760 ? 0 : 1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+  // ธีมเดียว: ครีม (ตัดตัวเลือกขาว/เทาเข้มออก 7 ก.ย. 69 — เล่มควรหน้าตาเดียวทั้งแอป)
   pbThemes = {
-    cream: { label: 'ครีม', pg: '#fffaf0', end: '#f6efe2', ink: '#2b241f', sub: '#8a7d6f', faint: '#a99e8e', ph: '#efe4d3', desk: '#e7ddcc', line: 'rgba(43,36,32,.1)' },
-    white: { label: 'ขาว', pg: '#ffffff', end: '#f7f6f4', ink: '#1b1b19', sub: '#6f6f69', faint: '#a5a59e', ph: '#eeedea', desk: '#dcdbd5', line: 'rgba(27,27,25,.1)' },
-    dark: { label: 'เทาเข้ม', pg: '#1d1a16', end: '#171512', ink: '#f2ead9', sub: '#a89d8b', faint: '#7d7365', ph: '#2a2621', desk: '#0e0d0b', line: 'rgba(242,234,217,.12)' }
+    cream: { label: 'ครีม', pg: '#fffaf0', end: '#f6efe2', ink: '#2b241f', sub: '#8a7d6f', faint: '#a99e8e', ph: '#efe4d3', desk: '#e7ddcc', line: 'rgba(43,36,32,.1)' }
   };
   get pbThemeKey() { try { const k = (JSON.parse(localStorage.getItem('wtn-pb-theme')) || {})[this.ebTripId()]; return this.pbThemes[k] ? k : 'cream'; } catch (e) { return 'cream'; } }
   setPbTheme(k) {
@@ -10702,7 +10583,7 @@ class Component extends DCLogic {
       'table.ex td.n{text-align:right;font-variant-numeric:tabular-nums}\n' +
       'table.ex tr.tot td{font-weight:700;border-bottom:0;border-top:2px solid rgba(43,36,32,.3)}\n';
   }
-  EPUB_PREMIUM_MSG = 'ไฟล์ EPUB เป็นฟีเจอร์ของพรีเมียม — อ่านเล่มในแอปและบันทึก PDF ยังใช้ได้ฟรีเต็มที่';
+  EPUB_PREMIUM_MSG = 'ไฟล์ EPUB เป็นฟีเจอร์ของพรีเมียม — อ่านเล่มในแอปใช้ได้ฟรีเต็มที่';
   epubGate() {
     if (this.isPremium) return true;
     if (this.isNativeApp) { this.showToast(this.EPUB_PREMIUM_MSG + ' · เปิดใช้ได้ที่ onevela.net'); return false; }
@@ -12497,7 +12378,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.07j',
+      appVersion: '2026.09.07s',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -12607,15 +12488,15 @@ class Component extends DCLogic {
           ebBusyLabel: pct < 80 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
           ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
           showEbBook: () => this.setState({ bvUrl: this.state.ebUrl || '', bvTitle: 'เล่ม' }),
-          ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 บันทึกเป็น PDF ได้') : 'ยังไม่มีบันทึกในทริปนี้',
+          ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 อ่านแบบพลิกหน้าได้') : 'ยังไม่มีบันทึกในทริปนี้',
           runEbook: () => this.makeEbook(),
           epBusy: !!this.state.epBusy,
           epLabel: this.state.epBusy ? 'กำลังทำไฟล์ EPUB… ' + (this.state.epPct || 0) + '%' : 'บันทึกไฟล์ EPUB',
           runEpub: () => this.makeEpub(),
           epLocked: !this.isPremium,
           epubNote: this.isPremium
-            ? 'อ่านเล่มได้ในแอปเลย · อยากได้ PDF กด "บันทึก PDF" ในเล่ม · EPUB คือไฟล์อีบุ๊กมาตรฐาน เปิดใน Apple Books / Play Books ได้'
-            : 'อ่านเล่มในแอปและบันทึก PDF ใช้ได้ฟรีเต็มที่ · ไฟล์ EPUB (เปิดใน Apple Books / Play Books) เป็นของพรีเมียม',
+            ? 'อ่านเล่มได้ในแอปเลย · อยากเก็บเป็นไฟล์ กด "ไฟล์ EPUB" — เปิดใน Apple Books / Play Books ได้'
+            : 'อ่านเล่มในแอปใช้ได้ฟรีเต็มที่ · ไฟล์ EPUB (เปิดใน Apple Books / Play Books) เป็นของพรีเมียม',
           ...(() => {
             const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
             return {
@@ -13407,15 +13288,8 @@ class Component extends DCLogic {
       cfCancel: () => this.setState({ cfMsg: '', cfFn: null }),
       cfOk: () => { const fn = this.state.cfFn; this.setState({ cfMsg: '', cfFn: null }); if (typeof fn === 'function') fn(); },
       bvOpen: !!this.state.bvUrl, bvUrl: this.state.bvUrl || '', bvTitle: this.state.bvTitle || 'เล่ม',
-      bvSaveLabel: this.state.bvBusy ? 'กำลังทำ PDF…' : 'บันทึก PDF',
-      dpOpen: !!this.state.dpOpen,
-      dpCanPrint: !this.isNativeApp,
-      dpNative: !!this.isNativeApp,
-      dpCancel: () => this.setState({ dpOpen: false }),
-      dpPrint: () => this.printDocNow(),
-      dpSaveFile: () => this.saveDocFile(),
+      pbOn: this.pbOn,
       bvBusy: !!this.state.bvBusy,
-      saveDoc: () => this.saveDoc(),
       closeBook: () => this.closeDoc(),
       lbOpen: !!(this.state.lbList && this.state.lbList.length),
       lbSrc: (this.state.lbList || [])[this.state.lbIdx || 0] || '',
@@ -14280,7 +14154,7 @@ class Component extends DCLogic {
         };
         const pb = pad(pb0, 'pb'), eb = pad(eb0, 'eb');
         return { shelfItems: items, noShelf: items.length === 0,
-          shelfPb: pb, shelfEb: eb, hasShelfPb: pb0.length > 0, hasShelfEb: eb0.length > 0,
+          shelfPb: pb, shelfEb: eb, hasShelfPb: this.pbOn && pb0.length > 0, hasShelfEb: eb0.length > 0,
           shelfPbNote: pb0.length + ' เล่ม · รูปเป็นตัวเล่าเรื่อง',
           shelfEbNote: eb0.length + ' เล่ม · เรื่องเล่าเป็นตัวเล่าเรื่อง',
           shelfNote: items.length + ' เล่มจาก ' + new Set(items.map(x => x.tripId)).size + ' ทริป' };
