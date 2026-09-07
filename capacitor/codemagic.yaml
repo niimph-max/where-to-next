@@ -23,6 +23,9 @@ workflows:
     environment:
       java: 17
       node: 20
+      vars:
+        VELA_VERSION: "1.0.2"          # ← versionName ที่ผู้ใช้เห็น
+        ANDROID_VERSION_CODE: "12"     # ← ต้องมากกว่าที่อัปขึ้น Play ครั้งก่อน (11)
       android_signing:
         - vela_keystore
     scripts:
@@ -35,10 +38,16 @@ workflows:
           cd capacitor
           npx cap add android 2>/dev/null || true
           npx cap sync android
-      - name: ตั้งเลขบิลด์
+      - name: สร้างไอคอน + สปแลชจาก assets/ (ไม่งั้นได้โลโก้ Capacitor ค่าเริ่มต้น)
         script: |
-          cd capacitor/android
-          echo "versionCode = $(($PROJECT_BUILD_NUMBER + 1))"
+          cd capacitor
+          npx --yes @capacitor/assets@3 generate --android
+      - name: ตั้งเวอร์ชัน + versionCode
+        script: |
+          cd capacitor/android/app
+          sed -i "s/versionCode [0-9]*/versionCode $ANDROID_VERSION_CODE/" build.gradle
+          sed -i "s/versionName \"[^\"]*\"/versionName \"$VELA_VERSION\"/" build.gradle
+          grep -E "versionCode|versionName" build.gradle
       - name: บิลด์ .aab
         script: |
           cd capacitor/android
@@ -64,7 +73,7 @@ workflows:
       cocoapods: default
       node: 20
       vars:
-        VELA_VERSION: "1.0.3"        # ← เลขเวอร์ชันที่จะปล่อย แก้ที่นี่ที่เดียว
+        VELA_VERSION: "1.0.2"        # ← เลขเวอร์ชันที่จะปล่อย แก้ที่นี่ที่เดียว
     scripts:
       - name: ติดตั้ง dependencies
         script: |
@@ -74,6 +83,10 @@ workflows:
         script: |
           cd capacitor
           npx cap sync ios
+      - name: สร้างไอคอน + สปแลชจาก assets/ (ไม่งั้นได้โลโก้ Capacitor ค่าเริ่มต้น)
+        script: |
+          cd capacitor
+          npx --yes @capacitor/assets@3 generate --ios
       - name: pod install
         script: |
           cd capacitor/ios/App
@@ -101,6 +114,63 @@ workflows:
       - capacitor/ios/App/build/**/*.xcarchive
       - /tmp/xcodebuild_logs/*.log
     publishing:
+      email:
+        recipients:
+          - admin@onevela.net
+        notify:
+          success: true
+          failure: true
+
+  ios-testflight:
+    name: Vela iOS · TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 45
+    integrations:
+      app_store_connect: Vela ASC key      # ← ต้องตรงกับชื่อ key ใน Codemagic UI
+    environment:
+      xcode: latest
+      cocoapods: default
+      node: 20
+      vars:
+        # 1.0.3 ยังรอ review อยู่ → ส่ง TestFlight ด้วยเวอร์ชันเดิม เลขบิลด์สูงขึ้น
+        VELA_VERSION: "1.0.3"
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: net.onevela.app
+    scripts:
+      - name: ติดตั้ง dependencies
+        script: |
+          cd capacitor
+          npm install
+      - name: เตรียม iOS platform
+        script: |
+          cd capacitor
+          npx cap sync ios
+      - name: สร้างไอคอน + สปแลชจาก assets/ (ไม่งั้นได้โลโก้ Capacitor ค่าเริ่มต้น)
+        script: |
+          cd capacitor
+          npx --yes @capacitor/assets@3 generate --ios
+      - name: pod install
+        script: |
+          cd capacitor/ios/App
+          pod install
+      - name: ตั้งเวอร์ชัน + เลขบิลด์
+        script: |
+          cd capacitor/ios/App
+          agvtool new-marketing-version "$VELA_VERSION"
+          agvtool new-version -all "$BUILD_NUMBER"
+      - name: บิลด์ ipa
+        script: |
+          cd capacitor/ios/App
+          xcode-project use-profiles
+          xcode-project build-ipa --workspace "App.xcworkspace" --scheme "App"
+    artifacts:
+      - capacitor/ios/App/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
       email:
         recipients:
           - admin@onevela.net
