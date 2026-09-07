@@ -12,6 +12,10 @@ window.WTN_SUPABASE = {
   // รูปทั้งหมดวิ่งผ่าน Cloudflare R2 (ดู cloudflare/vela-media-worker.js)
   // ค่าว่าง = ใช้ Supabase Storage ตรง ๆ เหมือนเดิม
   mediaBase: "https://onevela.net/i",
+  // เรนเดอร์ PDF จริงผ่าน Cloudflare Browser Rendering (ดู cloudflare/vela-pdf-worker.js)
+  // ค่าว่าง = บันทึกเป็นไฟล์เอกสาร .html แบบเดิม (ปุ่มยังทำงาน ไม่พัง)
+  // ใส่ "https://onevela.net/pdf" เมื่อ deploy worker + route เสร็จแล้ว
+  pdfBase: "",
   // ปลายทางของลิงก์ในอีเมล (ตั้งรหัสผ่านใหม่ ฯลฯ)
   // ในแอป iOS/Android origin คือ capacitor://localhost ซึ่ง Supabase ไม่ยอมรับ → ไม่ส่งอีเมลเลย
   // จึงบังคับใช้ URL เว็บจริงแทน (ต้องอยู่ใน Auth → URL Configuration → Redirect URLs)

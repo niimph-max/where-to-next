@@ -707,8 +707,7 @@
             </div>
           </sc-for>
           <div class="wtn-ov-actions" style="display:flex;gap:10px;margin-top:18px">
-            <button onClick="{{ shareOverview }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
-            <button onClick="{{ exportOverviewPdf }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.15);background:#fffaf0;color:#5c5347;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>โปรแกรมเดินทาง</button>
+            <button onClick="{{ shareOverview }}" style="flex:1;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
           </div>
         </div>
       </sc-if>
@@ -1114,7 +1113,7 @@
                 <button onClick="{{ exportRecap }}" style="width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15.5px 'Anuphan';border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.8"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M10 9.5v5l4-2.5z"/></svg>{{ exportRecapLabel }}</button>
                 <sc-if value="{{ recReadyOn }}" hint-placeholder-val="{{ false }}">
                   <sc-if value="{{ recCanShare }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ shareRecapFile }}" style="width:100%;min-height:44px;margin-bottom:10px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">แชร์คลิปที่เพิ่งทำ</button>
+                    <button onClick="{{ shareRecapFile }}" style="width:100%;min-height:44px;margin-bottom:10px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer">{{ recShareLabel }}</button>
                   </sc-if>
                 </sc-if>
                 <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:16px">{{ recapSizeNote }}</div>
@@ -2976,10 +2975,10 @@
 </sc-if>
 <sc-if value="{{ bvOpen }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;inset:0;z-index:9900;background:#141310;display:flex;flex-direction:column">
-    <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 10px 8px">
+    <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(max(env(safe-area-inset-top), 20px) + 8px) 10px 10px">
       <button onClick="{{ closeBook }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
       <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:rgba(246,239,226,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bvTitle }}</span>
-      <a href="{{ bvUrl }}" target="_blank" rel="noopener" style="flex:none;display:flex;align-items:center;min-height:40px;padding:0 15px;border-radius:20px;background:#c05f39;color:#fff;font:600 14px 'Anuphan';text-decoration:none">บันทึก PDF</a>
+      <button onClick="{{ saveDoc }}" disabled="{{ bvBusy }}" style="flex:none;display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border:none;border-radius:22px;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M8 8l4-4 4 4M5 15v3a2 2 0 002 2h10a2 2 0 002-2v-3"></path></svg>{{ bvSaveLabel }}</button>
     </div>
     <iframe id="wtn-book-frame" src="{{ bvUrl }}" title="เล่ม" style="flex:1;min-height:0;width:100%;border:none;background:#141310;display:block"></iframe>
   </div>
@@ -4575,7 +4574,7 @@ class Component extends DCLogic {
     url.searchParams.set('Allianceid', this.TRIP_AFF.aid);
     url.searchParams.set('SID', this.TRIP_AFF.sid);
     if (sub1) url.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
-    window.open(url.toString(), '_blank', 'noopener');
+    this.openExt(url.toString());
     return true;
   }
   // Klook เปิดไม่ผ่านเลย (ค้างที่โครงหน้าเปล่าทุกเมือง/ทุกคำค้น) → ใช้ Trip.com เป็นตัวหลักทุกหมวด
@@ -4592,7 +4591,7 @@ class Component extends DCLogic {
     u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
     u.searchParams.set('SID', this.TRIP_AFF.sid);
     if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
     return true;
   }
   // รถรับส่งสนามบิน — หน้านี้ไม่รับพารามิเตอร์เมือง ผู้ใช้เลือกในหน้าเว็บเอง
@@ -4602,7 +4601,7 @@ class Component extends DCLogic {
     u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
     u.searchParams.set('SID', this.TRIP_AFF.sid);
     if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
     return true;
   }
   // หน้าทัวร์/ที่เที่ยวของเมืองนั้น — ใช้รหัสเมืองชุดเดียวกับโรงแรม (searchkey=<city id>, searchtype=1)
@@ -4615,7 +4614,7 @@ class Component extends DCLogic {
     u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
     u.searchParams.set('SID', this.TRIP_AFF.sid);
     if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
     return true;
   }
   // เปิดหน้าโรงแรม Trip.com พร้อมเมือง+วันที่จากแผน (ต้องรู้รหัสเมือง)
@@ -4635,7 +4634,7 @@ class Component extends DCLogic {
     u.searchParams.set('Allianceid', this.TRIP_AFF.aid);
     u.searchParams.set('SID', this.TRIP_AFF.sid);
     if (sub1) u.searchParams.set('trip_sub1', String(sub1).slice(0, 40));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
     return true;
   }
   affPartnerName(kind) {
@@ -4649,7 +4648,7 @@ class Component extends DCLogic {
     if (ci && p.ci) u.searchParams.set(p.ci, ci);
     if (co && p.co) u.searchParams.set(p.co, co);
     const sep = p.click.includes('?') ? '&' : '?';
-    window.open(p.click + sep + 'url=' + encodeURIComponent(u.toString()) + '&sid=' + encodeURIComponent(sid || ''), '_blank', 'noopener');
+    this.openExt(p.click + sep + 'url=' + encodeURIComponent(u.toString()) + '&sid=' + encodeURIComponent(sid || ''));
   }
   tripDayIso(i) {
     const t = this.curTripRec();
@@ -4713,7 +4712,7 @@ class Component extends DCLogic {
     if (co) u.searchParams.set('checkout', co);
     u.searchParams.set('aid', this.KLOOK_AID);
     u.searchParams.set('aff_ext', (this.state.trip || 'trip') + '-stay-d' + ((Number(this.state.day) || 0) + 1));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
   }
   openAffiliate() {
     const kind = this.state.addKind;
@@ -4750,7 +4749,7 @@ class Component extends DCLogic {
     }
     u.searchParams.set('aid', this.KLOOK_AID);
     u.searchParams.set('aff_ext', (this.state.trip || 'trip') + '-d' + ((Number(this.state.day) || 0) + 1));
-    window.open(u.toString(), '_blank', 'noopener');
+    this.openExt(u.toString());
   }
   catKind(cat) { return { place: 'ที่เที่ยว', act: 'กิจกรรม', food: 'กิน', go: 'เดินทาง' }[cat] || 'ที่เที่ยว'; }
   baseDaysFor(tid) {
@@ -7376,6 +7375,7 @@ class Component extends DCLogic {
       if (file && navigator.share) {                              // บางเครื่องไม่มี canShare แต่แชร์ไฟล์ได้
         try { await navigator.share({ files: [file] }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
       }
+      if (this.isNativeApp) { try { if (await this._shareFileNative(blob, name, 'การ์ดบันทึก')) return; } catch (e) {} }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
       setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
       this.showToast('เซฟรูปการ์ดลงเครื่องแล้ว — เอาไปลง IG/TikTok ได้เลย');
@@ -7774,6 +7774,7 @@ class Component extends DCLogic {
         if (e && e.name === 'AbortError') return;
         console.warn('[wtn] backup share', e);
       }
+      if (this.isNativeApp) { try { if (await this._shareFileNative(blob, name, 'ไฟล์สำรอง Vela')) return; } catch (e) {} }
       const url = URL.createObjectURL(blob), a = document.createElement('a');
       a.href = url; a.download = name;
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500);
@@ -8242,6 +8243,12 @@ class Component extends DCLogic {
     } catch (e) {}
     // ปุ่มย้อนกลับของ Android เรียกผ่านตัวนี้ (native.js)
     window.__velaBack = () => {
+      // ปิดของที่ทับอยู่ก่อนเสมอ ไม่งั้นผู้ใช้ติดอยู่ในหน้าอ่านเอกสาร (กดย้อนกลับแล้วไม่ไปไหน)
+      if (this.state.bvUrl) { this.closeDoc(); return true; }
+      if ((this.state.lbList || []).length) { this.closeLightbox(); return true; }
+      if (this.state.cfMsg) { this.setState({ cfMsg: '', cfFn: null }); return true; }
+      if (this.state.pbOpen) { this.setState({ pbOpen: false }); return true; }
+      if (this.state.ebOpen) { this.setState({ ebOpen: false }); return true; }
       if (this.state.history && this.state.history.length) { this.back(); return true; }
       if (this.state.tab && this.state.tab !== 'plan') { this.setTab('plan'); return true; }
       return false;   // อยู่หน้าแรกแล้ว → ให้แอปย่อลง
@@ -8667,9 +8674,6 @@ class Component extends DCLogic {
       '@media print{.bar{display:none}body{background:#fff}.sheet{max-width:none;margin:0;padding:0;box-shadow:none;background:#fff}}' +
       '@media(max-width:640px){.sheet{padding:20px 16px;margin:10px}.facts{grid-template-columns:1fr}h1{font-size:25px}.cvimg{height:190px}}' +
       '</style></head><body>' +
-      '<div class="bar"><button onclick="window.print()">' + E(L.print) + '</button>' +
-      '<button class="gh" onclick="parent.postMessage({vela:\'save-plan-doc\'},\'*\')">' + E(L.save) + '</button>' +
-      '<span>' + E(L.hint) + '</span></div>' +
       '<div class="sheet"><div class="cover">' + cover +
       '<div class="kick">' + E(L.doc) + '</div><h1>' + E(D.title) + '</h1>' +
       '<div class="sub">' + E([D.city, D.country].filter(Boolean).join(' · ')) + '</div>' +
@@ -8684,39 +8688,86 @@ class Component extends DCLogic {
       '<div class="foot"><span>' + E(D.title) + '</span><span>' + E(L.foot) + '</span></div>' +
       '</div></body></html>';
   }
+  // ลงทะเบียนเอกสารที่เปิดในหน้าอ่าน เพื่อให้ปุ่มบันทึกเดียวใช้ได้กับทุกเล่ม
+  _regDoc(url, html, name, title, pdfHtml) {
+    if (!this._docByUrl) this._docByUrl = {};
+    this._docByUrl[url] = { html, name, title, pdfHtml };
+  }
+  closeDoc() { this.setState({ bvUrl: '', bvBusy: false }); }
+  get pdfBase() { try { return String((window.WTN_SUPABASE || {}).pdfBase || ''); } catch (e) { return ''; } }
   async exportOverviewPdf() {
     try {
       const D = await this.planDocData();
       const html = this.planDocHtml(D);
-      this._planDocHtml = html;
-      this._planDocName = (D.title || 'trip').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 48) +
+      const name = (D.title || 'trip').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 48) +
         (D.EN ? ' - itinerary.html' : ' - โปรแกรมเดินทาง.html');
-      if (!this._planDocListener) {
-        this._planDocListener = e => {
-          if (!e || !e.data || e.data.vela !== 'save-plan-doc' || !this._planDocHtml) return;
-          this.savePlanDoc();
-        };
-        window.addEventListener('message', this._planDocListener);
-      }
+      const title = D.EN ? 'Itinerary' : 'โปรแกรมการเดินทาง';
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      this.setState({ bvUrl: url, bvTitle: D.EN ? 'Itinerary' : 'โปรแกรมการเดินทาง' });
+      this._regDoc(url, html, name, title);
+      this.setState({ bvUrl: url, bvTitle: title });
     } catch (e) {
       console.warn('[wtn] plan doc', e);
       this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
     }
   }
-  async savePlanDoc() {
-    if (!this._planDocHtml) return;
-    const name = this._planDocName || 'itinerary.html';
-    const blob = new Blob([this._planDocHtml], { type: 'text/html' });
-    if (this.isNativeApp) {
-      try { await this._saveFileNative(blob, name, this.lang === 'en' ? 'Itinerary' : 'โปรแกรมการเดินทาง'); return; } catch (e) {}
+  // ปุ่มเดียว: ทำ PDF จริง → เด้ง share sheet ของเครื่อง (ส่งต่อ/เก็บลงไฟล์/สั่งพิมพ์ เลือกเอง)
+  // เรนเดอร์ PDF ที่ Cloudflare (ดู cloudflare/vela-pdf-worker.js) — Chrome จริง
+  // จึงตัดหน้า/สระวรรณยุกต์ไทยถูกเหมือนกันทุกเครื่อง · ต่อเน็ตไม่ได้ → ตกไปใช้ไฟล์เอกสาร
+  async saveDoc() {
+    if (this.state.bvBusy) return;
+    const url = this.state.bvUrl || '';
+    const d = (this._docByUrl || {})[url];
+    if (!d) return;
+    const base = String(d.name || 'vela.html').replace(/\.html?$/i, '');
+    if (this.pdfBase) {
+      let html = '';
+      try { html = typeof d.pdfHtml === 'function' ? d.pdfHtml() : (d.pdfHtml || d.html); } catch (e) { html = d.html; }
+      if (html && html.length <= 6500000) {
+        this.setState({ bvBusy: true });
+        try {
+          const r = await fetch(this.pdfBase, {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ html, name: base + '.pdf' })
+          });
+          if (!r.ok) throw new Error('pdf ' + r.status);
+          const pdf = await r.blob();
+          if (!pdf || pdf.size < 800) throw new Error('pdf empty');
+          this.setState({ bvBusy: false });
+          await this._deliverFile(pdf, base + '.pdf', d.title, 'application/pdf');
+          return;
+        } catch (e) {
+          console.warn('[wtn] pdf', e);
+          this.setState({ bvBusy: false });
+          this.showToast(this.lang === 'en' ? "Couldn't make the PDF — saving the document file instead" : 'ทำ PDF ไม่สำเร็จ — บันทึกเป็นไฟล์เอกสารให้แทน');
+        }
+      }
     }
+    if (!this.isNativeApp && !this.pdfBase) {
+      try {
+        const f = document.getElementById('wtn-book-frame');
+        if (f && f.contentWindow) { f.contentWindow.focus(); f.contentWindow.print(); return; }
+      } catch (e) {}
+    }
+    await this._deliverFile(new Blob([d.html], { type: 'text/html' }), d.name, d.title, 'text/html');
+  }
+  // ส่งไฟล์ต่อให้ผู้ใช้: แอป = share sheet ของเครื่อง · เว็บมือถือ = Web Share · เว็บเดสก์ทอป = ดาวน์โหลด
+  async _deliverFile(blob, name, title, mime) {
+    if (this.isNativeApp) {
+      try { if (await this._shareFileNative(blob, name, title)) return; } catch (e) {}
+    }
+    try {
+      const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title }); return; }
+        catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+    } catch (e) {}
     try {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 8000);
+      this.showToast((this.lang === 'en' ? 'Saved: ' : 'บันทึกแล้ว: ') + name);
     } catch (e) {
       this.showToast(this.lang === 'en' ? "Couldn't save the file" : 'บันทึกไฟล์ไม่สำเร็จ');
     }
@@ -9265,7 +9316,7 @@ class Component extends DCLogic {
     const metas = await Promise.all(set.map(u => this._shotMeta(u)));
     this._ebRatio = new Map(metas.map(m => [m.u, m.r]));
   }
-  ebHtml(D, map) {
+  ebHtml(D, map, forPdf) {
     const E = s => this._esc(s);
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
     const page = inner => '<section class="pg">' + inner + '</section>';
@@ -9473,9 +9524,9 @@ class Component extends DCLogic {
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
-      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · A5 · ' +
-        E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
-      out.join('') + this._bookViewer(false, 'eb-' + (D.tripId || D.title)) + '</body></html>';
+      (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · A5 · ' +
+        E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>') +
+      out.join('') + (forPdf ? '' : this._bookViewer(false, 'eb-' + (D.tripId || D.title))) + '</body></html>';
   }
   EB_INS_SIZES = { half: 'ปกติ', full: 'เต็มหน้า', small: 'เล็ก' };
   // ค่าจากหน้า "จัดรูปรายวัน" รุ่นแรก (v17v–w) ไม่มี UI แล้ว → ย้ายมาเป็นรูปที่วางในบท แล้วล้างทิ้ง
@@ -10042,7 +10093,7 @@ class Component extends DCLogic {
       fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
   }
-  pbHtml(D) {
+  pbHtml(D, forPdf) {
     const E = s => this._esc(s);
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
     const T = this.pbThemes[this.pbThemeKey] || this.pbThemes.cream;
@@ -10129,11 +10180,11 @@ class Component extends DCLogic {
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
       '</style></head><body>' +
-      '<div class="bar-print"><button onclick="window.print()">บันทึกเป็น PDF / สั่งพิมพ์</button><span>' + out.length + ' หน้า · ' +
+      (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · ' +
         (press ? 'A5 แนวนอน + ตัดตก 3 มม. · ตั้งกระดาษ 216×154 มม. · Scale 100% ปิด Fit to page'
                : 'แนวนอน A5 · ' + E((this.pbQualities[D.quality || 'screen'] || {}).label || '')) +
-        (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>' +
-      out.join('') + this._bookViewer(true, 'pb-' + (D.tripId || D.title), PGW, PGH) + '</body></html>';
+        (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>') +
+      out.join('') + (forPdf ? '' : this._bookViewer(true, 'pb-' + (D.tripId || D.title), PGW, PGH)) + '</body></html>';
   }
   // ── โหมดอ่านแบบหนังสือ: กางหน้าคู่ พลิกหน้าได้จริง (ไม่ใช่หน้าเรียงแบบ PDF) ──
   _bookViewer(landscape, bookKey, mmW, mmH) {
@@ -10178,7 +10229,7 @@ class Component extends DCLogic {
       '<div id="fl"><div class="face" id="ff"></div><div class="face" id="fb"></div></div>' +
       '</div></div><div id="bkbar">' +
       '<button id="bp">&lsaquo;<span class="lb"> ก่อนหน้า</span></button><span id="bkno"></span><button id="bn"><span class="lb">ถัดไป </span>&rsaquo;</button>' +
-      '<button id="bfl">เรียงหน้า</button><button class="pr" id="bpr">บันทึกเป็น PDF</button>' +
+      '<button id="bfl">เรียงหน้า</button>' +
       '</div><div id="bkpg"><i></i></div></div>' +
       '<div id="bkjump"><div class="jw"><div class="jh"><span>ไปที่หน้า</span><button class="jx" id="bkjx">ปิด</button></div><div id="bkjg"></div></div></div>' +
       '<button id="bkback">กลับไปโหมดหนังสือ</button>';
@@ -10244,7 +10295,6 @@ class Component extends DCLogic {
       'k=Math.max(.76,Math.min(1.4,Math.round(k*100)/100));if(k===1)delete KS[i];else KS[i]=k;applyK();' +
       'try{localStorage.setItem("wtn-bk-k:"+BK,JSON.stringify(KS));}catch(e){}}' +
       'applyK();' +
-      'document.getElementById("bpr").onclick=function(){restore();setTimeout(function(){window.print();},80);};' +
       'document.getElementById("bfl").onclick=function(){restore();stage.style.display="none";src.style.display="block";' +
       'back.style.display="block";document.documentElement.style.overflow="auto";document.body.style.overflow="auto";window.scrollTo(0,0);};' +
       'back.onclick=function(){src.style.display="none";stage.style.display="flex";back.style.display="none";' +
@@ -10274,6 +10324,8 @@ class Component extends DCLogic {
       this.setState({ pbPct: 88 });
       const html = this.pbHtml(D);
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const pbName = String(D.title || 'photobook').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 48) + ' - โฟโต้บุ๊ก.html';
+      this._regDoc(url, html, pbName, (D.title || 'โฟโต้บุ๊ก'), () => this.pbHtml(D, true));
       this.setState({ pbPct: 100, pbUrl: url, pbOpen: true, bvUrl: url, bvTitle: (D.title || 'โฟโต้บุ๊ก') });
     } catch (e) {
       console.warn('[wtn] photobook', e);
@@ -10298,6 +10350,8 @@ class Component extends DCLogic {
       this.setState({ ebPct: 92 });
       const html = this.ebHtml(D, map);
       const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const ebName = String(D.title || 'vela-book').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 48) + ' - เล่ม.html';
+      this._regDoc(url, html, ebName, (D.title || 'เล่ม'), () => this.ebHtml(D, map, true));
       this.setState({ ebPct: 100, ebUrl: url, ebOpen: true, bvUrl: url, bvTitle: (D.title || 'เล่ม') });
     } catch (e) {
       console.warn('[wtn] ebook', e);
@@ -10600,6 +10654,15 @@ class Component extends DCLogic {
     try { if (C && typeof C.nativePromise === 'function') return C.nativePromise(name, method, args || {}); } catch (e) {}
     return Promise.reject(new Error(name + '.' + method + ' ไม่พร้อม'));
   }
+  // เปิดลิงก์ภายนอก — ในแอป native this.openExt() ถูกบล็อก ต้องส่งให้ปลั๊กอิน Browser
+  openExt(url) {
+    const u = String(url || '');
+    if (!u) return;
+    if (this.isNativeApp) {
+      try { this._np('Browser', 'open', { url: u }).catch(() => { try { window.open(u, '_blank', 'noopener'); } catch (e) {} }); return; } catch (e) {}
+    }
+    try { window.open(u, '_blank', 'noopener'); } catch (e) {}
+  }
   _blobB64(blob) {
     return new Promise((ok, no) => {
       const r = new FileReader();
@@ -10628,6 +10691,35 @@ class Component extends DCLogic {
     }
     return false;
   }
+  // เขียนไฟล์ใหญ่ทีเดียวไม่ได้ (base64 ของ 40 MB = สตริง 54 MB → แอปค้าง)
+  // → เขียนก้อนแรกแล้วต่อท้ายเป็นท่อนละ ~1.5 MB (ขนาดหาร 3 ลงตัว ไม่งั้น base64 เพี้ยน)
+  async _writeChunked(path, blob, directory) {
+    const CH = 1572864;
+    if (blob.size <= CH) {
+      return this._np('Filesystem', 'writeFile', { path, data: await this._blobB64(blob), directory, recursive: true });
+    }
+    let r = await this._np('Filesystem', 'writeFile', { path, data: await this._blobB64(blob.slice(0, CH)), directory, recursive: true });
+    for (let at = CH; at < blob.size; at += CH) {
+      await this._np('Filesystem', 'appendFile', { path, data: await this._blobB64(blob.slice(at, Math.min(at + CH, blob.size))), directory });
+    }
+    return r;
+  }
+  async _shareFileNative(blob, name, title) {
+    let uri = '';
+    try {
+      const r = await this._writeChunked('Vela/' + name, blob, 'CACHE');
+      uri = (r && (r.uri || r.path)) || '';
+    } catch (e) {}
+    if (uri) {
+      try { await this._np('Share', 'share', { title, url: uri, dialogTitle: title }); return true; }
+      catch (e) { if (String((e && (e.message || e)) || '').toLowerCase().indexOf('cancel') >= 0) return true; }
+    }
+    try {
+      const r2 = await this._writeChunked('Vela/' + name, blob, 'DOCUMENTS');
+      if (r2) { this.showToast('บันทึกไฟล์แล้ว: Documents/Vela/' + name); return true; }
+    } catch (e) {}
+    return false;
+  }
   async makeEpub() {
     if (this._epBusy) return;
     if (!this.epubGate()) return;
@@ -10645,18 +10737,8 @@ class Component extends DCLogic {
       const blob = this._zipStore(files);
       const name = (D.title || 'vela-book').replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 60) + '.epub';
       this.setState({ epPct: 100 });
-      const file = new File([blob], name, { type: 'application/epub+zip' });
-      const plat = (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()) || 'web';
-      if (plat === 'android' && await this._saveFileNative(blob, name, D.title)) return;
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: D.title }); return; }
-        catch (e) { if (e && e.name === 'AbortError') return; }
-      }
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob); a.download = name;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
-      this.showToast('บันทึกไฟล์ EPUB แล้ว (' + this.fmtBytes(blob.size) + ') — เปิดใน Apple Books / Play Books ได้เลย');
+      // แอป (iOS/Android) → เด้ง share sheet ของเครื่องเสมอ: ส่งต่อ / บันทึกลงไฟล์ / เปิดในแอปอ่านหนังสือ
+      await this._deliverFile(blob, name, D.title || 'เล่ม EPUB', 'application/epub+zip');
     } catch (e) {
       console.warn('[wtn] epub', e);
       this.showToast('ทำไฟล์ EPUB ไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -11390,6 +11472,9 @@ class Component extends DCLogic {
       try { if (this._recBlobUrl) URL.revokeObjectURL(this._recBlobUrl); } catch (e) {}
       this._recBlob = blob; this._recBlobUrl = url; this._recBlobName = name;
       this.setState({ recExportPct: 100, recReady: { url, name, size: this.fmtBytes(blob.size), ext } });
+      if (this.isNativeApp) {
+        try { await this._deliverFile(blob, name, 'คลิปรีแคป', blob.type || 'video/mp4'); } catch (e) {}
+      }
       // ไม่ต้อง toast — กล่อง "คลิปพร้อมแล้ว" ที่มีปุ่มบันทึกโผล่อยู่ตรงหน้าแล้ว
     } catch (e) {
       console.warn('[wtn] export recap', e);
@@ -11901,6 +11986,7 @@ class Component extends DCLogic {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try { await navigator.share({ files: [file], title: b.title }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
       }
+      if (this.isNativeApp) { try { if (await this._shareFileNative(blob, name, (b.title || 'การ์ดทริป'))) return; } catch (e) {} }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
       setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 10000);
       this.showToast('เซฟการ์ดลงเครื่องแล้ว');
@@ -12314,7 +12400,7 @@ class Component extends DCLogic {
           ovTitle: info.title, ovM1: info.m1, ovM2: info.m2, ovCoverId: 'wtn-cover-' + this.state.trip,
           ovDayCount: this.days.length, ovStopCount: this.days.reduce((a, d, i) => a + (d.stops || []).length + ((this.state.added || {})[this.state.trip + ':' + i] || []).length, 0),
           ovCiCount: totalCi,
-          shareOverview: () => this.shareOverview(), exportOverviewPdf: () => this.exportOverviewPdf(),
+          shareOverview: () => this.shareOverview(),
         };
       })(),
       goDocs: () => this.go('docs'),
@@ -12344,7 +12430,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.06e',
+      appVersion: '2026.09.07f',
       kbDoneShow: !!this.state.kbUp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13195,7 +13281,7 @@ class Component extends DCLogic {
             clipShowCard: !!cl && !playing, clipPlaying: playing,
             clipLabel: cl ? cl.label : '', clipThumb: (cl && cl.thumb) || '', clipHasThumb: !!(cl && cl.thumb),
             clipEmbed: (cl && cl.embed) || '',
-            clipOpen: () => { if (!cl) return; if (cl.embed) this.setState({ clipPlay: cid }); else window.open(cl.url, '_blank', 'noopener'); } };
+            clipOpen: () => { if (!cl) return; if (cl.embed) this.setState({ clipPlay: cid }); else this.openExt(cl.url); } };
         })(),
         photos: this.thumbList(c.photos, 92, true),
         hasPhotos: (c.photos || []).length > 0,
@@ -13254,7 +13340,10 @@ class Component extends DCLogic {
       cfCancel: () => this.setState({ cfMsg: '', cfFn: null }),
       cfOk: () => { const fn = this.state.cfFn; this.setState({ cfMsg: '', cfFn: null }); if (typeof fn === 'function') fn(); },
       bvOpen: !!this.state.bvUrl, bvUrl: this.state.bvUrl || '', bvTitle: this.state.bvTitle || 'เล่ม',
-      closeBook: () => this.setState({ bvUrl: '' }),
+      bvSaveLabel: this.state.bvBusy ? 'กำลังทำ PDF…' : (this.pdfBase ? 'บันทึก PDF' : 'บันทึกไฟล์'),
+      bvBusy: !!this.state.bvBusy,
+      saveDoc: () => this.saveDoc(),
+      closeBook: () => this.closeDoc(),
       lbOpen: !!(this.state.lbList && this.state.lbList.length),
       lbSrc: (this.state.lbList || [])[this.state.lbIdx || 0] || '',
       ...(() => {
@@ -13545,7 +13634,7 @@ class Component extends DCLogic {
             hasClip: !!_clip, clipShowCard: !!_clip && !_playing, clipPlaying: _playing,
             clipLabel: _clip ? _clip.label : '', clipThumb: _clip ? _clip.thumb : '',
             clipHasThumb: !!(_clip && _clip.thumb), clipEmbed: _clip && _clip.embed ? _clip.embed : '',
-            clipOpen: () => { if (!_clip) return; if (_clip.embed) this.setState({ clipPlay: m.id }); else window.open(_clip.url, '_blank', 'noopener'); },
+            clipOpen: () => { if (!_clip) return; if (_clip.embed) this.setState({ clipPlay: m.id }); else this.openExt(_clip.url); },
             id: m.id, author: m.authorName || 'nimjourney', time: this.timeAgo(m.at),
             dateStr, timeStr,
             avatar: av, hasAvatar: !!av, noAvatar: !av,
@@ -14037,13 +14126,13 @@ class Component extends DCLogic {
               recReadyUrl: (this.state.recReady || {}).url || '',
               recReadyName: (this.state.recReady || {}).name || '',
               recReadyLabel: 'บันทึกคลิปลงเครื่อง' + ((this.state.recReady || {}).size ? ' · ' + this.state.recReady.size : ''),
-              recCanShare: !!(navigator.canShare && this.state.recReady),
+              recCanShare: !!(this.state.recReady && (this.isNativeApp || navigator.canShare)),
+              recShareLabel: this.state.recSaving ? 'กำลังเตรียมไฟล์…' : 'บันทึก / แชร์คลิปที่เพิ่งทำ',
               shareRecapFile: async () => {
-                try {
-                  const f = new File([this._recBlob], this._recBlobName, { type: this._recBlob.type });
-                  if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
-                } catch (e) { if (e && e.name === 'AbortError') return; }
-                this.showToast('เครื่องนี้แชร์ไฟล์ตรงไม่ได้ — กด "บันทึกคลิปลงเครื่อง" แล้วอัปจากคลังรูป');
+                if (!this._recBlob || this.state.recSaving) return;
+                this.setState({ recSaving: true });
+                try { await this._deliverFile(this._recBlob, this._recBlobName || 'recap.mp4', 'คลิปรีแคป', this._recBlob.type || 'video/mp4'); }
+                finally { this.setState({ recSaving: false }); }
               },
               recapPrevStyle: 'position:relative;height:' + (port ? 320 : 210) + 'px;background:#1a1613',
               recapSizeNote: (port
