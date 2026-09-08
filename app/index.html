@@ -582,6 +582,111 @@
       </sc-if>
 
       <!-- ========== TRIP DETAIL / PLANNER ========== -->
+      <sc-if value="{{ sBooking }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:4px 20px 30px;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="font-family:'Chonburi',serif;font-size:21px;color:#2b241f">{{ bkTitle }}</div>
+            <div style="font:500 12.5px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkWhen }}</div>
+          </div>
+          <div style="background:#efe4d3;border-radius:14px;padding:11px 13px;display:flex;gap:9px;align-items:flex-start">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="1.9" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01" stroke-linecap="round"></path></svg>
+            <div style="font:500 12.5px/1.65 'Anuphan';color:#6c5f4f;text-wrap:pretty">Vela อาจได้ค่าตอบแทนจากการจองผ่านลิงก์เหล่านี้ · ราคาที่คุณจ่ายเท่าเดิม และเราไม่ได้เลือกให้ตามค่าคอมมิชชัน</div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px 16px 14px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M3 20V8l9-4 9 4v12"></path><path d="M9 20v-6h6v6"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">ที่พัก</div>
+              <div style="margin-left:auto;font:600 11.5px 'Anuphan';color:#a54e2c;background:#fbeee6;padding:4px 9px;border-radius:9px">{{ bkGapNote }}</div>
+            </div>
+            <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-bottom:11px">ดึงเมืองกับวันจากแผนของคุณให้แล้ว</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ bkGaps }}" as="g" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 14px 'Anuphan';color:#2b241f">{{ g.city }} · {{ g.nights }}</div>
+                    <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ g.when }}</div>
+                  </div>
+                  <button onClick="{{ g.on }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">หาที่พัก</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ bkHasDone }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:9px;padding:2px 2px 0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7d9470" stroke-width="2.2" stroke-linecap="round"><path d="M5 13l4 4 10-10"></path></svg>
+                  <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ bkDoneNote }}</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" stroke-linejoin="round"><path d="M4 14l16-6-3 9-5-2-2 5-2-4-4-2z"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">เครื่องบิน</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+              <div style="flex:1;min-width:0">
+                <div style="font:600 14px 'Anuphan';color:#2b241f">{{ bkRoute }}</div>
+                <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkFlightWhen }}</div>
+              </div>
+              <button onClick="{{ bkFlight }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูตั๋ว</button>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M5 17V9l2-4h10l2 4v8"></path><path d="M5 13h14M8 17v2M16 17v2"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">รถรับ-ส่งสนามบิน</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+              <div style="flex:1;min-width:0">
+                <div style="font:600 14px 'Anuphan';color:#2b241f">สนามบิน → ที่พัก</div>
+                <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkTransferWhen }}</div>
+              </div>
+              <button onClick="{{ bkTransfer }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">จองรถ</button>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M12 3l2.6 5.6 6.4.8-4.7 4.3 1.2 6.3L12 17l-5.5 3 1.2-6.3L3 9.4l6.4-.8z"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">ทัวร์ &amp; กิจกรรม</div>
+            </div>
+            <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-bottom:11px">ตามเมืองที่อยู่ในแผน</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ bkCities }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" style="min-height:40px;padding:0 15px;border-radius:12px;background:#f6efe2;border:1px solid rgba(43,36,32,.1);font:600 13.5px 'Anuphan';color:#2b241f;cursor:pointer">{{ c.name }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><rect x="7" y="3" width="10" height="18" rx="2"></rect><path d="M11 18h2"></path></svg>
+            <div style="flex:1;min-width:0">
+              <div style="font:700 14.5px 'Anuphan';color:#2b241f">ซิม / eSIM</div>
+              <div style="font:500 12px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">เน็ตใช้ได้ตั้งแต่ลงเครื่อง</div>
+            </div>
+            <button onClick="{{ bkSim }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูแพ็ก</button>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="font:700 15.5px 'Anuphan';color:#2b241f">อยากเลือกเอง</div>
+            <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin:3px 0 12px">เปิดหน้าของพาร์ตเนอร์ไปเลือกเองได้เลย</div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ bkTripCom }}" style="flex:1;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);border-radius:13px;background:#f6efe2;cursor:pointer">
+                <span style="width:9px;height:9px;border-radius:50%;background:#287dfa"></span>
+                <span style="font:600 14.5px 'Anuphan';color:#2b241f">Trip.com</span>
+              </button>
+              <button onClick="{{ bkKlook }}" style="flex:1;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);border-radius:13px;background:#f6efe2;cursor:pointer">
+                <span style="width:9px;height:9px;border-radius:50%;background:#ff5722"></span>
+                <span style="font:600 14.5px 'Anuphan';color:#2b241f">Klook</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="font:500 12px/1.7 'Anuphan';color:#a99e8e;text-align:center;padding:2px 10px;text-wrap:pretty">ทุกปุ่มพาไปหน้าพาร์ตเนอร์โดยตรง เปิดในเบราว์เซอร์ของเครื่อง — Vela ไม่เก็บข้อมูลการจองของคุณ</div>
+        </div>
+      </sc-if>
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
           <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>{{ tripLiveLabel }}</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
@@ -598,6 +703,11 @@
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg>
               <div style="flex:1"><div style="font:600 15px 'Anuphan';color:#f6efe2">ตั๋ว & เอกสาร</div><div style="font:500 13px 'Anuphan';color:#c9b79b">ตั๋วเครื่องบิน · โปรแกรมทัวร์ · ที่พัก</div></div>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+            </div>
+            <div onClick="{{ goBooking }}" style="display:flex;align-items:center;gap:11px;background:#fffaf0;border:1.5px solid #c05f39;border-radius:13px;padding:12px 14px;margin-top:9px;cursor:pointer">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><path d="M4 10h16M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3M5 10h14v9H5z"/></svg>
+              <div style="flex:1"><div style="font:600 15px 'Anuphan';color:#2b241f">จองทริปนี้</div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ที่พัก · ตั๋ว · รถรับ-ส่ง · ทัวร์</div></div>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
             </div>
           </div>
           <div class="wtn-s" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
@@ -8458,6 +8568,8 @@ class Component extends DCLogic {
     this.titles.prep = 'เตรียมตัวก่อนเดินทาง';
     this.tabOf.overview = 'plan';
     this.tabOf.prep = 'plan';
+    this.tabOf.booking = 'plan';
+    this.titles.booking = 'จองทริปนี้';
   }
   overviewText() {
     const info = this.tripInfo;
@@ -8734,6 +8846,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:A4;margin:15mm 16mm}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.bar{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#2b241f;color:#f6efe2;padding:11px 16px;font:500 13.5px ' + A + '}' +
@@ -9528,6 +9643,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:148mm 210mm;margin:0}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:148mm;height:210mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
@@ -10164,6 +10282,93 @@ class Component extends DCLogic {
       fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
   }
+  // ---------- หน้า "จองทริปนี้" — ลิงก์พาร์ตเนอร์ที่ผูกกับเมือง+วันของทริปจริง ----------
+  // กติกาที่ต้องรักษาไว้: ไม่โชว์ราคา/คำว่าดีล (เราไม่ได้ดึงราคาจริง) · มีบรรทัดเปิดเผยค่าตอบแทน
+  // · ทุกปุ่มพาไปหน้าพาร์ตเนอร์ตรง เปิดในเบราว์เซอร์ระบบ ไม่มีหน้าคั่นของเรา
+  BOOK_NOSTAY = { 'ยังไม่ได้เลือกที่พัก': 1, 'No stay picked yet': 1, '': 1 };
+  bookTrip() { return (this.userTrips || []).find(x => x.id === this.state.trip) || this.curTripRec() || {}; }
+  bookSid(tag) { return String(this.state.trip || 'trip') + '-bk-' + tag; }
+  // คืนที่ยังไม่มีที่พัก — รวมวันติดกันในเมืองเดียวกันเป็นช่วงเดียว
+  bookStayGaps() {
+    const out = [];
+    this.days.forEach((d, i) => {
+      if (!this.BOOK_NOSTAY[String(d.stayName || '').trim()]) return;
+      const city = String(d.city || '').trim();
+      const last = out[out.length - 1];
+      if (last && last.to === i - 1 && last.city === city) { last.to = i; return; }
+      out.push({ from: i, to: i, city });
+    });
+    return out;
+  }
+  bookStayDone() { return this.days.filter(d => !this.BOOK_NOSTAY[String(d.stayName || '').trim()]).length; }
+  // ⚠ `day.city` ในแอปนี้คือ "หัวข้อของวัน" (เช่น "Charyn Canyons → Saty") ไม่ใช่ชื่อเมือง
+  // → ห้ามเอาไปโชว์เป็นชิปเมืองตรง ๆ ต้องหาชื่อเมืองจริงจากดิกชันนารีก่อน ส่วนข้อความดิบใช้เป็นแค่คำใบ้ให้ลิงก์
+  bookCityHit(raw) {
+    const k = String(raw || '').trim().toLowerCase();
+    if (!k) return null;
+    let best = '';
+    Object.keys(this.TRIP_CITY).forEach(key => { if ((k === key || k.indexOf(key) !== -1) && key.length > best.length) best = key; });
+    if (!best) return null;
+    const id = this.TRIP_CITY[best];
+    const thai = /[\u0E00-\u0E7F]/.test(best);
+    return { id, label: thai ? best : (this.TRIP_CITY_NAME[id] || best), hint: String(raw).trim() };
+  }
+  bookCities() {
+    const t = this.bookTrip(), out = [], seen = {};
+    this.days.forEach(d => {
+      const h = this.bookCityHit(d.city);
+      if (!h || seen[h.id]) return;
+      seen[h.id] = 1;
+      out.push(h);
+    });
+    if (!out.length) {
+      const h = this.bookCityHit(t.city) || this.bookCityHit(t.country) || this.bookCityHit(t.name);
+      const fb = String(t.city || t.country || t.name || '').trim();
+      if (h) out.push(h);
+      else if (fb) out.push({ id: 'fb', label: fb, hint: fb });
+    }
+    return out.slice(0, 4);
+  }
+  openBookStay(from, to, city) {
+    const t = this.bookTrip();
+    const ci = this.tripDayIso(from), co = this.tripDayIso(to + 1), sid = this.bookSid('stay-d' + (from + 1));
+    const p = this.affPartner('ที่พัก');
+    if (p) return this.cjOpen(p, city || t.city || t.name, ci, co, sid);
+    if (this.tripAffStay([city, t.city, t.name, t.country], ci, co, sid)) return;
+    if (this.tripAffPage('ที่พัก', sid)) return;
+    this.openExt(this.klookUrl('/th/hotels/', sid));
+  }
+  openBookFlight() {
+    const t = this.bookTrip(), sid = this.bookSid('flight');
+    if (this.tripAffFlights(sid, [t.city, t.country, t.name].filter(Boolean).join(' '))) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookTransfer() {
+    const sid = this.bookSid('transfer');
+    if (this.tripAffTransfer(sid)) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookThings(city) {
+    const t = this.bookTrip(), sid = this.bookSid('things');
+    if (this.tripAffThings([city, t.city, t.name, t.country], sid)) return;
+    if (this.tripAffPage('ที่เที่ยว', sid)) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookSim() { this.openExt(this.klookUrl('/th/wifi-sim/', this.bookSid('sim'))); }
+  // ปุ่ม "อยากเลือกเอง" — หน้าแรกของพาร์ตเนอร์ ไม่ใช่หน้าค้นหา (หน้าผลค้นหาของ Klook ค้างทุกคำค้น)
+  openBookTripDotCom() {
+    const sid = this.bookSid('free');
+    if (this.tripAffPage('ที่พัก', sid)) return;
+    this.openExt('https://th.trip.com/');
+  }
+  klookUrl(path, sid) {
+    const u = new URL('https://www.klook.com' + path);
+    u.searchParams.set('aid', this.KLOOK_AID);
+    if (sid) u.searchParams.set('aff_ext', String(sid).slice(0, 40));
+    return u.toString();
+  }
+  openBookKlook() { this.openExt(this.klookUrl('/th/', this.bookSid('free'))); }
+
   // ══ แชร์เล่มเป็นลิงก์ — เก็บแค่ "แปลนเล่ม" (ลำดับหน้า + เลย์เอาต์ + ลิงก์รูป) ไม่กี่ KB ══
   // คนดูไม่ต้องล็อกอิน (มาตรฐานเดียวกับลิงก์แชร์ตอนเรื่องเล่า) · ล็อกอินเฉพาะถูกใจ/คอมเมนต์
   pbShareMap() { try { return JSON.parse(localStorage.getItem('wtn-pb-share')) || {}; } catch (e) { return {}; } }
@@ -10352,6 +10557,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:' + PGW + 'mm ' + PGH + 'mm;margin:0}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:' + T.desk + ';font-family:' + A + ';color:' + T.ink + ';-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:' + PGW + 'mm;height:' + PGH + 'mm;background:' + T.pg + ';position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(20,16,13,.22);page-break-after:always;break-after:page}' +
@@ -10418,7 +10626,8 @@ class Component extends DCLogic {
       '#fl.on{display:block}' +
       '#fl .face{position:absolute;inset:0;overflow:hidden;background:#fffaf0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 14px 40px rgba(0,0,0,.4)}' +
       '#fb{transform:rotateY(180deg)}' +
-      '#bkbar{flex:none;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 12px 15px;flex-wrap:wrap}' +
+      // แถบปุ่มต้องพ้นแถบนำทางล่างของ Android (ปุ่ม/ขีดปัด) ไม่งั้นกด "ถัดไป/เรียงหน้า" ไม่โดน
+      '#bkbar{flex:none;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 12px calc(15px + env(safe-area-inset-bottom, 0px));flex-wrap:wrap}' +
       '#bkbar button{min-height:44px;min-width:44px;padding:0 15px;border:1px solid rgba(231,221,204,.24);border-radius:12px;background:rgba(255,255,255,.07);color:#e7ddcc;font:600 14px ' + A + ';cursor:pointer}' +
       '#bkbar button.pr{background:#c05f39;border-color:#c05f39;color:#fff}' +
       '#bkbar button:disabled{opacity:.3;cursor:default}' +
@@ -12585,7 +12794,38 @@ class Component extends DCLogic {
       sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
       sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard' && sc!=='country' && sc!=='city' && !(sc==='chapterEdit' && this.state.ceFocus && !this.state.ceHeadPin), sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
-      sOverview: sc==='overview', sPrep: sc==='prep', sWpImport: sc==='wpImport' && this.isAdmin,
+      sOverview: sc==='overview', sPrep: sc==='prep', sBooking: sc==='booking',
+      goBooking: () => this.go('booking'),
+      ...(() => {
+        if (sc !== 'booking') return { bkGaps: [], bkCities: [], bkTitle: '', bkWhen: '', bkGapNote: '', bkHasGaps: false, bkDoneNote: '', bkHasDone: false, bkRoute: '', bkFlightWhen: '', bkTransferWhen: '', bkFlight: () => {}, bkTransfer: () => {}, bkSim: () => {}, bkTripCom: () => {}, bkKlook: () => {} };
+        const t = this.bookTrip();
+        const gaps = this.bookStayGaps(), done = this.bookStayDone();
+        const nights = gaps.reduce((a, g) => a + (g.to - g.from + 1), 0);
+        const fmtD = i => { const iso = this.tripDayIso(i); if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : d.getDate() + ' ' + this.thMonths()[d.getMonth()]; };
+        return {
+          bkTitle: String(t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, ''),
+          bkWhen: this.fmtRange(t.start, t.end) || '',
+          bkHasGaps: gaps.length > 0,
+          bkGapNote: nights ? ('ยังว่าง ' + nights + ' คืน') : 'จองครบแล้ว',
+          bkHasDone: done > 0,
+          bkDoneNote: 'อีก ' + done + ' คืนจองไว้แล้วในแผน',
+          bkGaps: gaps.map(g => ({
+            city: (this.bookCityHit(g.city) || {}).label || String(t.city || t.country || '').trim() || 'ยังไม่ได้ใส่เมือง',
+            when: 'วันที่ ' + (g.from + 1) + (g.to > g.from ? '–' + (g.to + 1) : '') + ' · ' + fmtD(g.from) + (g.to > g.from ? '–' + fmtD(g.to) : ''),
+            nights: (g.to - g.from + 1) + ' คืน',
+            on: () => this.openBookStay(g.from, g.to, g.city)
+          })),
+          bkCities: this.bookCities().map(c => ({ name: c.label, on: () => this.openBookThings(c.hint || c.label) })),
+          bkRoute: 'กรุงเทพฯ → ' + (t.city || t.country || t.name || 'ปลายทาง'),
+          bkFlightWhen: this.fmtRange(t.start, t.end) || 'ยังไม่ได้ใส่วันเดินทาง',
+          bkTransferWhen: 'วันแรกของทริป' + (fmtD(0) ? ' · ' + fmtD(0) : ''),
+          bkFlight: () => this.openBookFlight(),
+          bkTransfer: () => this.openBookTransfer(),
+          bkSim: () => this.openBookSim(),
+          bkTripCom: () => this.openBookTripDotCom(),
+          bkKlook: () => this.openBookKlook()
+        };
+      })(), sWpImport: sc==='wpImport' && this.isAdmin,
       ...(() => {
         const _pk = this.packing;
         const info = this.tripInfo;
@@ -12661,7 +12901,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.08g',
+      appVersion: '2026.09.08j',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
