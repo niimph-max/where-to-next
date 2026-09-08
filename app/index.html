@@ -3073,6 +3073,7 @@ class Component extends DCLogic {
     pwReset: (() => { try { const s = (location.hash || '') + (location.search || ''); if (/type=recovery/.test(s)) return true; if (!/[?&]code=/.test(location.search || '')) return false; const t = +(localStorage.getItem('wtn-pwreset') || 0); return t > 0 && Date.now() - t < 3600000; } catch (e) { return false; } })(),
     pwNew: '', pwNew2: '', pwErr: '',
     screen: (() => { try { const p = new URLSearchParams(location.search); if (p.get('b')) return 'chapterRead'; const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ · ลิงก์เล่ม (?b=) ต้องไม่เด้งหน้าสมัคร คนดูไม่ต้องล็อกอิน
+    sharedBook: (() => { try { return !!new URLSearchParams(location.search).get('b'); } catch (e) { return false; } })(),
     deepLoading: (() => { try { const p = new URLSearchParams(location.search); if (p.get('b')) return true; return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
     // ฟีดสาธารณะที่ดึงมารอบก่อน — โชว์ได้ทันทีระหว่างรอของใหม่ ไม่ต้องเห็นจอว่าง
@@ -5350,6 +5351,7 @@ class Component extends DCLogic {
   }
   _guardStoryScreens() {
     const sc = this.state.screen;
+    if (this.state.sharedBook) return;   // เปิดจากลิงก์แชร์เล่ม — ยืมหน้า chapterRead เป็นฉากหลังของตัวอ่านเล่ม ไม่ใช่ตอนเรื่องเล่า
     if (sc !== 'chapterRead' && sc !== 'chapterEdit') return;
     if (this.state.deepLoading) return;
     if (sc === 'chapterRead' && this.state.remoteOpen) return;
@@ -8430,7 +8432,7 @@ class Component extends DCLogic {
       if (bid) {
         try { history.replaceState(null, '', location.pathname); } catch (e) {}
         this.openSharedBook(bid);
-        setTimeout(() => { if (this.state.deepLoading && !this.state.bvUrl) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 25000);
+        setTimeout(() => { if (this.state.deepLoading && !this.state.bvUrl) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 15000);
       }
     } catch (e) {}
     try {
@@ -8791,7 +8793,7 @@ class Component extends DCLogic {
     this.setState({ bvUrl: '', bvBusy: false, bvShared: false });
     // ปิดเล่มที่เปิดจากลิงก์คนอื่น — ข้างหลังไม่มีหน้าอะไรอยู่ พาไปหน้าเริ่มต้นของเขาเอง
     if (shared && this.state.screen === 'chapterRead' && !this.state.remoteOpen) {
-      try { this.setState({ history: [], deepLoading: false, deepErr: false, screen: localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard' }); } catch (e) {}
+      try { this.setState({ history: [], deepLoading: false, deepErr: false, sharedBook: false, screen: localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard' }); } catch (e) {}
     }
   }
   // โฟโต้บุ๊ก: เปิดใช้อยู่ — เป็นเล่มสำหรับ "เปิดดูพลิกหน้า" ไม่ใช่ของสำหรับพิมพ์ (7 ก.ย. 69)
@@ -12642,7 +12644,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.08e',
+      appVersion: '2026.09.08f',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13015,7 +13017,7 @@ class Component extends DCLogic {
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
-      deepGoHome: () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ deepLoading: false, deepErr: false, remoteOpen: null, screen: (() => { try { return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), history: [] }); },
+      deepGoHome: () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ sharedBook: false, deepLoading: false, deepErr: false, remoteOpen: null, screen: (() => { try { return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), history: [] }); },
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
