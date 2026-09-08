@@ -583,6 +583,111 @@
       </sc-if>
 
       <!-- ========== TRIP DETAIL / PLANNER ========== -->
+      <sc-if value="{{ sBooking }}" hint-placeholder-val="{{ false }}">
+        <div class="wtn-screen" style="padding:4px 20px 30px;display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="font-family:'Chonburi',serif;font-size:21px;color:#2b241f">{{ bkTitle }}</div>
+            <div style="font:500 12.5px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkWhen }}</div>
+          </div>
+          <div style="background:#efe4d3;border-radius:14px;padding:11px 13px;display:flex;gap:9px;align-items:flex-start">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a7d6f" stroke-width="1.9" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01" stroke-linecap="round"></path></svg>
+            <div style="font:500 12.5px/1.65 'Anuphan';color:#6c5f4f;text-wrap:pretty">Vela อาจได้ค่าตอบแทนจากการจองผ่านลิงก์เหล่านี้ · ราคาที่คุณจ่ายเท่าเดิม และเราไม่ได้เลือกให้ตามค่าคอมมิชชัน</div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px 16px 14px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M3 20V8l9-4 9 4v12"></path><path d="M9 20v-6h6v6"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">ที่พัก</div>
+              <div style="margin-left:auto;font:600 11.5px 'Anuphan';color:#a54e2c;background:#fbeee6;padding:4px 9px;border-radius:9px">{{ bkGapNote }}</div>
+            </div>
+            <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-bottom:11px">ดึงเมืองกับวันจากแผนของคุณให้แล้ว</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ bkGaps }}" as="g" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 14px 'Anuphan';color:#2b241f">{{ g.city }} · {{ g.nights }}</div>
+                    <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ g.when }}</div>
+                  </div>
+                  <button onClick="{{ g.on }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">หาที่พัก</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ bkHasDone }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:9px;padding:2px 2px 0">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7d9470" stroke-width="2.2" stroke-linecap="round"><path d="M5 13l4 4 10-10"></path></svg>
+                  <div style="font:500 12.5px 'Anuphan';color:#8a7d6f">{{ bkDoneNote }}</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" stroke-linejoin="round"><path d="M4 14l16-6-3 9-5-2-2 5-2-4-4-2z"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">เครื่องบิน</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+              <div style="flex:1;min-width:0">
+                <div style="font:600 14px 'Anuphan';color:#2b241f">{{ bkRoute }}</div>
+                <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkFlightWhen }}</div>
+              </div>
+              <button onClick="{{ bkFlight }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูตั๋ว</button>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M5 17V9l2-4h10l2 4v8"></path><path d="M5 13h14M8 17v2M16 17v2"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">รถรับ-ส่งสนามบิน</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;background:#f6efe2;border-radius:13px;padding:11px 12px">
+              <div style="flex:1;min-width:0">
+                <div style="font:600 14px 'Anuphan';color:#2b241f">สนามบิน → ที่พัก</div>
+                <div style="font:500 12px 'Anuphan';color:#8a7d6f;margin-top:2px">{{ bkTransferWhen }}</div>
+              </div>
+              <button onClick="{{ bkTransfer }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">จองรถ</button>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9"><path d="M12 3l2.6 5.6 6.4.8-4.7 4.3 1.2 6.3L12 17l-5.5 3 1.2-6.3L3 9.4l6.4-.8z"></path></svg>
+              <div style="font:700 15.5px 'Anuphan';color:#2b241f">ทัวร์ &amp; กิจกรรม</div>
+            </div>
+            <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-bottom:11px">ตามเมืองที่อยู่ในแผน</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ bkCities }}" as="c" hint-placeholder-count="3">
+                <button onClick="{{ c.on }}" style="min-height:40px;padding:0 15px;border-radius:12px;background:#f6efe2;border:1px solid rgba(43,36,32,.1);font:600 13.5px 'Anuphan';color:#2b241f;cursor:pointer">{{ c.name }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><rect x="7" y="3" width="10" height="18" rx="2"></rect><path d="M11 18h2"></path></svg>
+            <div style="flex:1;min-width:0">
+              <div style="font:700 14.5px 'Anuphan';color:#2b241f">ซิม / eSIM</div>
+              <div style="font:500 12px/1.55 'Anuphan';color:#8a7d6f;margin-top:2px">เน็ตใช้ได้ตั้งแต่ลงเครื่อง</div>
+            </div>
+            <button onClick="{{ bkSim }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:11px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ดูแพ็ก</button>
+          </div>
+
+          <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.09);border-radius:18px;padding:16px">
+            <div style="font:700 15.5px 'Anuphan';color:#2b241f">อยากเลือกเอง</div>
+            <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin:3px 0 12px">เปิดหน้าของพาร์ตเนอร์ไปเลือกเองได้เลย</div>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ bkTripCom }}" style="flex:1;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);border-radius:13px;background:#f6efe2;cursor:pointer">
+                <span style="width:9px;height:9px;border-radius:50%;background:#287dfa"></span>
+                <span style="font:600 14.5px 'Anuphan';color:#2b241f">Trip.com</span>
+              </button>
+              <button onClick="{{ bkKlook }}" style="flex:1;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);border-radius:13px;background:#f6efe2;cursor:pointer">
+                <span style="width:9px;height:9px;border-radius:50%;background:#ff5722"></span>
+                <span style="font:600 14.5px 'Anuphan';color:#2b241f">Klook</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="font:500 12px/1.7 'Anuphan';color:#a99e8e;text-align:center;padding:2px 10px;text-wrap:pretty">ทุกปุ่มพาไปหน้าพาร์ตเนอร์โดยตรง เปิดในเบราว์เซอร์ของเครื่อง — Vela ไม่เก็บข้อมูลการจองของคุณ</div>
+        </div>
+      </sc-if>
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
           <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>{{ tripLiveLabel }}</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
@@ -599,6 +704,11 @@
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg>
               <div style="flex:1"><div style="font:600 15px 'Anuphan';color:#f6efe2">ตั๋ว & เอกสาร</div><div style="font:500 13px 'Anuphan';color:#c9b79b">ตั๋วเครื่องบิน · โปรแกรมทัวร์ · ที่พัก</div></div>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9b79b" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+            </div>
+            <div onClick="{{ goBooking }}" style="display:flex;align-items:center;gap:11px;background:#fffaf0;border:1.5px solid #c05f39;border-radius:13px;padding:12px 14px;margin-top:9px;cursor:pointer">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.7"><path d="M4 10h16M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3M5 10h14v9H5z"/></svg>
+              <div style="flex:1"><div style="font:600 15px 'Anuphan';color:#2b241f">จองทริปนี้</div><div style="font:500 13px 'Anuphan';color:#8a7d6f">ที่พัก · ตั๋ว · รถรับ-ส่ง · ทัวร์</div></div>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
             </div>
           </div>
           <div class="wtn-s" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
@@ -2956,7 +3066,39 @@
       <sc-if value="{{ pbHasUrl }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ showPbBook }}" style="display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer">เปิดเล่ม</button>
       </sc-if>
+      <button onClick="{{ pbShareBook }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;margin-top:10px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" stroke-linecap="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3M8 7l4-4 4 4"/></svg>{{ pbShareLabel }}</button>
+      <sc-if value="{{ pbShareLocked }}" hint-placeholder-val="{{ false }}">
+        <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:7px">{{ pbShareNote }}</div>
+      </sc-if>
       <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">เล่มแนวนอน · รูปเป็นตัวเล่าเรื่อง มีแค่หัวข้อวัน<br>อ่านแบบพลิกหน้าได้ในแอปเลย</div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ sbOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;background:rgba(20,16,13,.55);display:flex;align-items:flex-end;justify-content:center;z-index:62">
+    <div style="width:100%;max-width:402px;background:#f6efe2;border-radius:22px 22px 0 0;padding:20px 20px 26px;max-height:88%;overflow:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">แชร์เล่มเป็นลิงก์</div>
+        <button onClick="{{ sbClose }}" style="min-width:44px;min-height:44px;border:none;background:transparent;color:#8a7d6f;font:600 15px 'Anuphan';cursor:pointer">ปิด</button>
+      </div>
+      <div style="font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px">คนที่ได้รับลิงก์เปิดอ่านเล่มได้เลย ไม่ต้องสมัคร · ดูได้อย่างเดียว เซฟไฟล์ไม่ได้</div>
+      <sc-if value="{{ sbBusy }}" hint-placeholder-val="{{ true }}">
+        <div style="font:500 14px 'Anuphan';color:#8a7d6f;text-align:center;padding:22px 0">กำลังเตรียมเล่ม…</div>
+      </sc-if>
+      <sc-if value="{{ sbReady }}" hint-placeholder-val="{{ false }}">
+        <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">สถานะลิงก์</div>
+        <div style="display:flex;gap:7px;margin-bottom:7px"><sc-for list="{{ sbVisChips }}" as="vc" hint-placeholder-count="3"><button onClick="{{ vc.on }}" style="{{ vc.style }}">{{ vc.label }}</button></sc-for></div>
+        <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;margin-bottom:16px">{{ sbVisNote }}</div>
+        <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:13px;padding:12px 13px;font:500 13px/1.5 'Anuphan';color:#6c5f4f;word-break:break-all;margin-bottom:10px">{{ sbLink }}</div>
+        <sc-if value="{{ sbHasMiss }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fbeee6;border-radius:12px;padding:11px 12px;font:500 12.5px/1.6 'Anuphan';color:#a54e2c;margin-bottom:12px">{{ sbMissNote }}</div>
+        </sc-if>
+        <div style="display:flex;gap:9px">
+          <button onClick="{{ sbCopy }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 15px 'Anuphan';border-radius:14px;cursor:pointer">{{ sbCopyLabel }}</button>
+          <button onClick="{{ sbShare }}" style="flex:1;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:14px;cursor:pointer">ส่งต่อ</button>
+        </div>
+        <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">อัปเดตเล่มแล้วกด “แชร์เล่มเป็นลิงก์” ซ้ำได้ — ลิงก์เดิมจะเห็นของใหม่</div>
+      </sc-if>
     </div>
   </div>
 </sc-if>
@@ -2965,6 +3107,9 @@
     <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(max(env(safe-area-inset-top), 20px) + 8px) 10px 10px">
       <button onClick="{{ closeBook }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
       <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:rgba(246,239,226,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bvTitle }}</span>
+      <sc-if value="{{ bvCta }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ bvCtaGo }}" style="flex:none;min-height:40px;padding:0 15px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 13.5px 'Anuphan';cursor:pointer">ทำเล่มของคุณ</button>
+      </sc-if>
     </div>
     <iframe id="wtn-book-frame" src="{{ bvUrl }}" title="เล่ม" style="flex:1;min-height:0;width:100%;border:none;background:#141310;display:block"></iframe>
   </div>
@@ -3038,8 +3183,9 @@ class Component extends DCLogic {
     // pkce: ลิงก์กลับมาเป็น ?code=... ไม่มี type=recovery → เช็คธงที่ปักไว้ตอนกด "ลืมรหัสผ่าน"
     pwReset: (() => { try { const s = (location.hash || '') + (location.search || ''); if (/type=recovery/.test(s)) return true; if (!/[?&]code=/.test(location.search || '')) return false; const t = +(localStorage.getItem('wtn-pwreset') || 0); return t > 0 && Date.now() - t < 3600000; } catch (e) { return false; } })(),
     pwNew: '', pwNew2: '', pwErr: '',
-    screen: (() => { try { const p = new URLSearchParams(location.search); const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ
-    deepLoading: (() => { try { const p = new URLSearchParams(location.search); return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
+    screen: (() => { try { const p = new URLSearchParams(location.search); if (p.get('b')) return 'chapterRead'; const fresh = p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch'); if (fresh) return 'chapterRead'; return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), // ลิงก์ที่เคยเปิดแล้ว (บุ๊กมาร์กค้าง) — เข้าแอปปกติ · ลิงก์เล่ม (?b=) ต้องไม่เด้งหน้าสมัคร คนดูไม่ต้องล็อกอิน
+    sharedBook: (() => { try { return !!new URLSearchParams(location.search).get('b'); } catch (e) { return false; } })(),
+    deepLoading: (() => { try { const p = new URLSearchParams(location.search); if (p.get('b')) return true; return !!(p.get('st') && p.get('ch') && localStorage.getItem('wtn-deep-last') !== p.get('st') + ':' + p.get('ch')); } catch (e) { return false; } })(),
     online: (typeof navigator === 'undefined' || navigator.onLine !== false),
     // ฟีดสาธารณะที่ดึงมารอบก่อน — โชว์ได้ทันทีระหว่างรอของใหม่ ไม่ต้องเห็นจอว่าง
     remoteFeed: (() => { try { const a = JSON.parse(localStorage.getItem('wtn-feed-cache') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } })(),
@@ -3811,7 +3957,14 @@ class Component extends DCLogic {
     }
     return out;
   }
+  // หลังกู้ไฟล์สำรอง (โดยเฉพาะข้ามบัญชี) baseline เก่าใช้ไม่ได้แล้ว — ถือว่า "ไม่มีตัวเทียบ"
+  // จนกว่าจะดันของที่กู้มาขึ้นคลาวด์สำเร็จ 1 รอบ · กันทั้งการลบทิ้งใน _writeLocal และ merge ที่ตัดสินผิดข้าง
+  _restoreMode() {
+    try { const v = Number(localStorage.getItem('vela-restore') || 0); return !!v && (Date.now() - v) < 216e5; } catch (e) { return false; }
+  }
+  _clearRestore() { try { localStorage.removeItem('vela-restore'); } catch (e) {} }
   _getBase() {
+    if (this._restoreMode()) return null;
     if (this._baseMem) return this._baseMem;
     const o = this._parseJSON(localStorage.getItem('wtn-sync-base'));
     if (o) this._baseMem = o;
@@ -3829,6 +3982,7 @@ class Component extends DCLogic {
   }
   // คืน baseline จาก IDB ก่อน merge รอบแรกหลังเปิดแอป
   async _ensureBase() {
+    if (this._restoreMode()) { this._baseMem = null; return null; }
     if (this._baseMem) return this._baseMem;
     const ls = this._parseJSON(localStorage.getItem('wtn-sync-base'));
     if (ls) { this._baseMem = ls; return ls; }
@@ -3926,6 +4080,7 @@ class Component extends DCLogic {
     await be.pushBackup({ _app: 'where-to-next', _at: at, data });
     try { this._egBump('push', JSON.stringify(data || {}).length); } catch (e) { this._egBump('push', 0); }
     this._setBase(data);
+    this._clearRestore();                                   // ของที่กู้มาขึ้นคลาวด์แล้ว — กลับมาใช้ baseline ตามปกติ
     try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
     this._lastSyncSig = this._sigOf(data); this._synced = true;
   }
@@ -5307,6 +5462,7 @@ class Component extends DCLogic {
   }
   _guardStoryScreens() {
     const sc = this.state.screen;
+    if (this.state.sharedBook) return;   // เปิดจากลิงก์แชร์เล่ม — ยืมหน้า chapterRead เป็นฉากหลังของตัวอ่านเล่ม ไม่ใช่ตอนเรื่องเล่า
     if (sc !== 'chapterRead' && sc !== 'chapterEdit') return;
     if (this.state.deepLoading) return;
     if (sc === 'chapterRead' && this.state.remoteOpen) return;
@@ -7746,21 +7902,28 @@ class Component extends DCLogic {
     const data = { _app: 'where-to-next', _at: Date.now(), data: {} };
     try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) data.data[k] = localStorage.getItem(k); } } catch (e) {}
     try {
-      if (withPhotos) {
-        // เก็บตัวรูปจริงจาก IndexedDB ลงไฟล์ด้วย — คีย์ idb:pNN ที่ถูกอ้างถึงจริงเท่านั้น
+      // ทั้ง "ตัวรูป" และ "เนื้อตอนหนังสือ" อยู่ใน IndexedDB — localStorage เก็บแค่ตัวชี้ (idb:pNN / idb:hXX)
+      // เนื้อตอนเป็นตัวหนังสือ เล็กมาก → ใส่ทุกครั้ง แม้เลือก "เฉพาะข้อความ" (ไม่งั้นไฟล์สำรองไม่มีเนื้อเรื่องเลย)
+      {
         const refs = new Set();
-        Object.keys(data.data).forEach(k => { const m = String(data.data[k] || '').match(/idb:p\d+/g); if (m) m.forEach(r => refs.add(r)); });
-        const photos = {};
-        for (const r of refs) { const d = await this.idbGet(r.slice(4)); if (d) photos[r] = d; }
-        data.photos = photos;
-        data._photoCount = Object.keys(photos).length;
+        Object.keys(data.data).forEach(k => { const m = String(data.data[k] || '').match(/idb:[A-Za-z0-9_.\-]+/g); if (m) m.forEach(r => refs.add(r)); });
+        const blobs = {}; let nP = 0, nB = 0;
+        for (const r of refs) {
+          const isPhoto = /^idb:p\d/.test(r);
+          if (isPhoto && !withPhotos) continue;
+          let d = null; try { d = await this.idbGet(r.slice(4)); } catch (e) {}
+          if (d == null || d === '') continue;
+          blobs[r] = d; if (isPhoto) nP++; else nB++;
+        }
+        data.photos = blobs;                 // ชื่อคีย์เดิม — ตัวกู้ของรุ่นก่อนอ่านได้เหมือนกัน
+        data._photoCount = nP; data._bodyCount = nB;
       }
       const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
       const name = 'vela-backup-' + new Date().toISOString().slice(0, 10) + (withPhotos ? '-photos' : '') + '.json';
       const size = this.fmtBytes(blob.size);
       const done = () => this.showToast(withPhotos
-        ? '✓ สำรองแล้ว · รวมรูป ' + (data._photoCount || 0) + ' ใบ (' + size + ')'
-        : '✓ สำรองแล้ว · เฉพาะข้อความ (' + size + ')');
+        ? '✓ สำรองแล้ว · รูป ' + (data._photoCount || 0) + ' ใบ · เนื้อตอน ' + (data._bodyCount || 0) + ' ตอน (' + size + ')'
+        : '✓ สำรองแล้ว · เฉพาะข้อความ + เนื้อตอน ' + (data._bodyCount || 0) + ' ตอน (' + size + ')');
       // iOS/แอป native: a.click() ดาวน์โหลดไม่ได้ (ไฟล์หายเงียบ ๆ) → ต้องผ่านชีตแชร์ให้เลือก "บันทึกไปยังไฟล์"
       try {
         const file = new File([blob], name, { type: 'application/json' });
@@ -7814,13 +7977,20 @@ class Component extends DCLogic {
       Object.keys(d).forEach(k => { if (SKIP[k]) return; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) this._setLS(k, d[k]); });
       try { ['wtn-sync-base', 'wtn-cloud-at', 'wtn-tombs'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
       this._baseMem = null;
-      const ph = (obj && obj.photos) || null;                    // ไฟล์รุ่นใหม่มีตัวรูปมาด้วย → ใส่กลับ IndexedDB
+      // ⚠️ baseline มีสำเนาอยู่ใน IndexedDB ด้วย (`sync-base`) — ลบแต่ใน localStorage ไม่พอ
+      // ตัวที่ค้างคือเหตุที่ "กู้ข้ามบัญชีแล้วข้อมูลเด้งหายกลับเป็นของบัญชีเดิม":
+      // รอบซิงก์ถัดไปหยิบ baseline ของบัญชีเดิมมาเทียบ → ตัดสินว่าของที่เพิ่งกู้มา "ถูกลบจากอีกเครื่องแล้ว"
+      try { this.idbDel('sync-base'); } catch (e) {}
+      try { localStorage.setItem('vela-restore', String(Date.now())); } catch (e) {}   // โหมดหลังกู้: ห้ามใช้ baseline เก่า ห้ามลบอะไรทิ้ง จนกว่าจะดันขึ้นคลาวด์สำเร็จ 1 รอบ
+      const ph = (obj && obj.photos) || null;                    // ไฟล์รุ่นใหม่มีตัวรูป/เนื้อตอนมาด้วย → ใส่กลับ IndexedDB
       if (ph && typeof ph === 'object') {
         const keys = Object.keys(ph);
         (async () => {
-          let ok = 0;
-          for (const r of keys) { try { await this.idbPut(r.slice(4), ph[r]); ok++; } catch (e) {} }
-          alert('กู้ข้อมูลสำเร็จ · คืนรูป ' + ok + ' ใบ');
+          let nP = 0, nB = 0;
+          for (const r of keys) {
+            try { await this.idbPut(r.slice(4), ph[r]); if (/^idb:p\d/.test(r)) nP++; else nB++; } catch (e) {}
+          }
+          alert('กู้ข้อมูลสำเร็จ · คืนรูป ' + nP + ' ใบ · เนื้อตอน ' + nB + ' ตอน');
           location.reload();
         })();
         return;
@@ -8246,6 +8416,7 @@ class Component extends DCLogic {
       if (this.state.bvUrl) { this.closeDoc(); return true; }
       if ((this.state.lbList || []).length) { this.closeLightbox(); return true; }
       if (this.state.cfMsg) { this.setState({ cfMsg: '', cfFn: null }); return true; }
+      if (this.state.sbOpen) { this.setState({ sbOpen: false }); return true; }
       if (this.state.pbOpen) { this.setState({ pbOpen: false }); return true; }
       if (this.state.ebOpen) { this.setState({ ebOpen: false }); return true; }
       if (this.state.history && this.state.history.length) { this.back(); return true; }
@@ -8368,6 +8539,14 @@ class Component extends DCLogic {
     if (window.WTNBackend) wire();
     else window.addEventListener('wtn-backend-ready', this._bready = wire, { once: true });
     try {
+      const bid = new URLSearchParams(location.search).get('b');   // ลิงก์แชร์เล่ม: onevela.net/b/<id> → /app/?b=<id>
+      if (bid) {
+        try { history.replaceState(null, '', location.pathname); } catch (e) {}
+        this.openSharedBook(bid);
+        setTimeout(() => { if (this.state.deepLoading && !this.state.bvUrl) this.setState({ deepLoading: false, deepErr: true }); }, navigator.onLine === false ? 1500 : 15000);
+      }
+    } catch (e) {}
+    try {
       const p = new URLSearchParams(location.search);
       if (p.get('st') && p.get('ch')) {
         const sid = p.get('st'), cid = p.get('ch');
@@ -8390,6 +8569,8 @@ class Component extends DCLogic {
     this.titles.prep = 'เตรียมตัวก่อนเดินทาง';
     this.tabOf.overview = 'plan';
     this.tabOf.prep = 'plan';
+    this.tabOf.booking = 'plan';
+    this.titles.booking = 'จองทริปนี้';
   }
   overviewText() {
     const info = this.tripInfo;
@@ -8447,13 +8628,35 @@ class Component extends DCLogic {
     return this.parseLegacyT(s.t);
   }
   // อ่านข้อความที่แชร์ออกจาก Vela กลับเป็นแผน — ตรงตัว ไม่ผ่าน AI จึงครบและไม่มีค่าใช้จ่าย
+  // ก็อปมาจากอีเมล/เว็บเมล ตัวอักษรจะเพี้ยนได้หลายแบบ — ล้างให้เหลือรูปแบบเดียวก่อนอ่าน
+  _cleanPaste(s) {
+    return String(s || '')
+      .replace(/\r\n?/g, '\n')
+      .replace(/[\u2028\u2029\u0085]/g, '\n')          // เมลบางตัวขึ้นบรรทัดด้วยอักขระพวกนี้ — split ธรรมดามองไม่เห็น กลายเป็นบรรทัดเดียวยาว
+      .replace(/[\u200b-\u200f\u2060\ufeff]/g, '')     // อักขระล่องหนที่เว็บเมลแทรก
+      .replace(/\u00a0/g, ' ')
+      .split('\n').map(ln => ln
+        .replace(/^\s*(?:[>|]+\s?)+/, '')              // เครื่องหมายอ้างอิงตอนตอบเมล
+        .replace(/^\s*[•▪◦‣*]\s+/, '· ')               // เมลแปลงหัวข้อย่อยเป็น bullet ของตัวเอง
+        .trim()).join('\n');
+  }
   velaParse(text) {
-    const src = String(text || '');
+    const src = this._cleanPaste(text);
     // ปกติดูจากเครื่องหมายท้ายข้อความ — แต่ถ้าบรรทัดท้ายหายไป (ตัดก็อปมาไม่ครบ) ยังอ่านจากรูปแบบได้
     const looksVela = /(^|\n)\s*▸\s*(วันที่|Day)\s/.test(src) && /(^|\n)\s*·\s/.test(src);
-    if (src.indexOf(this.VELA_MARK) === -1 && !looksVela) return null;
+    // เมลแบบข้อความล้วนตัดบรรทัดยาวอัตโนมัติ (~78 ตัว) → เครื่องหมายท้ายอาจถูกหั่นกลางคำ · เทียบแบบไม่สนช่องว่าง
+    const flat = src.replace(/\s+/g, '');
+    if (flat.indexOf(this.VELA_MARK.replace(/\s+/g, '')) === -1 && !looksVela) return null;
+    // ย่อหน้าชวนติดตั้งท้ายข้อความ ไม่ใช่เนื้อแผน — ตัดออกก่อน ไม่งั้นบรรทัดที่เมลหั่นมาจะไปต่อท้ายกิจกรรมสุดท้าย
+    let bodyTxt = src;
+    const cut = bodyTxt.search(/(อยากได้แผนนี้ทั้งก้อน|Want this whole plan)/);
+    if (cut > -1) bodyTxt = bodyTxt.slice(0, cut);
+    // เครื่องหมายท้ายข้อความก็ถูกเมลหั่นได้ (บรรทัดสองขึ้นต้นด้วย "v1|...") — ตัดตั้งแต่หัวเครื่องหมาย
+    // ไม่งั้นเศษที่เหลือจะถูกนับเป็นบรรทัดต่อเนื่องแล้วไปต่อท้ายชื่อกิจกรรมสุดท้าย · meta ยังอ่านจาก src เต็มตามเดิม
+    const mk = bodyTxt.search(/\[\s*vela-\s*plan/i);
+    if (mk > -1) bodyTxt = bodyTxt.slice(0, mk);
     const days = []; let cur = null, name = '';
-    src.split(/\r?\n/).forEach(raw => {
+    bodyTxt.split(/\r?\n/).forEach(raw => {
       const ln = raw.trim();
       if (!ln) return;
       if (ln.indexOf('✦') === 0) { name = ln.slice(1).trim(); return; }
@@ -8482,12 +8685,18 @@ class Component extends DCLogic {
         if (parts.length > 1) { kind = parts.shift().trim(); title = parts.join(' — ').trim(); }
         if (!title && !kind) return;
         cur.stops.push({ ...this.mkWhen(this.normPeriod(when), /^\d{1,2}:\d{2}$/.test(when) ? when : ''), kind, title, note: '' });
+        return;
       }
+      // บรรทัดที่ไม่มีหัวสัญลักษณ์ = เมลหั่นบรรทัดยาวมา → ต่อท้ายรายการล่าสุด ไม่ทิ้ง (ก่อนหน้านี้ชื่อกิจกรรมยาว ๆ หายครึ่งท้าย)
+      if (/vela-plan/i.test(ln) || /^(วางแผนด้วย Vela|Planned with Vela)/.test(ln)) return;
+      const last = cur.stops[cur.stops.length - 1];
+      if (last) { if (last.note) last.note += ' ' + ln; else last.title = (last.title + ' ' + ln).trim(); }
+      else if (cur.summary) cur.summary += ' ' + ln;
     });
     if (!days.length) return null;
     days.forEach(d => { if (!d.stayName) d.stayName = this.lang === 'en' ? 'No stay picked yet' : 'ยังไม่ได้เลือกที่พัก'; });
     let meta = null;
-    const mm = src.match(/\[vela-plan v1\|([^\]]*)\]/);
+    const mm = src.match(/\[\s*vela-\s*plan\s*v\s*1\s*\|([^\]]*)\]/);
     if (mm) {
       const p = mm[1].split('|').map(x => x.trim());
       meta = { country: p[0] || '', city: p[1] || '', start: p[2] || '', end: p[3] || '', budget: p[4] || '' };
@@ -8638,6 +8847,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:A4;margin:15mm 16mm}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.bar{position:sticky;top:0;z-index:9;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#2b241f;color:#f6efe2;padding:11px 16px;font:500 13.5px ' + A + '}' +
@@ -8672,7 +8884,8 @@ class Component extends DCLogic {
       '.foot{margin-top:8px;border-top:1px solid rgba(43,36,32,.14);padding-top:12px;font:500 12.5px ' + A + ';color:#a3968a;display:flex;justify-content:space-between;gap:12px}' +
       '@media print{.bar{display:none}body{background:#fff}.sheet{max-width:none;margin:0;padding:0;box-shadow:none;background:#fff}}' +
       '@media(max-width:640px){.sheet{padding:20px 16px;margin:10px}.facts{grid-template-columns:1fr}h1{font-size:25px}.cvimg{height:190px}}' +
-      '</style></head><body>' +
+      '</style>  <script src="native.js"></script>
+</head><body>' +
       '<div class="sheet"><div class="cover">' + cover +
       '<div class="kick">' + E(L.doc) + '</div><h1>' + E(D.title) + '</h1>' +
       '<div class="sub">' + E([D.city, D.country].filter(Boolean).join(' · ')) + '</div>' +
@@ -8692,7 +8905,14 @@ class Component extends DCLogic {
     if (!this._docByUrl) this._docByUrl = {};
     this._docByUrl[url] = { html, name, title, pdfHtml };
   }
-  closeDoc() { this.setState({ bvUrl: '', bvBusy: false }); }
+  closeDoc() {
+    const shared = this.state.bvShared;
+    this.setState({ bvUrl: '', bvBusy: false, bvShared: false });
+    // ปิดเล่มที่เปิดจากลิงก์คนอื่น — ข้างหลังไม่มีหน้าอะไรอยู่ พาไปหน้าเริ่มต้นของเขาเอง
+    if (shared && this.state.screen === 'chapterRead' && !this.state.remoteOpen) {
+      try { this.setState({ history: [], deepLoading: false, deepErr: false, sharedBook: false, screen: localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard' }); } catch (e) {}
+    }
+  }
   // โฟโต้บุ๊ก: เปิดใช้อยู่ — เป็นเล่มสำหรับ "เปิดดูพลิกหน้า" ไม่ใช่ของสำหรับพิมพ์ (7 ก.ย. 69)
   get pbOn() { return true; }
   get pdfBase() { try { return String((window.WTN_SUPABASE || {}).pdfBase || ''); } catch (e) { return ''; } }
@@ -9425,6 +9645,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:148mm 210mm;margin:0}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:#e7ddcc;font-family:' + A + ';color:#2b241f;-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:148mm;height:210mm;background:#fffaf0;position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(43,36,32,.18);page-break-after:always;break-after:page}' +
@@ -9492,7 +9715,8 @@ class Component extends DCLogic {
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
-      '</style></head><body>' +
+      '</style>  <script src="native.js"></script>
+</head><body>' +
       (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · A5 · ' +
         E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>') +
       out.join('') + (forPdf ? '' : this._bookViewer(false, 'eb-' + (D.tripId || D.title))) + '</body></html>';
@@ -10061,11 +10285,240 @@ class Component extends DCLogic {
       fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
   }
+  // ---------- หน้า "จองทริปนี้" — ลิงก์พาร์ตเนอร์ที่ผูกกับเมือง+วันของทริปจริง ----------
+  // กติกาที่ต้องรักษาไว้: ไม่โชว์ราคา/คำว่าดีล (เราไม่ได้ดึงราคาจริง) · มีบรรทัดเปิดเผยค่าตอบแทน
+  // · ทุกปุ่มพาไปหน้าพาร์ตเนอร์ตรง เปิดในเบราว์เซอร์ระบบ ไม่มีหน้าคั่นของเรา
+  BOOK_NOSTAY = { 'ยังไม่ได้เลือกที่พัก': 1, 'No stay picked yet': 1, '': 1 };
+  bookTrip() { return (this.userTrips || []).find(x => x.id === this.state.trip) || this.curTripRec() || {}; }
+  bookSid(tag) { return String(this.state.trip || 'trip') + '-bk-' + tag; }
+  // คืนที่ยังไม่มีที่พัก — รวมวันติดกันในเมืองเดียวกันเป็นช่วงเดียว
+  bookStayGaps() {
+    const out = [];
+    this.days.forEach((d, i) => {
+      if (!this.BOOK_NOSTAY[String(d.stayName || '').trim()]) return;
+      const city = String(d.city || '').trim();
+      const last = out[out.length - 1];
+      if (last && last.to === i - 1 && last.city === city) { last.to = i; return; }
+      out.push({ from: i, to: i, city });
+    });
+    return out;
+  }
+  bookStayDone() { return this.days.filter(d => !this.BOOK_NOSTAY[String(d.stayName || '').trim()]).length; }
+  // ⚠ `day.city` ในแอปนี้คือ "หัวข้อของวัน" (เช่น "Charyn Canyons → Saty") ไม่ใช่ชื่อเมือง
+  // → ห้ามเอาไปโชว์เป็นชิปเมืองตรง ๆ ต้องหาชื่อเมืองจริงจากดิกชันนารีก่อน ส่วนข้อความดิบใช้เป็นแค่คำใบ้ให้ลิงก์
+  bookCityHit(raw) {
+    const k = String(raw || '').trim().toLowerCase();
+    if (!k) return null;
+    let best = '';
+    Object.keys(this.TRIP_CITY).forEach(key => { if ((k === key || k.indexOf(key) !== -1) && key.length > best.length) best = key; });
+    if (!best) return null;
+    const id = this.TRIP_CITY[best];
+    const thai = /[\u0E00-\u0E7F]/.test(best);
+    return { id, label: thai ? best : (this.TRIP_CITY_NAME[id] || best), hint: String(raw).trim() };
+  }
+  bookCities() {
+    const t = this.bookTrip(), out = [], seen = {};
+    this.days.forEach(d => {
+      const h = this.bookCityHit(d.city);
+      if (!h || seen[h.id]) return;
+      seen[h.id] = 1;
+      out.push(h);
+    });
+    if (!out.length) {
+      const h = this.bookCityHit(t.city) || this.bookCityHit(t.country) || this.bookCityHit(t.name);
+      const fb = String(t.city || t.country || t.name || '').trim();
+      if (h) out.push(h);
+      else if (fb) out.push({ id: 'fb', label: fb, hint: fb });
+    }
+    return out.slice(0, 4);
+  }
+  openBookStay(from, to, city) {
+    const t = this.bookTrip();
+    const ci = this.tripDayIso(from), co = this.tripDayIso(to + 1), sid = this.bookSid('stay-d' + (from + 1));
+    const p = this.affPartner('ที่พัก');
+    if (p) return this.cjOpen(p, city || t.city || t.name, ci, co, sid);
+    if (this.tripAffStay([city, t.city, t.name, t.country], ci, co, sid)) return;
+    if (this.tripAffPage('ที่พัก', sid)) return;
+    this.openExt(this.klookUrl('/th/hotels/', sid));
+  }
+  openBookFlight() {
+    const t = this.bookTrip(), sid = this.bookSid('flight');
+    if (this.tripAffFlights(sid, [t.city, t.country, t.name].filter(Boolean).join(' '))) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookTransfer() {
+    const sid = this.bookSid('transfer');
+    if (this.tripAffTransfer(sid)) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookThings(city) {
+    const t = this.bookTrip(), sid = this.bookSid('things');
+    if (this.tripAffThings([city, t.city, t.name, t.country], sid)) return;
+    if (this.tripAffPage('ที่เที่ยว', sid)) return;
+    this.openExt(this.klookUrl('/th/', sid));
+  }
+  openBookSim() { this.openExt(this.klookUrl('/th/wifi-sim/', this.bookSid('sim'))); }
+  // ปุ่ม "อยากเลือกเอง" — หน้าแรกของพาร์ตเนอร์ ไม่ใช่หน้าค้นหา (หน้าผลค้นหาของ Klook ค้างทุกคำค้น)
+  openBookTripDotCom() {
+    const sid = this.bookSid('free');
+    if (this.tripAffPage('ที่พัก', sid)) return;
+    this.openExt('https://th.trip.com/');
+  }
+  klookUrl(path, sid) {
+    const u = new URL('https://www.klook.com' + path);
+    u.searchParams.set('aid', this.KLOOK_AID);
+    if (sid) u.searchParams.set('aff_ext', String(sid).slice(0, 40));
+    return u.toString();
+  }
+  openBookKlook() { this.openExt(this.klookUrl('/th/', this.bookSid('free'))); }
+
+  // ══ แชร์เล่มเป็นลิงก์ — เก็บแค่ "แปลนเล่ม" (ลำดับหน้า + เลย์เอาต์ + ลิงก์รูป) ไม่กี่ KB ══
+  // คนดูไม่ต้องล็อกอิน (มาตรฐานเดียวกับลิงก์แชร์ตอนเรื่องเล่า) · ล็อกอินเฉพาะถูกใจ/คอมเมนต์
+  pbShareMap() { try { return JSON.parse(localStorage.getItem('wtn-pb-share')) || {}; } catch (e) { return {}; } }
+  bookShareUrl(id) {
+    const cfg = window.WTN_SUPABASE || {};
+    if (cfg.shareBase) return String(cfg.shareBase).replace(/\/+$/, '').replace(/\/s$/, '/b') + '/' + encodeURIComponent(id);
+    return this.webBase() + '?b=' + encodeURIComponent(id);
+  }
+  // เครื่องคนอื่นเปิดได้เฉพาะรูปที่อยู่บนคลาวด์แล้ว — รูปที่ยังอยู่ในเครื่อง (idb:/data:) แชร์ไม่ได้
+  _cloudSrc(v) { return (typeof v === 'string' && /^https?:\/\//i.test(v)) ? v : ''; }
+  pbSharePlan(D) {
+    let miss = 0;
+    const days = [];
+    (D.days || []).forEach(d => {
+      const shots = [];
+      (d.shots || []).forEach(s => {
+        const u = this._cloudSrc(s.ref) || this._cloudSrc(s.u);
+        if (!u) { miss++; return; }
+        shots.push({ u, ref: s.ref, r: s.r, w: s.w, h: s.h, sty: this.pbImgStyle(s) });
+      });
+      if (shots.length) days.push({ n: d.n, label: d.label, title: d.title, places: (d.places || []).slice(0, 3), shots });
+    });
+    const cover = this._cloudSrc(D.cover) || ((days[0] || {}).shots || [{}])[0].u || '';
+    const plan = { v: 1, shared: true, quality: 'screen',
+      title: D.title || '', sub: D.sub || '', when: D.when || '', author: D.author || '',
+      cover, theme: this.pbThemeKey, wm: !this.isPremium,
+      days, photos: days.reduce((a, d) => a + d.shots.length, 0) };
+    return { plan, miss };
+  }
+  // ⚠ แชร์เล่ม = พรีเมียม โดยเนื้อแท้: เล่มที่คนอื่นเปิดได้ต้องให้รูปอยู่บนคลาวด์
+  // และ `hoistImages()` กันรูปขึ้นคลาวด์ไว้ให้พรีเมียมตามหลักราคาเดิม
+  // → ต้องบอก "ตั้งแต่ก่อนกด" ไม่ใช่ปล่อยให้กดแล้วได้เล่มรูปหาย
+  SHARE_PREMIUM_MSG = 'แชร์เล่มเป็นลิงก์เป็นฟีเจอร์ของพรีเมียม — เพราะรูปในเล่มต้องอยู่บนคลาวด์ คนอื่นถึงจะเปิดดูได้';
+  shareGate() {
+    if (this.isPremium) return true;
+    if (this.isNativeApp) { this.showToast(this.SHARE_PREMIUM_MSG + ' · ดูแพ็กได้ที่ onevela.net'); return false; }
+    this.askConfirm(this.SHARE_PREMIUM_MSG, () => this.go('premium'), 'ดูแพ็กพรีเมียม');
+    return false;
+  }
+  async pbShareBook() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) { this.showToast('ต้องล็อกอินก่อนถึงจะแชร์เล่มได้'); return; }
+    if (!this.shareGate()) return;
+    if (this._sbBusy) return;
+    this._sbBusy = true;
+    this.setState({ sbOpen: true, sbBusy: true, sbLink: '', sbMiss: 0 });
+    try {
+      const D = (this._pbData && (this._pbData.days || []).length) ? this._pbData : (this._pbData = await this.pbGather());
+      const { plan, miss } = this.pbSharePlan(D);
+      if (!plan.days.length) {
+        this.setState({ sbOpen: false, sbBusy: false });
+        this.showToast('รูปในเล่มนี้ยังอยู่แต่ในเครื่อง — ต้องสำรองรูปขึ้นคลาวด์ก่อนถึงจะแชร์ได้');
+        return;
+      }
+      const trip = this.ebTripId(), map = this.pbShareMap(), cur = map[trip] || {};
+      const id = cur.id || ('b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+      const vis = cur.vis || 'link';
+      await be.saveBook({ id, kind: 'photo', vis, title: plan.title, cover: plan.cover,
+        author: plan.author, photos: plan.photos, pages: this.pbPlan(plan).length, plan });
+      map[trip] = { id, vis, at: Date.now() };
+      try { localStorage.setItem('wtn-pb-share', JSON.stringify(map)); } catch (e) {}
+      this.setState({ sbLink: this.bookShareUrl(id), sbVis: vis, sbMiss: miss, sbBusy: false, sbCopied: false });
+    } catch (e) {
+      console.warn('[wtn] shareBook', e);
+      this.setState({ sbOpen: false, sbBusy: false });
+      this.showToast('แชร์ไม่สำเร็จ — ลองอีกครั้งตอนเน็ตนิ่ง ๆ');
+    } finally { this._sbBusy = false; }
+  }
+  async setSbVis(vis) {
+    const trip = this.ebTripId(), map = this.pbShareMap(), cur = map[trip];
+    if (!cur || !cur.id) return;
+    this.setState({ sbVis: vis });
+    map[trip] = { ...cur, vis };
+    try { localStorage.setItem('wtn-pb-share', JSON.stringify(map)); } catch (e) {}
+    try { await window.WTNBackend.setBookVis(cur.id, vis); }
+    catch (e) { this.showToast('เปลี่ยนไม่สำเร็จ — ลองใหม่'); }
+  }
+  async sbCopy() {
+    const t = this.state.sbLink || '';
+    let ok = false;
+    try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
+    if (!ok) try {
+      const ta = document.createElement('textarea');
+      ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove();
+    } catch (e) {}
+    this.setState({ sbCopied: ok });
+    if (!ok) this.showToast('ก็อปไม่ได้ — กดค้างที่ลิงก์แล้วเลือก “คัดลอก”');
+  }
+  async sbShare() {
+    const url = this.state.sbLink || '';
+    if (!url) return;
+    try { if (navigator.share) { await navigator.share({ title: 'เล่มจากทริป', url }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    this.sbCopy();
+  }
+  // เปิดเล่มจากลิงก์ที่คนอื่นส่งมา — ไม่ต้องล็อกอิน ประกอบหน้าใหม่บนเครื่องคนดูจากแปลน
+  // ยิง REST ตรง ไม่รอ SDK/เซสชัน — คนดูส่วนใหญ่ไม่ได้ล็อกอิน และเปิดใน in-app browser ของ LINE/FB
+  // ซึ่งตัว backend เริ่มช้าหรือค้างได้ (เคยทำให้หน้าค้าง "กำลังเปิด…" จนหมดเวลา)
+  async _fetchSharedBook(id) {
+    const cfg = window.WTN_SUPABASE || {};
+    if (cfg.url && cfg.anonKey) {
+      const H = { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey, 'content-type': 'application/json' };
+      const base = String(cfg.url).replace(/\/+$/, '');
+      try {
+        const r = await fetch(base + '/rest/v1/rpc/share_book_plan', { method: 'POST', headers: H, body: JSON.stringify({ p_id: id }) });
+        if (r.ok) { const d = await r.json(); if (d && d.plan) return d; }
+        else console.warn('[wtn] share_book_plan', r.status);
+      } catch (e) { console.warn('[wtn] share_book_plan', e); }
+      try {   // ยังไม่ได้รันฟังก์ชันใน SQL → อ่านจากตารางตรง (RLS เปิดให้เล่มที่แชร์)
+        const r = await fetch(base + '/rest/v1/books?id=eq.' + encodeURIComponent(id) + '&select=title,cover,author,photos,pages,plan&limit=1', { headers: H });
+        if (r.ok) { const rows = await r.json(); if (rows && rows[0] && rows[0].plan) return rows[0]; }
+        else console.warn('[wtn] books rest', r.status);
+      } catch (e) { console.warn('[wtn] books rest', e); }
+    }
+    const be = window.WTNBackend;
+    if (be && be.getBook) return await be.getBook(id);
+    return null;
+  }
+  async openSharedBook(id) {
+    if (!id || this._sharedBookDone) return;
+    this._sharedBookDone = true;
+    this.setState({ bvBusy: true });
+    try {
+      const row = await this._fetchSharedBook(id);
+      const D = row && row.plan;
+      if (!D || !(D.days || []).length) {
+        this.setState({ bvBusy: false, deepLoading: false, deepErr: true });
+        return;
+      }
+      const html = this.pbHtml({ ...D, shared: true });
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      this._regDoc(url, html, (D.title || 'photobook') + '.html', D.title || 'โฟโต้บุ๊ก');
+      this._deepDone = true;
+      this.setState({ bvUrl: url, bvTitle: D.title || 'โฟโต้บุ๊ก', bvShared: true, bvBusy: false, deepLoading: false, deepErr: false });
+      be.bookView(id);
+    } catch (e) {
+      console.warn('[wtn] openSharedBook', e);
+      this.setState({ bvBusy: false, deepLoading: false, deepErr: true });
+    }
+  }
   pbHtml(D, forPdf) {
     const E = s => this._esc(s);
     const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
-    const T = this.pbThemes[this.pbThemeKey] || this.pbThemes.cream;
-    const dark = this.pbThemeKey === 'dark';
+    // เล่มที่เปิดจากลิงก์แชร์ ต้องใช้ธีม/ลายน้ำ/กรอบรูปที่ "เจ้าของเล่ม" ตั้งไว้ (มากับแปลน) ไม่ใช่ค่าในเครื่องคนดู
+    const tkey = D.theme && this.pbThemes[D.theme] ? D.theme : this.pbThemeKey;
+    const T = this.pbThemes[tkey] || this.pbThemes.cream;
+    const dark = tkey === 'dark';
     const press = !!(this.pbQualities[D.quality] || {}).press;
     const PGW = press ? 216 : 210, PGH = press ? 154 : 148, BL = press ? 3 : 0;
     const M = n => (Math.round((n + BL) * 10) / 10) + 'mm';
@@ -10076,8 +10529,11 @@ class Component extends DCLogic {
       '<div class="scrim"></div><div class="brand"><i></i>VELA</div>' +
       '<div class="cov"><div class="k">' + E(D.sub) + '</div><h1>' + E(D.title) + '</h1><div class="rule"></div>' +
       '<div class="by">' + E(D.when) + (D.author ? ' &nbsp;·&nbsp; ' + E(D.author) : '') + '</div></div>'));
-    const IM = (s, cls) => '<img' + (cls ? ' class="' + cls + '"' : '') + ' src="' + E(s.u) + '" style="' + this.pbImgStyle(s) + '">';
-    const wm = this.isPremium ? '' : '<div class="wm">สร้างด้วย Vela · onevela.net</div>';
+    // เล่มจากลิงก์แชร์: รูปมาจาก R2 ทีละหน้า (lazy) — คนเปิดใน in-app browser ของ FB จะได้ไม่ค้าง
+    const LZ = D.shared ? ' loading="lazy" decoding="async"' : '';
+    const IM = (s, cls) => '<img' + (cls ? ' class="' + cls + '"' : '') + LZ + ' src="' + E(s.u) + '" style="' + (s.sty || this.pbImgStyle(s)) + '">';
+    const wmOn = D.wm != null ? !!D.wm : !this.isPremium;
+    const wm = wmOn ? '<div class="wm">สร้างด้วย Vela · onevela.net</div>' : '';
     this.pbPlan(D).forEach(p => {
       if (p.kind === 'cover' || p.kind === 'end') return;
       const d = p.day;
@@ -10104,6 +10560,9 @@ class Component extends DCLogic {
       '<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&family=Chonburi&display=swap" rel="stylesheet">' +
       '<style>' +
       '@page{size:' + PGW + 'mm ' + PGH + 'mm;margin:0}' +
+      // Android WebView ขยายตัวอักษรเองในกล่องกว้าง (font boosting) → บรรทัดสูงขึ้น เนื้อล้นออกนอกหน้า
+      // (iOS ไม่มีอาการนี้) · ต้องปิดที่ระดับ html ในเอกสารเล่มที่เราสร้างเองด้วย ไม่ใช่แค่ในแอป
+      'html{-webkit-text-size-adjust:100%;text-size-adjust:100%}' +
       '*{box-sizing:border-box}' +
       'body{margin:0;background:' + T.desk + ';font-family:' + A + ';color:' + T.ink + ';-webkit-print-color-adjust:exact;print-color-adjust:exact}' +
       '.pg{width:' + PGW + 'mm;height:' + PGH + 'mm;background:' + T.pg + ';position:relative;overflow:hidden;margin:0 auto 10mm;box-shadow:0 6px 24px rgba(20,16,13,.22);page-break-after:always;break-after:page}' +
@@ -10147,7 +10606,8 @@ class Component extends DCLogic {
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
-      '</style></head><body>' +
+      '</style>  <script src="native.js"></script>
+</head><body>' +
       (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · ' +
         (press ? 'A5 แนวนอน + ตัดตก 3 มม. · ตั้งกระดาษ 216×154 มม. · Scale 100% ปิด Fit to page'
                : 'แนวนอน A5 · ' + E((this.pbQualities[D.quality || 'screen'] || {}).label || '')) +
@@ -10170,7 +10630,8 @@ class Component extends DCLogic {
       '#fl.on{display:block}' +
       '#fl .face{position:absolute;inset:0;overflow:hidden;background:#fffaf0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 14px 40px rgba(0,0,0,.4)}' +
       '#fb{transform:rotateY(180deg)}' +
-      '#bkbar{flex:none;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 12px 15px;flex-wrap:wrap}' +
+      // แถบปุ่มต้องพ้นแถบนำทางล่างของ Android (ปุ่ม/ขีดปัด) ไม่งั้นกด "ถัดไป/เรียงหน้า" ไม่โดน
+      '#bkbar{flex:none;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 12px calc(15px + env(safe-area-inset-bottom, 0px));flex-wrap:wrap}' +
       '#bkbar button{min-height:44px;min-width:44px;padding:0 15px;border:1px solid rgba(231,221,204,.24);border-radius:12px;background:rgba(255,255,255,.07);color:#e7ddcc;font:600 14px ' + A + ';cursor:pointer}' +
       '#bkbar button.pr{background:#c05f39;border-color:#c05f39;color:#fff}' +
       '#bkbar button:disabled{opacity:.3;cursor:default}' +
@@ -10391,7 +10852,8 @@ class Component extends DCLogic {
     return '<?xml version="1.0" encoding="utf-8"?>\n' +
       '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="th" xml:lang="th">' +
       '<head><meta charset="utf-8"/><title>' + this._esc(title) + '</title>' +
-      '<link rel="stylesheet" type="text/css" href="style.css"/></head>' +
+      '<link rel="stylesheet" type="text/css" href="style.css"/>  <script src="native.js"></script>
+</head>' +
       '<body' + (cls ? ' class="' + cls + '"' : '') + '>' + body + '</body></html>';
   }
   // ปกของไฟล์ EPUB = รูปที่มีตัวหนังสืออยู่บนตัวมันเอง
@@ -12337,7 +12799,38 @@ class Component extends DCLogic {
       sDiscover: sc==='discover', sProfile: sc==='profile', sCountry: sc==='country', sCity: sc==='city',
       sStoryEdit: sc==='storyEdit', sChapterEdit: sc==='chapterEdit', sChapterRead: sc==='chapterRead',
       sOnboard: sc==='onboard', sPremium: sc==='premium', sAdmin: sc==='admin', sRestore: sc==='restore', chrome: sc!=='onboard' && sc!=='country' && sc!=='city' && !(sc==='chapterEdit' && this.state.ceFocus && !this.state.ceHeadPin), sDocs: sc==='docs', sTicket: sc==='ticket', sDocView: sc==='docView',
-      sOverview: sc==='overview', sPrep: sc==='prep', sWpImport: sc==='wpImport' && this.isAdmin,
+      sOverview: sc==='overview', sPrep: sc==='prep', sBooking: sc==='booking',
+      goBooking: () => this.go('booking'),
+      ...(() => {
+        if (sc !== 'booking') return { bkGaps: [], bkCities: [], bkTitle: '', bkWhen: '', bkGapNote: '', bkHasGaps: false, bkDoneNote: '', bkHasDone: false, bkRoute: '', bkFlightWhen: '', bkTransferWhen: '', bkFlight: () => {}, bkTransfer: () => {}, bkSim: () => {}, bkTripCom: () => {}, bkKlook: () => {} };
+        const t = this.bookTrip();
+        const gaps = this.bookStayGaps(), done = this.bookStayDone();
+        const nights = gaps.reduce((a, g) => a + (g.to - g.from + 1), 0);
+        const fmtD = i => { const iso = this.tripDayIso(i); if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : d.getDate() + ' ' + this.thMonths()[d.getMonth()]; };
+        return {
+          bkTitle: String(t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, ''),
+          bkWhen: this.fmtRange(t.start, t.end) || '',
+          bkHasGaps: gaps.length > 0,
+          bkGapNote: nights ? ('ยังว่าง ' + nights + ' คืน') : 'จองครบแล้ว',
+          bkHasDone: done > 0,
+          bkDoneNote: 'อีก ' + done + ' คืนจองไว้แล้วในแผน',
+          bkGaps: gaps.map(g => ({
+            city: (this.bookCityHit(g.city) || {}).label || String(t.city || t.country || '').trim() || 'ยังไม่ได้ใส่เมือง',
+            when: 'วันที่ ' + (g.from + 1) + (g.to > g.from ? '–' + (g.to + 1) : '') + ' · ' + fmtD(g.from) + (g.to > g.from ? '–' + fmtD(g.to) : ''),
+            nights: (g.to - g.from + 1) + ' คืน',
+            on: () => this.openBookStay(g.from, g.to, g.city)
+          })),
+          bkCities: this.bookCities().map(c => ({ name: c.label, on: () => this.openBookThings(c.hint || c.label) })),
+          bkRoute: 'กรุงเทพฯ → ' + (t.city || t.country || t.name || 'ปลายทาง'),
+          bkFlightWhen: this.fmtRange(t.start, t.end) || 'ยังไม่ได้ใส่วันเดินทาง',
+          bkTransferWhen: 'วันแรกของทริป' + (fmtD(0) ? ' · ' + fmtD(0) : ''),
+          bkFlight: () => this.openBookFlight(),
+          bkTransfer: () => this.openBookTransfer(),
+          bkSim: () => this.openBookSim(),
+          bkTripCom: () => this.openBookTripDotCom(),
+          bkKlook: () => this.openBookKlook()
+        };
+      })(), sWpImport: sc==='wpImport' && this.isAdmin,
       ...(() => {
         const _pk = this.packing;
         const info = this.tripInfo;
@@ -12413,7 +12906,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.07ad',
+      appVersion: '2026.09.08j',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -12786,7 +13279,7 @@ class Component extends DCLogic {
       sDeepLoading: !!this.state.deepLoading || !!this.state.deepErr,
       deepErrShow: !!this.state.deepErr,
       deepLoadingShow: !this.state.deepErr,
-      deepGoHome: () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ deepLoading: false, deepErr: false, remoteOpen: null, screen: (() => { try { return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), history: [] }); },
+      deepGoHome: () => { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ sharedBook: false, deepLoading: false, deepErr: false, remoteOpen: null, screen: (() => { try { return localStorage.getItem('wtn-auth') ? 'myplans' : 'onboard'; } catch (e) { return 'onboard'; } })(), history: [] }); },
       authChoice: this.state.auth === 'choice', authForm: this.state.auth === 'signup' || this.state.auth === 'login',
       authPhoneMode: this.state.auth === 'phone',
       phoneStepNum: this.state.auth === 'phone' && this.state.phoneStep !== 'code',
@@ -13323,6 +13816,35 @@ class Component extends DCLogic {
       cfCancel: () => this.setState({ cfMsg: '', cfFn: null }),
       cfOk: () => { const fn = this.state.cfFn; this.setState({ cfMsg: '', cfFn: null }); if (typeof fn === 'function') fn(); },
       bvOpen: !!this.state.bvUrl, bvUrl: this.state.bvUrl || '', bvTitle: this.state.bvTitle || 'เล่ม',
+      // เล่มที่เปิดจากลิงก์คนอื่น + ยังไม่มีบัญชี → ชวนสมัคร (ไม่กั้นการอ่าน)
+      bvCta: !!this.state.bvShared && this.isGuest,
+      bvCtaGo: () => { this.closeDoc(); this.gotoSignup(); },
+      sbOpen: !!this.state.sbOpen,
+      sbBusy: !!this.state.sbBusy,
+      sbReady: !!this.state.sbLink && !this.state.sbBusy,
+      sbLink: this.state.sbLink || '',
+      sbClose: () => this.setState({ sbOpen: false }),
+      sbCopy: () => this.sbCopy(),
+      sbShare: () => this.sbShare(),
+      sbCopyLabel: this.state.sbCopied ? '✓ ก็อปลิงก์แล้ว' : 'ก็อปลิงก์',
+      sbMissNote: this.state.sbMiss ? ('รูป ' + this.state.sbMiss + ' ใบยังอยู่แต่ในเครื่อง จึงไม่อยู่ในเล่มที่แชร์ — สำรองรูปขึ้นคลาวด์แล้วกดแชร์ใหม่จะครบ') : '',
+      sbHasMiss: !!this.state.sbMiss,
+      // มีแค่ 2 สถานะจริง — "สาธารณะ" ยังไม่ต่างจาก "ใครมีลิงก์" เพราะฟีดสาธารณะยังไม่เปิด
+      // (เปิดไม่ได้จนกว่าจะมีปุ่มรายงาน/บล็อก · Apple 1.2) → ไม่โชว์ตัวเลือกที่ยังไม่มีของจริง
+      sbVisChips: [
+        { k: 'private', label: 'ปิดลิงก์' },
+        { k: 'link', label: 'ใครมีลิงก์เปิดได้' }
+      ].map(c => ({ label: c.label, on: () => this.setSbVis(c.k),
+        style: (this.state.sbVis === 'private' ? 'private' : 'link') === c.k
+          ? "flex:1;min-height:46px;background:#2b241f;color:#f6efe2;font:600 13.5px 'Anuphan';border-radius:12px;border:none;cursor:pointer"
+          : "flex:1;min-height:46px;background:#efe4d3;color:#7c7264;font:600 13.5px 'Anuphan';border-radius:12px;border:none;cursor:pointer" })),
+      sbVisNote: (this.state.sbVis === 'private')
+        ? 'ตอนนี้ปิดอยู่ — คนที่กดลิงก์เดิมจะเปิดไม่ได้ เปิดใหม่ได้ทุกเมื่อ'
+        : 'คนที่มีลิงก์เปิดอ่านได้เลย · เล่มไม่ขึ้นที่ไหนเอง คนอื่นหาไม่เจอถ้าไม่ได้รับลิงก์',
+      pbShareBook: () => this.pbShareBook(),
+      pbShareLabel: this.isPremium ? 'แชร์เล่มเป็นลิงก์' : 'แชร์เล่มเป็นลิงก์ · พรีเมียม',
+      pbShareLocked: !this.isPremium,
+      pbShareNote: 'ลิงก์ให้คนอื่นเปิดอ่านเล่มได้ในแอป — เป็นของพรีเมียม เพราะรูปทั้งเล่มต้องสำรองขึ้นคลาวด์ก่อน',
       pbOn: this.pbOn,
       bvBusy: !!this.state.bvBusy,
       closeBook: () => this.closeDoc(),
