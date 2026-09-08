@@ -10260,17 +10260,34 @@ class Component extends DCLogic {
     this.sbCopy();
   }
   // เปิดเล่มจากลิงก์ที่คนอื่นส่งมา — ไม่ต้องล็อกอิน ประกอบหน้าใหม่บนเครื่องคนดูจากแปลน
+  // ยิง REST ตรง ไม่รอ SDK/เซสชัน — คนดูส่วนใหญ่ไม่ได้ล็อกอิน และเปิดใน in-app browser ของ LINE/FB
+  // ซึ่งตัว backend เริ่มช้าหรือค้างได้ (เคยทำให้หน้าค้าง "กำลังเปิด…" จนหมดเวลา)
+  async _fetchSharedBook(id) {
+    const cfg = window.WTN_SUPABASE || {};
+    if (cfg.url && cfg.anonKey) {
+      const H = { apikey: cfg.anonKey, Authorization: 'Bearer ' + cfg.anonKey, 'content-type': 'application/json' };
+      const base = String(cfg.url).replace(/\/+$/, '');
+      try {
+        const r = await fetch(base + '/rest/v1/rpc/share_book_plan', { method: 'POST', headers: H, body: JSON.stringify({ p_id: id }) });
+        if (r.ok) { const d = await r.json(); if (d && d.plan) return d; }
+        else console.warn('[wtn] share_book_plan', r.status);
+      } catch (e) { console.warn('[wtn] share_book_plan', e); }
+      try {   // ยังไม่ได้รันฟังก์ชันใน SQL → อ่านจากตารางตรง (RLS เปิดให้เล่มที่แชร์)
+        const r = await fetch(base + '/rest/v1/books?id=eq.' + encodeURIComponent(id) + '&select=title,cover,author,photos,pages,plan&limit=1', { headers: H });
+        if (r.ok) { const rows = await r.json(); if (rows && rows[0] && rows[0].plan) return rows[0]; }
+        else console.warn('[wtn] books rest', r.status);
+      } catch (e) { console.warn('[wtn] books rest', e); }
+    }
+    const be = window.WTNBackend;
+    if (be && be.getBook) return await be.getBook(id);
+    return null;
+  }
   async openSharedBook(id) {
     if (!id || this._sharedBookDone) return;
-    const be = window.WTNBackend;
-    if (!be || !be.getBook) {
-      window.addEventListener('wtn-backend-ready', () => this.openSharedBook(id), { once: true });
-      return;
-    }
     this._sharedBookDone = true;
     this.setState({ bvBusy: true });
     try {
-      const row = await be.getBook(id);
+      const row = await this._fetchSharedBook(id);
       const D = row && row.plan;
       if (!D || !(D.days || []).length) {
         this.setState({ bvBusy: false, deepLoading: false, deepErr: true });
@@ -12644,7 +12661,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.08f',
+      appVersion: '2026.09.08g',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
