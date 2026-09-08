@@ -381,6 +381,36 @@ async function boot() {
       }));
     },
 
+    // ---------- BOOKS (เล่มที่แชร์เป็นลิงก์ — เก็บแค่แปลนเล่ม ไม่ใช่ไฟล์) ----------
+    // คนดูไม่ต้องล็อกอิน: RLS เปิดอ่านเมื่อ vis = link/public (ดู supabase/books.sql)
+    async saveBook(rec) {
+      if (!this._uid || !rec || !rec.id) return null;
+      ok(await SB.from("books").upsert({
+        id: rec.id, owner: this._uid,
+        kind: rec.kind || "photo", vis: rec.vis || "link",
+        title: rec.title || "", cover: rec.cover || "", author: rec.author || "",
+        pages: rec.pages || 0, photos: rec.photos || 0,
+        plan: rec.plan || {}, updated_at: new Date().toISOString()
+      }));
+      return rec.id;
+    },
+    async getBook(id) {
+      try {
+        const { data } = await SB.from("books").select("*").eq("id", id).maybeSingle();
+        return data || null;
+      } catch (e) { console.warn("[wtn] getBook", e); return null; }
+    },
+    async setBookVis(id, vis) {
+      if (!this._uid) return;
+      ok(await SB.from("books").update({ vis, updated_at: new Date().toISOString() }).eq("id", id));
+    },
+    async myBooks() {
+      if (!this._uid) return [];
+      const rows = ok(await SB.from("books").select("id,kind,vis,title,cover,photos,pages,views,updated_at").eq("owner", this._uid));
+      return rows || [];
+    },
+    async bookView(id) { try { await SB.rpc("record_book_view", { p_id: id }); } catch (e) {} },
+
     // ---------- MOMENTS ----------
     async publishMoment(id, d) {
       if (!this._uid) return;
