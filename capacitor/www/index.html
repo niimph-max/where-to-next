@@ -8884,8 +8884,7 @@ class Component extends DCLogic {
       '.foot{margin-top:8px;border-top:1px solid rgba(43,36,32,.14);padding-top:12px;font:500 12.5px ' + A + ';color:#a3968a;display:flex;justify-content:space-between;gap:12px}' +
       '@media print{.bar{display:none}body{background:#fff}.sheet{max-width:none;margin:0;padding:0;box-shadow:none;background:#fff}}' +
       '@media(max-width:640px){.sheet{padding:20px 16px;margin:10px}.facts{grid-template-columns:1fr}h1{font-size:25px}.cvimg{height:190px}}' +
-      '</style>  <script src="native.js"></script>
-</head><body>' +
+      '</style></head><body>' +
       '<div class="sheet"><div class="cover">' + cover +
       '<div class="kick">' + E(L.doc) + '</div><h1>' + E(D.title) + '</h1>' +
       '<div class="sub">' + E([D.city, D.country].filter(Boolean).join(' · ')) + '</div>' +
@@ -9715,8 +9714,7 @@ class Component extends DCLogic {
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:#fff}.pg{margin:0;box-shadow:none}}' +
-      '</style>  <script src="native.js"></script>
-</head><body>' +
+      '</style></head><body>' +
       (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · A5 · ' +
         E((this.pbQualities[D.quality || 'screen'] || {}).label || '') + (D.bytes ? ' ~' + this.fmtBytes(D.bytes) : '') + '</span></div>') +
       out.join('') + (forPdf ? '' : this._bookViewer(false, 'eb-' + (D.tripId || D.title))) + '</body></html>';
@@ -10606,8 +10604,7 @@ class Component extends DCLogic {
       '.bar-print button{min-height:44px;padding:0 22px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 15px ' + A + ';cursor:pointer}' +
       '.bar-print span{align-self:center;color:#c9b79b;font:500 13px ' + A + '}' +
       '@media print{.bar-print{display:none}body{background:' + (dark ? T.pg : '#fff') + '}.pg{margin:0;box-shadow:none}}' +
-      '</style>  <script src="native.js"></script>
-</head><body>' +
+      '</style></head><body>' +
       (forPdf ? '' : '<div class="bar-print"><span>' + out.length + ' หน้า · ' +
         (press ? 'A5 แนวนอน + ตัดตก 3 มม. · ตั้งกระดาษ 216×154 มม. · Scale 100% ปิด Fit to page'
                : 'แนวนอน A5 · ' + E((this.pbQualities[D.quality || 'screen'] || {}).label || '')) +
@@ -10852,8 +10849,7 @@ class Component extends DCLogic {
     return '<?xml version="1.0" encoding="utf-8"?>\n' +
       '<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="th" xml:lang="th">' +
       '<head><meta charset="utf-8"/><title>' + this._esc(title) + '</title>' +
-      '<link rel="stylesheet" type="text/css" href="style.css"/>  <script src="native.js"></script>
-</head>' +
+      '<link rel="stylesheet" type="text/css" href="style.css"/></head>' +
       '<body' + (cls ? ' class="' + cls + '"' : '') + '>' + body + '</body></html>';
   }
   // ปกของไฟล์ EPUB = รูปที่มีตัวหนังสืออยู่บนตัวมันเอง
