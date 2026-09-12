@@ -1,0 +1,26 @@
+# vela-media — Cloudflare Worker + R2
+#
+# ⚠ Worker ตัวนี้ถูก deploy ผ่าน Cloudflare Dashboard (ไม่ได้ deploy ด้วย wrangler)
+#   ไฟล์นี้มีไว้ "บันทึกค่า config ที่ตั้งไว้จริงบน Dashboard" เป็นหลัก
+#   ถ้าจะเริ่มใช้ `wrangler deploy` ให้ตรวจ compatibility_date กับ route ใน Dashboard
+#   ให้ตรงกันก่อน มิฉะนั้น deploy ครั้งแรกจะไปทับค่าที่ตั้งด้วยมือไว้
+#
+#   Secrets ไม่อยู่ในไฟล์นี้ (ตั้งด้วย `wrangler secret put <NAME>` หรือทาง Dashboard):
+#     SUPABASE_ANON     — anon key (ใช้ตรวจ token ตอนอัปโหลด)
+#     ADMIN_TOKEN       — รหัสสำหรับ endpoint /i/_keys, /i/_copy, /i/_has
+#     SUPABASE_SERVICE  — service_role key (ใช้อ่านรายชื่อไฟล์ตอนย้ายเท่านั้น)
+
+name = "vela-media"
+main = "vela-media-worker.js"
+compatibility_date = "2026-09-12"
+
+routes = [
+  { pattern = "onevela.net/i/*", zone_name = "onevela.net" }
+]
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "vela-media"
+
+[vars]
+SUPABASE_URL = "https://glnpyzlbalxnqrqxdsuo.supabase.co"
