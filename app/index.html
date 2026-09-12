@@ -110,17 +110,23 @@
   @keyframes wtnSpin{to{transform:rotate(360deg)}}
   @keyframes wtnToast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
   /* full-screen by default (any device/webview) */
-  body{padding:0!important;background:#2b241f!important;align-items:stretch!important;justify-content:flex-start!important}
+  /* พื้นหลังเอกสารต้องเป็นครีม — เบราว์เซอร์มือถือเอาสีนี้ไปแต้มแถบสถานะ/แถบที่อยู่
+     (พื้นเข้มเดิมทำให้เห็น "คาดสีน้ำตาล" ข้างบนบนเว็บ แต่ไม่มีในแอป) */
+  html{background:#f6efe2;--wtn-st:max(env(safe-area-inset-top),var(--wtn-top,0px))}
+  body{padding:0!important;background:#f6efe2!important;align-items:stretch!important;justify-content:flex-start!important}
   /* ล็อกไม่ให้ document เลื่อนเอง — บน iOS คีย์บอร์ดดันหน้าขึ้นแล้วค้าง
      ทำให้เห็นพื้นสีเข้มด้านล่างและหัวข้อถูกตัดด้านบน (สกรอลล์จริงอยู่ที่ .wtn-s) */
   html,body{height:100%!important;overflow:hidden!important;overscroll-behavior:none}
   .wtn-phone{width:100vw!important;max-width:100vw!important;border-radius:0!important;padding:0!important;box-shadow:none!important;overflow-x:hidden!important}
   .wtn-body{width:100vw!important;max-width:100vw!important;height:100vh!important;height:100dvh!important;border-radius:0!important;overflow-x:hidden!important;
-    /* เว้นที่ให้แถบสถานะ (นาฬิกา/แบต) ของเครื่อง — ไม่ให้หัวข้อไปซ้อน */
-    box-sizing:border-box!important;padding-top:env(safe-area-inset-top)!important}
-  /* พื้นครีมของแถบสถานะ ทับพื้นเข้มของ body ไม่ให้โผล่ */
-  .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:max(env(safe-area-inset-top),var(--wtn-top,0px));background:#f6efe2;z-index:1;pointer-events:none}
-  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:max(env(safe-area-inset-top),var(--wtn-top,0px))!important}
+    box-sizing:border-box!important;padding-top:0!important}
+  /* แถบสถานะแบบ iOS: ฝ้าโปร่งแสง ให้เนื้อหา/รูปเลื่อนลอดใต้ island ได้ แต่นาฬิกายังอ่านออก */
+  .wtn-body:before{content:'';position:fixed;top:0;left:0;right:0;height:var(--wtn-st);background:rgba(246,239,226,.52);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);z-index:7;pointer-events:none}
+  .wtn-body{height:calc(100dvh - var(--wtn-kb,0px))!important;padding-top:0!important}
+  /* ตัวที่ "ต้องไม่" อยู่ใต้ island — เว้นระยะเองทีละอัน */
+  .wtn-nav{padding-top:calc(15px + var(--wtn-st))!important}
+  .wtn-hbar{padding-top:calc(14px + var(--wtn-st))!important}
+  .wtn-cehead{padding-top:calc(7px + var(--wtn-st))!important}
   .wtn-tabbar{padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
   .wtn-kb-up .wtn-tabbar{padding-bottom:8px!important}
   /* กำลังพิมพ์อยู่ ปุ่มลอย (+ โมเมนต์ / ถาม AI) กดไม่ได้อยู่ดี และไปทับปุ่ม "เสร็จ" */
@@ -226,7 +232,7 @@
     </sc-if>
 
     <sc-if value="{{ chrome }}" hint-placeholder-val="{{ false }}">
-      <div style="flex:none;display:flex;align-items:center;gap:11px;padding:15px 20px 11px;border-bottom:1px solid rgba(43,36,32,.06);position:relative;z-index:6;background:#f6efe2">
+      <div class="wtn-nav" style="flex:none;display:flex;align-items:center;gap:11px;padding:15px 20px 11px;border-bottom:1px solid rgba(43,36,32,.06);position:relative;z-index:6;background:#f6efe2">
         <sc-if value="{{ canBack }}" hint-placeholder-val="{{ false }}">
           <button onClick="{{ back }}" style="width:34px;height:34px;border-radius:50%;border:1px solid rgba(43,36,32,.12);background:#fffaf0;color:#2b241f;font-size:21px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none">‹</button>
         </sc-if>
@@ -1919,7 +1925,7 @@
       <sc-if value="{{ sChapterEdit }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="display:flex;flex-direction:column;height:100%">
           <sc-if value="{{ ceHeadSlim }}" hint-placeholder-val="{{ false }}">
-            <div style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+            <div class="wtn-cehead" style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
               <button onClick="{{ openCeHead }}" title="แสดงหัวเรื่อง" style="width:34px;height:34px;flex:none;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:10px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 15l6-6 6 6"></path></svg></button>
               <span style="flex:1;min-width:0;font:600 14.5px 'Anuphan';color:#5c5347;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ ceTitleSlim }}</span>
               <button onClick="{{ zenAi }}" title="AI เรียบเรียงจากโมเมนต์วันนี้" style="width:36px;height:34px;flex:none;border:1px solid rgba(192,95,57,.3);background:#fbeee6;border-radius:10px;color:#c05f39;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"></path></svg></button>
@@ -2131,7 +2137,7 @@
           <div style="position:relative;height:340px;overflow:hidden">
             <photo-pick id="wtn-ex-kz-hero" fallback="{{ exHero }}" placeholder="แตะเพื่อใส่รูปประเทศ" style="position:absolute;inset:0"></photo-pick>
             <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.34) 0%,rgba(43,36,32,0) 30%,rgba(43,36,32,.16) 55%,rgba(43,36,32,.74) 100%)"></div>
-            <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
+            <div class="wtn-hbar" style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
               <button onClick="{{ back }}" style="pointer-events:auto;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.94);color:#2b241f;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(43,36,32,.2)">‹</button>
               <div style="flex:1"></div>
               <div style="pointer-events:auto;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(43,36,32,.2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2b241f" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
@@ -2168,7 +2174,7 @@
           <div style="position:relative;height:330px;overflow:hidden">
             <photo-pick id="{{ cityHeroId }}" fallback="{{ cityHero }}" placeholder="แตะเพื่อใส่รูปเมือง" style="position:absolute;inset:0"></photo-pick>
             <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(43,36,32,.36) 0%,rgba(43,36,32,0) 30%,rgba(43,36,32,.18) 55%,rgba(43,36,32,.76) 100%)"></div>
-            <div style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
+            <div class="wtn-hbar" style="position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:14px 16px;pointer-events:none">
               <button onClick="{{ back }}" style="pointer-events:auto;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.94);color:#2b241f;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(43,36,32,.2)">‹</button>
               <div style="pointer-events:auto;display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.94);border-radius:20px;padding:7px 14px 7px 12px;box-shadow:0 2px 10px rgba(43,36,32,.2)"><span style="font-size:15px">🇰🇿</span><span style="font:700 14px 'Anuphan';color:#2b241f">{{ exCountryPill }}</span></div>
               <div style="flex:1"></div>
@@ -2860,7 +2866,7 @@
     <sc-if value="{{ ciSheetHost }}" hint-placeholder-val="{{ false }}">
     <sc-if value="{{ ciFormOpen }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed;inset:0;z-index:40;background:#f6efe2;display:flex;flex-direction:column">
-        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:calc(13px + env(safe-area-inset-top)) 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
+        <div style="flex:none;display:flex;align-items:center;gap:12px;padding:calc(13px + var(--wtn-st)) 16px 13px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
           <button onClick="{{ toggleCiForm }}" title="ปิด" style="width:38px;height:38px;flex:none;border:none;background:#efe4d3;color:#2b241f;border-radius:50%;cursor:pointer;font:700 16px 'Anuphan';display:flex;align-items:center;justify-content:center">✕</button>
           <div style="font:400 19px 'Chonburi',serif;color:#2b241f">บันทึกโมเมนต์</div>
         </div>
@@ -2993,7 +2999,7 @@
 
 <sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
   <div onClick="{{ lbClose }}" style="position:fixed;inset:0;z-index:9800;background:rgba(20,16,13,.96);display:flex;flex-direction:column">
-    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px">
+    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(var(--wtn-st) + 10px) 14px 10px">
       <span style="font:600 14.5px 'Anuphan';color:rgba(246,239,226,.75)">{{ lbLabel }}</span>
       <span style="flex:1"></span>
       <button onClick="{{ lbClose }}" style="width:44px;height:44px;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
@@ -3103,7 +3109,7 @@
 </sc-if>
 <sc-if value="{{ bvOpen }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;inset:0;z-index:9900;background:#141310;display:flex;flex-direction:column">
-    <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(max(env(safe-area-inset-top), 20px) + 8px) 10px 10px">
+    <div style="flex:none;display:flex;align-items:center;gap:8px;padding:calc(max(var(--wtn-st), 20px) + 8px) 10px 10px">
       <button onClick="{{ closeBook }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:rgba(246,239,226,.12);color:#f6efe2;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
       <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:rgba(246,239,226,.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ bvTitle }}</span>
       <sc-if value="{{ bvCta }}" hint-placeholder-val="{{ false }}">
@@ -3126,7 +3132,7 @@
 </sc-if>
 <sc-if value="{{ frOpen }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;inset:0;z-index:9850;background:rgba(14,12,10,.96);display:flex;flex-direction:column">
-    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 14px 8px">
+    <div style="flex:none;display:flex;align-items:center;gap:10px;padding:calc(var(--wtn-st) + 10px) 14px 8px">
       <span style="flex:1;min-width:0;font:600 15px 'Anuphan';color:#e7ddcc">{{ frTitle }}</span>
       <button onClick="{{ frReset }}" style="flex:none;min-height:40px;padding:0 14px;border:1px solid rgba(231,221,204,.24);background:transparent;color:#c9b79b;font:600 13.5px 'Anuphan';border-radius:11px;cursor:pointer">รีเซ็ต</button>
     </div>
@@ -12901,7 +12907,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.08j',
+      appVersion: '2026.09.12a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
