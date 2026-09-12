@@ -8478,8 +8478,7 @@ class Component extends DCLogic {
         const got = p.offsetHeight; p.remove();
         const Cap = window.Capacitor;
         const nat = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
-        const stand = window.matchMedia && window.matchMedia('(display-mode:standalone)').matches;
-        if (got > 4 || !(nat || stand)) { document.documentElement.style.setProperty('--wtn-top', '0px'); return; }
+        if (got > 4 || !nat) { document.documentElement.style.setProperty('--wtn-top', '0px'); return; }
         const h = Math.max(window.screen.height, window.screen.width);
         document.documentElement.style.setProperty('--wtn-top', (h >= 896 ? 54 : h >= 812 ? 47 : 20) + 'px');
       } catch (e) {}
@@ -12907,7 +12906,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.12a',
+      appVersion: '2026.09.12b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
