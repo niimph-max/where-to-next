@@ -1,0 +1,26 @@
+# vela-share — Cloudflare Worker (การ์ดลิงก์แชร์ /s/* และ /b/*)
+#
+# ⚠ Worker ตัวนี้ถูก deploy ผ่าน Cloudflare Dashboard (ไม่ได้ deploy ด้วย wrangler)
+#   ไฟล์นี้มีไว้บันทึกค่า config ที่ตั้งไว้จริงบน Dashboard
+#   ถ้าจะใช้ wrangler:  wrangler deploy -c wrangler.vela-share.toml
+#   ตรวจ compatibility_date กับ routes ใน Dashboard ให้ตรงก่อน ไม่งั้น deploy ครั้งแรกจะไปทับค่าที่ตั้งด้วยมือ
+#
+#   ⚠ โฟลเดอร์นี้มี worker 2 ตัว จึงมี wrangler 2 ไฟล์
+#      wrangler.toml              → vela-media
+#      wrangler.vela-share.toml   → vela-share (ไฟล์นี้)
+#
+#   Secrets ไม่อยู่ในไฟล์นี้ (ตั้งด้วย `wrangler secret put <NAME>` หรือทาง Dashboard):
+#     SUPABASE_ANON — anon key (เปิดเผยได้ ไม่ใช่ความลับ แต่เก็บเป็น secret ไว้ตามที่ตั้งบน Dashboard)
+
+name = "vela-share"
+main = "vela-share-worker.js"
+compatibility_date = "2026-09-12"
+
+routes = [
+  { pattern = "onevela.net/s/*", zone_name = "onevela.net" },
+  { pattern = "onevela.net/b/*", zone_name = "onevela.net" }
+]
+
+[vars]
+SUPABASE_URL = "https://glnpyzlbalxnqrqxdsuo.supabase.co"
+APP_URL = "https://onevela.net/app"
