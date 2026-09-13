@@ -3615,6 +3615,7 @@ class Component extends DCLogic {
   }
   // ยกรูป base64 ที่ฝังในข้อมูลขึ้น Cloud Storage แล้วแทนด้วยลิงก์ (อัพครั้งเดียว/รูป, กันซ้ำด้วย map)
   async hoistImages() {
+    this._hoistStat = null;        // เคลียร์สถิติรอบก่อน ไม่งั้น syncNow รายงานค่าค้าง
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     if (!this.isPremium) return;   // ฟรี = รูปอยู่ในเครื่องล้วน ไม่แตะ Storage
@@ -3648,11 +3649,26 @@ class Component extends DCLogic {
       }
     }
     if (!found.size) return;
+    // สถิติรอบนี้ — syncNow อ่านไปแจ้งผู้ใช้ (เดิม catch ว่างเปล่า รูปอัปไม่ขึ้นก็เงียบ
+    // แล้วไปโผล่เป็น "รูปหาย" ตอนเปิดอีกเครื่อง — เคสแหลมสิงห์ 9 ก.ย. 2026)
+    const stat = this._hoistStat = { total: found.size, ok: 0, fail: 0, cached: 0, lastErr: '' };
     const urlFor = {};
     for (const d of found) {
       const h = hash(d);
-      if (map[h]) { urlFor[d] = map[h]; continue; }
-      try { const u = await be.uploadImage(d, 'img.jpg'); map[h] = u; urlFor[d] = u; try { const tb = await this.makeThumbBlob(d); if (tb) await be.uploadThumbFor(u, tb); } catch (e2) {} } catch (e) { /* อัพไม่ได้ก็คงเป็น data url ไว้ก่อน */ }
+      if (map[h]) { urlFor[d] = map[h]; stat.cached++; continue; }
+      // ลองใหม่ 3 ครั้ง ถอยจังหวะขึ้นเรื่อยๆ — เน็ตมือถือสะดุดแวบเดียวไม่ควรทำให้รูปค้างถาวร
+      let u = null;
+      for (let attempt = 0; attempt < 3 && !u; attempt++) {
+        if (attempt) await new Promise(r => setTimeout(r, 500 * attempt * attempt));
+        try { u = await be.uploadImage(d, 'img.jpg'); }
+        catch (e) { stat.lastErr = (e && (e.code || e.message)) || String(e); }
+      }
+      if (u) {
+        map[h] = u; urlFor[d] = u; stat.ok++;
+        try { const tb = await this.makeThumbBlob(d); if (tb) await be.uploadThumbFor(u, tb); } catch (e2) {}
+      } else {
+        stat.fail++;   // คงเป็น data url / idb ref ไว้ก่อน รอบหน้าค่อยลองใหม่
+      }
     }
     this._applyingCloud = true;
     try {
@@ -7892,9 +7908,16 @@ class Component extends DCLogic {
       this._synced = true;
       await this.cloudPush();
       // ตรวจว่ามีรูปที่ยังอัปไม่ขึ้นไหม
+      // เดิมนับเฉพาะคีย์ photopick: (รูปโปรไฟล์/ปก) — รูปในโมเมนต์/ตอนเก็บเป็น idb: ref
+      // ใน wtn-moments / wtn-stories จึงไม่เคยถูกนับ ซิงก์เลยขึ้น "สำเร็จ" ทั้งที่รูปไม่ได้ไปไหน
       let pending = 0;
       for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('photopick:') === 0 && (localStorage.getItem(k) || '').indexOf('data:image') !== -1) pending++; }
-      alert(pending ? ('ซิงก์ข้อมูลขึ้นคลาวด์แล้ว ✓\nแต่มีรูป ' + pending + ' รูปที่อัปไม่สำเร็จ (ลองอีกครั้ง หรือเช็กเน็ต)') : 'ซิงก์ขึ้นคลาวด์เรียบร้อย ✓ รูปและข้อมูลพร้อมข้ามเครื่องแล้ว');
+      const hs = this._hoistStat || null;
+      if (hs && hs.fail) pending += hs.fail;
+      alert(pending
+        ? ('ซิงก์ข้อมูลขึ้นคลาวด์แล้ว ✓\nแต่ยังมีรูป ' + pending + ' รูปที่อัปไม่สำเร็จ — ยังอยู่ในเครื่องนี้ครบ ไม่หาย\nแต่จะยังไม่เห็นบนเครื่องอื่นจนกว่าจะอัปขึ้นได้\nแอปจะลองใหม่ให้อัตโนมัติ หรือกดซิงก์อีกครั้งเมื่อเน็ตดีขึ้น'
+            + (hs && hs.lastErr ? ('\n\n(' + hs.lastErr + ')') : ''))
+        : 'ซิงก์ขึ้นคลาวด์เรียบร้อย ✓ รูปและข้อมูลพร้อมข้ามเครื่องแล้ว');
     } catch (e) {
       console.warn('[wtn] syncNow', e);
       alert('ซิงก์ไม่สำเร็จ: ' + ((e && (e.code || e.message)) || String(e)));
@@ -12906,7 +12929,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.12b',
+      appVersion: '2026.09.13a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
