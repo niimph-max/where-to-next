@@ -1587,6 +1587,8 @@
                       <sc-if value="{{ mo.hasWx }}" hint-placeholder-val="{{ false }}"><div style="display:inline-flex;align-items:center;gap:4px;font:600 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px;margin-left:8px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg>{{ mo.wxStr }}</div></sc-if>
                       <sc-if value="{{ mo.hasCoord }}" hint-placeholder-val="{{ false }}"><a href="{{ mo.mapUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font:600 12.5px 'Anuphan';color:#8a7d6f;margin-top:3px;text-decoration:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>{{ mo.coordStr }}</a></sc-if>
                     </div>
+                    <sc-if value="{{ mo.starOff }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mo.toggleStar }}" title="คัดเก็บไว้ทำเล่ม" style="display:inline-flex;align-items:center;justify-content:center;flex:none;border:1px solid rgba(43,36,32,.14);background:#fffaf0;color:#b7a992;padding:7px;border-radius:10px;cursor:pointer;min-height:36px;min-width:36px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg></button></sc-if>
+                    <sc-if value="{{ mo.starOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ mo.toggleStar }}" title="เอาออกจากเรื่องที่คัดไว้" style="display:inline-flex;align-items:center;justify-content:center;flex:none;border:1px solid rgba(192,95,57,.35);background:rgba(192,95,57,.1);color:#c05f39;padding:7px;border-radius:10px;cursor:pointer;min-height:36px;min-width:36px"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg></button></sc-if>
                     <button onClick="{{ mo.share }}" title="แชร์เป็นรูปการ์ด" style="display:inline-flex;align-items:center;gap:5px;flex:none;border:1px solid rgba(43,36,32,.14);background:#fffaf0;color:#5c5347;font:600 13px 'Anuphan';padding:7px 11px;border-radius:10px;cursor:pointer;min-height:36px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M12 4L8 8M12 4l4 4"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>แชร์</button>
                     <sc-if value="{{ mo.mine }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:2px;flex:none"><button onClick="{{ mo.edit }}" style="border:none;background:transparent;color:#8a7d6f;font:600 13px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ mo.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></span></sc-if>
                   </div>
@@ -7396,6 +7398,16 @@ class Component extends DCLogic {
     if (be && be._uid && be.deleteMoment) be.deleteMoment(id).catch(() => {});
     this.scheduleCloudPush();
   }
+  // ดาว = "คัดไว้ทำเล่ม" — คนละแกนกับ cat (cat บอกว่าเรื่องอะไร ดาวบอกว่าคัดหรือยัง)
+  // โมเมนต์เก่าไม่มีฟิลด์ star ให้ถือว่า 0 · ต้องแตะ _m ไม่งั้น _stampChanged ไม่เห็นว่าเปลี่ยน
+  toggleStar(id) {
+    const now = this.moments.find(x => x.id === id);
+    const on = !(now && now.star);
+    this.saveMoments(this.moments.map(x => x.id === id ? { ...x, star: on ? 1 : 0, _m: Date.now() } : x));
+    this.scheduleCloudPush();
+    this.showToast(on ? '★ คัดเก็บไว้แล้ว' : 'เอาออกจากเรื่องที่คัดไว้');
+    this.forceUpdate();
+  }
   editMoment(m) { this.setState({ momentEdit: m.id, meText: m.text || '', meCat: (m.cat != null ? m.cat : 0), meAt: m.at || Date.now(), mePhotos: [...(m.photos || [])] }); }
   // เพิ่มรูปตอนแก้ไขโมเมนต์ (ย่อรูปเหมือนตอนโพสต์)
   async addMePhotos(ev) {
@@ -12929,7 +12941,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.13a',
+      appVersion: '2026.09.17a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14187,6 +14199,10 @@ class Component extends DCLogic {
             catStyle: catTagStyle(ci), catDotEl: catDotStyle(ci),
             _dk: this.dkey(m.at),
             mine: !!m.mine,
+            starred: !!m.star,
+            starOn: !!m.mine && !!m.star,          // แยกสองธงเพราะ {{ }} ใส่นิพจน์ไม่ได้
+            starOff: !!m.mine && !m.star,
+            toggleStar: () => this.toggleStar(m.id),
             editingThis: meId === m.id, viewMode: meId !== m.id,
             edit: () => this.editMoment(m),
             del: () => this.askConfirm('ลบโมเมนต์นี้? ข้อความและรูปในโมเมนต์นี้จะหายไป กู้คืนไม่ได้', () => this.deleteMoment(m.id)) };
@@ -14194,6 +14210,9 @@ class Component extends DCLogic {
         let momentList = momentFeed;
         if (calDay) momentList = momentList.filter(x => x._dk === calDay);
         if (catFilter != null) momentList = momentList.filter(x => x.catIdx === catFilter);
+        const starCount = momentFeed.filter(x => x.starred).length;
+        const starOnly = !!this.state.starOnly;
+        if (starOnly) momentList = momentList.filter(x => x.starred);   // กรองซ้อนกับหมวดได้
         const totalMoments = momentFeed.length;
         // ---- calendar ----
         const now2 = new Date();
@@ -14227,8 +14246,11 @@ class Component extends DCLogic {
           style: chipBase + (i === mpCatSel ? ';background:' + this.catColor(i) + ';color:#fff;border-color:' + this.catColor(i) : ';background:#fff;color:#6f6558;border-color:rgba(43,36,32,.15)'),
           dot: 'width:7px;height:7px;border-radius:50%;flex:none;background:' + (i === mpCatSel ? '#fff' : this.catColor(i)) }));
         const filterBase = 'flex:none;font:600 14.5px \'Anuphan\';padding:7px 14px;border-radius:20px;border:1px solid;cursor:pointer';
-        const catFilters = [{ name: 'ทั้งหมด', on: () => this.setState({ catFilter: null }),
-            style: filterBase + (catFilter == null ? ';background:#2b241f;color:#f6efe2;border-color:#2b241f' : ';background:#fff;color:#6f6558;border-color:rgba(43,36,32,.15)') }]
+        // ชิป "★ คัดไว้" โผล่เฉพาะตอนมีของให้กรอง — ยังไม่เคยคัดก็ไม่ต้องมีชิปตาย
+        const starChip = starCount ? [{ name: '★ คัดไว้ ' + starCount, on: () => this.setState({ starOnly: !starOnly }),
+            style: filterBase + (starOnly ? ';background:#c05f39;color:#fff;border-color:#c05f39' : ';background:#fff;color:#c05f39;border-color:rgba(192,95,57,.4)') }] : [];
+        const catFilters = starChip.concat([{ name: 'ทั้งหมด', on: () => this.setState({ catFilter: null }),
+            style: filterBase + (catFilter == null ? ';background:#2b241f;color:#f6efe2;border-color:#2b241f' : ';background:#fff;color:#6f6558;border-color:rgba(43,36,32,.15)') }])
           .concat(cats.map((c, i) => ({ name: c, on: () => this.setState({ catFilter: i }),
             style: filterBase + (catFilter === i ? ';background:' + this.catColor(i) + ';color:#fff;border-color:' + this.catColor(i) : ';background:#fff;color:#6f6558;border-color:rgba(43,36,32,.15)') })));
         const draft = this.state.catDraft || cats;
