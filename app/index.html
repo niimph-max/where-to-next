@@ -12544,35 +12544,9 @@ class Component extends DCLogic {
         stats: pb.days + ' วัน · ' + pb.pages + ' หน้า · ' + pb.photos + ' รูป',
         open: () => this.shelfOpen(t.id, 'pb'), card: () => this.makeShareCard(t.id, 'pb') });
     });
-    // เรื่องที่ไม่ผูกทริป (นำเข้าจากบล็อก / เขียนเองโดยไม่มีทริป) — ทำเป็นอีบุ๊กได้เหมือนกัน
-    (this.stories || []).forEach(raw => {
-      if (raw.tripId) return;
-      const prev = this._ebStoryOverride;
-      this._ebStoryOverride = raw.id;
-      let eb = null;
-      try { eb = this.ebEstimate(''); } catch (e) {} finally { this._ebStoryOverride = prev; }
-      if (!eb || eb.parts <= 0 || eb.chapters <= 0) return;
-      const st = this.normStory(raw);
-      const ttl = String(st.title || 'เล่มของฉัน').trim();
-      const ls = this._shelfSplit(ttl);
-      const author = (st.author || '').trim() || this.profile.name || 'นักเดินทาง';
-      const yr = (() => {
-        const ys = (st.chapters || []).map(c => new Date(c.createdAt || 0).getFullYear()).filter(y => y > 1990);
-        if (!ys.length) return '';
-        const off = (this.lang === 'en' ? 0 : 543), a = Math.min(...ys) + off, b = Math.max(...ys) + off;
-        return a === b ? String(a) : (a + '–' + b);
-      })();
-      out.push({
-        tripId: 'st' + st.id, storyId: st.id, title: ttl, l1: ls[0], l2: ls[1],
-        sub: [(st.country || '').trim(), yr].filter(Boolean).join(' · '),
-        when: eb.chapters + ' ตอน', author, author2: 'บันทึกโดย ' + author,
-        kind: 'eb', tall: true, wide: false,
-        cover: this.coverOf('wtn-eb-cover-st' + st.id, '') || st.cover || 'default-cover.jpg',
-        kindLabel: 'อีบุ๊ก', meta: eb.chapters + ' ตอน · ' + eb.pages + ' หน้า',
-        stats: eb.chapters + ' ตอน · ' + eb.pages + ' หน้า',
-        open: () => this.shelfOpenStory(st.id), card: () => this.showToast('การ์ดโพสต์ยังรองรับเฉพาะเล่มที่ผูกกับทริป')
-      });
-    });
+    // ชั้นหนังสือ = เล่มที่ทำจากทริปเท่านั้น
+    // เล่มจากเรื่องเล่า (เช่นที่นำเข้าจากบล็อก) เข้าถึงได้ที่หน้า "จัดการบันทึกเรื่องเล่า" ของเรื่องนั้น
+    // เคยเอามาโชว์ที่นี่ด้วยแล้วมันท่วม (71 การ์ด) — เอาออก 20 ก.ย. 69
     return out;
   }
   async shelfOpen(id, kind) {
@@ -12580,13 +12554,6 @@ class Component extends DCLogic {
     this._fromShelf = true;
     try { if (kind === 'pb') await this.makePhotobook(); else await this.makeEbook(); }
     finally { this._ebTripOverride = null; this._fromShelf = false; }
-  }
-  // เปิดเล่มที่ไม่ผูกทริป — ผูกกับ id ของเรื่องแทน
-  async shelfOpenStory(sid) {
-    this._ebStoryOverride = sid;
-    this._fromShelf = true;
-    try { await this.makeEbook(); }
-    finally { this._ebStoryOverride = null; this._fromShelf = false; }
   }
   // ── การ์ดโพสต์ 1080×1350: ปกเล่มตรงหน้า + คำโปรย (เอาไปลงโพสต์/ยิงแอด) ──
   async makeShareCard(tripId, kind) {
@@ -13162,7 +13129,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.20c',
+      appVersion: '2026.09.20d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14995,12 +14962,7 @@ class Component extends DCLogic {
           shelfPb: pb, shelfEb: eb, hasShelfPb: this.pbOn && pb0.length > 0, hasShelfEb: eb0.length > 0,
           shelfPbNote: pb0.length + ' เล่ม · รูปเป็นตัวเล่าเรื่อง',
           shelfEbNote: eb0.length + ' เล่ม · เรื่องเล่าเป็นตัวเล่าเรื่อง',
-          shelfNote: (() => {
-            const nTrip = new Set(items.filter(x => !x.storyId).map(x => x.tripId)).size;
-            const nStory = new Set(items.filter(x => x.storyId).map(x => x.storyId)).size;
-            return items.length + ' เล่ม' + (nTrip ? ' จาก ' + nTrip + ' ทริป' : '')
-              + (nStory ? (nTrip ? ' + ' : ' จาก ') + nStory + ' เรื่องที่ไม่ผูกทริป' : '');
-          })() };
+          shelfNote: items.length + ' เล่มจาก ' + new Set(items.map(x => x.tripId)).size + ' ทริป' };
       })(),
       pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
       ...(() => {
