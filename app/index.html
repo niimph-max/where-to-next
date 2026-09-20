@@ -9176,6 +9176,10 @@ class Component extends DCLogic {
   }
   // เล่มผูกกับทริปของเรื่องเล่าที่เปิดอยู่ ไม่ใช่ทริปที่เลือกค้างไว้ในแอป
   ebStory() {
+    if (this._ebStoryOverride) {                                 // เปิดเล่มจากชั้นหนังสือ: เรื่องที่ไม่ผูกทริป (เช่น นำเข้าจาก WordPress)
+      const s = (this.stories || []).find(x => x.id === this._ebStoryOverride);
+      return s ? this.normStory(s) : null;
+    }
     if (this._ebTripOverride) {                                  // เปิดเล่มจากชั้นหนังสือ: ผูกกับทริปนั้น ไม่ใช่ทริปที่เลือกค้างไว้
       const s = (this.stories || []).find(x => x.tripId === this._ebTripOverride);
       return s ? this.normStory(s) : null;
@@ -9183,9 +9187,19 @@ class Component extends DCLogic {
     return this.openStory || this.tripStoryExisting || null;
   }
   ebTripId() {
+    if (this._ebStoryOverride) { const s = this.ebStory(); return (s && s.tripId) || ''; }
     if (this._ebTripOverride) return this._ebTripOverride;
     const s = this.ebStory();
-    return (s && s.tripId) || this.state.trip;
+    // เรื่องที่ไม่ผูกทริปต้องคืนค่าว่าง ห้ามหล่นไปใช้ทริปที่เลือกค้างไว้ ไม่งั้นเล่มจะลากวัน/ค่าใช้จ่ายของทริปอื่นเข้ามา
+    if (s) return s.tripId || '';
+    return this.state.trip;
+  }
+  // กุญแจเก็บของประจำเล่ม (ปก/รูปที่จัดวาง) — เล่มที่ไม่ผูกทริปใช้ id ของเรื่องแทน id ทริป
+  ebKey() {
+    const t = this.ebTripId();
+    if (t) return t;
+    const s = this.ebStory();
+    return (s && s.id) ? 'st' + s.id : '';
   }
   ebExpenses(trip) {
     try { return (JSON.parse(localStorage.getItem('wtn-expenses')) || {})[trip] || []; } catch (e) { return []; }
@@ -9269,10 +9283,11 @@ class Component extends DCLogic {
   }
   async ebGather() {
     const trip = this.ebTripId();
-    const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
-    this.healCheckinDays(trip);
-    const ci = this.checkins || {};
-    const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
+    const ebSt = this.ebStory();
+    const t = trip ? ((this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {}) : {};
+    if (trip) this.healCheckinDays(trip);
+    const ci = trip ? (this.checkins || {}) : {};
+    const n = trip ? Math.max(1, this.dayCount(t.start, t.end) || 0) : 0;   // ไม่มีทริป = ไม่มีวัน เล่มประกอบจากตอนล้วนๆ
     const cmap = this.ebChapterMap();
     const EQ = this.pbQualities[this.pbQuality];
     const days = [];
@@ -9312,18 +9327,32 @@ class Component extends DCLogic {
       days.push({ n: 0, label: '', items: [], story: st, title: st.title });
     }
     days.forEach((d, i) => { d.n = i + 1; });                 // เลขตอนเรียงต่อเนื่องตามสารบัญ
-    const cover = await this.resolvePhoto(this.coverOf('wtn-eb-cover-' + trip, '') || this.coverOf('wtn-cover-' + trip, '') || '');
+    const ck = this.ebKey();
+    const cover = await this.resolvePhoto(this.coverOf('wtn-eb-cover-' + ck, '') || this.coverOf('wtn-cover-' + ck, '') || (!trip && ebSt ? (ebSt.cover || '') : ''));
     const cats = {};
-    this.ebExpenses(trip).forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + (Number(e.amt) || 0); });
+    (trip ? this.ebExpenses(trip) : []).forEach(e => { cats[e.cat] = (cats[e.cat] || 0) + (Number(e.amt) || 0); });
     const rows = Object.keys(cats).filter(k => cats[k] > 0).sort((a, b) => cats[b] - cats[a]);
     const total = rows.reduce((s, k) => s + cats[k], 0);
-    const yr = (() => { try { return (+String(t.start || '').slice(0, 4) + (this.lang === 'en' ? 0 : 543)) || ''; } catch (e) { return ''; } })();
-    const ttl = (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
+    const yr = (() => {
+      try {
+        if (trip) return (+String(t.start || '').slice(0, 4) + (this.lang === 'en' ? 0 : 543)) || '';
+        // เล่มไม่ผูกทริป: เอาช่วงปีจากวันที่ของตอน (เรื่องเก่าจากบล็อกมักกินหลายปี)
+        const ys = (((ebSt || {}).chapters) || []).map(c => new Date(c.createdAt || 0).getFullYear()).filter(y => y > 1990);
+        if (!ys.length) return '';
+        const off = (this.lang === 'en' ? 0 : 543), a = Math.min(...ys) + off, b = Math.max(...ys) + off;
+        return a === b ? String(a) : (a + '–' + b);
+      } catch (e) { return ''; }
+    })();
+    const ttl = trip
+      ? (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '')
+      : (((ebSt || {}).title || '').trim() || 'เล่มของฉัน');
     return {
       title: ttl,
-      sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
-      when: this.fmtRange(t.start, t.end) || '',
-      author: this.profile.name || 'นักเดินทาง',
+      sub: trip
+        ? [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · ')
+        : [((ebSt || {}).country || '').trim(), yr].filter(Boolean).join(' · '),
+      when: trip ? (this.fmtRange(t.start, t.end) || '') : (days.length ? days.length + ' ตอน' : ''),
+      author: (!trip && ((ebSt || {}).author || '').trim()) || this.profile.name || 'นักเดินทาง',
       cover, days,
       quality: this.pbQuality,
       bytes: this._urlBytes(cover) + days.reduce((a, d) => a
@@ -9342,6 +9371,7 @@ class Component extends DCLogic {
   // แผนที่เส้นทาง: ต่อไทล์เป็นรูปเดียว แล้ววาดเส้นทาง/หมุดทับ (ฝังลงไฟล์ได้ เปิดออฟไลน์ได้)
   async ebMapImage(W, H) {
     const trip = this.ebTripId(), ci = this.checkins || {};
+    if (!trip) return null;                                   // เล่มไม่ผูกทริป ไม่มีเส้นทางให้วาด
     let pts = [];
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0)
       .sort((a, b) => (+a.split(':')[1]) - (+b.split(':')[1]))
@@ -9791,13 +9821,13 @@ class Component extends DCLogic {
   }
   get ebInsAll() { try { return JSON.parse(localStorage.getItem('wtn-eb-inserts')) || {}; } catch (e) { return {}; } }
   ebInserts(chId) {
-    const t = this.ebInsAll[this.ebTripId()] || {};
+    const t = this.ebInsAll[this.ebKey()] || {};
     const v = t[String(chId)];
     return Array.isArray(v) ? v : [];
   }
   saveEbInserts(chId, list) {
     try {
-      const all = this.ebInsAll, tid = this.ebTripId();
+      const all = this.ebInsAll, tid = this.ebKey();
       all[tid] = all[tid] || {};
       if (!list || !list.length) delete all[tid][String(chId)];
       else all[tid][String(chId)] = list;
@@ -10806,7 +10836,7 @@ class Component extends DCLogic {
     this.setState({ ebBusy: true, ebPct: 4 });
     try {
       const D = await this.ebGather();
-      if (!D.days.length) { this.showToast('ยังไม่มีบันทึกในทริปนี้'); return; }
+      if (!D.days.length) { this.showToast(this.ebTripId() ? 'ยังไม่มีบันทึกในทริปนี้' : 'เรื่องนี้ยังไม่มีตอนที่มีเนื้อหา'); return; }
       await this._ebMeasure(D);
       this.setState({ ebPct: 26 });
       this.setState({ ebPct: 80 });
@@ -10871,8 +10901,10 @@ class Component extends DCLogic {
   async _epubAssets(urls) {
     const map = new Map(), files = [];
     let n = 0;
+    const miss = this._epubMiss = { total: 0, fail: 0, hosts: {}, lastErr: '' };
     for (const u of urls) {
       if (!u || map.has(u)) continue;
+      miss.total++;
       try {
         const b = await (await fetch(u)).blob();
         const mime = (b.type || 'image/jpeg').toLowerCase();
@@ -10880,7 +10912,13 @@ class Component extends DCLogic {
         const href = 'img/p' + (++n) + '.' + ext;
         files.push({ name: 'OEBPS/' + href, data: new Uint8Array(await b.arrayBuffer()) });
         map.set(u, { href, id: 'im' + n, mime: 'image/' + (ext === 'jpg' ? 'jpeg' : ext) });
-      } catch (e) { /* รูปนี้ข้ามไป */ }
+      } catch (e) {
+        // ห้ามเงียบ: รูปจากโดเมนอื่น (เช่นที่นำเข้ามาจากบล็อก) มักถูกเบราว์เซอร์กันไม่ให้อ่านเนื้อไฟล์
+        // ถ้าไม่นับไว้ จะได้เล่มที่รูปหายโดยไม่มีใครรู้
+        miss.fail++;
+        miss.lastErr = (e && (e.message || e.name)) || String(e);
+        try { miss.hosts[new URL(u, location.href).hostname] = (miss.hosts[new URL(u, location.href).hostname] || 0) + 1; } catch (e2) {}
+      }
     }
     return { map, files };
   }
@@ -11206,7 +11244,7 @@ class Component extends DCLogic {
     this.setState({ epBusy: true, epPct: 6 });
     try {
       const D = await this.ebGather();
-      if (!D.days.length) { this.showToast('ยังไม่มีบันทึกในทริปนี้'); return; }
+      if (!D.days.length) { this.showToast(this.ebTripId() ? 'ยังไม่มีบันทึกในทริปนี้' : 'เรื่องนี้ยังไม่มีตอนที่มีเนื้อหา'); return; }
       this.setState({ epPct: 40 });
       let map = null;
       try { map = await this.ebMapImage(1000, 700); } catch (e) {}
@@ -11218,6 +11256,11 @@ class Component extends DCLogic {
       this.setState({ epPct: 100 });
       // แอป (iOS/Android) → เด้ง share sheet ของเครื่องเสมอ: ส่งต่อ / บันทึกลงไฟล์ / เปิดในแอปอ่านหนังสือ
       await this._deliverFile(blob, name, D.title || 'เล่ม EPUB', 'application/epub+zip');
+      const ms = this._epubMiss;
+      if (ms && ms.fail) {
+        const hs = Object.keys(ms.hosts).sort((a, b) => ms.hosts[b] - ms.hosts[a]).slice(0, 2).join(', ');
+        this.showToast('ไฟล์พร้อมแล้ว แต่ใส่รูปไม่ได้ ' + ms.fail + '/' + ms.total + ' ใบ' + (hs ? ' (จาก ' + hs + ')' : '') + ' — รูปจากเว็บอื่นดึงเข้าเล่มไม่ได้ ลองแนบรูปของตัวเองเข้าตอนแทน');
+      }
     } catch (e) {
       console.warn('[wtn] epub', e);
       this.showToast('ทำไฟล์ EPUB ไม่สำเร็จ — ลองใหม่อีกครั้ง');
@@ -11228,10 +11271,10 @@ class Component extends DCLogic {
   }
   // ประเมินจำนวนหน้าด้วยตัวจัดหน้าชุดเดียวกับตอนสร้างจริง (ตัวเลขในชีตต้องตรงกับเล่ม)
   ebEstimate(trip) {
-    const ci = this.checkins || {};
+    const ci = trip ? (this.checkins || {}) : {};                  // ไม่มีทริป = ไม่นับเช็คอินของใคร
     const cmap = this.ebChapterMap();
     let days = 0, cis = 0, photos = 0, chapters = 0, pages = 2;   // ปก + สารบัญ
-    let photosAll = 0, cisIn = 0;
+    let photosAll = 0, cisIn = 0, extras = 0;
     const dayIdx = {};
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => { dayIdx[+k.split(':')[1]] = true; });
     Object.keys(cmap.byDay).forEach(k => { dayIdx[+k] = true; });
@@ -11265,7 +11308,7 @@ class Component extends DCLogic {
     cmap.extra.forEach(c => {
       const paras = this._htmlParas(c.html);
       if (!paras.length) return;
-      chapters++; pages++;
+      chapters++; extras++; pages++;
       let h = 0, any = false;
       paras.forEach(p => this._ebChunk(p, 1200).forEach(part => {
         const need = Math.ceil(part.length / 52) * 6.9 + 5;
@@ -11275,7 +11318,8 @@ class Component extends DCLogic {
       if (any) pages++;
     });
     if (cis || chapters) pages += 3;                // แผนที่ + ค่าใช้จ่าย + หน้าท้าย
-    return { days, cis, cisIn, photos, photosAll, chapters, pages };
+    // parts = จำนวน "ตอน" ทั้งหมดในเล่ม (วันในทริป + ตอนที่ไม่ผูกวัน) — ตัวเลขที่ใช้ตัดสินว่ามีเล่มไหม
+    return { days, cis, cisIn, photos, photosAll, chapters, pages, extras, parts: days + extras };
   }
   // ---------- SUPPORT ----------
   supDiagInfo() {
@@ -12359,6 +12403,35 @@ class Component extends DCLogic {
         stats: pb.days + ' วัน · ' + pb.pages + ' หน้า · ' + pb.photos + ' รูป',
         open: () => this.shelfOpen(t.id, 'pb'), card: () => this.makeShareCard(t.id, 'pb') });
     });
+    // เรื่องที่ไม่ผูกทริป (นำเข้าจากบล็อก / เขียนเองโดยไม่มีทริป) — ทำเป็นอีบุ๊กได้เหมือนกัน
+    (this.stories || []).forEach(raw => {
+      if (raw.tripId) return;
+      const prev = this._ebStoryOverride;
+      this._ebStoryOverride = raw.id;
+      let eb = null;
+      try { eb = this.ebEstimate(''); } catch (e) {} finally { this._ebStoryOverride = prev; }
+      if (!eb || eb.parts <= 0 || eb.chapters <= 0) return;
+      const st = this.normStory(raw);
+      const ttl = String(st.title || 'เล่มของฉัน').trim();
+      const ls = this._shelfSplit(ttl);
+      const author = (st.author || '').trim() || this.profile.name || 'นักเดินทาง';
+      const yr = (() => {
+        const ys = (st.chapters || []).map(c => new Date(c.createdAt || 0).getFullYear()).filter(y => y > 1990);
+        if (!ys.length) return '';
+        const off = (this.lang === 'en' ? 0 : 543), a = Math.min(...ys) + off, b = Math.max(...ys) + off;
+        return a === b ? String(a) : (a + '–' + b);
+      })();
+      out.push({
+        tripId: 'st' + st.id, storyId: st.id, title: ttl, l1: ls[0], l2: ls[1],
+        sub: [(st.country || '').trim(), yr].filter(Boolean).join(' · '),
+        when: eb.chapters + ' ตอน', author, author2: 'บันทึกโดย ' + author,
+        kind: 'eb', tall: true, wide: false,
+        cover: this.coverOf('wtn-eb-cover-st' + st.id, '') || st.cover || 'default-cover.jpg',
+        kindLabel: 'อีบุ๊ก', meta: eb.chapters + ' ตอน · ' + eb.pages + ' หน้า',
+        stats: eb.chapters + ' ตอน · ' + eb.pages + ' หน้า',
+        open: () => this.shelfOpenStory(st.id), card: () => this.showToast('การ์ดโพสต์ยังรองรับเฉพาะเล่มที่ผูกกับทริป')
+      });
+    });
     return out;
   }
   async shelfOpen(id, kind) {
@@ -12366,6 +12439,13 @@ class Component extends DCLogic {
     this._fromShelf = true;
     try { if (kind === 'pb') await this.makePhotobook(); else await this.makeEbook(); }
     finally { this._ebTripOverride = null; this._fromShelf = false; }
+  }
+  // เปิดเล่มที่ไม่ผูกทริป — ผูกกับ id ของเรื่องแทน
+  async shelfOpenStory(sid) {
+    this._ebStoryOverride = sid;
+    this._fromShelf = true;
+    try { await this.makeEbook(); }
+    finally { this._ebStoryOverride = null; this._fromShelf = false; }
   }
   // ── การ์ดโพสต์ 1080×1350: ปกเล่มตรงหน้า + คำโปรย (เอาไปลงโพสต์/ยิงแอด) ──
   async makeShareCard(tripId, kind) {
@@ -12941,7 +13021,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.17a',
+      appVersion: '2026.09.20a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13026,22 +13106,28 @@ class Component extends DCLogic {
       ...(() => {
         const trip = this.ebTripId();
         const est = this.ebEstimate(trip);
-        const d = est.days, n = est.cis, ph = est.photos;
+        const noTrip = !trip;                                   // เล่มจากเรื่องล้วน (เช่น นำเข้าจากบล็อก) — ไม่มีวัน/เช็คอิน/ค่าใช้จ่าย
+        const d = est.parts, n = est.cis, ph = est.photos;
         const pct = this.state.ebPct || 0;
         return {
           ebOpen: !!this.state.ebOpen,
           openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0 }),
           closeEbook: () => this.setState({ ebOpen: false }),
           openEbPhotos: () => { this.setState({ ebOpen: false, ebChId: null, ebPick: null }); this.go('ebPhotos'); },
-          ebCoverId: 'wtn-eb-cover-' + trip,
-          ebSummary: d ? (est.chapters + ' ตอนเรื่องเล่า · ' + d + ' วัน · ' + n + ' เช็คอิน — ประมาณ ' + est.pages + ' หน้า')
-                       : 'ทริปนี้ยังไม่มีบันทึก — เช็คอินระหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม',
+          ebCoverId: 'wtn-eb-cover-' + this.ebKey(),
+          ebSummary: d
+            ? (noTrip ? (est.chapters + ' ตอน — ประมาณ ' + est.pages + ' หน้า')
+                      : (est.chapters + ' ตอนเรื่องเล่า · ' + est.days + ' วัน · ' + n + ' เช็คอิน — ประมาณ ' + est.pages + ' หน้า'))
+            : (noTrip ? 'เรื่องนี้ยังไม่มีตอนที่มีเนื้อหา — เขียนหรือนำเข้าตอนก่อน'
+                      : 'ทริปนี้ยังไม่มีบันทึก — เช็คอินระหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม'),
           // แยกให้ชัดว่ารูป "เข้าเล่มจริง" กี่ใบ จากที่มีทั้งหมดกี่ใบ — ตัวเลขเดียวทำให้เข้าใจผิด
-          ebPhotoLine: !d ? '' : (est.photosAll
-            ? (est.photos === est.photosAll
-                ? 'ใช้รูปทั้ง ' + est.photos + ' ใบในทริป'
-                : 'ใช้รูปที่คุณเลือกไว้ ' + est.photos + ' ใบ (ในทริปมี ' + est.photosAll + ' ใบ)')
-            : 'ทริปนี้ยังไม่มีรูป'),
+          ebPhotoLine: !d ? '' : (noTrip
+            ? 'รูปจากเว็บอื่นใส่เข้าเล่มไม่ได้ — แนบรูปของตัวเองเข้าตอนเพื่อให้มีรูปในเล่ม'
+            : (est.photosAll
+              ? (est.photos === est.photosAll
+                  ? 'ใช้รูปทั้ง ' + est.photos + ' ใบในทริป'
+                  : 'ใช้รูปที่คุณเลือกไว้ ' + est.photos + ' ใบ (ในทริปมี ' + est.photosAll + ' ใบ)')
+              : 'ทริปนี้ยังไม่มีรูป')),
           ebPhotoWarn: false,
           ebPhotoHint: '',
 
@@ -13051,7 +13137,10 @@ class Component extends DCLogic {
           ebBusyLabel: pct < 80 ? 'กำลังรวบรวมบันทึกและรูป…' : pct < 92 ? 'กำลังวาดแผนที่เส้นทาง…' : 'กำลังจัดหน้า…',
           ebUrl: this.state.ebUrl || '', ebHasUrl: !!this.state.ebUrl,
           showEbBook: () => this.setState({ bvUrl: this.state.ebUrl || '', bvTitle: 'เล่ม' }),
-          ebCardNote: d ? (est.chapters + ' ตอน · ' + d + ' วัน — ทำเป็นเล่ม A5 อ่านแบบพลิกหน้าได้') : 'ยังไม่มีบันทึกในทริปนี้',
+          ebCardNote: d
+            ? (noTrip ? (est.chapters + ' ตอน — ทำเป็นเล่ม A5 อ่านแบบพลิกหน้าได้')
+                      : (est.chapters + ' ตอน · ' + est.days + ' วัน — ทำเป็นเล่ม A5 อ่านแบบพลิกหน้าได้'))
+            : (noTrip ? 'ยังไม่มีตอนที่มีเนื้อหา' : 'ยังไม่มีบันทึกในทริปนี้'),
           runEbook: () => this.makeEbook(),
           epBusy: !!this.state.epBusy,
           epLabel: this.state.epBusy ? 'กำลังทำไฟล์ EPUB… ' + (this.state.epPct || 0) + '%' : 'บันทึกไฟล์ EPUB',
@@ -14760,7 +14849,12 @@ class Component extends DCLogic {
           shelfPb: pb, shelfEb: eb, hasShelfPb: this.pbOn && pb0.length > 0, hasShelfEb: eb0.length > 0,
           shelfPbNote: pb0.length + ' เล่ม · รูปเป็นตัวเล่าเรื่อง',
           shelfEbNote: eb0.length + ' เล่ม · เรื่องเล่าเป็นตัวเล่าเรื่อง',
-          shelfNote: items.length + ' เล่มจาก ' + new Set(items.map(x => x.tripId)).size + ' ทริป' };
+          shelfNote: (() => {
+            const nTrip = new Set(items.filter(x => !x.storyId).map(x => x.tripId)).size;
+            const nStory = new Set(items.filter(x => x.storyId).map(x => x.storyId)).size;
+            return items.length + ' เล่ม' + (nTrip ? ' จาก ' + nTrip + ' ทริป' : '')
+              + (nStory ? (nTrip ? ' + ' : ' จาก ') + nStory + ' เรื่องที่ไม่ผูกทริป' : '');
+          })() };
       })(),
       pStyleRecap: this.state.profileTab==='recap' ? pillOn : pillOff,
       ...(() => {
