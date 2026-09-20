@@ -1897,6 +1897,7 @@
             <textarea value="{{ synDraft }}" onInput="{{ setSynDraft }}" placeholder="เล่าคร่าวๆ ว่าทริปนี้ไปไหน เจออะไร ประทับใจตรงไหน" style="width:100%;box-sizing:border-box;min-height:120px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px;font:500 16px/1.8 'Anuphan';color:#2f2a24;outline:none;resize:vertical;text-wrap:pretty"></textarea>
             <div style="display:flex;gap:8px;margin-top:9px"><button onClick="{{ cancelSyn }}" style="flex:1;min-height:44px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveSyn }}" style="flex:1.4;min-height:44px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">บันทึกแนะนำเรื่อง</button></div>
           </sc-if>
+          <button onClick="{{ seOpenEbook }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#2b241f;border:none;border-radius:14px;padding:13px 15px;cursor:pointer;margin-top:20px"><span style="width:36px;height:36px;border-radius:10px;background:rgba(233,180,138,.18);display:flex;align-items:center;justify-content:center;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="1.7"><path d="M4 5h16v14H4z"></path><path d="M12 5v14M4 9h8M4 13h8"></path></svg></span><div style="flex:1;min-width:0"><div style="font:600 14.5px 'Anuphan';color:#f6efe2">รวมเป็นอีบุ๊ก · จัดรูป · ไฟล์ EPUB</div><div style="font:500 12.5px 'Anuphan';color:#c9b79b">{{ seEbNote }}</div></div><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e9b48a" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></button>
           <div style="display:flex;align-items:center;justify-content:center;margin:24px 0 14px"><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">ตอนทั้งหมด ({{ seChapCount }})</span></div>
           <button onClick="{{ addChapterFn }}" style="width:100%;min-height:52px;border:none;background:#c05f39;color:#fff;font:600 17px 'Anuphan';border-radius:26px;cursor:pointer;margin-bottom:16px">+ เพิ่มตอนใหม่</button>
           <div style="display:flex;flex-direction:column;gap:12px">
@@ -2773,8 +2774,9 @@
                     <button onClick="{{ bk.on }}" style="{{ bk.openStyle }}">{{ bk.label }}</button>
                     <sc-if value="{{ bk.picking }}" hint-placeholder-val="{{ false }}">
                       <div style="margin-top:8px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:13px;padding:10px">
+                        <button onClick="{{ bk.up }}" style="{{ bk.upStyle }}">{{ bk.upLabel }}</button>
                         <sc-if value="{{ bk.poolEmpty }}" hint-placeholder-val="{{ false }}">
-                          <div style="font:500 13px 'Anuphan';color:#a99e8e;text-align:center;padding:10px">วันนี้ยังไม่มีรูปในโมเมนต์</div>
+                          <div style="font:500 13px/1.6 'Anuphan';color:#a99e8e;text-align:center;padding:10px">{{ bk.poolNote }}</div>
                         </sc-if>
                         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));grid-auto-rows:72px;gap:6px;align-content:start;max-height:224px;overflow-y:auto">
                           <sc-for list="{{ bk.pool }}" as="pp" hint-placeholder-count="8">
@@ -9184,6 +9186,10 @@ class Component extends DCLogic {
       const s = (this.stories || []).find(x => x.tripId === this._ebTripOverride);
       return s ? this.normStory(s) : null;
     }
+    if (this.state.ebStoryId) {                                  // เปิดแผ่นทำเล่มจากหน้าจัดการเรื่อง
+      const s = (this.stories || []).find(x => x.id === this.state.ebStoryId);
+      if (s) return this.normStory(s);
+    }
     return this.openStory || this.tripStoryExisting || null;
   }
   ebTripId() {
@@ -9321,9 +9327,15 @@ class Component extends DCLogic {
     for (const c of cmap.extra) {
       const paras = this._htmlParas(c.html);
       if (!paras.length) continue;
-      const st = { title: c.title || 'ตอนหนึ่ง', paras, photos: [], cover: await this.resolvePhoto(c.cover || '') || '' };
+      const st = { title: c.title || 'ตอนหนึ่ง', paras, photos: [], cover: await this.resolvePhoto(c.cover || '') || '', inserts: [] };
       for (const p of (c.photos || [])) { const r = await this.resolvePhoto(p); if (r) st.photos.push(r); }
       st.photos = await this.shrinkList(st.photos, EQ);
+      // รูปที่ผู้ใช้จัดวางไว้ในตอนนี้ — เดิมโค้ดอ่านเฉพาะตอนที่ผูกกับวัน ตอนอิสระจึงถูกข้ามไปเงียบๆ
+      for (const x of this.ebInserts(c.id)) {
+        const r = await this.resolvePhoto(x.ref);
+        if (!r) continue;
+        st.inserts.push({ u: (await this.shrinkList([r], EQ))[0] || r, cap: x.cap || '', size: x.size || 'half', after: x.after });
+      }
       days.push({ n: 0, label: '', items: [], story: st, title: st.title });
     }
     days.forEach((d, i) => { d.n = i + 1; });                 // เลขตอนเรียงต่อเนื่องตามสารบัญ
@@ -9835,13 +9847,54 @@ class Component extends DCLogic {
     } catch (e) {}
     this.forceUpdate();
   }
-  // รูปทั้งหมดที่หยิบมาวางได้: โมเมนต์ของวันนั้น + รูปที่แนบไว้กับบท
+  // คลังรูปที่ผู้ใช้อัปเข้ามาเองสำหรับเล่มนี้ (เก็บใน IndexedDB ของเครื่อง อ้างด้วย ref 'idb:')
+  get ebPoolAll() { try { return JSON.parse(localStorage.getItem('wtn-eb-pool')) || {}; } catch (e) { return {}; } }
+  ebUserPool() { const v = this.ebPoolAll[this.ebKey()]; return Array.isArray(v) ? v : []; }
+  saveEbUserPool(list) {
+    try {
+      const all = this.ebPoolAll, k = this.ebKey();
+      if (!list || !list.length) delete all[k]; else all[k] = list;
+      localStorage.setItem('wtn-eb-pool', JSON.stringify(all));
+    } catch (e) {}
+  }
+  // เลือกรูปจากเครื่อง → ย่อ → เก็บลงเครื่อง → วางตรงจุดที่กดทันที
+  // ใช้ ref 'idb:' เพราะ resolvePhoto จะคืน data url ออกมา ทำให้ EPUB ฝังรูปได้จริง
+  // (ต่างจากลิงก์ WordPress ที่เบราว์เซอร์ให้แสดงได้แต่อ่านเนื้อไฟล์ไม่ได้)
+  ebPickFiles(chId, after) {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.style.display = 'none';
+    document.body.appendChild(inp);
+    inp.onchange = async () => {
+      const files = [...(inp.files || [])];
+      try { inp.remove(); } catch (e) {}
+      if (!files.length) return;
+      this.showToast('กำลังเตรียมรูป ' + files.length + ' ใบ…');
+      const refs = [];
+      for (const f of files) {
+        try {
+          const du = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+          const small = await this.shrinkUrl(du, 1800, 0.86);
+          refs.push(await this.stashPhoto(small));
+        } catch (e) { console.warn('[wtn] eb upload', e); }
+      }
+      if (!refs.length) { this.showToast('อ่านไฟล์รูปไม่ได้ ลองใหม่อีกครั้ง'); return; }
+      this.saveEbUserPool(this.ebUserPool().concat(refs));
+      const l = this.ebInserts(chId).concat(refs.map(r => ({ ref: r, cap: '', size: 'half', after })));
+      l.sort((p, q) => (p.after - q.after) || 0);
+      this.saveEbInserts(chId, l);
+      this.setState({ ebPick: null });
+      this.showToast('เพิ่มรูป ' + refs.length + ' ใบแล้ว');
+    };
+    inp.click();
+  }
+  // รูปทั้งหมดที่หยิบมาวางได้: โมเมนต์ของวันนั้น + รูปที่แนบไว้กับบท + รูปที่อัปเอง
   ebPoolFor(dayIdx, ch) {
     const tid = this.ebTripId();
     const out = [], seen = {};
     const add = (ref, from) => { if (ref && !seen[ref]) { seen[ref] = 1; out.push({ ref, from: from || '' }); } };
-    if (dayIdx != null) ((this.checkins || {})[tid + ':' + dayIdx] || []).forEach(c => (c.photos || []).forEach(p => add(p, (c.name || '').trim())));
+    if (dayIdx != null && tid) ((this.checkins || {})[tid + ':' + dayIdx] || []).forEach(c => (c.photos || []).forEach(p => add(p, (c.name || '').trim())));
     if (ch) { add(ch.cover, 'ปกของบท'); (ch.photos || []).forEach(p => add(p, 'รูปแนบบท')); }
+    this.ebUserPool().forEach(r => add(r, 'อัปเอง'));
     return out;
   }
   // บททั้งหมดที่จัดรูปได้ (ผูกวัน = หยิบรูปจากโมเมนต์วันนั้นได้)
@@ -13021,7 +13074,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.20a',
+      appVersion: '2026.09.20b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13111,7 +13164,7 @@ class Component extends DCLogic {
         const pct = this.state.ebPct || 0;
         return {
           ebOpen: !!this.state.ebOpen,
-          openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0 }),
+          openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0, ebStoryId: null }),
           closeEbook: () => this.setState({ ebOpen: false }),
           openEbPhotos: () => { this.setState({ ebOpen: false, ebChId: null, ebPick: null }); this.go('ebPhotos'); },
           ebCoverId: 'wtn-eb-cover-' + this.ebKey(),
@@ -13287,6 +13340,11 @@ class Component extends DCLogic {
                       on: () => this.setState(s => ({ ebPick: s.ebPick === k ? null : k })),
                       picking: this.state.ebPick === k,
                       poolEmpty: pool.length === 0,
+                      poolNote: cur.day != null ? 'วันนี้ยังไม่มีรูปในโมเมนต์ — กดปุ่มข้างบนเพื่ออัปรูปจากเครื่อง'
+                                                : 'ยังไม่มีรูปในคลังของเล่มนี้ — กดปุ่มข้างบนเพื่ออัปรูปจากเครื่อง',
+                      upLabel: '＋ อัปรูปจากเครื่อง',
+                      upStyle: "width:100%;min-height:40px;margin-bottom:8px;border:1px solid rgba(192,95,57,.45);background:#fff4ec;color:#c05f39;font:600 13.5px 'Anuphan';border-radius:10px;cursor:pointer",
+                      up: () => this.ebPickFiles(ch.id, k),
                       pool: pool.map(p => ({ src: this.px(p.ref), from: p.from,
                         wrap: 'position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:9px;overflow:hidden;padding:0;cursor:pointer;background:#efe4d3;border:' +
                           (used[p.ref] ? '2px solid #c05f39' : '1px solid rgba(43,36,32,.14)'),
@@ -14961,6 +15019,16 @@ class Component extends DCLogic {
           togglePublished: () => this.patchStory(os.id, { published: !os.published }),
           toggleFinished: () => this.patchStory(os.id, { finished: !os.finished }),
           sePreview: () => { if (chs.length) this.openChapterRead(chs[0].id, true); else this.openStoryRead(os.id); },
+          // ทำเล่มจากเรื่องนี้โดยตรง — เดิมแผ่นนี้เปิดได้จากหน้าทริปทางเดียว เรื่องที่ไม่ผูกทริปจึงเข้าไม่ถึงทั้งการจัดรูปและ EPUB
+          seOpenEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0, ebStoryId: os.id }),
+          seEbNote: (() => {
+            const prev = this._ebStoryOverride;
+            this._ebStoryOverride = os.id;
+            let e = null;
+            try { e = this.ebEstimate(os.tripId || ''); } catch (x) {} finally { this._ebStoryOverride = prev; }
+            return (e && e.parts) ? (e.chapters + ' ตอน · ประมาณ ' + e.pages + ' หน้า — จัดรูปแล้วออกเป็นไฟล์ EPUB ได้')
+                                  : 'ยังไม่มีตอนที่มีเนื้อหา';
+          })(),
           seCover: os.cover || '', seHasCover: !!os.cover, seNoCover: !os.cover, setStoryCover: e => this.setStoryCover(e),
           seMetaEdit: me, seMetaView: !me, seMetaBtnLabel: me ? 'เสร็จ' : 'แก้ไข',
           toggleStoryMeta: () => {
