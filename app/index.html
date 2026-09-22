@@ -3838,6 +3838,35 @@ class Component extends DCLogic {
     const cut = now - 90 * 864e5; Object.keys(t).forEach(k => { if (t[k] < cut) delete t[k]; }); // เก็บคำสั่งลบ 90 วัน
     try { localStorage.setItem('wtn-tombs', JSON.stringify(t)); } catch (e) {}
   }
+  // ⚠⚠ ใบสั่งลบ "รายกิจกรรมในแผน" — ลบแล้วต้องไม่เด้งกลับ (22 ก.ย. 2569)
+  //   ของเดิม _mergeDay เก็บ stops ของเครื่องตัวเองไว้ทุกใบเสมอ (`stops = [...ld.stops]`)
+  //   แปลว่า "การลบข้ามเครื่องไม่ได้เลย": A ลบ → คลาวด์เหลือ 3 · B (มือถือที่ยังมี 4) ซิงก์ทีหลัง
+  //   B ไม่เคยรู้เรื่องการลบ จึงดันของตัวเอง 4 ใบขึ้นคลาวด์ → A ดึงลงมา เจอใบที่ตัวเองลบไปแล้ว
+  //   แต่ baseline ของ A เดินผ่านจุดที่ลบไปแล้ว มันจึงนับเป็น "ของใหม่จากอีกเครื่อง" แล้วใส่กลับ
+  //   = ลบแล้วกลับมาไม่จบ (เจ้าของ: "เด้งกลับมาอีกแล้ว นี่ไงคือปัญหา ลบไปแล้วกลับมาอีก")
+  //   baseline บอกได้แค่ "เครื่องนี้เคยเห็นอะไร" ไม่ได้บอกว่า "ใครตั้งใจลบ" — ต้องมีใบสั่งลบเท่านั้น
+  //   คีย์ลึกถึงวัน: '<tripId>:<ดัชนีวัน>:<kind|title|time|period>' (คีย์เดียวกับที่ _mergeDay ใช้เทียบ)
+  _stopKey(s) { return [(s && s.kind) || '', (s && s.title) || '', (s && (s.time || s.t)) || '', (s && s.period) || ''].join('|'); }
+  _sTombs() { try { return JSON.parse(localStorage.getItem('wtn-stop-tombs')) || {}; } catch (e) { return {}; } }
+  _addSTomb(tid, di, s) {
+    if (!tid || !s) return;
+    const t = this._sTombs(), now = Date.now(), k = tid + ':' + di + ':' + this._stopKey(s);
+    t[k] = now;
+    const cut = now - 90 * 864e5; Object.keys(t).forEach(x => { if (t[x] < cut) delete t[x]; });   // เก็บ 90 วันเท่าใบสั่งลบโมเมนต์
+    try { localStorage.setItem('wtn-stop-tombs', JSON.stringify(t)); } catch (e) {}
+    if (this._mSTombs) this._mSTombs[k] = now;
+  }
+  // ใส่กิจกรรมคีย์เดิมกลับเข้าไปใหม่ = ยกเลิกใบสั่งลบ ไม่งั้นซิงก์รอบหน้าจะลบให้อีกทั้งที่เพิ่งเพิ่ม
+  // เรียกจาก saveItinerary จุดเดียว เพราะทุกทางที่เพิ่มกิจกรรม (เพิ่มเอง/นำเข้าแผน/ผู้ช่วยจัดวัน) ผ่านตรงนั้นหมด
+  _sweepSTombs(tid, days) {
+    if (!tid) return;
+    const t = this._sTombs(); let hit = false;
+    (days || []).forEach((d, i) => (((d && d.stops) || [])).forEach(s => {
+      const k = tid + ':' + i + ':' + this._stopKey(s);
+      if (t[k]) { delete t[k]; hit = true; if (this._mSTombs) delete this._mSTombs[k]; }
+    }));
+    if (hit) { try { localStorage.setItem('wtn-stop-tombs', JSON.stringify(t)); } catch (e) {} }
+  }
   _pickNewer(l, r) {
     const lm = l._m || 0, rm = r._m || 0;
     let w = (lm !== rm) ? (lm > rm ? l : r)
@@ -3926,7 +3955,7 @@ class Component extends DCLogic {
     return out;
   }
   _mergeVal(k, bs, ls, rs) {
-    if (k === 'wtn-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ
+    if (k === 'wtn-tombs' || k === 'wtn-stop-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ (โมเมนต์ · รายกิจกรรมในแผน) — ต้องรวม ห้ามทับ
     // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องรวมกัน ห้ามทับกัน — เคยพังจริง (22 ก.ย. 2569)
     //   เจ้าของทำรูปย่อครบ 434 รูปบนเดสก์ท็อป แล้วกล่อง "ดูแลรูปภาพ" กลับมาขึ้นอีกเองทั้งที่ไม่ได้ทำอะไร
     //   เพราะกฎรวมข้อมูลทั่วไปข้างล่างมีบรรทัด `if (ls === bs) return rs;` = "ฉันไม่ได้แก้ → เอาของอีกเครื่อง"
@@ -3978,20 +4007,26 @@ class Component extends DCLogic {
       if (!Array.isArray(ld)) { out[id] = rd; return; }
       if (!Array.isArray(rd)) { out[id] = ld; return; }
       const n = Math.max(ld.length, rd.length), days = [];
-      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i]));
+      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i], id + ':' + i + ':'));
       out[id] = days;
     });
     return JSON.stringify(out);
   }
   STAY_PH = /ยังไม่ได้เลือกที่พัก|No stay picked yet|ยังไม่มีชื่อวัน|No day name yet|เพิ่มได้ในโหมดแก้ไข|แตะ “แก้ไข”|Tap “Edit”/;
-  _mergeDay(bd, ld, rd) {
+  _mergeDay(bd, ld, rd, pre) {
     if (!ld) return rd;
     if (!rd) return ld;
     const key = s => [s.kind || '', s.title || '', s.time || s.t || '', s.period || ''].join('|');
+    // ⚠ ใบสั่งลบรายกิจกรรม — ต้องกรอง "ทั้งสองฝั่ง"
+    //   ฝั่งอีกเครื่อง: เครื่องรุ่นเก่า (iOS/Android ที่ยังไม่ได้อัปเดต) จะดันใบที่ลบแล้วขึ้นคลาวด์ซ้ำได้เรื่อยๆ
+    //   ฝั่งเราเอง: เครื่องที่เพิ่งรับใบสั่งลบมาจากอีกเครื่อง ต้องเอาของตัวเองออกด้วย การลบถึงจะข้ามเครื่องได้จริง
+    const T = this._mSTombs || this._sTombs();
+    const dead = pre ? (s => !!T[pre + key(s)]) : (() => false);
+    const lsv = ((ld.stops) || []).filter(s => !dead(s));
     const bk = new Set(((bd && bd.stops) || []).map(key));
-    const lk = new Set(((ld.stops) || []).map(key));
-    const stops = [...((ld.stops) || [])];
-    ((rd.stops) || []).forEach(s => { const k = key(s); if (!lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
+    const lk = new Set(lsv.map(key));
+    const stops = [...lsv];
+    ((rd.stops) || []).forEach(s => { const k = key(s); if (!dead(s) && !lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
     const pick = (f, ph) => {
       const lv = ld[f], rv = rd[f], bv = bd ? bd[f] : undefined;
       if (lv === rv) return lv;
@@ -4133,6 +4168,8 @@ class Component extends DCLogic {
     const remote = remoteData || {};
     const lt = this._parseJSON(local['wtn-tombs']) || {}, rt = this._parseJSON(remote['wtn-tombs']) || {};
     this._mTombs = Object.assign({}, rt, lt); // รวมคำสั่งลบจากทุกเครื่อง
+    const lst = this._parseJSON(local['wtn-stop-tombs']) || {}, rst = this._parseJSON(remote['wtn-stop-tombs']) || {};
+    this._mSTombs = Object.assign({}, rst, lst); // ใบสั่งลบรายกิจกรรมในแผน — ใช้ใน _mergeDay
     const out = {};
     new Set([...Object.keys(base), ...Object.keys(local), ...Object.keys(remote)]).forEach(k => {
       if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') return;
@@ -4692,7 +4729,7 @@ class Component extends DCLogic {
   }
   get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
   itineraryOf(id) { return this.itineraries[id] || null; }
-  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } }
+  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this._sweepSTombs(id, days); }
   patchDay(i, patch) {
     const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[i]) return;
@@ -5185,7 +5222,10 @@ class Component extends DCLogic {
     const i = this.state.day;
     if (origin === 'base') {
       const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
-      if (days[i]) { days[i].stops.splice(si, 1); this.saveItinerary(this.state.trip, days); this.forceUpdate(); }
+      if (days[i]) {
+        this._addSTomb(this.state.trip, i, days[i].stops[si]);   // ⚠ ต้องจดก่อนตัดออก ไม่งั้นอีกเครื่องดันกลับขึ้นมาทีหลัง
+        days[i].stops.splice(si, 1); this.saveItinerary(this.state.trip, days); this.forceUpdate();
+      }
     } else {
       const key = this.state.trip + ':' + i, added = { ...(this.state.added || {}) }, list = [...(added[key] || [])];
       list.splice(si, 1); added[key] = list; this.setState({ added });
@@ -8129,11 +8169,11 @@ class Component extends DCLogic {
       // wtn-sync-base คือ "ของที่เคยซิงก์แล้ว" ของบัญชีเดิม · พอ merge เจอคีย์อยู่ใน base แต่ไม่มีบนคลาวด์
       // ของบัญชีใหม่ มันแปลว่า "อีกเครื่องลบไปแล้ว" → ลบทิ้งหมด · ล้าง baseline แล้วของที่กู้มาจะนับเป็น
       // ของใหม่ในเครื่อง แล้วถูกดันขึ้นคลาวด์ตามปกติ
-      const SKIP = { 'wtn-sync-base': 1, 'wtn-cloud-at': 1, 'wtn-tombs': 1, 'wtn-auth': 1,
+      const SKIP = { 'wtn-sync-base': 1, 'wtn-cloud-at': 1, 'wtn-tombs': 1, 'wtn-stop-tombs': 1, 'wtn-auth': 1,
         'wtn-img-map': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1, 'wtn-base-v2': 1,
         'wtn-premium': 1, 'wtn-premium-plan': 1 };
       Object.keys(d).forEach(k => { if (SKIP[k]) return; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) this._setLS(k, d[k]); });
-      try { ['wtn-sync-base', 'wtn-cloud-at', 'wtn-tombs'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+      try { ['wtn-sync-base', 'wtn-cloud-at', 'wtn-tombs', 'wtn-stop-tombs'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
       this._baseMem = null;
       // ⚠️ baseline มีสำเนาอยู่ใน IndexedDB ด้วย (`sync-base`) — ลบแต่ใน localStorage ไม่พอ
       // ตัวที่ค้างคือเหตุที่ "กู้ข้ามบัญชีแล้วข้อมูลเด้งหายกลับเป็นของบัญชีเดิม":
@@ -13782,7 +13822,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22i',
+      appVersion: '2026.09.22j',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
