@@ -753,7 +753,7 @@
               <button onClick="{{ p.on }}" style="{{ p.style }}"><span style="font:700 17px 'Anuphan';line-height:1">{{ p.n }}</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">{{ p.date }}</span></button>
             </sc-for>
             <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
-              <button style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;font:600 20px 'Anuphan';cursor:pointer">+</button>
+              <button onClick="{{ addTripDay }}" title="เพิ่มอีกหนึ่งวัน" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;font:600 20px 'Anuphan';cursor:pointer">+</button>
             </sc-if>
           </div>
           <div style="padding:2px 20px 0">
@@ -4972,12 +4972,31 @@ class Component extends DCLogic {
   }
   catKind(cat) { return { place: 'ที่เที่ยว', act: 'กิจกรรม', food: 'กิน', go: 'เดินทาง' }[cat] || 'ที่เที่ยว'; }
   baseDaysFor(tid) {
-    const it = this.itineraryOf(tid); if (it && it.length) return this.withRealDates(it, tid);
+    const it = this.itineraryOf(tid); if (it && it.length) return this.withRealDates(this.padDays(it, tid), tid);
     if (tid === 'kazakh') return this.kzDays;
     if (tid === 'yamagata') return this.jpDays;
     if (tid === 'blank') return this.blankDays;
     const ut = this.userTrips.find(x => x.id === tid); if (ut) return this.userDays(ut);
     return this.blankDays;
+  }
+  // ⚠ ยืดวันเดินทางแล้ว "จำนวนวัน" ต้องเพิ่มตาม — เคยเป็นบั๊ก (22 ก.ย. 2569)
+  //   baseDaysFor คืนแผนที่บันทึกไว้ทั้งก้อน จำนวนวันจึงค้างที่ตอนสร้างทริป
+  //   เจ้าของขยายวันสุดท้ายเป็น 17 เม.ย. แต่แถบวันยังมีแค่ 7 วัน เพราะแผนเก่าถูกบันทึกไว้แล้ว
+  //   ⚠ เติมท้ายอย่างเดียว ห้ามตัดทิ้งเด็ดขาด — วันที่มีอยู่มีกิจกรรม/ที่พักผูกอยู่
+  //     และเช็กอิน/โมเมนต์คีย์ด้วย 'tripId:index' ถ้าตัดวัน ของพวกนั้นจะกลายเป็นขยะที่หาไม่เจอ
+  //     (ย่นวันเดินทางให้สั้นลงจึงไม่ลบวันให้ ต้องให้คนตัดสินใจเอง)
+  padDays(days, tid) {
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    const n = t ? this.dayCount(t.start, t.end) : 0;
+    if (!n || n <= days.length) return days;
+    const out = days.slice();
+    for (let i = days.length; i < n; i++) out.push(this.blankDay(i));
+    return out;
+  }
+  blankDay(i) {
+    return { n: String(i + 1), date: '', tag: 'วันที่ ' + (i + 1),
+      city: 'ยังไม่มีชื่อวัน', summary: 'แตะ “แก้ไข” เพื่อตั้งชื่อวัน แล้วเพิ่มกิจกรรมแรก', stops: [],
+      stayName: 'ยังไม่ได้เลือกที่พัก', stayMeta: 'เพิ่มได้ในโหมดแก้ไข' };
   }
   // แผนที่บันทึกไว้เก็บ label วันแบบตายตัว — ถ้าทริปมีวันเริ่มแล้ว ให้คำนวณวันที่จริงใหม่ทุกครั้ง
   withRealDates(days, tid) {
@@ -4987,8 +5006,39 @@ class Component extends DCLogic {
     const M = this.thMonths();
     return days.map((d, i) => {
       const dt = new Date(start.getTime() + i * 86400000);
-      return { ...d, date: dt.getDate() + ' ' + M[dt.getMonth()] };
+      const date = dt.getDate() + ' ' + M[dt.getMonth()];
+      // ⚠ tag ถูกเขียนตายไว้ตอนนำเข้าแผน (importVelaPlan) — เดิมไม่ได้คำนวณใหม่ตรงนี้
+      //   ผลคือหัวข้อวันโชว์วันที่เก่าค้าง ("วันที่ 1 · 8 ม.ค.") ขัดกับชิปวันข้างบนที่ถูกต้อง
+      return { ...d, date, tag: (this.lang === 'en' ? 'Day ' : 'วันที่ ') + (d.n || (i + 1)) + ' · ' + date };
     });
+  }
+  // ปุ่ม + ในแถบวัน — เดิมไม่มี onClick เลย กดแล้วไม่เกิดอะไร (แก้ 22 ก.ย. 2569)
+  // ขยาย "วันสุดท้ายของทริป" แทนการต่อวันลงแผนตรงๆ เพื่อให้ช่วงวันเดินทางกับจำนวนวันเป็นความจริงอันเดียวกัน
+  // (ถ้าต่อลงแผนเฉยๆ หัวทริปจะบอก 7 วัน แต่แถบวันมี 8 — คนละความจริงสองอัน แบบที่เพิ่งเจอ)
+  addTripDay() {
+    if (this.days.length >= 90) { this.showToast('ทริปหนึ่งเก็บได้ไม่เกิน 90 วัน'); return; }
+    const tid = this.state.trip;
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    if (t && t.start && t.end) {
+      const e = new Date(t.end);
+      if (!isNaN(e)) {
+        const nx = new Date(e.getTime() + 86400000).toISOString().slice(0, 10);
+        if (this.dayCount(t.start, nx) > this.dayCount(t.start, t.end)) {
+          this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, end: nx } : x));
+          const i = this.days.length - 1;
+          this.setState({ day: i });
+          this.showToast('เพิ่มวันที่ ' + (i + 1) + ' · วันสุดท้ายของทริปเลื่อนเป็น ' + (this.days[i] || {}).date);
+          return;
+        }
+      }
+    }
+    // ทริปที่ยังไม่ได้ตั้งวันเดินทาง — ต่อวันลงแผนตรงๆ
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    const i = days.length;
+    days.push(this.blankDay(i));
+    this.saveItinerary(tid, days);
+    this.setState({ day: i });
+    this.showToast('เพิ่มวันที่ ' + (i + 1) + ' แล้ว');
   }
   openAddPick(payload) {
     const trips = this.userTrips;
@@ -13705,7 +13755,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22e',
+      appVersion: '2026.09.22f',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14819,6 +14869,7 @@ class Component extends DCLogic {
         };
       })(),
       dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
+      addTripDay: () => this.addTripDay(),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
