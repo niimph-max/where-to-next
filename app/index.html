@@ -1949,6 +1949,10 @@
                   <sc-if value="{{ c.canDown }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.down }}" title="เลื่อนลง" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button></sc-if>
                   <button onClick="{{ c.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:4px 6px">ลบ</button>
                 </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
+                  <span onClick="{{ c.toggleInBook }}" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;flex:none"><span style="font:600 13.5px 'Anuphan';color:#5c5347">ใส่ในเล่ม EPUB</span><span style="width:42px;height:24px;border-radius:14px;position:relative;flex:none;{{ c.bookTrack }}"><span style="position:absolute;top:3px;{{ c.bookKnob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span></span>
+                  <sc-if value="{{ c.notInBook }}" hint-placeholder-val="{{ false }}"><span style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;text-align:right;flex:1;min-width:0">ตอนนี้จะไม่อยู่ในเล่ม</span></sc-if>
+                </div>
               </div>
             </sc-for>
           </div>
@@ -9839,6 +9843,17 @@ class Component extends DCLogic {
     });
     return { byDay, extra };
   }
+  // เลือกได้ว่าตอนไหนลงเล่ม EPUB — สวิตช์อยู่ในรายชื่อตอนของเรื่องเล่า (22 ก.ย. 2569)
+  // ค่าเริ่มต้นคือ "ลง" (เช็ค === false ไม่ใช่ falsy) เพื่อให้เล่มที่เคยทำไว้หน้าตาไม่เปลี่ยน
+  chInBook(c) { return !(c && c.inBook === false); }
+  // ⚠ แผนที่ตอน "เฉพาะที่จะลงเล่ม" — ใช้ตอนสร้าง/ประเมินเล่มเท่านั้น
+  //   หน้าจัดรูปในเล่มกับหน้าแก้ไขต้องใช้ ebChapterMap() ตัวเต็ม ไม่งั้นตอนที่ปิดไว้จะหายไปจากที่แก้ไขด้วย
+  //   (โฟโต้บุ๊กไม่เกี่ยว — มันใช้รูปจากโมเมนต์ ไม่ได้ใช้เนื้อเรื่อง)
+  ebBookMap() {
+    const m = this.ebChapterMap(), byDay = {};
+    Object.keys(m.byDay).forEach(k => { if (this.chInBook(m.byDay[k])) byDay[k] = m.byDay[k]; });
+    return { byDay, extra: m.extra.filter(c => this.chInBook(c)) };
+  }
   // เช็คอินเก่าอาจถูกเก็บผิดวัน (บั๊กก่อน v16m) — จัดเข้าวันตามเวลาที่บันทึกไว้ แล้วเรียงตามเวลา
   healCheckinDays(tripId) {
     this.dedupeCheckins();
@@ -9903,7 +9918,7 @@ class Component extends DCLogic {
     if (trip) this.healCheckinDays(trip);
     const ci = trip ? (this.checkins || {}) : {};
     const n = trip ? Math.max(1, this.dayCount(t.start, t.end) || 0) : 0;   // ไม่มีทริป = ไม่มีวัน เล่มประกอบจากตอนล้วนๆ
-    const cmap = this.ebChapterMap();
+    const cmap = this.ebBookMap();                 // ตอนที่ปิดสวิตช์ "ใส่ในเล่ม" ไว้ ไม่เข้าเล่ม
     const EQ = this.pbQualities[this.pbQuality];
     const days = [];
     for (let i = 0; i < n; i++) {
@@ -11973,7 +11988,7 @@ class Component extends DCLogic {
   // ประเมินจำนวนหน้าด้วยตัวจัดหน้าชุดเดียวกับตอนสร้างจริง (ตัวเลขในชีตต้องตรงกับเล่ม)
   ebEstimate(trip) {
     const ci = trip ? (this.checkins || {}) : {};                  // ไม่มีทริป = ไม่นับเช็คอินของใคร
-    const cmap = this.ebChapterMap();
+    const cmap = this.ebBookMap();                                 // ตัวเลข "N ตอน" ต้องตรงกับที่จะลงเล่มจริง
     let days = 0, cis = 0, photos = 0, chapters = 0, pages = 2;   // ปก + สารบัญ
     let photosAll = 0, cisIn = 0, extras = 0;
     const dayIdx = {};
@@ -13690,7 +13705,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22d',
+      appVersion: '2026.09.22e',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13919,7 +13934,8 @@ class Component extends DCLogic {
                       ebChRows: chs.map(x => {
                         const ins = this.ebInserts(x.ch.id);
                         return { title: x.ch.title || 'ตอนหนึ่ง',
-                          meta: (x.day != null ? this.ebDayHead(x.day) + ' · ' : '') + this.ebParasOf(x.ch).length + ' ย่อหน้า · วางรูปแล้ว ' + ins.length + ' ใบ',
+                          meta: (x.day != null ? this.ebDayHead(x.day) + ' · ' : '') + this.ebParasOf(x.ch).length + ' ย่อหน้า · วางรูปแล้ว ' + ins.length + ' ใบ'
+                            + (this.chInBook(x.ch) ? '' : ' · ไม่ลงเล่ม'),
                           on: () => this.setState({ ebChId: x.ch.id, ebPick: null }),
                           style: 'width:100%;text-align:left;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;cursor:pointer;display:block' };
                       }) };
@@ -15719,13 +15735,20 @@ class Component extends DCLogic {
             n: '#' + (i + 1), title: c.title, meta: fmtDT(c.updatedAt), words: (c.words || 0) + ' คำ',
             free: !!c.free, freeLabel: c.free ? 'ฟรี' : 'พรีเมียม',
             freeStyle: seg + (c.free ? 'background:#efe4d3;color:#5c5347' : 'background:#f3e2d5;color:#a4482a'),
+            inBook: this.chInBook(c), notInBook: !this.chInBook(c),
+            bookTrack: this.chInBook(c) ? 'background:#c05f39' : 'background:#d8ccb8',
+            bookKnob: this.chInBook(c) ? 'right:3px' : 'left:3px',
+            // ⚠ ต้องแตะ _m ด้วย — ตัวรวมข้อมูลสองเครื่องตัดสินด้วยเวลาแก้ล่าสุด (updatedAt/createdAt/_m)
+            //   ถ้าไม่แตะ สวิตช์ที่เพิ่งกดจะถูกฉบับของอีกเครื่องทับกลับเงียบๆ ตอนซิงก์
+            //   (ไม่แตะ updatedAt เพราะบรรทัด "แก้ไขเมื่อ…" ในรายชื่อตอนใช้ค่านั้น จะกลายเป็นโกหก)
+            toggleInBook: () => chPatch(c.id, { inBook: !this.chInBook(c), _m: Date.now() }),
             published: !!c.published, pubLabel: c.published ? 'เผยแพร่สู่สาธารณะ' : 'ร่าง',
             pubStyle: seg + (c.published ? 'background:rgba(143,206,155,.2);color:#4e8a5c' : 'background:#efe4d3;color:#7c7264'),
             pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8', pubKnob: c.published ? 'right:3px' : 'left:3px',
             canUp: i > 0, canDown: i < chs.length - 1,
             up: () => this.moveChapter(c.id, -1), down: () => this.moveChapter(c.id, 1),
             on: () => this.openChapterEdit(c.id),
-            toggleFree: () => chPatch(c.id, { free: !c.free }),
+            toggleFree: () => chPatch(c.id, { free: !c.free, _m: Date.now() }),   // เหตุผลเดียวกับ toggleInBook
             togglePub: () => this.setChapterPublished(os.id, c.id, !c.published),
             del: () => this.deleteChapter(c.id) })),
           addChapterFn: () => this.addChapter(),
