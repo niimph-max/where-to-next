@@ -27,6 +27,9 @@
   //   เนื้อใน <template> เป็น DocumentFragment ที่ไม่โหลดอะไรเลย (ไม่โหลดรูป ไม่โหลด iframe ไม่รันสคริปต์)
   //   ⚠ <helmet> ต้องอยู่ "นอก" ห่อเสมอ เพราะ <link>/<script> ข้างในต้องทำงานจริง
   //   ฟังก์ชันนี้คลี่ห่อออกให้ได้สตริงเทมเพลตเดิมเป๊ะ · ไฟล์ที่ไม่ได้ห่อยังทำงานเหมือนเดิมทุกประการ
+  // ปักธงให้ index.html รู้ว่าเอนจินรุ่นนี้เข้าใจห่อ <template data-dc-tpl> แล้ว
+  // (ถ้าไม่มีธงนี้ index.html จะคลี่ห่อเองเป็นตาข่ายนิรภัย — ดูสคริปต์ท้าย </x-dc>)
+  try { window.__dcTplAware = true; } catch (e) {}
   function dcTemplateHtml(dc) {
     let hit = false, out = "";
     dc.childNodes.forEach((n) => {

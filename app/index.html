@@ -3242,6 +3242,22 @@
   <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:9500;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 20px;border-radius:22px;box-shadow:0 10px 26px -8px rgba(43,36,32,.6);max-width:86vw;text-align:center;animation:wtnToast .28s ease">{{ toast }}</div>
 </sc-if>
 </template></x-dc>
+<script>
+  /* ⚠⚠ ตาข่ายนิรภัยของการห่อ <template data-dc-tpl> (22 ก.ย. 2569)
+     index.html กับ support.js เป็นคนละไฟล์ และ Cloudflare แคชแยกกัน 4 ชั่วโมง
+     จึงมีช่วงที่เบราว์เซอร์ได้ index.html ตัวใหม่ (ห่อแล้ว) คู่กับ support.js ตัวเก่า (ยังไม่รู้จักห่อ)
+     ถ้าปล่อยไว้ เอนจินเก่าจะเรนเดอร์แท็ก template ออกมาทั้งก้อน = หน้าขาว ซึ่งเป็นอาการที่แย่ที่สุด
+     ตรงนี้เลยคลี่ห่อเองถ้าเจอว่า support.js ไม่ได้ปักธง __dcTplAware ไว้
+     ยอมให้ยิงคำขอปลอมแบบเดิมดีกว่าหน้าขาว · เมื่อไฟล์ทั้งคู่ตรงรุ่นกัน สคริปต์นี้จะไม่ทำอะไรเลย */
+  (function () {
+    try {
+      if (window.__dcTplAware) return;
+      var dc = document.querySelector('x-dc');
+      var t = dc && dc.querySelector('template[data-dc-tpl]');
+      if (t) t.replaceWith(t.content);
+    } catch (e) {}
+  })();
+</script>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
 class Component extends DCLogic {
   state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authMsg: '',
@@ -13839,7 +13855,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22m',
+      appVersion: '2026.09.22n',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
