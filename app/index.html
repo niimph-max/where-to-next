@@ -135,6 +135,34 @@
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
   }
+  /* ── จอกว้างบนเบราว์เซอร์: กลับไปเป็นกรอบมือถือจัดกลาง ───────────────────────
+     ปัญหาเดิม: กฎ .wtn-phone/.wtn-body ข้างบนบังคับ 100vw!important เพื่อให้เต็มจอในแอป
+     ผลคือบนคอมจอ 2000px การ์ดทริปยืดเป็นแถบยาว ดูเหมือนของที่พัง ไม่ใช่ของที่ตั้งใจ
+     การ์ดกันแอป native สองชั้น — ห้ามถอดออก:
+       1) min-width:900px  → มือถือไม่เข้าเงื่อนไข
+       2) html:not(.is-native) → native.js เติมคลาสนี้ใน <head> ก่อนวาดจอแรก
+          (กัน iPad จอใหญ่ในแอป native ไม่ให้กลายเป็นกรอบลอยกลางจอ)
+     ⚠ transform บน .wtn-body จงใจใส่ ทำให้ลูกที่เป็น position:fixed
+       (แถบเมนูล่าง · toast · ชีตเด้งขึ้น) ยึดกับกรอบแทนขอบจอ ถ้าเอาออกของพวกนี้จะหลุดไปติดขอบจอ */
+  @media (min-width:900px){
+    html:not(.is-native), html:not(.is-native) body{height:100%!important;overflow:hidden!important}
+    html:not(.is-native) body{background:#d9cdb9!important;display:flex!important;align-items:center!important;
+      justify-content:center!important;padding:0!important}
+    html:not(.is-native) .wtn-phone{width:auto!important;max-width:none!important;padding:0!important}
+    html:not(.is-native) .wtn-body{
+      width:min(430px,100vw)!important;max-width:430px!important;
+      height:min(920px,calc(100dvh - 48px))!important;
+      border-radius:30px!important;overflow:hidden!important;
+      box-shadow:0 26px 70px -18px rgba(43,36,32,.5)!important;
+      transform:translateZ(0);            /* ← ทำให้ position:fixed ยึดกับกรอบ */
+      border:1px solid rgba(43,36,32,.12)!important}
+    /* บนคอมไม่มี notch — คืนระยะบนให้เป็นปกติ ไม่งั้นหัวข้อจะลอยต่ำเกินไป */
+    html:not(.is-native) .wtn-body:before{display:none!important}
+    html:not(.is-native) .wtn-nav{padding-top:15px!important}
+    html:not(.is-native) .wtn-hbar{padding-top:14px!important}
+    html:not(.is-native) .wtn-cehead{padding-top:7px!important}
+    html:not(.is-native) .wtn-tabbar{padding-bottom:14px!important}
+  }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
@@ -13323,7 +13351,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.21f',
+      appVersion: '2026.09.22a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
