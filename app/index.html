@@ -4194,9 +4194,19 @@ class Component extends DCLogic {
     const base = this._getBase() || {};
     this._applyingCloud = true;
     try {
-      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 };
+      // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องเขียนลงเครื่องด้วย — ชิ้นที่ตกหล่นจาก 22i (22 ก.ย. 2569)
+      //   22i แก้ให้ _mergeVal "รวม" ตารางแทนการทับกัน แต่ลืมจุดนี้ไป
+      //   keep = "ห้ามเขียนทับของในเครื่อง" → ค่าที่รวมแล้วถูกดันขึ้นคลาวด์อย่างเดียว
+      //   ส่วนเครื่องตัวเองยังถือตารางเก่าที่ไม่ครบอยู่ตลอดกาล ซิงก์กี่รอบก็ไม่มีวันครบ
+      //   เดสก์ท็อปไม่มีอาการเพราะมันเป็นคนทำงานเอง ตารางเลยครบอยู่แล้ว — อาการโผล่เฉพาะเครื่องอื่น
+      //   (เจ้าของ: "web app ในมือถือ ยังเหลือรูปให้ย่อ 298" ทั้งที่คลาวด์ครบ 434 และคอมขึ้น 0)
+      //   เขียนได้แล้วอย่างปลอดภัย เพราะ _mergeVal คืนค่าที่เป็น superset ของในเครื่องเสมอ
+      //   (Object.assign({}, remote, local) — ของในเครื่องชนะทุกคีย์ ไม่มีทางหายไป)
+      //   ⚠ แต่ยัง "ห้ามลบ" ทั้งสองคีย์นี้ ใช้ noDel แยกไว้ต่างหาก
+      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+      const noDel = Object.assign({ 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 }, keep);
       const toDel = [];
-      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || noDel[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
       toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       Object.keys(map).forEach(k => { if (keep[k]) return; this._setLS(k, map[k]); });
     } finally { this._applyingCloud = false; }
@@ -12338,6 +12348,9 @@ class Component extends DCLogic {
     } catch (e) { console.warn('[wtn] pushAllBodies', e); }
     this.setState({ bodyBusy: false, bodyMsg: 'ดันขึ้นคลาวด์ใหม่แล้ว ' + n + ' ตอน — ก้อนบนคลาวด์จะเท่ากับฉบับในเครื่องแล้ว' });
   }
+  // ตัวเลขไว้ดูของจริงแทนการเดา — เครื่องที่ตารางไม่ครบจะเห็นเลขนี้น้อยกว่าเครื่องอื่น
+  // (เคยเดาผิดสามรอบเรื่องกล่อง "ดูแลรูปภาพ" เพราะไม่มีเลขให้ดูจากมือถือ)
+  thumbMapN() { try { return Object.keys(JSON.parse(localStorage.getItem('wtn-thumb-map') || '{}')).length; } catch (e) { return 0; } }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
     let n = 0;
@@ -13643,8 +13656,8 @@ class Component extends DCLogic {
           legacyImgNote: n > 0
             ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
             : (this.lang === 'en'
-                ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter')
-                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก · '
+                ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter · ledger ' + this.thumbMapN() + ')')
+                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป (ตารางที่ทำแล้วในเครื่องนี้ ' + this.thumbMapN() + ' รายการ) — ฟีดและตารางรูปจะโหลดเบาลงมาก · '
                     + 'ใช้เวลาราว ' + Math.max(1, Math.round(tn * 1.7 / 60)) + ' นาที เปิดหน้านี้ทิ้งไว้จนเสร็จ '
                     + '(หลุดกลางทางก็ไม่เสียของ กดซ้ำได้ ระบบจะทำต่อจากเดิม)')),
           rehostLabel: this.state.rehostBusy
@@ -13822,7 +13835,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22j',
+      appVersion: '2026.09.22k',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
