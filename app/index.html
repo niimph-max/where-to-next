@@ -12158,22 +12158,29 @@ class Component extends DCLogic {
         .forEach(u => { if (!/_t\.[a-z0-9]+$/i.test(u)) urls.add(u); });
     }
     const list = [...urls].filter(u => !tmap[u]);
-    if (!list.length) return;
+    if (!list.length) return { done: 0, failed: 0, total: 0 };
     const saveMap = () => { try { localStorage.setItem('wtn-thumb-map', JSON.stringify(tmap)); } catch (e) {} };
+    let done = 0, failed = 0;
     for (let i = 0; i < list.length; i++) {
       // รูปที่โหลด/ย่อ/อัปไม่ผ่าน (ถูกลบไปแล้ว ไฟล์เสีย ฯลฯ) ต้องทำเครื่องหมายไว้ด้วย
       // ไม่งั้นกล่อง "ดูแลรูปภาพ" จะเด้งกลับมาให้กดซ้ำไม่รู้จบ
+      // ⚠⚠ และต้องมี timeout ด้วย — เคยพังจริง (22 ก.ย. 2569)
+      //   loadImgForCanvas ไม่มี timeout เลย ถ้ารูป "ใบแรก" ค้าง ลูปจะไม่จบแม้แต่รอบเดียว
+      //   แผนที่ wtn-thumb-map จึงว่างเปล่า กล่อง "ดูแลรูปภาพ" เลยเด้งกลับมาทุกครั้งที่กด
+      //   (ตอนนั้นเกิดจากคำขอปลอม src={{ }} 38 ใบกินคิวจนรูปจริงโหลดไม่ได้ — ดู sw.js)
       try {
-        const im = await this.loadImgForCanvas(list[i]);
+        const im = await this._imgCap(this.loadImgForCanvas(list[i]), 12000);
         const tb = im ? await this.makeThumbBlob(im) : null;
-        const t = tb ? await be.uploadThumbFor(list[i], tb) : null;
+        const t = tb ? await this._imgCap(be.uploadThumbFor(list[i], tb), 20000) : null;
         tmap[list[i]] = t ? 1 : 'x';
-      } catch (e) { tmap[list[i]] = 'x'; }
+        if (t) done++; else failed++;
+      } catch (e) { tmap[list[i]] = 'x'; failed++; }
       saveMap();                                     // บันทึกทีละรูป — หลุดกลางทางก็ไม่เสียของเดิม
       this.setState({ rehostPct: Math.round((i + 1) / list.length * 100) });
     }
     saveMap();
     this._thumbN = undefined;
+    return { done, failed, total: list.length };
   }
   // แยกข้อความเป็นชิ้นๆ เพื่อให้ URL กดออกไปได้จริง (template hole เรนเดอร์ได้แค่ text)
   _linkify(s) {
@@ -12388,9 +12395,14 @@ class Component extends DCLogic {
       keys.forEach(k => { const v = localStorage.getItem(k) || ''; raw[k] = v; (v.match(re) || []).forEach(u => urls.add(u)); });
       const list = [...urls];
       if (!list.length) {                                   // ไม่มีรูปค้างแล้ว — เหลือแค่สร้างรูปย่อให้ครบ
-        await this.backfillThumbs();
+        const r = await this.backfillThumbs();
         this._thumbN = undefined;
-        this.showToast('✓ รูปย่อครบแล้ว');
+        this.forceUpdate();
+        // ⚠ ห้ามบอก "ครบแล้ว" ลอยๆ — ของเดิมขึ้นข้อความนี้ทุกครั้งแม้ไม่ได้ทำอะไรเลยสักรูป
+        //   เจ้าของเลยเห็นว่าสำเร็จ แต่กล่องเด้งกลับมา งงว่าตกลงมันทำหรือไม่ทำ
+        this.showToast(!r ? 'ยังทำรูปย่อไม่ได้ — ต้องล็อกอินและเป็นสมาชิกพรีเมียมก่อน'
+          : (r.failed ? ('ทำรูปย่อแล้ว ' + r.done + ' รูป · ไม่สำเร็จ ' + r.failed + ' — กดซ้ำได้ ระบบจะข้ามที่ทำไปแล้ว')
+                      : ('✓ ทำรูปย่อครบ ' + r.done + ' รูป')));
         return;
       }
       let map = {};
@@ -13579,7 +13591,9 @@ class Component extends DCLogic {
             ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
             : (this.lang === 'en'
                 ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter')
-                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก')),
+                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก · '
+                    + 'ใช้เวลาราว ' + Math.max(1, Math.round(tn * 1.7 / 60)) + ' นาที เปิดหน้านี้ทิ้งไว้จนเสร็จ '
+                    + '(หลุดกลางทางก็ไม่เสียของ กดซ้ำได้ ระบบจะทำต่อจากเดิม)')),
           rehostLabel: this.state.rehostBusy
             ? ('กำลังทำ… ' + (this.state.rehostPct || 0) + '%')
             : (n > 0 ? 'ย้ายรูปขึ้นคลาวด์ใหม่' : 'สร้างรูปย่อ'),
@@ -13755,7 +13769,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22g',
+      appVersion: '2026.09.22h',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
