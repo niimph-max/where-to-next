@@ -3927,6 +3927,19 @@ class Component extends DCLogic {
   }
   _mergeVal(k, bs, ls, rs) {
     if (k === 'wtn-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ
+    // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องรวมกัน ห้ามทับกัน — เคยพังจริง (22 ก.ย. 2569)
+    //   เจ้าของทำรูปย่อครบ 434 รูปบนเดสก์ท็อป แล้วกล่อง "ดูแลรูปภาพ" กลับมาขึ้นอีกเองทั้งที่ไม่ได้ทำอะไร
+    //   เพราะกฎรวมข้อมูลทั่วไปข้างล่างมีบรรทัด `if (ls === bs) return rs;` = "ฉันไม่ได้แก้ → เอาของอีกเครื่อง"
+    //   พอ iOS ดึงภาพกลางคัน (~300 รูป) ไปแล้วดันกลับขึ้นคลาวด์ เดสก์ท็อปที่ไม่ได้แก้อะไรเลยก็รับของ 300 มาทับ 434
+    //   → งานที่ทำเสร็จแล้วหายไป 134 รูป กล่องเด้งกลับ และจะปิงปองกันไปมาไม่จบระหว่างเครื่อง
+    //   ตารางพวกนี้เป็นบันทึก "เคยทำแล้ว" ต่อรายการ ไม่ใช่ค่าที่คนแก้ → union เสมอ ไม่มีวันเสียของ
+    if (k === 'wtn-thumb-map' || k === 'wtn-rehost-map') {
+      const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {};
+      const out = Object.assign({}, r, l);
+      // ฝั่งที่ทำสำเร็จ (1) ชนะฝั่งที่ทำไม่ผ่าน ('x') ไม่งั้นรูปที่ทำได้แล้วจะถูกตีตราว่าเสียตลอดไป
+      Object.keys(r).forEach(u => { if (r[u] === 1 && out[u] === 'x') out[u] = 1; });
+      return JSON.stringify(out);
+    }
     if (k === 'wtn-itinerary') {
       if (ls === undefined) return rs;
       if (rs === undefined) return ls;
@@ -13769,7 +13782,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22h',
+      appVersion: '2026.09.22i',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
