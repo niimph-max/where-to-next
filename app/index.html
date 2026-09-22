@@ -9338,25 +9338,41 @@ class Component extends DCLogic {
       this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
     }
   }
+  // มือถือ/แท็บเล็ตจริงเท่านั้น — โน้ตบุ๊กจอสัมผัสของ Windows ต้องไม่เข้าเงื่อนไขนี้
+  // (เช็ก UA ไม่ใช่ maxTouchPoints เพราะโน้ตบุ๊กจอสัมผัสก็ได้ค่ามากกว่า 0)
+  get isTouchMobile() {
+    try {
+      const ua = navigator.userAgent || '';
+      if (/Android|iPhone|iPod|iPad/i.test(ua)) return true;
+      if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true;   // iPadOS อ้างตัวเป็น Mac
+      return false;
+    } catch (e) { return false; }
+  }
   // ส่งไฟล์ต่อให้ผู้ใช้: แอป = share sheet ของเครื่อง · เว็บมือถือ = Web Share · เว็บเดสก์ทอป = ดาวน์โหลด
   async _deliverFile(blob, name, title, mime) {
     if (this.isNativeApp) {
       try { if (await this._shareFileNative(blob, name, title)) return; } catch (e) {}
       try { if (await this._saveToDeviceNative(blob, name)) return; } catch (e) {}
     }
-    try {
-      const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title }); return; }
-        catch (e) { if (e && e.name === 'AbortError') return; }
-      }
-    } catch (e) {}
+    // ⚠ บนคอมห้ามใช้ Web Share — เคยพังมาแล้ว (22 ก.ย. 2569)
+    //   Chrome บน Windows ตอบ canShare({files}) = true แล้วเปิด "แผงแชร์ของ Windows" ให้
+    //   แต่ปุ่ม "คัดลอก" ในแผงนั้นคัดลอก *ลิงก์* ไม่ใช่ไฟล์ → ผู้ใช้ไปวางใน LINE/แชตแล้วไม่มีไฟล์ติดไป
+    //   บนคอมจึงดาวน์โหลดตรงๆ ได้ไฟล์จริงไว้แนบเอง · มือถือยังใช้แผงแชร์เพราะส่งเข้าแอปได้จริง
+    if (this.isTouchMobile) {
+      try {
+        const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title }); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+      } catch (e) {}
+    }
     try {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 8000);
-      this.showToast((this.lang === 'en' ? 'Saved: ' : 'บันทึกแล้ว: ') + name);
+      this.showToast((this.lang === 'en' ? 'Downloaded: ' : 'ดาวน์โหลดไฟล์แล้ว: ') + name);
     } catch (e) {
       this.showToast(this.lang === 'en' ? "Couldn't save the file" : 'บันทึกไฟล์ไม่สำเร็จ');
     }
@@ -13674,7 +13690,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22c',
+      appVersion: '2026.09.22d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
