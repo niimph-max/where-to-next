@@ -2877,6 +2877,20 @@
               </div>
             </sc-for>
           </div>
+          <sc-if value="{{ pbHasOff }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:22px;padding:13px 14px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px">
+              <div style="font:600 13.5px 'Anuphan';color:#2b241f;margin-bottom:3px">รูปที่เอาออกจากเล่ม</div>
+              <div style="font:500 12.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:10px">แตะรูปเพื่อเอากลับเข้าเล่ม — รูปพวกนี้ยังอยู่ในโมเมนต์ตามเดิม ไม่ได้ถูกลบ</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <sc-for list="{{ pbOffShots }}" as="of" hint-placeholder-count="2">
+                  <button onClick="{{ of.on }}" title="เอากลับเข้าเล่ม" style="flex:none;width:78px;border:none;background:transparent;padding:0;cursor:pointer;text-align:center">
+                    <img src="{{ of.u }}" alt="" loading="lazy" decoding="async" style="width:78px;height:58px;object-fit:cover;border-radius:9px;display:block;opacity:.5">
+                    <span style="display:block;font:500 11.5px 'Anuphan';color:#a1927c;margin-top:4px">{{ of.day }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
           <button onClick="{{ pbFrDone }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างเล่มด้วยกรอบนี้</button>
         </div>
       </sc-if>
@@ -3208,6 +3222,10 @@
         <button onClick="{{ frMoveNext }}" style="{{ frNextStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
       <sc-if value="{{ frPbTools }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button onClick="{{ frReplace }}" style="flex:1;min-height:44px;border:1px solid rgba(231,221,204,.26);background:transparent;color:#e7ddcc;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">เปลี่ยนรูปนี้</button>
+          <button onClick="{{ frDrop }}" style="flex:1;min-height:44px;border:1px solid rgba(224,144,124,.42);background:transparent;color:#e0907c;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">เอาออกจากเล่ม</button>
+        </div>
         <div style="font:600 12.5px 'Anuphan';color:#a89d8b;margin-bottom:7px">กรอบของรูปนี้ในเล่ม</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px"><sc-for list="{{ frSizeChips }}" as="zc" hint-placeholder-count="5"><button onClick="{{ zc.on }}" style="{{ zc.style }}">{{ zc.label }}</button></sc-for></div>
       </sc-if>
@@ -10715,10 +10733,10 @@ class Component extends DCLogic {
     return { x: +v[0] || 0, y: +v[1] || 0, z: Math.max(1, +v[2] || 1), set: true };
   }
   get pbOrders() { try { return JSON.parse(localStorage.getItem('wtn-pb-order')) || {}; } catch (e) { return {}; } }
-  pbOrderOf(dayIdx) { const t = this.pbOrders[this.ebTripId()] || {}; const v = t[dayIdx]; return Array.isArray(v) ? v : null; }
+  pbOrderOf(dayIdx) { const t = this.pbOrders[this.pbTripId()] || {}; const v = t[dayIdx]; return Array.isArray(v) ? v : null; }
   savePbOrder(dayIdx, refs) {
     try {
-      const all = this.pbOrders, tid = this.ebTripId();
+      const all = this.pbOrders, tid = this.pbTripId();   // ⚠ ต้องเป็นทริปตัวเดียวกับที่การ์ด/pbGather ใช้ ไม่งั้นลำดับที่จัดไว้หาไม่เจอ
       all[tid] = all[tid] || {}; all[tid][dayIdx] = refs;
       localStorage.setItem('wtn-pb-order', JSON.stringify(all));
     } catch (e) {}
@@ -11086,7 +11104,7 @@ class Component extends DCLogic {
   openFrEdit(i) {
     const sl = this.pbFrameSlots()[i]; if (!sl) return;
     const f = this.pbFocalOf(sl.ref);
-    this.setState({ pbFr: { ref: sl.ref, u: sl.u, x: f.x, y: f.y, z: f.z } });
+    this.setState({ pbFr: { ref: sl.ref, u: sl.u, x: f.x, y: f.y, z: f.z, dn: sl.dn } });   // dn = วันของรูปนี้ ใช้ตอนลบ/เปลี่ยน
   }
   frSave() {
     const fr = this.state.pbFr; if (!fr || !fr.ref) return;
@@ -11127,54 +11145,128 @@ class Component extends DCLogic {
     refs.forEach(r => { if (r && cur.indexOf(r) < 0) cur.push(r); });
     all[k] = cur; this.savePbExtras(all);
   }
-  // เพิ่มรูปเข้า "วันของหน้านี้" — กดจากหัวหน้าที่กำลังดูอยู่ ไม่ต้องเลือกวันเอง
-  pbPickExtra(dn) {
-    if (this._pbAddBusy) return;
-    const trip = this.pbTripId();
-    const i = (dn || 0) - 1;                    // dn คือเลขวันแบบ 1..n · คีย์ที่เก็บใช้ index 0..n-1
-    if (!trip || i < 0) { this.showToast('ยังไม่รู้ว่าเป็นทริปไหน ลองเปิดจากหน้าสรุปทริปอีกครั้ง'); return; }
-    const inp = document.createElement('input');
-    inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.style.display = 'none';
-    document.body.appendChild(inp);
-    inp.onchange = async () => {
-      const files = [...(inp.files || [])];
-      try { inp.remove(); } catch (e) {}
-      if (!files.length) return;
-      this._pbAddBusy = true;
-      this.setState({ pbAddBusy: true });
-      this.showToast('กำลังเตรียมรูป ' + files.length + ' ใบ…');
-      const refs = [];
-      for (const f of files) {
-        try {
-          const du = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
-          const small = await this.shrinkUrl(du, 2600, 0.9);   // เล่มพิมพ์ต้องใหญ่กว่า EPUB · แต่รูปกล้องใหญ่ 6000px ไม่ต้องเก็บทั้งใบ
-          refs.push(await this.stashPhoto(small));
-        } catch (e) { console.warn('[wtn] pb extra', e); }
-      }
-      this._pbAddBusy = false;
-      this.setState({ pbAddBusy: false });
-      if (!refs.length) { this.showToast('อ่านไฟล์รูปไม่ได้ ลองใหม่อีกครั้ง'); return; }
-      this.pbAddExtra(trip, i, refs);
-      try { this._pbData = await this.pbGather(); } catch (e) { console.warn('[wtn] pb regather', e); }
-      this.setState({ pbPct: 0 });
-      this.showToast('เพิ่มรูป ' + refs.length + ' ใบเข้าวันที่ ' + (i + 1) + ' แล้ว');
-      this.forceUpdate();
-    };
-    inp.click();
+  // ── เอารูปออกจากเล่ม / เอากลับ (23 ก.ย. 2569) ─────────────────────────────
+  // ⚠⚠ "ลบ" ตรงนี้คือ "ไม่เอาเข้าเล่ม" เท่านั้น — ไม่แตะโมเมนต์ ไม่แตะรูปต้นฉบับ
+  //   เก็บเป็นรายการแยก (wtn-pb-off) เพื่อให้ "เอากลับ" ได้เสมอจากแถบท้ายหน้า
+  //   ห้ามทำเป็นลบจริงเด็ดขาด — ลบแล้วเอาคืนไม่ได้คือของอันตรายที่สุดในแอปนี้
+  get pbOffs() { try { return JSON.parse(localStorage.getItem('wtn-pb-off')) || {}; } catch (e) { return {}; } }
+  pbOffOf(trip, i) { const a = this.pbOffs[trip + ':' + i]; return Array.isArray(a) ? a : []; }
+  pbSetOff(trip, i, ref, on) {
+    if (!trip || !ref || i < 0) return;
+    const all = this.pbOffs, k = trip + ':' + i;
+    let cur = Array.isArray(all[k]) ? all[k].slice() : [];
+    if (on) { if (cur.indexOf(ref) < 0) cur.push(ref); } else cur = cur.filter(r => r !== ref);
+    if (cur.length) all[k] = cur; else delete all[k];
+    try { localStorage.setItem('wtn-pb-off', JSON.stringify(all)); } catch (e) {}
   }
-  pbShotCount(trip) {
-    const ci = this.checkins || {};
-    const byDay = {};
-    Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
-      const i = +k.split(':')[1];
-      (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).filter(p => !this.spriteOf(p)).length); });
+  async pbRefresh() {
+    try { this._pbData = await this.pbGather(); } catch (e) { console.warn('[wtn] pb regather', e); }
+    this.setState({ pbPct: 0 });
+    this.forceUpdate();
+  }
+  // เลือกไฟล์จากเครื่อง → ย่อ → เก็บลง IDB → คืนรายการ ref
+  // ⚠ 2600 พิกเซลคือความกว้างจอ iPad Pro พอดี — เจ้าของไม่ได้เอาไปพิมพ์ แต่ "เปิดดูบน iPad/จอคอมแล้วต้องไม่แตก"
+  //   จำนวนพิกเซลคือตัวที่ทำให้ไม่แตก · คุณภาพการบีบคือตัวที่ทำให้ไฟล์ไม่ใหญ่
+  //   จึงคงพิกเซลไว้ แล้วลดคุณภาพการบีบจาก 0.9 → 0.85 แทน (ไฟล์เล็กลงราว 25–30% ตาเปล่าบนจอแยกไม่ออก)
+  pbPickFiles(multi) {
+    return new Promise(res => {
+      const inp = document.createElement('input');
+      inp.type = 'file'; inp.accept = 'image/*'; if (multi) inp.multiple = true; inp.style.display = 'none';
+      document.body.appendChild(inp);
+      let done = false;
+      const fin = v => { if (done) return; done = true; try { inp.remove(); } catch (e) {} res(v || []); };
+      inp.onchange = async () => {
+        const files = [...(inp.files || [])];
+        if (!files.length) return fin([]);
+        this._pbAddBusy = true;
+        this.setState({ pbAddBusy: true });
+        this.showToast('กำลังเตรียมรูป ' + files.length + ' ใบ…');
+        const refs = [];
+        for (const f of files) {
+          try {
+            const du = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(f); });
+            refs.push(await this.stashPhoto(await this.shrinkUrl(du, 2600, 0.85)));
+          } catch (e) { console.warn('[wtn] pb pick', e); }
+        }
+        this._pbAddBusy = false;
+        this.setState({ pbAddBusy: false });
+        if (!refs.length) this.showToast('อ่านไฟล์รูปไม่ได้ ลองใหม่อีกครั้ง');
+        fin(refs);
+      };
+      // กดยกเลิกในกล่องเลือกไฟล์ — เบราว์เซอร์ไม่ยิง change ให้ ต้องปลดล็อกเองไม่งั้นค้าง
+      window.addEventListener('focus', () => setTimeout(() => { if (!inp.files || !inp.files.length) fin([]); }, 900), { once: true });
+      inp.click();
     });
-    // ⚠ ห้ามบวกรูปของเรื่องเล่าเข้ามา — pbGather ข้ามรูปพวกนั้นโดยตั้งใจ (มักเป็นรูปเดิมอัปซ้ำ จะซ้ำในเล่ม)
-    //   ของเดิมบวกไว้ การ์ดเลยบอก 137 รูป ทั้งที่เล่มจริงได้ 126 — ตัวเลขบนการ์ดต้องตรงกับเล่มเสมอ
-    const ex = this.pbExtras;
-    Object.keys(ex).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
-      const i = +k.split(':')[1];
-      byDay[i] = (byDay[i] || 0) + ((ex[k] || []).length);
+  }
+  // เพิ่มรูปเข้า "วันของหน้านี้" — กดจากหัวหน้าที่กำลังดูอยู่ ไม่ต้องเลือกวันเอง
+  async pbPickExtra(dn) {
+    if (this._pbAddBusy) return;
+    const trip = this.pbTripId(), i = (dn || 0) - 1;   // dn คือเลขวันแบบ 1..n · คีย์ที่เก็บใช้ index 0..n-1
+    if (!trip || i < 0) { this.showToast('ยังไม่รู้ว่าเป็นทริปไหน ลองเปิดจากหน้าสรุปทริปอีกครั้ง'); return; }
+    const refs = await this.pbPickFiles(true);
+    if (!refs.length) return;
+    this.pbAddExtra(trip, i, refs);
+    await this.pbRefresh();
+    this.showToast('เพิ่มรูป ' + refs.length + ' ใบเข้าวันที่ ' + (i + 1) + ' แล้ว');
+  }
+  async pbDropShot(ref, dn) {
+    const trip = this.pbTripId(), i = (dn || 0) - 1;
+    if (!trip || i < 0 || !ref) return;
+    this.pbSetOff(trip, i, ref, true);
+    this.setState({ pbFr: null });
+    await this.pbRefresh();
+    this.showToast('เอาออกจากเล่มแล้ว — รูปยังอยู่ในโมเมนต์ · เอากลับได้ที่ท้ายหน้า');
+  }
+  async pbRestoreShot(ref, i) {
+    const trip = this.pbTripId();
+    if (!trip || !ref || i < 0) return;
+    this.pbSetOff(trip, i, ref, false);
+    await this.pbRefresh();
+    this.showToast('เอารูปกลับเข้าเล่มแล้ว');
+  }
+  // เปลี่ยนรูปในช่องนี้ — รูปใหม่ไปนั่ง "ตำแหน่งเดิม" ของรูปเก่า ผู้ใช้ไม่ต้องลากเอง
+  async pbReplaceShot(ref, dn) {
+    if (this._pbAddBusy) return;
+    const trip = this.pbTripId(), i = (dn || 0) - 1;
+    if (!trip || i < 0 || !ref) return;
+    const pos = this.pbShotPos(ref);                  // ⚠ ต้องจดตำแหน่งก่อน จะ gather ใหม่แล้วตำแหน่งเปลี่ยน
+    const refs = await this.pbPickFiles(false);
+    if (!refs.length) return;
+    const nu = refs[0];
+    this.pbAddExtra(trip, i, [nu]);
+    this.pbSetOff(trip, i, ref, true);                // รูปเก่าแค่ถูกเอาออก ยังกดเอากลับได้
+    this.setState({ pbFr: null });
+    await this.pbRefresh();
+    try {
+      const d = ((this._pbData || {}).days || []).find(dd => dd.n === dn);
+      if (d && pos && pos.i >= 0) {
+        const arr = d.shots.slice();
+        const k = arr.findIndex(s => s.ref === nu);
+        if (k >= 0) {
+          const [s] = arr.splice(k, 1);
+          arr.splice(Math.min(pos.i, arr.length), 0, s);
+          d.shots = arr; d.pinned = true;
+          this.savePbOrder(i, arr.map(x => x.ref));
+        }
+      }
+    } catch (e) { console.warn('[wtn] pb replace order', e); }
+    this.forceUpdate();
+    this.showToast('เปลี่ยนรูปแล้ว — รูปเดิมเอากลับได้ที่ท้ายหน้า');
+  }
+  // ⚠⚠ ตัวเลขบนการ์ดต้องตรงกับเล่มจริงเสมอ — ตรงนี้จึงต้องคัดรูปด้วยกติกาเดียวกับ pbGather เป๊ะๆ
+  //   (เคยบวกรูปของเรื่องเล่าเข้ามาด้วย การ์ดเลยบอก 137 ทั้งที่เล่มได้ 126 — pbGather ข้ามรูปพวกนั้นโดยตั้งใจ)
+  //   แก้ตรงไหนใน pbGather ต้องมาแก้ตรงนี้ด้วยทุกครั้ง
+  pbShotCount(trip) {
+    const ci = this.checkins || {}, ex = this.pbExtras, byDay = {}, dayIdx = new Set();
+    Object.keys(ci).forEach(k => { if (k.indexOf(trip + ':') === 0) dayIdx.add(+k.split(':')[1]); });
+    Object.keys(ex).forEach(k => { if (k.indexOf(trip + ':') === 0) dayIdx.add(+k.split(':')[1]); });
+    dayIdx.forEach(i => {
+      const off = new Set(this.pbOffOf(trip, i)), seen = {};
+      let n = 0;
+      const add = r => { if (r && !seen[r] && !off.has(r)) { seen[r] = 1; n++; } };
+      (ci[trip + ':' + i] || []).forEach(c => { if (this.ciWantsPb(c)) (c.photos || []).slice(0, 6).forEach(p => { if (!this.spriteOf(p)) add(p); }); });
+      (ex[trip + ':' + i] || []).forEach(add);
+      if (n) byDay[i] = n;
     });
     return byDay;
   }
@@ -11207,10 +11299,13 @@ class Component extends DCLogic {
     this.healCheckinDays(trip);
     const ci = this.checkins || {}, cmap = this.ebChapterMap();
     const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
-    const days = [];
+    const days = [], offOut = [];
     for (let i = 0; i < n; i++) {
       const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], items = [], seen = {};
-      const push = (u, ref) => { if (u && !seen[u]) { seen[u] = 1; items.push({ u, ref: ref || u }); } };
+      // รูปที่ผู้ใช้กด "เอาออกจากเล่ม" — ข้ามตอนจัดเล่ม แต่เก็บไว้ให้กดเอากลับได้ที่ท้ายหน้า
+      const off = new Set(this.pbOffOf(trip, i));
+      for (const r of off) { try { offOut.push({ ref: r, i, day: 'วันที่ ' + (i + 1), u: await this.resolvePhoto(r) }); } catch (e) {} }
+      const push = (u, ref) => { const r = ref || u; if (u && !seen[u] && !off.has(r)) { seen[u] = 1; items.push({ u, ref: r }); } };
       // โฟโต้บุ๊กใช้เฉพาะรูปจากโมเมนต์ที่ติ๊กไว้ — ไม่ดึงปก/รูปของเรื่องเล่า (มักเป็นรูปเดิมอัปซ้ำ → ซ้ำในเล่ม)
       for (const c of list) {
         if (!this.ciWantsPb(c)) continue;
@@ -11255,7 +11350,7 @@ class Component extends DCLogic {
     return { title: ttl,
       sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
       when: this.fmtRange(t.start, t.end) || '', author: this.profile.name || 'นักเดินทาง',
-      cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0),
+      cover, days, off: offOut, photos: days.reduce((s, d) => s + d.shots.length, 0),
       quality: this.pbQuality,
       fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
@@ -13928,7 +14023,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.23b',
+      appVersion: '2026.09.23c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14098,6 +14193,8 @@ class Component extends DCLogic {
                       openPbFrame: () => this.openPbFrame(),
                   openPbCheck: () => this.openPbCheck(),
                   pbFrameBtnLabel: this.state.pbFrLoading ? 'กำลังเปิดรูป…' : 'ปรับกรอบรูปในเล่ม',
+                  pbHasOff: !!((((this._pbData || {}).off) || []).length),
+                  pbOffShots: ((((this._pbData || {}).off) || []).map(o => ({ u: o.u, day: o.day, on: () => this.pbRestoreShot(o.ref, o.i) }))),
                   sPbFrame: sc === 'pbFrame',
                   sPbCheck: sc === 'pbCheck',
                   ...(sc !== 'pbCheck' ? {} : (() => {
@@ -14282,6 +14379,8 @@ class Component extends DCLogic {
                   frZoom: fr ? Math.round(fr.z * 100) : 100,
                   frZoomLabel: (fr ? Math.round(fr.z * 100) : 100) + '%',
                   frSetZoom: e => { const z = Math.max(1, (+e.target.value || 100) / 100); this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, z } } : {}), () => this.frSave()); },
+                  frReplace: () => { if (fr) this.pbReplaceShot(fr.ref, fr.dn); },
+                  frDrop: () => { if (fr) this.pbDropShot(fr.ref, fr.dn); },
                   frReset: () => { if (fr) { this.savePbFocal(fr.ref, null); this.setPbSize(fr.ref, ''); } this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: 50, y: 42, z: 1 } } : {})); },
                   frClose: () => { this.frSave(); this.setState({ pbFr: null }); },
                   frDown: e => this.frDown(e), frMove: e => this.frMove(e), frUp: () => this.frUp()
