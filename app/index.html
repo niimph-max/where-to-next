@@ -9897,6 +9897,18 @@ class Component extends DCLogic {
     if (s) return s.tripId || '';
     return this.state.trip;
   }
+  // ⚠⚠ โฟโต้บุ๊กต้องยึด "ทริปที่เปิดอยู่" ไม่ใช่เรื่องเล่าที่ค้างอยู่ (23 ก.ย. 2569)
+  //   บนหน้า "สรุปทริป" สถิติรีแคปข้างบนใช้ this.state.trip แต่การ์ดโฟโต้บุ๊กใช้ ebTripId()
+  //   — คนละแหล่งบนหน้าจอเดียวกัน · ebTripId() ออกแบบมาเพื่อเล่ม EPUB จึงยึดเรื่องเล่าที่เปิดอยู่
+  //   และ "คืนค่าว่าง" ถ้าเรื่องนั้นไม่ผูกทริป (ตั้งใจ ห้ามแก้ที่ตัวมันเอง)
+  //   เจ้าของมีเรื่องนำเข้าจาก WordPress 69 เรื่องที่ไม่ผูกทริป พอเปิดอ่านเรื่องพวกนั้นแล้วมาหน้าสรุปทริป
+  //   หน้าเดียวกันจึงขึ้น "198 รูป" กับ "ทริปนี้ยังไม่มีรูป" พร้อมกัน — จำลองซ้ำได้แล้ว
+  //   ⚠ เปิดเล่มจากชั้นหนังสือ (_ebStoryOverride / _ebTripOverride) ต้องเคารพของเดิม ห้ามไปทับ
+  pbTripId() {
+    if (this._ebStoryOverride || this._ebTripOverride) return this.ebTripId();
+    if (this.state.screen === 'summary' && this.state.trip) return this.state.trip;
+    return this.ebTripId();
+  }
   // กุญแจเก็บของประจำเล่ม (ปก/รูปที่จัดวาง) — เล่มที่ไม่ผูกทริปใช้ id ของเรื่องแทน id ทริป
   ebKey() {
     const t = this.ebTripId();
@@ -11131,7 +11143,7 @@ class Component extends DCLogic {
     });
   }
   async pbGather() {
-    const trip = this.ebTripId();
+    const trip = this.pbTripId();   // ⚠ ต้องเป็นตัวเดียวกับที่การ์ดโฟโต้บุ๊กนับ ไม่งั้นการ์ดบอกมีรูป แต่สร้างเล่มออกมาว่าง
     const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
     this.healCheckinDays(trip);
     const ci = this.checkins || {}, cmap = this.ebChapterMap();
@@ -13855,7 +13867,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.22n',
+      appVersion: '2026.09.23a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13984,19 +13996,21 @@ class Component extends DCLogic {
             ? 'อ่านเล่มได้ในแอปเลย · อยากเก็บเป็นไฟล์ กด "ไฟล์ EPUB" — เปิดใน Apple Books / Play Books ได้'
             : 'อ่านเล่มในแอปใช้ได้ฟรีเต็มที่ · ไฟล์ EPUB (เปิดใน Apple Books / Play Books) เป็นของพรีเมียม',
           ...(() => {
-            const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
+            // ⚠ บล็อกนี้ใช้ pbTrip ไม่ใช่ trip — การ์ดโฟโต้บุ๊กยึดทริปที่เปิดอยู่ (ดู pbTripId)
+            const pbTrip = this.pbTripId();
+            const pe = this.pbEstimate(pbTrip), pct2 = this.state.pbPct || 0;
             return {
               pbOpen: !!this.state.pbOpen,
               openPbook: () => this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }),
               closePbook: () => this.setState({ pbOpen: false }),
-              pbCoverId: 'wtn-pb-cover-' + trip,
+              pbCoverId: 'wtn-pb-cover-' + pbTrip,
               pbCardNote: pe.photos ? (pe.photos + ' รูป · ' + pe.days + ' วัน — เล่มแนวนอน ประมาณ ' + pe.pages + ' หน้า') : 'ยังไม่มีรูปในทริปนี้',
               pbSummary: pe.photos ? (pe.photos + ' รูป จาก ' + pe.days + ' วัน — จัดเป็นเล่มแนวนอนประมาณ ' + pe.pages + ' หน้า ไม่ต้องเขียนอะไรเพิ่ม')
-                                   : (this.ciRawPhotos(trip)
-                                      ? 'ทริปนี้มีรูปในโมเมนต์ ' + this.ciRawPhotos(trip) + ' รูป แต่ยังไม่ได้ติ๊กเข้าเล่มไว้'
+                                   : (this.ciRawPhotos(pbTrip)
+                                      ? 'ทริปนี้มีรูปในโมเมนต์ ' + this.ciRawPhotos(pbTrip) + ' รูป แต่ยังไม่ได้ติ๊กเข้าเล่มไว้'
                                       : 'ทริปนี้ยังไม่มีรูป — เช็คอินพร้อมรูประหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม'),
-              pbNeedsPick: !pe.photos && this.ciRawPhotos(trip) > 0,
-              pbPickAll: () => this.ciSelectAllForPb(trip),
+              pbNeedsPick: !pe.photos && this.ciRawPhotos(pbTrip) > 0,
+              pbPickAll: () => this.ciSelectAllForPb(pbTrip),
               pbBusy: !!this.state.pbBusy, pbIdle: !this.state.pbBusy,
               pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
               pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
