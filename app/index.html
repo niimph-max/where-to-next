@@ -2854,7 +2854,7 @@
 
       <sc-if value="{{ sPbFrame }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 40px">
-          <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม</div>
+          <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม<br>ปุ่ม <b>+</b> ที่หัวหน้า = เพิ่มรูปจากเครื่องเข้าวันนั้น (เช่น รูปกล้องใหญ่ที่ไม่ได้อยู่ในโมเมนต์) — รูปที่เพิ่มอยู่แค่ในเล่ม ไม่ขึ้นฟีด</div>
           <div style="display:flex;flex-direction:column;gap:20px">
             <sc-for list="{{ pbPages }}" as="pg" hint-placeholder-count="4">
               <div>
@@ -2862,6 +2862,7 @@
                   <span style="flex:1;min-width:0;font:600 13.5px 'Anuphan';color:#c05f39">{{ pg.label }}</span>
                   <span style="flex:none;font:500 12.5px 'Anuphan';color:#a1927c">{{ pg.meta }}</span>
                   <button onClick="{{ pg.up }}" aria-label="ย้ายหน้านี้ขึ้น" style="{{ pg.upStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 15l-6-6-6 6"/></svg></button>
+                  <button onClick="{{ pg.addPhoto }}" aria-label="เพิ่มรูปจากเครื่องเข้าวันนี้" title="เพิ่มรูปจากเครื่องเข้าวันนี้" style="{{ pg.addStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
                   <button onClick="{{ pg.down }}" aria-label="ย้ายหน้านี้ลง" style="{{ pg.downStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></button>
                 </div>
                 <div style="{{ pg.pageStyle }}">
@@ -11106,16 +11107,72 @@ class Component extends DCLogic {
     this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: nx, y: ny } } : {}));
   }
   frUp() { if (!this._frD) return; this._frD = null; this.frSave(); }
+  // ── รูปที่เพิ่มเองเข้าเล่ม — รูปกล้องใหญ่ที่ไม่ได้อยู่ในโมเมนต์ (23 ก.ย. 2569) ──
+  // เจ้าของ: "รูปถ่ายด้วยกล้องใหญ่ ยังไม่ได้ใส่เข้ามาตอนใช้มือถือ · เห็นรูปที่เข้ากับหน้านี้ ก็จะดึงไปใส่เลย"
+  // ⚠⚠ เก็บเป็น ref ของ IndexedDB ('idb:') แบบเดียวกับ "จัดรูปในเล่ม" ของ EPUB
+  //   ห้ามเก็บ data url ลง localStorage เด็ดขาด — พื้นที่หลักจำกัดราว 5 MB รูปกล้องใหญ่ใบเดียวก็เต็ม
+  //   ผลพลอยได้: ไม่กินพื้นที่เก็บและ egress บนคลาวด์เลย
+  //   ⚠ แลกมาด้วย "รูปพวกนี้อยู่เฉพาะเครื่องที่เพิ่ม" ซึ่งตรงกับการใช้งานจริง (รูปกล้องใหญ่อยู่ในคอม ทำเล่มจากคอม)
+  //   ถ้าวันหลังจะให้ข้ามเครื่องได้ ต้องอัปขึ้นคลาวด์แทน แล้วคิดเรื่องโควตาให้ดีก่อน
+  // ⚠ รูปที่เพิ่มตรงนี้ "ไม่กลายเป็นโมเมนต์" และไม่โผล่ในฟีด — อยู่แค่ในเล่ม ตามที่เจ้าของขอให้คงของเดิมไว้
+  get pbExtras() { try { return JSON.parse(localStorage.getItem('wtn-pb-extra')) || {}; } catch (e) { return {}; } }
+  pbExtraOf(trip, i) { const a = this.pbExtras[trip + ':' + i]; return Array.isArray(a) ? a : []; }
+  savePbExtras(all) { try { localStorage.setItem('wtn-pb-extra', JSON.stringify(all)); } catch (e) {} }
+  pbAddExtra(trip, i, refs) {
+    if (!trip || !refs || !refs.length) return;
+    const all = this.pbExtras, k = trip + ':' + i;
+    const cur = Array.isArray(all[k]) ? all[k].slice() : [];
+    refs.forEach(r => { if (r && cur.indexOf(r) < 0) cur.push(r); });
+    all[k] = cur; this.savePbExtras(all);
+  }
+  // เพิ่มรูปเข้า "วันของหน้านี้" — กดจากหัวหน้าที่กำลังดูอยู่ ไม่ต้องเลือกวันเอง
+  pbPickExtra(dn) {
+    if (this._pbAddBusy) return;
+    const trip = this.pbTripId();
+    const i = (dn || 0) - 1;                    // dn คือเลขวันแบบ 1..n · คีย์ที่เก็บใช้ index 0..n-1
+    if (!trip || i < 0) { this.showToast('ยังไม่รู้ว่าเป็นทริปไหน ลองเปิดจากหน้าสรุปทริปอีกครั้ง'); return; }
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.style.display = 'none';
+    document.body.appendChild(inp);
+    inp.onchange = async () => {
+      const files = [...(inp.files || [])];
+      try { inp.remove(); } catch (e) {}
+      if (!files.length) return;
+      this._pbAddBusy = true;
+      this.setState({ pbAddBusy: true });
+      this.showToast('กำลังเตรียมรูป ' + files.length + ' ใบ…');
+      const refs = [];
+      for (const f of files) {
+        try {
+          const du = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+          const small = await this.shrinkUrl(du, 2600, 0.9);   // เล่มพิมพ์ต้องใหญ่กว่า EPUB · แต่รูปกล้องใหญ่ 6000px ไม่ต้องเก็บทั้งใบ
+          refs.push(await this.stashPhoto(small));
+        } catch (e) { console.warn('[wtn] pb extra', e); }
+      }
+      this._pbAddBusy = false;
+      this.setState({ pbAddBusy: false });
+      if (!refs.length) { this.showToast('อ่านไฟล์รูปไม่ได้ ลองใหม่อีกครั้ง'); return; }
+      this.pbAddExtra(trip, i, refs);
+      try { this._pbData = await this.pbGather(); } catch (e) { console.warn('[wtn] pb regather', e); }
+      this.setState({ pbPct: 0 });
+      this.showToast('เพิ่มรูป ' + refs.length + ' ใบเข้าวันที่ ' + (i + 1) + ' แล้ว');
+      this.forceUpdate();
+    };
+    inp.click();
+  }
   pbShotCount(trip) {
-    const ci = this.checkins || {}, cmap = this.ebChapterMap();
+    const ci = this.checkins || {};
     const byDay = {};
     Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
       const i = +k.split(':')[1];
       (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).filter(p => !this.spriteOf(p)).length); });
     });
-    Object.keys(cmap.byDay).forEach(k => {
-      const ch = cmap.byDay[k];
-      byDay[+k] = (byDay[+k] || 0) + (ch.cover ? 1 : 0) + ((ch.photos || []).length);
+    // ⚠ ห้ามบวกรูปของเรื่องเล่าเข้ามา — pbGather ข้ามรูปพวกนั้นโดยตั้งใจ (มักเป็นรูปเดิมอัปซ้ำ จะซ้ำในเล่ม)
+    //   ของเดิมบวกไว้ การ์ดเลยบอก 137 รูป ทั้งที่เล่มจริงได้ 126 — ตัวเลขบนการ์ดต้องตรงกับเล่มเสมอ
+    const ex = this.pbExtras;
+    Object.keys(ex).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
+      const i = +k.split(':')[1];
+      byDay[i] = (byDay[i] || 0) + ((ex[k] || []).length);
     });
     return byDay;
   }
@@ -11157,6 +11214,8 @@ class Component extends DCLogic {
         if (!this.ciWantsPb(c)) continue;
         for (const p of (c.photos || []).slice(0, 6)) { if (this.spriteOf(p)) continue; const r = await this.resolvePhoto(p); push(r, p); }
       }
+      // รูปที่เพิ่มเองเข้าวันนี้ — ต่อท้ายรูปจากโมเมนต์ · ลำดับจริงยังจัดได้ในหน้าปรับกรอบ
+      for (const r of this.pbExtraOf(trip, i)) { const u = await this.resolvePhoto(r); push(u, r); }
       if (!items.length) continue;
       const shots = await Promise.all(items.map(it => this._shotMeta(it.u).then(m => ({ ...m, ref: it.ref }))));
       const ord = this.pbOrderOf(i);
@@ -13867,7 +13926,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.23a',
+      appVersion: '2026.09.23b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14179,6 +14238,8 @@ class Component extends DCLogic {
                       meta: g.hero ? 'รูปเต็มหน้า' : (g.items.length + ' รูป'),
                       upStyle: navP(gk > 0 && groups[gk - 1].dn === g.dn),
                       downStyle: navP(gk < groups.length - 1 && groups[gk + 1].dn === g.dn),
+                      addStyle: navP(!this.state.pbAddBusy && !!g.dn),
+                      addPhoto: () => this.pbPickExtra(g.dn),
                       up: () => this.pbMovePage(g.items.map(x => x.s.ref), -1),
                       down: () => this.pbMovePage(g.items.map(x => x.s.ref), 1),
                       pageStyle: 'position:relative;width:100%;aspect-ratio:210/148;background:' + T.pg + ';border:1px solid rgba(43,36,32,.12);border-radius:12px;overflow:hidden',
