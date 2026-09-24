@@ -371,7 +371,7 @@
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">วางแผนทริป &amp; จดบันทึก</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ซิงก์แผน/เรื่องเล่าข้ามเครื่อง</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรอง<b>รูปภาพ</b>ขึ้นคลาวด์</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
-            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">5 ครั้ง/ด</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
+            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">—</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรวจจุดหมายด้วย AI</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
           </div>
           <sc-if value="{{ buyOnWeb }}" hint-placeholder-val="{{ false }}">
@@ -14023,7 +14023,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.23c',
+      appVersion: '2026.09.24a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
