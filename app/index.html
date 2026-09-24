@@ -608,7 +608,7 @@
               <div style="font:500 13.5px/1.6 'Anuphan';color:#a99e90">ได้ทุกกิจกรรม เวลา โน้ต ที่พัก และชื่อ/ประเทศ/วัน/งบ ของทริป — แก้ต่อได้ทั้งหมด</div>
             </div>
           </sc-if>
-          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><span style="font:700 11.5px 'Anuphan';letter-spacing:.3px;color:#7a3a20;background:#ffd9a8;border-radius:999px;padding:3px 9px;flex:none;white-space:nowrap">พรีเมียม</span></sc-if></div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์ PDF แล้ว AI แยกเป็นรายวันให้ · แผนที่แชร์จาก Vela วางแล้วเข้าครบทันที</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><span style="font:700 11.5px 'Anuphan';letter-spacing:.3px;color:#7a3a20;background:#ffd9a8;border-radius:999px;padding:3px 9px;flex:none;white-space:nowrap">พรีเมียม</span></sc-if></div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์ PDF แล้ว AI แยกเป็นรายวันให้</div><sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><div style="font:500 13px 'Anuphan';color:#ffd9c4;margin-top:3px">ถ้าเพื่อนแชร์แผนจาก Vela มา ใช้การ์ดด้านบนได้ฟรี</div></sc-if></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
           <sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
             <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:16px;padding:15px;margin-bottom:14px">
               <textarea value="{{ impText }}" onInput="{{ setImpText }}" placeholder="วางโปรแกรมทัวร์ที่นี่ (ก็อปจากอีเมล/ไลน์)… เช่น&#10;วันที่ 1 บินไปอัลมาตี&#10;วันที่ 2 เที่ยวเมือง…" rows="5" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:500 16px/1.6 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:vertical"></textarea>
@@ -622,7 +622,6 @@
                 <span style="flex:1"></span>
                 <button onClick="{{ importProgramFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';padding:11px 20px;border-radius:13px;cursor:pointer;opacity:{{ impBtnOpacity }}">{{ impBtnLabel }}</button>
               </div>
-              <sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 13.5px/1.6 'Anuphan';color:#8a7d6f;background:#f6efe2;border-radius:11px;padding:10px 12px">⟡ <b style="color:#7a3a20">ให้ AI แยกวันเป็นฟีเจอร์พรีเมียม</b> · ส่วนการแนบไฟล์ PDF และแกะข้อความออกมา ใช้ได้ฟรีทุกคน · ถ้าเพื่อนแชร์แผนจาก Vela มา ใช้การ์ด “สร้างทริปจากแผน Vela” ด้านบนได้ฟรีเช่นกัน</div></sc-if>
               <sc-if value="{{ impHasErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 14px/1.5 'Anuphan';color:#b23b2a">{{ impErr }}</div></sc-if>
               <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้ · ไฟล์ PDF อ่านในเครื่องคุณ ส่งขึ้นไปแค่ข้อความ · PDF ที่เป็นภาพสแกนอ่านไม่ได้ ให้ก็อปข้อความมาวางแทน</div>
             </div>
@@ -9845,19 +9844,35 @@ class Component extends DCLogic {
     }
   }
   // เรียก AI ของ Vela + คุมเครดิต (หมดแล้วพาไปหน้าเติม ไม่ใช่ error ดิบๆ)
+  // ⚠ Gemini คิวเต็มชั่วคราวได้บ่อยพอสมควร ("This model is currently experiencing high demand")
+  //   เจอจริง ~1 ใน 5 ครั้งตอนทดสอบ 24 ก.ย. 69 · เดิมข้อความอังกฤษดิบเด้งใส่หน้าผู้ใช้ตรงๆ
+  //   ลองใหม่ให้เอง 3 รอบ แล้วค่อยยอมแพ้เป็นภาษาไทย
+  //   ⚠ ลองใหม่ "ไม่เสียเครดิตเพิ่ม" เพราะ ai-complete หักเครดิตหลังได้คำตอบจริงเท่านั้น
+  //     (Gemini พัง → return 502 ตั้งแต่ก่อนถึงบรรทัดหักเครดิต) — ถ้าวันหลังย้ายลำดับตรงนั้น ต้องกลับมาคิดใหม่
+  AI_BUSY_RE = /high demand|overload|unavailable|try again later|503/i;
   async aiViaVela(be, prompt) {
-    try {
-      const t = await be.aiComplete(prompt);
-      if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
-      return t;
-    } catch (e) {
-      if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); }
-      else if (e && e.code === 'no-credits') {
-        this.setState({ aiCredits: 0 });
-        this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
+    let last = null;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const t = await be.aiComplete(prompt);
+        if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
+        return t;
+      } catch (e) {
+        if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); throw e; }
+        if (e && e.code === 'no-credits') {
+          this.setState({ aiCredits: 0 });
+          this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
+          throw e;
+        }
+        last = e;
+        if (!this.AI_BUSY_RE.test(String((e && e.message) || ''))) throw e;
+        if (i < 2) await new Promise(r => setTimeout(r, 3000 * (i + 1)));
       }
-      throw e;
     }
+    const busy = new Error('ตอนนี้ AI มีคนใช้พร้อมกันเยอะจนคิวเต็ม — ไม่ใช่ปัญหาที่ไฟล์หรือข้อความของคุณ · รอสักครู่แล้วกดใหม่อีกครั้ง');
+    busy.code = 'ai-busy';
+    busy.cause = last;
+    throw busy;
   }
   async loadCredits() {
     const be = window.WTNBackend;
@@ -14090,7 +14105,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.24c',
+      appVersion: '2026.09.24d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14884,7 +14899,19 @@ class Component extends DCLogic {
       goTripKz: () => this.loadKazakh(),
       loadKazakh: () => this.loadKazakh(),
       goBlank: () => this.openTrip('blank'),
-      toggleImport: () => this.setState(s => ({ impOpen: !s.impOpen, impErr: '' })),
+      // ⚠⚠ การ์ดนี้เป็นพรีเมียม "ทั้งใบ" — คนใช้ฟรีเปิดไม่ได้เลย
+      //   เหตุผล: การแนบ PDF มีจุดประสงค์เดียวคือส่งต่อให้ AI แยกวัน ซึ่งเป็นพรีเมียม
+      //   ถ้าปล่อยให้เปิดการ์ดและแนบไฟล์ได้ แล้วไปตันตอนกดปุ่ม = หลอกให้เสียเวลาฟรีๆ (บั๊กแบบเดียวกับที่เพิ่งแก้ไป)
+      //   ⚠ ใช้ isPremium ไม่ใช่ aiAvailable() — aiAvailable() ต้องรอ backend โหลด คนจ่ายเงินแล้วจะโดนเด้งหน้าขายตอนเปิดแอป
+      //   ⚠ ในแอป native ห้ามพาไปหน้าขาย (กฎ App Store) — เด้งข้อความอย่างเดียว เหมือนที่ aiGate() ทำ
+      toggleImport: () => {
+        if (!this.isPremium) {
+          if (this.isNativeApp) this.showToast(this.AI_PREMIUM_MSG);
+          else this.go('premium');
+          return;
+        }
+        this.setState(s => ({ impOpen: !s.impOpen, impErr: '' }));
+      },
       impOpen: !!this.state.impOpen, impChevron: this.state.impOpen ? 'rotate(180deg)' : 'rotate(0deg)',
       impText: this.state.impText ?? '', setImpText: e => this.setState({ impText: e.target.value }),
       impDocsList: (this.state.impDocs || []).map(d => ({
