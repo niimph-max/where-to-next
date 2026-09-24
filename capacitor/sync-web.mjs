@@ -23,7 +23,10 @@ for (const f of FILES) {
 // ปรับ index.html ให้เหมาะกับ native
 let html = readFileSync(join(WWW, 'index.html'), 'utf8');
 html = html.replace("location.protocol === 'https:'", "location.protocol === 'https:' && !window.Capacitor");
-if (!html.includes('native.js')) {
+// ⚠⚠ ต้องเช็ค "แท็กสคริปต์" ไม่ใช่แค่คำว่า native.js (แก้ 24 ก.ย. 2569)
+// เคยพังเงียบ: app/index.html มีคำว่า native.js อยู่ในคอมเมนต์ 2 จุด เช็กแบบเดิมเลยคิดว่าเติมไปแล้ว
+// ผลคือแอป native ไม่โหลด native.js → ไม่มีคลาส is-native (จอเพี้ยน) และปุ่มย้อนกลับ Android ไม่ทำงาน
+if (!html.includes('src="native.js"')) {
   html = html.replace('</head>', '  <script src="native.js"><\/script>\n</head>');
 }
 writeFileSync(join(WWW, 'index.html'), html);
