@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# ตัวแอปเป็นหน้าเปล่าที่เนื้อหาเกิดจาก JavaScript — ไม่ได้ห้ามคลาน
+# แต่ในหน้านั้นมี <meta name="robots" content="noindex"> กำกับไว้
+# (ห้ามใช้ Disallow ตรงนี้ เพราะถ้าห้ามคลาน Google จะไม่เห็น noindex แล้วเก็บ URL เปล่าไว้แทน)
+
+Sitemap: https://onevela.net/sitemap.xml
