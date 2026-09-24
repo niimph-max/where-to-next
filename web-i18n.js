@@ -202,9 +202,11 @@
     var v = null;
     try { v = localStorage.getItem('vela-web-lang'); } catch (e) {}
     if (v === 'th' || v === 'en') return v;
-    var nav = '';
-    try { nav = (navigator.language || (navigator.languages || [])[0] || '').toLowerCase(); } catch (e) {}
-    return nav.indexOf('th') === 0 ? 'th' : 'en';
+    // ค่าเริ่มต้นเป็นไทยเสมอ — เป็นอังกฤษเฉพาะคนที่กดปุ่ม EN เอง (ค่าจะถูกจำไว้ใน localStorage)
+    // ⚠ ห้ามกลับไปเดาจาก navigator.language อีก: <html lang="th"> บอก Google ว่าหน้านี้เป็นไทย
+    //   แต่ Googlebot ตั้งภาษาเป็น en-US จึงเคยเห็นหน้าเป็นอังกฤษ = ภาษาที่ประกาศไม่ตรงกับเนื้อหาที่เห็น
+    //   (และคนไทยที่ตั้งมือถือเป็นอังกฤษ ก็เคยเจอหน้าขายเป็นอังกฤษทั้งที่ตลาดหลักคือไทย)
+    return 'th';
   }
   var LANG = pick();
   window.VELA_WEB_LANG = LANG;
