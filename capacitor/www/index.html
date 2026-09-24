@@ -21,8 +21,13 @@
 <meta name="twitter:description" content="วางแผนรายวัน จดงบ เที่ยว แล้วเปลี่ยนเป็นเรื่องเล่า">
 <meta name="twitter:image" content="https://onevela.net/app/og-image.png">
 <script src="./support.js"></script>
+  <script src="native.js"></script>
 </head>
 <body>
+<!-- ⚠ มาร์กอัปทั้งก้อนห่อไว้ในแท็ก template ข้างล่าง เพื่อไม่ให้เบราว์เซอร์ยิงคำขอจริง
+     จากแอตทริบิวต์ที่ยังไม่แทนค่า (มี 48 จุดในไฟล์นี้ · เคยทำหน้าเปิดค้าง 221 วินาที)
+     เนื้อในแท็กนั้นไม่โหลดรูป ไม่โหลด iframe ไม่รันสคริปต์ · support.js คลี่ห่อก่อนเรนเดอร์ (dcTemplateHtml)
+     ⚠ helmet ต้องอยู่นอกห่อเสมอ ไม่งั้นฟอนต์ สคริปต์หลังบ้าน และ service worker จะไม่ทำงาน -->
 <x-dc>
 <helmet data-dc-atomics>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -135,6 +140,38 @@
   @media (display-mode:standalone),(display-mode:minimal-ui){
     .wtn-sticky-bottom{padding-bottom:calc(13px + env(safe-area-inset-bottom))!important}
   }
+  /* ── จอกว้างบนเบราว์เซอร์: กลับไปเป็นกรอบมือถือจัดกลาง ───────────────────────
+     ปัญหาเดิม: กฎ .wtn-phone/.wtn-body ข้างบนบังคับ 100vw!important เพื่อให้เต็มจอในแอป
+     ผลคือบนคอมจอ 2000px การ์ดทริปยืดเป็นแถบยาว ดูเหมือนของที่พัง ไม่ใช่ของที่ตั้งใจ
+     การ์ดกันแอป native สองชั้น — ห้ามถอดออก:
+       1) min-width:900px  → มือถือไม่เข้าเงื่อนไข
+       2) html:not(.is-native) → native.js เติมคลาสนี้ใน <head> ก่อนวาดจอแรก
+          (กัน iPad จอใหญ่ในแอป native ไม่ให้กลายเป็นกรอบลอยกลางจอ)
+     ⚠ transform บน .wtn-body จงใจใส่ ทำให้ลูกที่เป็น position:fixed
+       (แถบเมนูล่าง · toast · ชีตเด้งขึ้น) ยึดกับกรอบแทนขอบจอ ถ้าเอาออกของพวกนี้จะหลุดไปติดขอบจอ */
+  @media (min-width:900px){
+    html:not(.is-native), html:not(.is-native) body{height:100%!important;overflow:hidden!important}
+    html:not(.is-native) body{background:#d9cdb9!important;display:flex!important;align-items:center!important;
+      justify-content:center!important;padding:0!important}
+    html:not(.is-native) .wtn-phone{width:auto!important;max-width:none!important;padding:0!important}
+    html:not(.is-native) .wtn-body{
+      width:min(430px,100vw)!important;max-width:430px!important;
+      height:min(920px,calc(100dvh - 48px))!important;
+      border-radius:30px!important;overflow:hidden!important;
+      box-shadow:0 26px 70px -18px rgba(43,36,32,.5)!important;
+      transform:translateZ(0);            /* ← ทำให้ position:fixed ยึดกับกรอบ */
+      border:1px solid rgba(43,36,32,.12)!important}
+    /* บนคอมไม่มี notch — คืนระยะบนให้เป็นปกติ ไม่งั้นหัวข้อจะลอยต่ำเกินไป */
+    html:not(.is-native) .wtn-body:before{display:none!important}
+    html:not(.is-native) .wtn-nav{padding-top:15px!important}
+    html:not(.is-native) .wtn-hbar{padding-top:14px!important}
+    html:not(.is-native) .wtn-cehead{padding-top:7px!important}
+    html:not(.is-native) .wtn-tabbar{padding-bottom:14px!important}
+    /* แถบชิป (แท็บทริป · วันที่ 1..N) ออกแบบให้ปัดนิ้วบนมือถือ แต่บนคอมไม่มีอะไรบอกว่าเลื่อนได้
+       และตัวที่ตกขอบขวาก็กดไม่ถึง — บนจอกว้างให้ขึ้นบรรทัดใหม่แทน เห็นครบทุกตัวไม่ต้องเลื่อน
+       (`_centerDayPill()` ที่เลื่อนแถบวันให้เองจะกลายเป็นไม่ทำอะไร ซึ่งถูกแล้วเพราะไม่มีอะไรตกขอบ) */
+    html:not(.is-native) .wtn-chips{flex-wrap:wrap!important;overflow-x:visible!important;row-gap:6px!important}
+  }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
   .wtn-rte:focus{outline:none}
@@ -193,7 +230,7 @@
   })();
 </script>
 </helmet>
-<div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
+<template data-dc-tpl><div class="wtn-phone" style="width:402px;background:#2b241f;border-radius:46px;padding:11px;box-shadow:0 40px 80px -24px rgba(43,36,32,.6),0 10px 24px rgba(43,36,32,.25)">
   <div class="wtn-body" style="background:#f6efe2;border-radius:36px;overflow:hidden;height:848px;display:flex;flex-direction:column;position:relative">
 
     <sc-if value="{{ offlineShow }}" hint-placeholder-val="{{ false }}">
@@ -696,7 +733,7 @@
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
           <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>{{ tripLiveLabel }}</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
-          <div class="wtn-s" style="display:flex;gap:6px;padding:14px 20px 4px;overflow-x:auto;scrollbar-width:none">
+          <div class="wtn-s wtn-chips" style="display:flex;gap:6px;padding:14px 20px 4px;overflow-x:auto;scrollbar-width:none">
             <button onClick="{{ goOverview }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">ภาพรวม</button>
             <button onClick="{{ goPrep }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">เตรียมตัว</button>
             <button onClick="{{ goMap }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">โมเมนต์</button>
@@ -716,12 +753,12 @@
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a99e8e" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
             </div>
           </div>
-          <div class="wtn-s" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
+          <div class="wtn-s wtn-chips" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
             <sc-for list="{{ dayPills }}" as="p" hint-placeholder-count="8">
               <button onClick="{{ p.on }}" style="{{ p.style }}"><span style="font:700 17px 'Anuphan';line-height:1">{{ p.n }}</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">{{ p.date }}</span></button>
             </sc-for>
             <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
-              <button style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;font:600 20px 'Anuphan';cursor:pointer">+</button>
+              <button onClick="{{ addTripDay }}" title="เพิ่มอีกหนึ่งวัน" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;font:600 20px 'Anuphan';cursor:pointer">+</button>
             </sc-if>
           </div>
           <div style="padding:2px 20px 0">
@@ -824,7 +861,9 @@
           </sc-for>
           <div class="wtn-ov-actions" style="display:flex;gap:10px;margin-top:18px">
             <button onClick="{{ shareOverview }}" style="flex:1;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>แชร์</button>
+            <button onClick="{{ sharePlanPdf }}" style="flex:1;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(43,36,32,.16);background:#fffaf0;color:#2b241f;font:600 16px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>PDF</button>
           </div>
+          <div style="font:500 12.5px/1.6 'Anuphan';color:#a99e8e;text-align:center;margin-top:9px">แชร์ = ส่งเป็นข้อความให้เพื่อนวางกลับใน Vela · PDF = เอกสารโปรแกรมเดินทาง ส่งให้ใครก็เปิดดูได้</div>
         </div>
       </sc-if>
 
@@ -1915,6 +1954,10 @@
                   <sc-if value="{{ c.canDown }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.down }}" title="เลื่อนลง" style="width:36px;height:36px;border:1px solid rgba(43,36,32,.14);background:#fff;color:#5c5347;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button></sc-if>
                   <button onClick="{{ c.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:4px 6px">ลบ</button>
                 </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(43,36,32,.07)">
+                  <span onClick="{{ c.toggleInBook }}" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;flex:none"><span style="font:600 13.5px 'Anuphan';color:#5c5347">ใส่ในเล่ม EPUB</span><span style="width:42px;height:24px;border-radius:14px;position:relative;flex:none;{{ c.bookTrack }}"><span style="position:absolute;top:3px;{{ c.bookKnob }};width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25)"></span></span></span>
+                  <sc-if value="{{ c.notInBook }}" hint-placeholder-val="{{ false }}"><span style="font:500 12.5px/1.5 'Anuphan';color:#a99e8e;text-align:right;flex:1;min-width:0">ตอนนี้จะไม่อยู่ในเล่ม</span></sc-if>
+                </div>
               </div>
             </sc-for>
           </div>
@@ -2812,7 +2855,7 @@
 
       <sc-if value="{{ sPbFrame }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen" style="padding:16px 20px 40px">
-          <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม</div>
+          <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">แต่ละกรอบข้างล่างคือช่องจริงบนหน้าเล่ม รูปไหนโดนตัดไม่สวย แตะแล้วลากปรับได้เลย · ปรับครั้งเดียวใช้ทุกที่ในเล่ม<br>ปุ่ม <b>+</b> ที่หัวหน้า = เพิ่มรูปจากเครื่องเข้าวันนั้น (เช่น รูปกล้องใหญ่ที่ไม่ได้อยู่ในโมเมนต์) — รูปที่เพิ่มอยู่แค่ในเล่ม ไม่ขึ้นฟีด</div>
           <div style="display:flex;flex-direction:column;gap:20px">
             <sc-for list="{{ pbPages }}" as="pg" hint-placeholder-count="4">
               <div>
@@ -2820,6 +2863,7 @@
                   <span style="flex:1;min-width:0;font:600 13.5px 'Anuphan';color:#c05f39">{{ pg.label }}</span>
                   <span style="flex:none;font:500 12.5px 'Anuphan';color:#a1927c">{{ pg.meta }}</span>
                   <button onClick="{{ pg.up }}" aria-label="ย้ายหน้านี้ขึ้น" style="{{ pg.upStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 15l-6-6-6 6"/></svg></button>
+                  <button onClick="{{ pg.addPhoto }}" aria-label="เพิ่มรูปจากเครื่องเข้าวันนี้" title="เพิ่มรูปจากเครื่องเข้าวันนี้" style="{{ pg.addStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
                   <button onClick="{{ pg.down }}" aria-label="ย้ายหน้านี้ลง" style="{{ pg.downStyle }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></button>
                 </div>
                 <div style="{{ pg.pageStyle }}">
@@ -2834,6 +2878,20 @@
               </div>
             </sc-for>
           </div>
+          <sc-if value="{{ pbHasOff }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:22px;padding:13px 14px;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:14px">
+              <div style="font:600 13.5px 'Anuphan';color:#2b241f;margin-bottom:3px">รูปที่เอาออกจากเล่ม</div>
+              <div style="font:500 12.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:10px">แตะรูปเพื่อเอากลับเข้าเล่ม — รูปพวกนี้ยังอยู่ในโมเมนต์ตามเดิม ไม่ได้ถูกลบ</div>
+              <div style="display:flex;gap:9px;flex-wrap:wrap">
+                <sc-for list="{{ pbOffShots }}" as="of" hint-placeholder-count="2">
+                  <button onClick="{{ of.on }}" title="เอากลับเข้าเล่ม" style="flex:none;width:78px;border:none;background:transparent;padding:0;cursor:pointer;text-align:center">
+                    <img src="{{ of.u }}" alt="" loading="lazy" decoding="async" style="width:78px;height:58px;object-fit:cover;border-radius:9px;display:block;opacity:.5">
+                    <span style="display:block;font:500 11.5px 'Anuphan';color:#a1927c;margin-top:4px">{{ of.day }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
           <button onClick="{{ pbFrDone }}" style="width:100%;min-height:54px;margin-top:24px;border:none;background:#c05f39;color:#fff;font:600 16px 'Anuphan';border-radius:14px;cursor:pointer">สร้างเล่มด้วยกรอบนี้</button>
         </div>
       </sc-if>
@@ -3165,6 +3223,10 @@
         <button onClick="{{ frMoveNext }}" style="{{ frNextStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
       <sc-if value="{{ frPbTools }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button onClick="{{ frReplace }}" style="flex:1;min-height:44px;border:1px solid rgba(231,221,204,.26);background:transparent;color:#e7ddcc;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">เปลี่ยนรูปนี้</button>
+          <button onClick="{{ frDrop }}" style="flex:1;min-height:44px;border:1px solid rgba(224,144,124,.42);background:transparent;color:#e0907c;font:600 13.5px 'Anuphan';border-radius:12px;cursor:pointer">เอาออกจากเล่ม</button>
+        </div>
         <div style="font:600 12.5px 'Anuphan';color:#a89d8b;margin-bottom:7px">กรอบของรูปนี้ในเล่ม</div>
         <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px"><sc-for list="{{ frSizeChips }}" as="zc" hint-placeholder-count="5"><button onClick="{{ zc.on }}" style="{{ zc.style }}">{{ zc.label }}</button></sc-for></div>
       </sc-if>
@@ -3199,7 +3261,23 @@
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:9500;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';padding:12px 20px;border-radius:22px;box-shadow:0 10px 26px -8px rgba(43,36,32,.6);max-width:86vw;text-align:center;animation:wtnToast .28s ease">{{ toast }}</div>
 </sc-if>
-</x-dc>
+</template></x-dc>
+<script>
+  /* ⚠⚠ ตาข่ายนิรภัยของการห่อ <template data-dc-tpl> (22 ก.ย. 2569)
+     index.html กับ support.js เป็นคนละไฟล์ และ Cloudflare แคชแยกกัน 4 ชั่วโมง
+     จึงมีช่วงที่เบราว์เซอร์ได้ index.html ตัวใหม่ (ห่อแล้ว) คู่กับ support.js ตัวเก่า (ยังไม่รู้จักห่อ)
+     ถ้าปล่อยไว้ เอนจินเก่าจะเรนเดอร์แท็ก template ออกมาทั้งก้อน = หน้าขาว ซึ่งเป็นอาการที่แย่ที่สุด
+     ตรงนี้เลยคลี่ห่อเองถ้าเจอว่า support.js ไม่ได้ปักธง __dcTplAware ไว้
+     ยอมให้ยิงคำขอปลอมแบบเดิมดีกว่าหน้าขาว · เมื่อไฟล์ทั้งคู่ตรงรุ่นกัน สคริปต์นี้จะไม่ทำอะไรเลย */
+  (function () {
+    try {
+      if (window.__dcTplAware) return;
+      var dc = document.querySelector('x-dc');
+      var t = dc && dc.querySelector('template[data-dc-tpl]');
+      if (t) t.replaceWith(t.content);
+    } catch (e) {}
+  })();
+</script>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:424,&quot;height&quot;:896}}">
 class Component extends DCLogic {
   state = { auth: 'choice', authName: '', authEmail: '', authPass: '', authErr: '', authMsg: '',
@@ -3800,6 +3878,35 @@ class Component extends DCLogic {
     const cut = now - 90 * 864e5; Object.keys(t).forEach(k => { if (t[k] < cut) delete t[k]; }); // เก็บคำสั่งลบ 90 วัน
     try { localStorage.setItem('wtn-tombs', JSON.stringify(t)); } catch (e) {}
   }
+  // ⚠⚠ ใบสั่งลบ "รายกิจกรรมในแผน" — ลบแล้วต้องไม่เด้งกลับ (22 ก.ย. 2569)
+  //   ของเดิม _mergeDay เก็บ stops ของเครื่องตัวเองไว้ทุกใบเสมอ (`stops = [...ld.stops]`)
+  //   แปลว่า "การลบข้ามเครื่องไม่ได้เลย": A ลบ → คลาวด์เหลือ 3 · B (มือถือที่ยังมี 4) ซิงก์ทีหลัง
+  //   B ไม่เคยรู้เรื่องการลบ จึงดันของตัวเอง 4 ใบขึ้นคลาวด์ → A ดึงลงมา เจอใบที่ตัวเองลบไปแล้ว
+  //   แต่ baseline ของ A เดินผ่านจุดที่ลบไปแล้ว มันจึงนับเป็น "ของใหม่จากอีกเครื่อง" แล้วใส่กลับ
+  //   = ลบแล้วกลับมาไม่จบ (เจ้าของ: "เด้งกลับมาอีกแล้ว นี่ไงคือปัญหา ลบไปแล้วกลับมาอีก")
+  //   baseline บอกได้แค่ "เครื่องนี้เคยเห็นอะไร" ไม่ได้บอกว่า "ใครตั้งใจลบ" — ต้องมีใบสั่งลบเท่านั้น
+  //   คีย์ลึกถึงวัน: '<tripId>:<ดัชนีวัน>:<kind|title|time|period>' (คีย์เดียวกับที่ _mergeDay ใช้เทียบ)
+  _stopKey(s) { return [(s && s.kind) || '', (s && s.title) || '', (s && (s.time || s.t)) || '', (s && s.period) || ''].join('|'); }
+  _sTombs() { try { return JSON.parse(localStorage.getItem('wtn-stop-tombs')) || {}; } catch (e) { return {}; } }
+  _addSTomb(tid, di, s) {
+    if (!tid || !s) return;
+    const t = this._sTombs(), now = Date.now(), k = tid + ':' + di + ':' + this._stopKey(s);
+    t[k] = now;
+    const cut = now - 90 * 864e5; Object.keys(t).forEach(x => { if (t[x] < cut) delete t[x]; });   // เก็บ 90 วันเท่าใบสั่งลบโมเมนต์
+    try { localStorage.setItem('wtn-stop-tombs', JSON.stringify(t)); } catch (e) {}
+    if (this._mSTombs) this._mSTombs[k] = now;
+  }
+  // ใส่กิจกรรมคีย์เดิมกลับเข้าไปใหม่ = ยกเลิกใบสั่งลบ ไม่งั้นซิงก์รอบหน้าจะลบให้อีกทั้งที่เพิ่งเพิ่ม
+  // เรียกจาก saveItinerary จุดเดียว เพราะทุกทางที่เพิ่มกิจกรรม (เพิ่มเอง/นำเข้าแผน/ผู้ช่วยจัดวัน) ผ่านตรงนั้นหมด
+  _sweepSTombs(tid, days) {
+    if (!tid) return;
+    const t = this._sTombs(); let hit = false;
+    (days || []).forEach((d, i) => (((d && d.stops) || [])).forEach(s => {
+      const k = tid + ':' + i + ':' + this._stopKey(s);
+      if (t[k]) { delete t[k]; hit = true; if (this._mSTombs) delete this._mSTombs[k]; }
+    }));
+    if (hit) { try { localStorage.setItem('wtn-stop-tombs', JSON.stringify(t)); } catch (e) {} }
+  }
   _pickNewer(l, r) {
     const lm = l._m || 0, rm = r._m || 0;
     let w = (lm !== rm) ? (lm > rm ? l : r)
@@ -3888,7 +3995,20 @@ class Component extends DCLogic {
     return out;
   }
   _mergeVal(k, bs, ls, rs) {
-    if (k === 'wtn-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ
+    if (k === 'wtn-tombs' || k === 'wtn-stop-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ (โมเมนต์ · รายกิจกรรมในแผน) — ต้องรวม ห้ามทับ
+    // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องรวมกัน ห้ามทับกัน — เคยพังจริง (22 ก.ย. 2569)
+    //   เจ้าของทำรูปย่อครบ 434 รูปบนเดสก์ท็อป แล้วกล่อง "ดูแลรูปภาพ" กลับมาขึ้นอีกเองทั้งที่ไม่ได้ทำอะไร
+    //   เพราะกฎรวมข้อมูลทั่วไปข้างล่างมีบรรทัด `if (ls === bs) return rs;` = "ฉันไม่ได้แก้ → เอาของอีกเครื่อง"
+    //   พอ iOS ดึงภาพกลางคัน (~300 รูป) ไปแล้วดันกลับขึ้นคลาวด์ เดสก์ท็อปที่ไม่ได้แก้อะไรเลยก็รับของ 300 มาทับ 434
+    //   → งานที่ทำเสร็จแล้วหายไป 134 รูป กล่องเด้งกลับ และจะปิงปองกันไปมาไม่จบระหว่างเครื่อง
+    //   ตารางพวกนี้เป็นบันทึก "เคยทำแล้ว" ต่อรายการ ไม่ใช่ค่าที่คนแก้ → union เสมอ ไม่มีวันเสียของ
+    if (k === 'wtn-thumb-map' || k === 'wtn-rehost-map') {
+      const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {};
+      const out = Object.assign({}, r, l);
+      // ฝั่งที่ทำสำเร็จ (1) ชนะฝั่งที่ทำไม่ผ่าน ('x') ไม่งั้นรูปที่ทำได้แล้วจะถูกตีตราว่าเสียตลอดไป
+      Object.keys(r).forEach(u => { if (r[u] === 1 && out[u] === 'x') out[u] = 1; });
+      return JSON.stringify(out);
+    }
     if (k === 'wtn-itinerary') {
       if (ls === undefined) return rs;
       if (rs === undefined) return ls;
@@ -3927,20 +4047,26 @@ class Component extends DCLogic {
       if (!Array.isArray(ld)) { out[id] = rd; return; }
       if (!Array.isArray(rd)) { out[id] = ld; return; }
       const n = Math.max(ld.length, rd.length), days = [];
-      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i]));
+      for (let i = 0; i < n; i++) days.push(this._mergeDay(bd[i], ld[i], rd[i], id + ':' + i + ':'));
       out[id] = days;
     });
     return JSON.stringify(out);
   }
   STAY_PH = /ยังไม่ได้เลือกที่พัก|No stay picked yet|ยังไม่มีชื่อวัน|No day name yet|เพิ่มได้ในโหมดแก้ไข|แตะ “แก้ไข”|Tap “Edit”/;
-  _mergeDay(bd, ld, rd) {
+  _mergeDay(bd, ld, rd, pre) {
     if (!ld) return rd;
     if (!rd) return ld;
     const key = s => [s.kind || '', s.title || '', s.time || s.t || '', s.period || ''].join('|');
+    // ⚠ ใบสั่งลบรายกิจกรรม — ต้องกรอง "ทั้งสองฝั่ง"
+    //   ฝั่งอีกเครื่อง: เครื่องรุ่นเก่า (iOS/Android ที่ยังไม่ได้อัปเดต) จะดันใบที่ลบแล้วขึ้นคลาวด์ซ้ำได้เรื่อยๆ
+    //   ฝั่งเราเอง: เครื่องที่เพิ่งรับใบสั่งลบมาจากอีกเครื่อง ต้องเอาของตัวเองออกด้วย การลบถึงจะข้ามเครื่องได้จริง
+    const T = this._mSTombs || this._sTombs();
+    const dead = pre ? (s => !!T[pre + key(s)]) : (() => false);
+    const lsv = ((ld.stops) || []).filter(s => !dead(s));
     const bk = new Set(((bd && bd.stops) || []).map(key));
-    const lk = new Set(((ld.stops) || []).map(key));
-    const stops = [...((ld.stops) || [])];
-    ((rd.stops) || []).forEach(s => { const k = key(s); if (!lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
+    const lk = new Set(lsv.map(key));
+    const stops = [...lsv];
+    ((rd.stops) || []).forEach(s => { const k = key(s); if (!dead(s) && !lk.has(k) && !bk.has(k)) stops.push(s); }); // ของอีกเครื่องที่เรายังไม่มี · ที่ base มีแต่เราตัดออก = ลบจริง ไม่เอากลับ
     const pick = (f, ph) => {
       const lv = ld[f], rv = rd[f], bv = bd ? bd[f] : undefined;
       if (lv === rv) return lv;
@@ -4082,6 +4208,8 @@ class Component extends DCLogic {
     const remote = remoteData || {};
     const lt = this._parseJSON(local['wtn-tombs']) || {}, rt = this._parseJSON(remote['wtn-tombs']) || {};
     this._mTombs = Object.assign({}, rt, lt); // รวมคำสั่งลบจากทุกเครื่อง
+    const lst = this._parseJSON(local['wtn-stop-tombs']) || {}, rst = this._parseJSON(remote['wtn-stop-tombs']) || {};
+    this._mSTombs = Object.assign({}, rst, lst); // ใบสั่งลบรายกิจกรรมในแผน — ใช้ใน _mergeDay
     const out = {};
     new Set([...Object.keys(base), ...Object.keys(local), ...Object.keys(remote)]).forEach(k => {
       if (k === 'wtn-cloud-at' || k === 'wtn-img-map' || k === 'wtn-sync-base') return;
@@ -4106,9 +4234,19 @@ class Component extends DCLogic {
     const base = this._getBase() || {};
     this._applyingCloud = true;
     try {
-      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 };
+      // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องเขียนลงเครื่องด้วย — ชิ้นที่ตกหล่นจาก 22i (22 ก.ย. 2569)
+      //   22i แก้ให้ _mergeVal "รวม" ตารางแทนการทับกัน แต่ลืมจุดนี้ไป
+      //   keep = "ห้ามเขียนทับของในเครื่อง" → ค่าที่รวมแล้วถูกดันขึ้นคลาวด์อย่างเดียว
+      //   ส่วนเครื่องตัวเองยังถือตารางเก่าที่ไม่ครบอยู่ตลอดกาล ซิงก์กี่รอบก็ไม่มีวันครบ
+      //   เดสก์ท็อปไม่มีอาการเพราะมันเป็นคนทำงานเอง ตารางเลยครบอยู่แล้ว — อาการโผล่เฉพาะเครื่องอื่น
+      //   (เจ้าของ: "web app ในมือถือ ยังเหลือรูปให้ย่อ 298" ทั้งที่คลาวด์ครบ 434 และคอมขึ้น 0)
+      //   เขียนได้แล้วอย่างปลอดภัย เพราะ _mergeVal คืนค่าที่เป็น superset ของในเครื่องเสมอ
+      //   (Object.assign({}, remote, local) — ของในเครื่องชนะทุกคีย์ ไม่มีทางหายไป)
+      //   ⚠ แต่ยัง "ห้ามลบ" ทั้งสองคีย์นี้ ใช้ noDel แยกไว้ต่างหาก
+      const keep = { 'wtn-auth': 1, 'wtn-cloud-at': 1, 'wtn-img-map': 1, 'wtn-sync-base': 1, 'wtn-premium': 1, 'wtn-premium-plan': 1 };
+      const noDel = Object.assign({ 'wtn-thumb-map': 1, 'wtn-rehost-map': 1 }, keep);
       const toDel = [];
-      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || keep[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || noDel[k]) continue; if (k.indexOf('photopick:') === 0) continue; if (/^wtn-/.test(k) && (k in base) && !(k in map)) toDel.push(k); } // ลบเฉพาะคีย์ที่เคยซิงก์แล้วและ merge ตัดสินว่าถูกลบจริง
       toDel.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       Object.keys(map).forEach(k => { if (keep[k]) return; this._setLS(k, map[k]); });
     } finally { this._applyingCloud = false; }
@@ -4641,7 +4779,7 @@ class Component extends DCLogic {
   }
   get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
   itineraryOf(id) { return this.itineraries[id] || null; }
-  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } }
+  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this._sweepSTombs(id, days); }
   patchDay(i, patch) {
     const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[i]) return;
@@ -4934,12 +5072,31 @@ class Component extends DCLogic {
   }
   catKind(cat) { return { place: 'ที่เที่ยว', act: 'กิจกรรม', food: 'กิน', go: 'เดินทาง' }[cat] || 'ที่เที่ยว'; }
   baseDaysFor(tid) {
-    const it = this.itineraryOf(tid); if (it && it.length) return this.withRealDates(it, tid);
+    const it = this.itineraryOf(tid); if (it && it.length) return this.withRealDates(this.padDays(it, tid), tid);
     if (tid === 'kazakh') return this.kzDays;
     if (tid === 'yamagata') return this.jpDays;
     if (tid === 'blank') return this.blankDays;
     const ut = this.userTrips.find(x => x.id === tid); if (ut) return this.userDays(ut);
     return this.blankDays;
+  }
+  // ⚠ ยืดวันเดินทางแล้ว "จำนวนวัน" ต้องเพิ่มตาม — เคยเป็นบั๊ก (22 ก.ย. 2569)
+  //   baseDaysFor คืนแผนที่บันทึกไว้ทั้งก้อน จำนวนวันจึงค้างที่ตอนสร้างทริป
+  //   เจ้าของขยายวันสุดท้ายเป็น 17 เม.ย. แต่แถบวันยังมีแค่ 7 วัน เพราะแผนเก่าถูกบันทึกไว้แล้ว
+  //   ⚠ เติมท้ายอย่างเดียว ห้ามตัดทิ้งเด็ดขาด — วันที่มีอยู่มีกิจกรรม/ที่พักผูกอยู่
+  //     และเช็กอิน/โมเมนต์คีย์ด้วย 'tripId:index' ถ้าตัดวัน ของพวกนั้นจะกลายเป็นขยะที่หาไม่เจอ
+  //     (ย่นวันเดินทางให้สั้นลงจึงไม่ลบวันให้ ต้องให้คนตัดสินใจเอง)
+  padDays(days, tid) {
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    const n = t ? this.dayCount(t.start, t.end) : 0;
+    if (!n || n <= days.length) return days;
+    const out = days.slice();
+    for (let i = days.length; i < n; i++) out.push(this.blankDay(i));
+    return out;
+  }
+  blankDay(i) {
+    return { n: String(i + 1), date: '', tag: 'วันที่ ' + (i + 1),
+      city: 'ยังไม่มีชื่อวัน', summary: 'แตะ “แก้ไข” เพื่อตั้งชื่อวัน แล้วเพิ่มกิจกรรมแรก', stops: [],
+      stayName: 'ยังไม่ได้เลือกที่พัก', stayMeta: 'เพิ่มได้ในโหมดแก้ไข' };
   }
   // แผนที่บันทึกไว้เก็บ label วันแบบตายตัว — ถ้าทริปมีวันเริ่มแล้ว ให้คำนวณวันที่จริงใหม่ทุกครั้ง
   withRealDates(days, tid) {
@@ -4949,8 +5106,39 @@ class Component extends DCLogic {
     const M = this.thMonths();
     return days.map((d, i) => {
       const dt = new Date(start.getTime() + i * 86400000);
-      return { ...d, date: dt.getDate() + ' ' + M[dt.getMonth()] };
+      const date = dt.getDate() + ' ' + M[dt.getMonth()];
+      // ⚠ tag ถูกเขียนตายไว้ตอนนำเข้าแผน (importVelaPlan) — เดิมไม่ได้คำนวณใหม่ตรงนี้
+      //   ผลคือหัวข้อวันโชว์วันที่เก่าค้าง ("วันที่ 1 · 8 ม.ค.") ขัดกับชิปวันข้างบนที่ถูกต้อง
+      return { ...d, date, tag: (this.lang === 'en' ? 'Day ' : 'วันที่ ') + (d.n || (i + 1)) + ' · ' + date };
     });
+  }
+  // ปุ่ม + ในแถบวัน — เดิมไม่มี onClick เลย กดแล้วไม่เกิดอะไร (แก้ 22 ก.ย. 2569)
+  // ขยาย "วันสุดท้ายของทริป" แทนการต่อวันลงแผนตรงๆ เพื่อให้ช่วงวันเดินทางกับจำนวนวันเป็นความจริงอันเดียวกัน
+  // (ถ้าต่อลงแผนเฉยๆ หัวทริปจะบอก 7 วัน แต่แถบวันมี 8 — คนละความจริงสองอัน แบบที่เพิ่งเจอ)
+  addTripDay() {
+    if (this.days.length >= 90) { this.showToast('ทริปหนึ่งเก็บได้ไม่เกิน 90 วัน'); return; }
+    const tid = this.state.trip;
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    if (t && t.start && t.end) {
+      const e = new Date(t.end);
+      if (!isNaN(e)) {
+        const nx = new Date(e.getTime() + 86400000).toISOString().slice(0, 10);
+        if (this.dayCount(t.start, nx) > this.dayCount(t.start, t.end)) {
+          this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, end: nx } : x));
+          const i = this.days.length - 1;
+          this.setState({ day: i });
+          this.showToast('เพิ่มวันที่ ' + (i + 1) + ' · วันสุดท้ายของทริปเลื่อนเป็น ' + (this.days[i] || {}).date);
+          return;
+        }
+      }
+    }
+    // ทริปที่ยังไม่ได้ตั้งวันเดินทาง — ต่อวันลงแผนตรงๆ
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    const i = days.length;
+    days.push(this.blankDay(i));
+    this.saveItinerary(tid, days);
+    this.setState({ day: i });
+    this.showToast('เพิ่มวันที่ ' + (i + 1) + ' แล้ว');
   }
   openAddPick(payload) {
     const trips = this.userTrips;
@@ -5084,7 +5272,10 @@ class Component extends DCLogic {
     const i = this.state.day;
     if (origin === 'base') {
       const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
-      if (days[i]) { days[i].stops.splice(si, 1); this.saveItinerary(this.state.trip, days); this.forceUpdate(); }
+      if (days[i]) {
+        this._addSTomb(this.state.trip, i, days[i].stops[si]);   // ⚠ ต้องจดก่อนตัดออก ไม่งั้นอีกเครื่องดันกลับขึ้นมาทีหลัง
+        days[i].stops.splice(si, 1); this.saveItinerary(this.state.trip, days); this.forceUpdate();
+      }
     } else {
       const key = this.state.trip + ':' + i, added = { ...(this.state.added || {}) }, list = [...(added[key] || [])];
       list.splice(si, 1); added[key] = list; this.setState({ added });
@@ -8028,11 +8219,11 @@ class Component extends DCLogic {
       // wtn-sync-base คือ "ของที่เคยซิงก์แล้ว" ของบัญชีเดิม · พอ merge เจอคีย์อยู่ใน base แต่ไม่มีบนคลาวด์
       // ของบัญชีใหม่ มันแปลว่า "อีกเครื่องลบไปแล้ว" → ลบทิ้งหมด · ล้าง baseline แล้วของที่กู้มาจะนับเป็น
       // ของใหม่ในเครื่อง แล้วถูกดันขึ้นคลาวด์ตามปกติ
-      const SKIP = { 'wtn-sync-base': 1, 'wtn-cloud-at': 1, 'wtn-tombs': 1, 'wtn-auth': 1,
+      const SKIP = { 'wtn-sync-base': 1, 'wtn-cloud-at': 1, 'wtn-tombs': 1, 'wtn-stop-tombs': 1, 'wtn-auth': 1,
         'wtn-img-map': 1, 'wtn-thumb-map': 1, 'wtn-rehost-map': 1, 'wtn-base-v2': 1,
         'wtn-premium': 1, 'wtn-premium-plan': 1 };
       Object.keys(d).forEach(k => { if (SKIP[k]) return; if (/^wtn-/.test(k) || k.indexOf('photopick:') === 0) this._setLS(k, d[k]); });
-      try { ['wtn-sync-base', 'wtn-cloud-at', 'wtn-tombs'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
+      try { ['wtn-sync-base', 'wtn-cloud-at', 'wtn-tombs', 'wtn-stop-tombs'].forEach(k => localStorage.removeItem(k)); } catch (e) {}
       this._baseMem = null;
       // ⚠️ baseline มีสำเนาอยู่ใน IndexedDB ด้วย (`sync-base`) — ลบแต่ใน localStorage ไม่พอ
       // ตัวที่ค้างคือเหตุที่ "กู้ข้ามบัญชีแล้วข้อมูลเด้งหายกลับเป็นของบัญชีเดิม":
@@ -8846,13 +9037,46 @@ class Component extends DCLogic {
   // ---------- โปรแกรมการเดินทาง (เอกสาร A4 แบบที่ทัวร์ส่งให้ลูกค้า) ----------
   // window.print() ใน WebView ของ iOS/Android ไม่ทำงาน → สร้างเอกสารเป็นไฟล์ HTML
   // เปิดอ่านในแอปได้ทันที และเซฟไฟล์ไปพิมพ์/แชร์ต่อได้
+  // ⚠ รูปในเอกสาร — เคยพลาดมาแล้วว่า "รูปไม่มา" (22 ก.ย. 2569)
+  // ของเดิมดึงปกจากช่องเดียว: photopick:wtn-cover-<trip> ซึ่งมีค่าต่อเมื่อผู้ใช้ "กดเลือกปก" เอง
+  // คนส่วนใหญ่ไม่เคยกด → cover = '' → เอกสารออกมาไม่มีรูปสักใบ ทั้งที่ในทริปมีรูปเต็มไปหมด
+  // ตอนนี้ไล่สำรองแบบเดียวกับโฟโต้บุ๊ก แล้วตกท้ายที่รูปเช็กอินใบแรกของทริป
+  async planDocPhotos(trip) {
+    const out = { cover: '', byDay: {} };
+    const ci = this.checkins || {};
+    for (let i = 0; i < this.days.length; i++) {
+      const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0));
+      const urls = [];
+      for (const c of list) {
+        for (const ref of ((c && c.photos) || [])) {
+          if (urls.length >= 3) break;
+          if (this.spriteOf(ref)) continue;                  // sprite = รูปย่อของระบบ ไม่ใช่รูปจริง
+          let r = '';
+          try { r = await this.resolvePhoto(ref) || ''; } catch (e) {}
+          if (r && urls.indexOf(r) < 0) urls.push(r);
+        }
+        if (urls.length >= 3) break;
+      }
+      if (urls.length) out.byDay[i] = urls;
+    }
+    let cov = this.coverOf('wtn-cover-' + trip, '') || this.coverOf('wtn-pb-cover-' + trip, '') ||
+      this.coverOf('wtn-eb-cover-' + trip, '') || '';
+    try { cov = await this.resolvePhoto(cov) || ''; } catch (e) { cov = ''; }
+    if (!cov) {
+      const first = Object.keys(out.byDay).map(Number).sort((a, b) => a - b)[0];
+      if (first != null) cov = (out.byDay[first] || [])[0] || '';
+    }
+    out.cover = cov;
+    return out;
+  }
   async planDocData() {
     const t = this.userTrips.find(x => x.id === this.state.trip) || {};
     const info = this.tripInfo;
     const EN = this.lang === 'en';
     const title = String(t.name || info.title || (EN ? 'My trip' : 'ทริปของฉัน')).replace(/\s*·\s*\d+\s*(วัน|days?)\s*$/i, '');
-    let cover = '';
-    try { cover = await this.resolvePhoto(this.coverOf('wtn-cover-' + this.state.trip, '') || ''); } catch (e) {}
+    let P = { cover: '', byDay: {} };
+    try { P = await this.planDocPhotos(this.state.trip); } catch (e) {}
+    const cover = P.cover || '';
     const days = this.days.map((d, i) => {
       const key = this.state.trip + ':' + i;
       const stops = [...(d.stops || []), ...(((this.state.added || {})[key]) || [])].map(s => {
@@ -8861,14 +9085,16 @@ class Component extends DCLogic {
       }).filter(s => s.title || s.kind);
       const noStay = ['ยังไม่ได้เลือกที่พัก', 'No stay picked yet'];
       return { n: d.n || (i + 1), date: d.date || '', city: d.city || '', summary: d.summary || '',
-        stops, stay: (d.stayName && noStay.indexOf(d.stayName) < 0) ? d.stayName : '', stayMeta: d.stayMeta || '' };
+        stops, stay: (d.stayName && noStay.indexOf(d.stayName) < 0) ? d.stayName : '', stayMeta: d.stayMeta || '',
+        photos: P.byDay[i] || [] };
     });
     return { EN, title, cover, days,
       country: t.country || '', city: t.city || '',
       when: this.fmtRange(t.start, t.end) || [t.start, t.end].filter(Boolean).join(' – '),
       budget: t.budget ? Number(t.budget).toLocaleString() : '',
       author: (this.profile.name || '').trim(),
-      stopCount: days.reduce((a, d) => a + d.stops.length, 0) };
+      stopCount: days.reduce((a, d) => a + d.stops.length, 0),
+      photoCount: days.reduce((a, d) => a + d.photos.length, 0) + (cover ? 1 : 0) };
   }
   planDocHtml(D) {
     const E = s => this._esc(s);
@@ -8957,6 +9183,287 @@ class Component extends DCLogic {
       '<div class="foot"><span>' + E(D.title) + '</span><span>' + E(L.foot) + '</span></div>' +
       '</div></body></html>';
   }
+  // ---------- PDF โปรแกรมเดินทาง — ไฟล์จริง กดครั้งเดียวเข้า share sheet ----------
+  // ทำไมวาดหน้ากระดาษเป็น "ภาพ" แทนที่จะฝังฟอนต์ลง PDF:
+  //   ตัวสร้าง PDF ฝั่ง JS ไม่มีตัวจัดรูปอักษรไทย (Thai shaping) — สระบน/ล่าง/วรรณยุกต์จะลอยผิดที่
+  //   ปล่อยให้เบราว์เซอร์วาดลง canvas แทน ได้หน้าตาตรงกับที่เห็นบนจอ 100%
+  //   และไม่ต้องพึ่ง window.print() ซึ่งใช้ไม่ได้ใน WebView ของ iOS/Android
+  //   (นั่นคือเหตุผลที่ของเดิมออกมาเป็นไฟล์ .html แล้วต้องไปสั่งพิมพ์เอง = หลายขั้น)
+  // แลกกับ: ผู้รับคัดลอกข้อความจากไฟล์ไม่ได้ · ไฟล์ราว 200–400 KB ต่อหน้า
+  // ⚠ หน่วยความจำ: canvas A4 หนึ่งหน้า = 1240×1754×4 ≈ 8.7 MB และระหว่างวาดเก็บไว้ทุกหน้า
+  //   → ปล่อยทิ้งทันทีหลังแปลงเป็น JPEG (ตั้ง width/height = 0) และจำกัดจำนวนหน้าไว้ที่ PDF_MAX
+  get PDF_MAX() { return 30; }
+  // ห่อภาพ JPEG เป็นไฟล์ PDF ด้วยมือ — ไม่ต้องพึ่งไลบรารีข้างนอก (แอปเป็นไฟล์เดียว ต้องไม่โหลดอะไรเพิ่ม)
+  _pdfFromJpegs(shots) {
+    const PW = 595.28, PH = 841.89;                 // A4 ในหน่วย point (72 ต่อนิ้ว)
+    const bin = s => { const a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i) & 255; return a; };
+    const parts = []; let len = 0;
+    const put = u => { parts.push(u); len += u.length; };
+    const off = [0];                                 // ตำแหน่ง byte ของแต่ละ object (ต้องตรงเป๊ะ ไม่งั้นไฟล์เปิดไม่ขึ้น)
+    const N = shots.length;
+    put(bin('%PDF-1.4\n%âãÏÓ\n'));
+    off[1] = len; put(bin('1 0 obj\n<</Type/Catalog/Pages 2 0 R>>\nendobj\n'));
+    const kids = []; for (let i = 0; i < N; i++) kids.push((3 + i * 3) + ' 0 R');
+    off[2] = len; put(bin('2 0 obj\n<</Type/Pages/Kids[' + kids.join(' ') + ']/Count ' + N + '>>\nendobj\n'));
+    for (let i = 0; i < N; i++) {
+      const pn = 3 + i * 3, cn = pn + 1, xn = pn + 2, s = shots[i];
+      off[pn] = len; put(bin(pn + ' 0 obj\n<</Type/Page/Parent 2 0 R/MediaBox[0 0 ' + PW + ' ' + PH +
+        ']/Resources<</XObject<</Im0 ' + xn + ' 0 R>>>>/Contents ' + cn + ' 0 R>>\nendobj\n'));
+      const draw = 'q ' + PW + ' 0 0 ' + PH + ' 0 0 cm /Im0 Do Q\n';
+      off[cn] = len; put(bin(cn + ' 0 obj\n<</Length ' + draw.length + '>>\nstream\n' + draw + 'endstream\nendobj\n'));
+      off[xn] = len; put(bin(xn + ' 0 obj\n<</Type/XObject/Subtype/Image/Width ' + s.w + '/Height ' + s.h +
+        '/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length ' + s.bytes.length + '>>\nstream\n'));
+      put(s.bytes); put(bin('\nendstream\nendobj\n'));
+    }
+    const xref = len, size = 3 + N * 3;
+    let t = 'xref\n0 ' + size + '\n0000000000 65535 f \n';
+    for (let n = 1; n < size; n++) t += String(off[n]).padStart(10, '0') + ' 00000 n \n';
+    t += 'trailer\n<</Size ' + size + '/Root 1 0 R>>\nstartxref\n' + xref + '\n%%EOF\n';
+    put(bin(t));
+    const out = new Uint8Array(len); let p = 0;
+    parts.forEach(c => { out.set(c, p); p += c.length; });
+    return new Blob([out], { type: 'application/pdf' });
+  }
+  // รูปเจ้าปัญหา (เซิร์ฟเวอร์เก่าไม่ตอบ / เน็ตหลุดกลางคัน) ต้องไม่ทำให้ทั้งไฟล์ค้าง
+  // ของเดิม _img ไม่มี timeout — onload/onerror ไม่ยิงเลยก็มี → แอปค้างที่ "กำลังทำ PDF…" ตลอดกาล
+  _imgCap(pr, ms) {
+    return Promise.race([
+      Promise.resolve(pr).catch(() => null),
+      new Promise(r => setTimeout(() => r(null), ms || 9000))]);
+  }
+  _cvJpegBytes(cv, q) {
+    return new Promise(res => {
+      const done = b => { try { b.arrayBuffer().then(a => res(new Uint8Array(a))).catch(() => res(null)); } catch (e) { res(null); } };
+      try { if (cv.toBlob) { cv.toBlob(b => b ? done(b) : res(null), 'image/jpeg', q); return; } } catch (e) {}
+      try { fetch(cv.toDataURL('image/jpeg', q)).then(r => r.blob()).then(done).catch(() => res(null)); } catch (e) { res(null); }
+    });
+  }
+  // วาดโปรแกรมเดินทางลงหน้ากระดาษ A4 — ขึ้นหน้าใหม่เองเมื่อเต็ม และไม่หั่นรายการเดียวคาสองหน้า
+  async planDocCanvases(D) {
+    // ฟอนต์โหลดแบบขี้เกียจ — ถ้าไม่สั่งโหลดก่อน canvas จะวาดด้วยฟอนต์สำรอง (หัวเรื่องจะไม่ใช่ Chonburi)
+    try {
+      await Promise.all([
+        document.fonts.load("400 60px 'Chonburi'", D.title || 'ก'),
+        document.fonts.load("600 30px 'Anuphan'", 'ก'),
+        document.fonts.load("500 30px 'Anuphan'", 'ก'),
+        document.fonts.load("400 29px 'Anuphan'", 'ก')]);
+    } catch (e) {}
+    try { await document.fonts.ready; } catch (e) {}
+    const W = 1240, H = 1754, M = 92, CW = W - M * 2;   // A4 ที่ 150 dpi · ขอบ ~15.5 มม.
+    const FOOT = 104;                                    // ที่ว่างท้ายกระดาษสำหรับเลขหน้า ห้ามเขียนทับ
+    const A = "'Anuphan',sans-serif", C = "'Chonburi',serif";
+    const EN = D.EN;
+    const L = EN
+      ? { doc: 'TRAVEL ITINERARY', day: 'Day', stay: 'Stay', dest: 'Destination', when: 'Dates', len: 'Length',
+          budget: 'Budget', acts: 'Activities', by: 'Planned by', days: 'days', items: 'items', foot: 'Made with Vela · onevela.net' }
+      : { doc: 'โปรแกรมการเดินทาง', day: 'วันที่', stay: 'ที่พัก', dest: 'จุดหมาย', when: 'วันเดินทาง', len: 'จำนวนวัน',
+          budget: 'งบประมาณ', acts: 'กิจกรรม', by: 'วางแผนโดย', days: 'วัน', items: 'รายการ', foot: 'จัดทำด้วย Vela · onevela.net' };
+    const pages = [];
+    let cv = null, cx = null, y = 0;
+    const newPage = () => {
+      cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      cx = cv.getContext('2d');
+      cx.fillStyle = '#fffdf8'; cx.fillRect(0, 0, W, H);
+      cx.textAlign = 'left'; cx.textBaseline = 'alphabetic';
+      pages.push(cv); y = M;
+    };
+    // ขึ้นหน้าใหม่ถ้าที่เหลือไม่พอ — เรียกก่อนเริ่มวาดก้อนใหม่ทุกครั้ง ห้ามเรียกกลางก้อน
+    const room = need => { if (y + need > H - FOOT && pages.length < this.PDF_MAX) newPage(); };
+    const sp = v => { try { cx.letterSpacing = v; } catch (e) {} };
+    const rr = (x, ry, w, h, r) => {
+      cx.beginPath();
+      cx.moveTo(x + r, ry); cx.arcTo(x + w, ry, x + w, ry + h, r);
+      cx.arcTo(x + w, ry + h, x, ry + h, r); cx.arcTo(x, ry + h, x, ry, r);
+      cx.arcTo(x, ry, x + w, ry, r); cx.closePath();
+    };
+    const one = (txt, maxW) => (this._cvWrap(cx, txt, maxW, 1) || [])[0] || '';
+    const para = (txt, font, color, x, maxW, lh) => {
+      cx.font = font;
+      const ls = this._cvWrap(cx, txt, maxW, 99) || [];
+      ls.forEach(l => {
+        room(lh);
+        cx.font = font; cx.fillStyle = color;      // ตั้งใหม่ทุกบรรทัด เผื่อ room() เพิ่งเปลี่ยนหน้า
+        cx.fillText(l, x, y + lh * 0.72); y += lh;
+      });
+    };
+    newPage();
+    // ---------- ปก ----------
+    let im = null, want = 0, got = 0, coverGot = 0;
+    // งบเวลารวมของการโหลดรูป — ทริปยาวที่รูปตายหมดจะกินเวลา 9 วิ × ทุกใบ ถ้าไม่มีเพดาน
+    const t0 = Date.now(), BUDGET = 45000;
+    // ⚠ ปกสำคัญที่สุด — "แผนเที่ยวส่งก่อนไปเที่ยว" แปลว่ายังไม่มีรูปเช็กอินเลย ปกคือรูปเดียวที่มี
+    //   จึงให้เวลานานกว่าใบอื่น และแยกนับไว้เพื่อบอกผู้ใช้ได้ตรงว่า "ปก" โหลดไม่ขึ้น
+    if (D.cover) { want++; im = await this._imgCap(this.loadImgForCanvas(D.cover), 18000); }
+    if (im && im.naturalWidth) {
+      got++; coverGot = 1;
+      const ch = 520;
+      cx.save(); rr(M, y, CW, ch, 20); cx.clip();
+      const s = Math.max(CW / im.naturalWidth, ch / im.naturalHeight);
+      const iw = im.naturalWidth * s, ih = im.naturalHeight * s;
+      cx.drawImage(im, M + (CW - iw) / 2, y + (ch - ih) / 2, iw, ih);
+      cx.restore();
+      y += ch + 34;
+    }
+    cx.font = '600 24px ' + A; cx.fillStyle = '#c05f39';
+    sp('4px'); cx.fillText(L.doc, M, y + 20); sp('0px');
+    y += 46;
+    para(D.title || '', '400 60px ' + C, '#2b241f', M, CW, 82);
+    y += 8;
+    const sub = [D.city, D.country].filter(Boolean).join(' · ');
+    if (sub) para(sub, '500 31px ' + A, '#7c7064', M, CW, 44);
+    y += 18;
+    // ---------- ตารางข้อมูลทริป 2 คอลัมน์ ----------
+    const facts = [[L.dest, [D.city, D.country].filter(Boolean).join(', ')], [L.when, D.when],
+      [L.len, D.days.length ? (D.days.length + ' ' + L.days) : ''], [L.budget, D.budget ? '฿' + D.budget : ''],
+      [L.acts, D.stopCount ? (D.stopCount + ' ' + L.items) : ''], [L.by, D.author]].filter(f => f[1]);
+    const colW = (CW - 38) / 2;
+    facts.forEach((f, i) => {
+      const col = i % 2;
+      if (col === 0) room(96);
+      const fx = M + col * (colW + 38), fy = y;
+      cx.fillStyle = 'rgba(43,36,32,.16)'; cx.fillRect(fx, fy, colW, 2);
+      cx.font = '600 21px ' + A; cx.fillStyle = '#a3968a';
+      sp('1.5px'); cx.fillText(f[0], fx, fy + 34); sp('0px');
+      cx.font = '600 30px ' + A; cx.fillStyle = '#2b241f';
+      cx.fillText(one(f[1], colW), fx, fy + 74);
+      if (col === 1 || i === facts.length - 1) y += 98;
+    });
+    y += 12;
+    cx.fillStyle = '#c05f39'; cx.fillRect(M, y, CW, 3);
+    y += 44;
+    // ---------- รายวัน ----------
+    const TW = 152;                                  // คอลัมน์เวลาซ้าย
+    for (const d of D.days) {
+      room(170);
+      cx.font = '600 26px ' + A;
+      const lab = L.day + ' ' + d.n, pw = cx.measureText(lab).width + 46;
+      cx.fillStyle = '#c05f39'; rr(M, y, pw, 50, 25); cx.fill();
+      cx.font = '600 26px ' + A; cx.fillStyle = '#fffaf0';
+      cx.fillText(lab, M + 23, y + 35);
+      if (d.city) {
+        cx.font = '600 34px ' + A; cx.fillStyle = '#2b241f';
+        cx.fillText(one(d.city, CW - pw - 260), M + pw + 22, y + 37);
+      }
+      if (d.date) {
+        cx.font = '500 26px ' + A; cx.fillStyle = '#8a7d6f';
+        cx.textAlign = 'right'; cx.fillText(d.date, W - M, y + 35); cx.textAlign = 'left';
+      }
+      y += 64;
+      cx.fillStyle = 'rgba(43,36,32,.16)'; cx.fillRect(M, y, CW, 2);
+      y += 24;
+      if (d.summary) { para(d.summary, '400 29px ' + A, '#5c5347', M, CW, 46); y += 12; }
+      d.stops.forEach(s => {
+        cx.font = '500 30px ' + A;
+        const tls = this._cvWrap(cx, s.title || '', CW - TW, 99) || [];
+        cx.font = '400 27px ' + A;
+        const nls = s.note ? (this._cvWrap(cx, s.note, CW - TW, 99) || []) : [];
+        const hR = tls.length * 42 + (nls.length ? nls.length * 40 + 8 : 0);
+        const rowH = Math.max(hR, s.kind ? 74 : 40) + 22;
+        room(rowH);                                  // รายการหนึ่งต้องอยู่หน้าเดียวกันทั้งอัน
+        const ry = y;
+        cx.font = '600 27px ' + A; cx.fillStyle = '#c05f39';
+        cx.fillText(one(s.when || '·', TW - 14), M, ry + 30);
+        if (s.kind) {
+          cx.font = '500 21px ' + A; cx.fillStyle = '#a3968a';
+          cx.fillText(one(s.kind, TW - 14), M, ry + 64);
+        }
+        let ty = ry;
+        tls.forEach(l => { cx.font = '500 30px ' + A; cx.fillStyle = '#2b241f'; cx.fillText(l, M + TW, ty + 30); ty += 42; });
+        if (nls.length) {
+          ty += 8;
+          nls.forEach(l => { cx.font = '400 27px ' + A; cx.fillStyle = '#7c7064'; cx.fillText(l, M + TW, ty + 28); ty += 40; });
+        }
+        y = ry + rowH;
+        cx.fillStyle = 'rgba(43,36,32,.10)'; cx.fillRect(M, y - 11, CW, 1);
+      });
+      // แถวรูปของวันนั้น — โหลดให้ครบก่อนค่อยวาง ถ้าโหลดไม่ขึ้นเลยก็ข้ามทั้งแถว ไม่ทิ้งช่องว่างเปล่า
+      const refs = (d.photos || []).slice(0, 3);
+      if (refs.length) {
+        const ims = [];
+        for (const u of refs) {
+          want++;
+          if (Date.now() - t0 > BUDGET) continue;        // หมดงบเวลา — นับเป็นโหลดไม่ขึ้น ให้ไปบอกผู้ใช้
+          const pim = await this._imgCap(this.loadImgForCanvas(u), 9000);
+          if (pim && pim.naturalWidth) { ims.push(pim); got++; }
+        }
+        if (ims.length) {
+          // เพดานความสูง: รูปใบเดียวจะกินเต็มความกว้าง ถ้าไม่คุมจะสูงเกือบครึ่งหน้า
+          const gap = 14, pw2 = (CW - gap * (ims.length - 1)) / ims.length,
+            phh = Math.round(Math.min(pw2 * 0.66, 360));
+          room(phh + 20);
+          const py = y;
+          ims.forEach((pim, k) => {
+            const px = M + k * (pw2 + gap);
+            cx.save(); rr(px, py, pw2, phh, 12); cx.clip();
+            const s2 = Math.max(pw2 / pim.naturalWidth, phh / pim.naturalHeight);
+            const iw2 = pim.naturalWidth * s2, ih2 = pim.naturalHeight * s2;
+            cx.drawImage(pim, px + (pw2 - iw2) / 2, py + (phh - ih2) / 2, iw2, ih2);
+            cx.restore();
+          });
+          y = py + phh + 20;
+        }
+      }
+      if (d.stay) {
+        cx.font = '500 27px ' + A;
+        const stxt = L.stay + '  ' + d.stay + (d.stayMeta ? ' · ' + d.stayMeta : '');
+        const sls = this._cvWrap(cx, stxt, CW - 44, 2) || [];
+        const bh = sls.length * 40 + 26;
+        room(bh + 14);
+        cx.fillStyle = '#f6efe2'; rr(M, y, CW, bh, 16); cx.fill();
+        sls.forEach((l, i) => { cx.font = '500 27px ' + A; cx.fillStyle = '#5c5347'; cx.fillText(l, M + 22, y + 38 + i * 40); });
+        y += bh + 10;
+      }
+      y += 32;
+    }
+    this._pdfShots = { want, got, coverWant: D.cover ? 1 : 0, coverGot };   // ใช้บอกผู้ใช้ว่ารูปไหนไม่มา
+    // ---------- ท้ายกระดาษ (ต้องรู้จำนวนหน้าก่อน จึงวาดทีหลัง) ----------
+    pages.forEach((p, i) => {
+      const c = p.getContext('2d');
+      c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+      c.fillStyle = 'rgba(43,36,32,.14)'; c.fillRect(M, H - 80, CW, 1);
+      c.font = '500 23px ' + A; c.fillStyle = '#a3968a';
+      c.fillText((this._cvWrap(c, D.title || '', CW - 480, 1) || [])[0] || '', M, H - 44);
+      c.textAlign = 'right';
+      c.fillText(L.foot + '   ·   ' + (i + 1) + '/' + pages.length, W - M, H - 44);
+      c.textAlign = 'left';
+    });
+    return pages;
+  }
+  async sharePlanPdf() {
+    if (this._pdfBusy) return;
+    this._pdfBusy = true;
+    this.showToast(this.lang === 'en' ? 'Making the PDF…' : 'กำลังทำ PDF…');
+    try {
+      const D = await this.planDocData();
+      const pages = await this.planDocCanvases(D);
+      const shots = [];
+      const q = pages.length > 8 ? 0.78 : 0.86;   // ทริปยาวๆ หลายสิบหน้า ไฟล์จะใหญ่เกินส่งในแชต
+      for (const p of pages) {
+        const bytes = await this._cvJpegBytes(p, q);
+        if (bytes) shots.push({ bytes, w: p.width, h: p.height });
+        try { p.width = p.height = 0; } catch (e) {}   // คืนหน่วยความจำทันที ไม่งั้นทริปยาวๆ แอปดับ
+      }
+      if (!shots.length) throw new Error('no pages');
+      const blob = this._pdfFromJpegs(shots);
+      const name = String(D.title || 'trip').replace(/[\\/:*?"<>|]/g, ' ').trim().slice(0, 48) +
+        (D.EN ? ' - itinerary.pdf' : ' - โปรแกรมเดินทาง.pdf');
+      // บอกก่อนส่งไฟล์ ไม่ใช่หลัง — ทอสต์ของ _deliverFile จะทับ และคนจะไม่รู้ว่ารูปหาย
+      const sh = this._pdfShots || { want: 0, got: 0, coverWant: 0, coverGot: 0 };
+      let warn = '';
+      if (sh.coverWant && !sh.coverGot) {
+        warn = this.lang === 'en' ? 'Made the PDF — but the cover photo would not load'
+                                  : 'ทำ PDF แล้ว — แต่รูปปกทริปโหลดไม่ขึ้น';
+      } else if (sh.want > sh.got) {
+        warn = this.lang === 'en' ? ('Made the PDF — ' + (sh.want - sh.got) + ' photo(s) would not load')
+                                  : ('ทำ PDF แล้ว — มีรูป ' + (sh.want - sh.got) + ' ใบโหลดไม่ขึ้น');
+      }
+      if (warn) { this.showToast(warn); await new Promise(r => setTimeout(r, 900)); }
+      await this._deliverFile(blob, name, D.EN ? 'Itinerary' : 'โปรแกรมการเดินทาง', 'application/pdf');
+    } catch (e) {
+      console.warn('[wtn] plan pdf', e);
+      this.showToast(this.lang === 'en' ? "Couldn't make the PDF" : 'ทำ PDF ไม่สำเร็จ');
+    } finally { this._pdfBusy = false; }
+  }
   // ลงทะเบียนเอกสารที่เปิดในหน้าอ่าน เพื่อให้ปุ่มบันทึกเดียวใช้ได้กับทุกเล่ม
   _regDoc(url, html, name, title, pdfHtml) {
     if (!this._docByUrl) this._docByUrl = {};
@@ -8988,25 +9495,41 @@ class Component extends DCLogic {
       this.showToast(this.lang === 'en' ? "Couldn't build the itinerary" : 'สร้างโปรแกรมไม่สำเร็จ');
     }
   }
+  // มือถือ/แท็บเล็ตจริงเท่านั้น — โน้ตบุ๊กจอสัมผัสของ Windows ต้องไม่เข้าเงื่อนไขนี้
+  // (เช็ก UA ไม่ใช่ maxTouchPoints เพราะโน้ตบุ๊กจอสัมผัสก็ได้ค่ามากกว่า 0)
+  get isTouchMobile() {
+    try {
+      const ua = navigator.userAgent || '';
+      if (/Android|iPhone|iPod|iPad/i.test(ua)) return true;
+      if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true;   // iPadOS อ้างตัวเป็น Mac
+      return false;
+    } catch (e) { return false; }
+  }
   // ส่งไฟล์ต่อให้ผู้ใช้: แอป = share sheet ของเครื่อง · เว็บมือถือ = Web Share · เว็บเดสก์ทอป = ดาวน์โหลด
   async _deliverFile(blob, name, title, mime) {
     if (this.isNativeApp) {
       try { if (await this._shareFileNative(blob, name, title)) return; } catch (e) {}
       try { if (await this._saveToDeviceNative(blob, name)) return; } catch (e) {}
     }
-    try {
-      const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title }); return; }
-        catch (e) { if (e && e.name === 'AbortError') return; }
-      }
-    } catch (e) {}
+    // ⚠ บนคอมห้ามใช้ Web Share — เคยพังมาแล้ว (22 ก.ย. 2569)
+    //   Chrome บน Windows ตอบ canShare({files}) = true แล้วเปิด "แผงแชร์ของ Windows" ให้
+    //   แต่ปุ่ม "คัดลอก" ในแผงนั้นคัดลอก *ลิงก์* ไม่ใช่ไฟล์ → ผู้ใช้ไปวางใน LINE/แชตแล้วไม่มีไฟล์ติดไป
+    //   บนคอมจึงดาวน์โหลดตรงๆ ได้ไฟล์จริงไว้แนบเอง · มือถือยังใช้แผงแชร์เพราะส่งเข้าแอปได้จริง
+    if (this.isTouchMobile) {
+      try {
+        const file = new File([blob], name, { type: mime || blob.type || 'application/octet-stream' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try { await navigator.share({ files: [file], title }); return; }
+          catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+      } catch (e) {}
+    }
     try {
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 8000);
-      this.showToast((this.lang === 'en' ? 'Saved: ' : 'บันทึกแล้ว: ') + name);
+      this.showToast((this.lang === 'en' ? 'Downloaded: ' : 'ดาวน์โหลดไฟล์แล้ว: ') + name);
     } catch (e) {
       this.showToast(this.lang === 'en' ? "Couldn't save the file" : 'บันทึกไฟล์ไม่สำเร็จ');
     }
@@ -9394,6 +9917,18 @@ class Component extends DCLogic {
     if (s) return s.tripId || '';
     return this.state.trip;
   }
+  // ⚠⚠ โฟโต้บุ๊กต้องยึด "ทริปที่เปิดอยู่" ไม่ใช่เรื่องเล่าที่ค้างอยู่ (23 ก.ย. 2569)
+  //   บนหน้า "สรุปทริป" สถิติรีแคปข้างบนใช้ this.state.trip แต่การ์ดโฟโต้บุ๊กใช้ ebTripId()
+  //   — คนละแหล่งบนหน้าจอเดียวกัน · ebTripId() ออกแบบมาเพื่อเล่ม EPUB จึงยึดเรื่องเล่าที่เปิดอยู่
+  //   และ "คืนค่าว่าง" ถ้าเรื่องนั้นไม่ผูกทริป (ตั้งใจ ห้ามแก้ที่ตัวมันเอง)
+  //   เจ้าของมีเรื่องนำเข้าจาก WordPress 69 เรื่องที่ไม่ผูกทริป พอเปิดอ่านเรื่องพวกนั้นแล้วมาหน้าสรุปทริป
+  //   หน้าเดียวกันจึงขึ้น "198 รูป" กับ "ทริปนี้ยังไม่มีรูป" พร้อมกัน — จำลองซ้ำได้แล้ว
+  //   ⚠ เปิดเล่มจากชั้นหนังสือ (_ebStoryOverride / _ebTripOverride) ต้องเคารพของเดิม ห้ามไปทับ
+  pbTripId() {
+    if (this._ebStoryOverride || this._ebTripOverride) return this.ebTripId();
+    if (this.state.screen === 'summary' && this.state.trip) return this.state.trip;
+    return this.ebTripId();
+  }
   // กุญแจเก็บของประจำเล่ม (ปก/รูปที่จัดวาง) — เล่มที่ไม่ผูกทริปใช้ id ของเรื่องแทน id ทริป
   ebKey() {
     const t = this.ebTripId();
@@ -9473,6 +10008,17 @@ class Component extends DCLogic {
     });
     return { byDay, extra };
   }
+  // เลือกได้ว่าตอนไหนลงเล่ม EPUB — สวิตช์อยู่ในรายชื่อตอนของเรื่องเล่า (22 ก.ย. 2569)
+  // ค่าเริ่มต้นคือ "ลง" (เช็ค === false ไม่ใช่ falsy) เพื่อให้เล่มที่เคยทำไว้หน้าตาไม่เปลี่ยน
+  chInBook(c) { return !(c && c.inBook === false); }
+  // ⚠ แผนที่ตอน "เฉพาะที่จะลงเล่ม" — ใช้ตอนสร้าง/ประเมินเล่มเท่านั้น
+  //   หน้าจัดรูปในเล่มกับหน้าแก้ไขต้องใช้ ebChapterMap() ตัวเต็ม ไม่งั้นตอนที่ปิดไว้จะหายไปจากที่แก้ไขด้วย
+  //   (โฟโต้บุ๊กไม่เกี่ยว — มันใช้รูปจากโมเมนต์ ไม่ได้ใช้เนื้อเรื่อง)
+  ebBookMap() {
+    const m = this.ebChapterMap(), byDay = {};
+    Object.keys(m.byDay).forEach(k => { if (this.chInBook(m.byDay[k])) byDay[k] = m.byDay[k]; });
+    return { byDay, extra: m.extra.filter(c => this.chInBook(c)) };
+  }
   // เช็คอินเก่าอาจถูกเก็บผิดวัน (บั๊กก่อน v16m) — จัดเข้าวันตามเวลาที่บันทึกไว้ แล้วเรียงตามเวลา
   healCheckinDays(tripId) {
     this.dedupeCheckins();
@@ -9537,7 +10083,7 @@ class Component extends DCLogic {
     if (trip) this.healCheckinDays(trip);
     const ci = trip ? (this.checkins || {}) : {};
     const n = trip ? Math.max(1, this.dayCount(t.start, t.end) || 0) : 0;   // ไม่มีทริป = ไม่มีวัน เล่มประกอบจากตอนล้วนๆ
-    const cmap = this.ebChapterMap();
+    const cmap = this.ebBookMap();                 // ตอนที่ปิดสวิตช์ "ใส่ในเล่ม" ไว้ ไม่เข้าเล่ม
     const EQ = this.pbQualities[this.pbQuality];
     const days = [];
     for (let i = 0; i < n; i++) {
@@ -10188,10 +10734,10 @@ class Component extends DCLogic {
     return { x: +v[0] || 0, y: +v[1] || 0, z: Math.max(1, +v[2] || 1), set: true };
   }
   get pbOrders() { try { return JSON.parse(localStorage.getItem('wtn-pb-order')) || {}; } catch (e) { return {}; } }
-  pbOrderOf(dayIdx) { const t = this.pbOrders[this.ebTripId()] || {}; const v = t[dayIdx]; return Array.isArray(v) ? v : null; }
+  pbOrderOf(dayIdx) { const t = this.pbOrders[this.pbTripId()] || {}; const v = t[dayIdx]; return Array.isArray(v) ? v : null; }
   savePbOrder(dayIdx, refs) {
     try {
-      const all = this.pbOrders, tid = this.ebTripId();
+      const all = this.pbOrders, tid = this.pbTripId();   // ⚠ ต้องเป็นทริปตัวเดียวกับที่การ์ด/pbGather ใช้ ไม่งั้นลำดับที่จัดไว้หาไม่เจอ
       all[tid] = all[tid] || {}; all[tid][dayIdx] = refs;
       localStorage.setItem('wtn-pb-order', JSON.stringify(all));
     } catch (e) {}
@@ -10559,7 +11105,7 @@ class Component extends DCLogic {
   openFrEdit(i) {
     const sl = this.pbFrameSlots()[i]; if (!sl) return;
     const f = this.pbFocalOf(sl.ref);
-    this.setState({ pbFr: { ref: sl.ref, u: sl.u, x: f.x, y: f.y, z: f.z } });
+    this.setState({ pbFr: { ref: sl.ref, u: sl.u, x: f.x, y: f.y, z: f.z, dn: sl.dn } });   // dn = วันของรูปนี้ ใช้ตอนลบ/เปลี่ยน
   }
   frSave() {
     const fr = this.state.pbFr; if (!fr || !fr.ref) return;
@@ -10580,16 +11126,148 @@ class Component extends DCLogic {
     this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: nx, y: ny } } : {}));
   }
   frUp() { if (!this._frD) return; this._frD = null; this.frSave(); }
-  pbShotCount(trip) {
-    const ci = this.checkins || {}, cmap = this.ebChapterMap();
-    const byDay = {};
-    Object.keys(ci).filter(k => k.indexOf(trip + ':') === 0).forEach(k => {
-      const i = +k.split(':')[1];
-      (ci[k] || []).forEach(c => { if (this.ciWantsPb(c)) byDay[i] = (byDay[i] || 0) + Math.min(6, (c.photos || []).filter(p => !this.spriteOf(p)).length); });
+  // ── รูปที่เพิ่มเองเข้าเล่ม — รูปกล้องใหญ่ที่ไม่ได้อยู่ในโมเมนต์ (23 ก.ย. 2569) ──
+  // เจ้าของ: "รูปถ่ายด้วยกล้องใหญ่ ยังไม่ได้ใส่เข้ามาตอนใช้มือถือ · เห็นรูปที่เข้ากับหน้านี้ ก็จะดึงไปใส่เลย"
+  // ⚠⚠ เก็บเป็น ref ของ IndexedDB ('idb:') แบบเดียวกับ "จัดรูปในเล่ม" ของ EPUB
+  //   ห้ามเก็บ data url ลง localStorage เด็ดขาด — พื้นที่หลักจำกัดราว 5 MB รูปกล้องใหญ่ใบเดียวก็เต็ม
+  //   ⚠⚠ แล้วรูปจะ "ขึ้นคลาวด์เองอัตโนมัติ" ไม่ต้องเขียนโค้ดอัปเลย — ตัวยกรูปขึ้นคลาวด์ (hoistImages)
+  //   กวาดทุกคีย์ wtn-* หา ref แบบ 'idb:p...' แล้วอัปให้ พร้อมเขียนทับ ref เป็นลิงก์ให้เอง
+  //   (ยืนยันจากการทดลองจริง 23 ก.ย. 69: หลังเพิ่มรูป ค่าที่เก็บกลายเป็นลิงก์ https ของ R2)
+  //   ผลคือ "รูปที่เพิ่มข้ามเครื่องได้จริง" แต่ก็ "กินพื้นที่เก็บและโควตาอัปโหลด" ตามจำนวนรูปที่เพิ่ม
+  //   ⚠ อย่าเขียนโค้ดอัปเองซ้ำอีกชั้น เดี๋ยวจะอัปสองรอบ
+  // ⚠ รูปที่เพิ่มตรงนี้ "ไม่กลายเป็นโมเมนต์" และไม่โผล่ในฟีด — อยู่แค่ในเล่ม ตามที่เจ้าของขอให้คงของเดิมไว้
+  get pbExtras() { try { return JSON.parse(localStorage.getItem('wtn-pb-extra')) || {}; } catch (e) { return {}; } }
+  pbExtraOf(trip, i) { const a = this.pbExtras[trip + ':' + i]; return Array.isArray(a) ? a : []; }
+  savePbExtras(all) { try { localStorage.setItem('wtn-pb-extra', JSON.stringify(all)); } catch (e) {} }
+  pbAddExtra(trip, i, refs) {
+    if (!trip || !refs || !refs.length) return;
+    const all = this.pbExtras, k = trip + ':' + i;
+    const cur = Array.isArray(all[k]) ? all[k].slice() : [];
+    refs.forEach(r => { if (r && cur.indexOf(r) < 0) cur.push(r); });
+    all[k] = cur; this.savePbExtras(all);
+  }
+  // ── เอารูปออกจากเล่ม / เอากลับ (23 ก.ย. 2569) ─────────────────────────────
+  // ⚠⚠ "ลบ" ตรงนี้คือ "ไม่เอาเข้าเล่ม" เท่านั้น — ไม่แตะโมเมนต์ ไม่แตะรูปต้นฉบับ
+  //   เก็บเป็นรายการแยก (wtn-pb-off) เพื่อให้ "เอากลับ" ได้เสมอจากแถบท้ายหน้า
+  //   ห้ามทำเป็นลบจริงเด็ดขาด — ลบแล้วเอาคืนไม่ได้คือของอันตรายที่สุดในแอปนี้
+  get pbOffs() { try { return JSON.parse(localStorage.getItem('wtn-pb-off')) || {}; } catch (e) { return {}; } }
+  pbOffOf(trip, i) { const a = this.pbOffs[trip + ':' + i]; return Array.isArray(a) ? a : []; }
+  pbSetOff(trip, i, ref, on) {
+    if (!trip || !ref || i < 0) return;
+    const all = this.pbOffs, k = trip + ':' + i;
+    let cur = Array.isArray(all[k]) ? all[k].slice() : [];
+    if (on) { if (cur.indexOf(ref) < 0) cur.push(ref); } else cur = cur.filter(r => r !== ref);
+    if (cur.length) all[k] = cur; else delete all[k];
+    try { localStorage.setItem('wtn-pb-off', JSON.stringify(all)); } catch (e) {}
+  }
+  async pbRefresh() {
+    try { this._pbData = await this.pbGather(); } catch (e) { console.warn('[wtn] pb regather', e); }
+    this.setState({ pbPct: 0 });
+    this.forceUpdate();
+  }
+  // เลือกไฟล์จากเครื่อง → ย่อ → เก็บลง IDB → คืนรายการ ref
+  // ⚠ 2600 พิกเซลคือความกว้างจอ iPad Pro พอดี — เจ้าของไม่ได้เอาไปพิมพ์ แต่ "เปิดดูบน iPad/จอคอมแล้วต้องไม่แตก"
+  //   จำนวนพิกเซลคือตัวที่ทำให้ไม่แตก · คุณภาพการบีบคือตัวที่ทำให้ไฟล์ไม่ใหญ่
+  //   จึงคงพิกเซลไว้ แล้วลดคุณภาพการบีบจาก 0.9 → 0.85 แทน (ไฟล์เล็กลงราว 25–30% ตาเปล่าบนจอแยกไม่ออก)
+  pbPickFiles(multi) {
+    return new Promise(res => {
+      const inp = document.createElement('input');
+      inp.type = 'file'; inp.accept = 'image/*'; if (multi) inp.multiple = true; inp.style.display = 'none';
+      document.body.appendChild(inp);
+      let done = false;
+      const fin = v => { if (done) return; done = true; try { inp.remove(); } catch (e) {} res(v || []); };
+      inp.onchange = async () => {
+        const files = [...(inp.files || [])];
+        if (!files.length) return fin([]);
+        this._pbAddBusy = true;
+        this.setState({ pbAddBusy: true });
+        this.showToast('กำลังเตรียมรูป ' + files.length + ' ใบ…');
+        const refs = [];
+        for (const f of files) {
+          try {
+            const du = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(f); });
+            refs.push(await this.stashPhoto(await this.shrinkUrl(du, 2600, 0.85)));
+          } catch (e) { console.warn('[wtn] pb pick', e); }
+        }
+        this._pbAddBusy = false;
+        this.setState({ pbAddBusy: false });
+        if (!refs.length) this.showToast('อ่านไฟล์รูปไม่ได้ ลองใหม่อีกครั้ง');
+        fin(refs);
+      };
+      // กดยกเลิกในกล่องเลือกไฟล์ — เบราว์เซอร์ไม่ยิง change ให้ ต้องปลดล็อกเองไม่งั้นค้าง
+      window.addEventListener('focus', () => setTimeout(() => { if (!inp.files || !inp.files.length) fin([]); }, 900), { once: true });
+      inp.click();
     });
-    Object.keys(cmap.byDay).forEach(k => {
-      const ch = cmap.byDay[k];
-      byDay[+k] = (byDay[+k] || 0) + (ch.cover ? 1 : 0) + ((ch.photos || []).length);
+  }
+  // เพิ่มรูปเข้า "วันของหน้านี้" — กดจากหัวหน้าที่กำลังดูอยู่ ไม่ต้องเลือกวันเอง
+  async pbPickExtra(dn) {
+    if (this._pbAddBusy) return;
+    const trip = this.pbTripId(), i = (dn || 0) - 1;   // dn คือเลขวันแบบ 1..n · คีย์ที่เก็บใช้ index 0..n-1
+    if (!trip || i < 0) { this.showToast('ยังไม่รู้ว่าเป็นทริปไหน ลองเปิดจากหน้าสรุปทริปอีกครั้ง'); return; }
+    const refs = await this.pbPickFiles(true);
+    if (!refs.length) return;
+    this.pbAddExtra(trip, i, refs);
+    await this.pbRefresh();
+    this.showToast('เพิ่มรูป ' + refs.length + ' ใบเข้าวันที่ ' + (i + 1) + ' แล้ว');
+  }
+  async pbDropShot(ref, dn) {
+    const trip = this.pbTripId(), i = (dn || 0) - 1;
+    if (!trip || i < 0 || !ref) return;
+    this.pbSetOff(trip, i, ref, true);
+    this.setState({ pbFr: null });
+    await this.pbRefresh();
+    this.showToast('เอาออกจากเล่มแล้ว — รูปยังอยู่ในโมเมนต์ · เอากลับได้ที่ท้ายหน้า');
+  }
+  async pbRestoreShot(ref, i) {
+    const trip = this.pbTripId();
+    if (!trip || !ref || i < 0) return;
+    this.pbSetOff(trip, i, ref, false);
+    await this.pbRefresh();
+    this.showToast('เอารูปกลับเข้าเล่มแล้ว');
+  }
+  // เปลี่ยนรูปในช่องนี้ — รูปใหม่ไปนั่ง "ตำแหน่งเดิม" ของรูปเก่า ผู้ใช้ไม่ต้องลากเอง
+  async pbReplaceShot(ref, dn) {
+    if (this._pbAddBusy) return;
+    const trip = this.pbTripId(), i = (dn || 0) - 1;
+    if (!trip || i < 0 || !ref) return;
+    const pos = this.pbShotPos(ref);                  // ⚠ ต้องจดตำแหน่งก่อน จะ gather ใหม่แล้วตำแหน่งเปลี่ยน
+    const refs = await this.pbPickFiles(false);
+    if (!refs.length) return;
+    const nu = refs[0];
+    this.pbAddExtra(trip, i, [nu]);
+    this.pbSetOff(trip, i, ref, true);                // รูปเก่าแค่ถูกเอาออก ยังกดเอากลับได้
+    this.setState({ pbFr: null });
+    await this.pbRefresh();
+    try {
+      const d = ((this._pbData || {}).days || []).find(dd => dd.n === dn);
+      if (d && pos && pos.i >= 0) {
+        const arr = d.shots.slice();
+        const k = arr.findIndex(s => s.ref === nu);
+        if (k >= 0) {
+          const [s] = arr.splice(k, 1);
+          arr.splice(Math.min(pos.i, arr.length), 0, s);
+          d.shots = arr; d.pinned = true;
+          this.savePbOrder(i, arr.map(x => x.ref));
+        }
+      }
+    } catch (e) { console.warn('[wtn] pb replace order', e); }
+    this.forceUpdate();
+    this.showToast('เปลี่ยนรูปแล้ว — รูปเดิมเอากลับได้ที่ท้ายหน้า');
+  }
+  // ⚠⚠ ตัวเลขบนการ์ดต้องตรงกับเล่มจริงเสมอ — ตรงนี้จึงต้องคัดรูปด้วยกติกาเดียวกับ pbGather เป๊ะๆ
+  //   (เคยบวกรูปของเรื่องเล่าเข้ามาด้วย การ์ดเลยบอก 137 ทั้งที่เล่มได้ 126 — pbGather ข้ามรูปพวกนั้นโดยตั้งใจ)
+  //   แก้ตรงไหนใน pbGather ต้องมาแก้ตรงนี้ด้วยทุกครั้ง
+  pbShotCount(trip) {
+    const ci = this.checkins || {}, ex = this.pbExtras, byDay = {}, dayIdx = new Set();
+    Object.keys(ci).forEach(k => { if (k.indexOf(trip + ':') === 0) dayIdx.add(+k.split(':')[1]); });
+    Object.keys(ex).forEach(k => { if (k.indexOf(trip + ':') === 0) dayIdx.add(+k.split(':')[1]); });
+    dayIdx.forEach(i => {
+      const off = new Set(this.pbOffOf(trip, i)), seen = {};
+      let n = 0;
+      const add = r => { if (r && !seen[r] && !off.has(r)) { seen[r] = 1; n++; } };
+      (ci[trip + ':' + i] || []).forEach(c => { if (this.ciWantsPb(c)) (c.photos || []).slice(0, 6).forEach(p => { if (!this.spriteOf(p)) add(p); }); });
+      (ex[trip + ':' + i] || []).forEach(add);
+      if (n) byDay[i] = n;
     });
     return byDay;
   }
@@ -10617,20 +11295,25 @@ class Component extends DCLogic {
     });
   }
   async pbGather() {
-    const trip = this.ebTripId();
+    const trip = this.pbTripId();   // ⚠ ต้องเป็นตัวเดียวกับที่การ์ดโฟโต้บุ๊กนับ ไม่งั้นการ์ดบอกมีรูป แต่สร้างเล่มออกมาว่าง
     const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
     this.healCheckinDays(trip);
     const ci = this.checkins || {}, cmap = this.ebChapterMap();
     const n = Math.max(1, this.dayCount(t.start, t.end) || 0);
-    const days = [];
+    const days = [], offOut = [];
     for (let i = 0; i < n; i++) {
       const list = (ci[trip + ':' + i] || []).slice().sort((a, b) => (a.at || 0) - (b.at || 0)), ch = cmap.byDay[i], items = [], seen = {};
-      const push = (u, ref) => { if (u && !seen[u]) { seen[u] = 1; items.push({ u, ref: ref || u }); } };
+      // รูปที่ผู้ใช้กด "เอาออกจากเล่ม" — ข้ามตอนจัดเล่ม แต่เก็บไว้ให้กดเอากลับได้ที่ท้ายหน้า
+      const off = new Set(this.pbOffOf(trip, i));
+      for (const r of off) { try { offOut.push({ ref: r, i, day: 'วันที่ ' + (i + 1), u: await this.resolvePhoto(r) }); } catch (e) {} }
+      const push = (u, ref) => { const r = ref || u; if (u && !seen[u] && !off.has(r)) { seen[u] = 1; items.push({ u, ref: r }); } };
       // โฟโต้บุ๊กใช้เฉพาะรูปจากโมเมนต์ที่ติ๊กไว้ — ไม่ดึงปก/รูปของเรื่องเล่า (มักเป็นรูปเดิมอัปซ้ำ → ซ้ำในเล่ม)
       for (const c of list) {
         if (!this.ciWantsPb(c)) continue;
         for (const p of (c.photos || []).slice(0, 6)) { if (this.spriteOf(p)) continue; const r = await this.resolvePhoto(p); push(r, p); }
       }
+      // รูปที่เพิ่มเองเข้าวันนี้ — ต่อท้ายรูปจากโมเมนต์ · ลำดับจริงยังจัดได้ในหน้าปรับกรอบ
+      for (const r of this.pbExtraOf(trip, i)) { const u = await this.resolvePhoto(r); push(u, r); }
       if (!items.length) continue;
       const shots = await Promise.all(items.map(it => this._shotMeta(it.u).then(m => ({ ...m, ref: it.ref }))));
       const ord = this.pbOrderOf(i);
@@ -10668,7 +11351,7 @@ class Component extends DCLogic {
     return { title: ttl,
       sub: [[t.city, t.country].filter(Boolean).find(x => x && x !== ttl) || '', yr].filter(Boolean).join(' · '),
       when: this.fmtRange(t.start, t.end) || '', author: this.profile.name || 'นักเดินทาง',
-      cover, days, photos: days.reduce((s, d) => s + d.shots.length, 0),
+      cover, days, off: offOut, photos: days.reduce((s, d) => s + d.shots.length, 0),
       quality: this.pbQuality,
       fit: !!(this.pbQualities[this.pbQuality] || {}).press,
       bytes: days.reduce((a, d) => a + d.shots.reduce((x, s) => x + this._urlBytes(s.u), 0), 0) + this._urlBytes(cover) };
@@ -11607,7 +12290,7 @@ class Component extends DCLogic {
   // ประเมินจำนวนหน้าด้วยตัวจัดหน้าชุดเดียวกับตอนสร้างจริง (ตัวเลขในชีตต้องตรงกับเล่ม)
   ebEstimate(trip) {
     const ci = trip ? (this.checkins || {}) : {};                  // ไม่มีทริป = ไม่นับเช็คอินของใคร
-    const cmap = this.ebChapterMap();
+    const cmap = this.ebBookMap();                                 // ตัวเลข "N ตอน" ต้องตรงกับที่จะลงเล่มจริง
     let days = 0, cis = 0, photos = 0, chapters = 0, pages = 2;   // ปก + สารบัญ
     let photosAll = 0, cisIn = 0, extras = 0;
     const dayIdx = {};
@@ -11727,22 +12410,29 @@ class Component extends DCLogic {
         .forEach(u => { if (!/_t\.[a-z0-9]+$/i.test(u)) urls.add(u); });
     }
     const list = [...urls].filter(u => !tmap[u]);
-    if (!list.length) return;
+    if (!list.length) return { done: 0, failed: 0, total: 0 };
     const saveMap = () => { try { localStorage.setItem('wtn-thumb-map', JSON.stringify(tmap)); } catch (e) {} };
+    let done = 0, failed = 0;
     for (let i = 0; i < list.length; i++) {
       // รูปที่โหลด/ย่อ/อัปไม่ผ่าน (ถูกลบไปแล้ว ไฟล์เสีย ฯลฯ) ต้องทำเครื่องหมายไว้ด้วย
       // ไม่งั้นกล่อง "ดูแลรูปภาพ" จะเด้งกลับมาให้กดซ้ำไม่รู้จบ
+      // ⚠⚠ และต้องมี timeout ด้วย — เคยพังจริง (22 ก.ย. 2569)
+      //   loadImgForCanvas ไม่มี timeout เลย ถ้ารูป "ใบแรก" ค้าง ลูปจะไม่จบแม้แต่รอบเดียว
+      //   แผนที่ wtn-thumb-map จึงว่างเปล่า กล่อง "ดูแลรูปภาพ" เลยเด้งกลับมาทุกครั้งที่กด
+      //   (ตอนนั้นเกิดจากคำขอปลอม src={{ }} 38 ใบกินคิวจนรูปจริงโหลดไม่ได้ — ดู sw.js)
       try {
-        const im = await this.loadImgForCanvas(list[i]);
+        const im = await this._imgCap(this.loadImgForCanvas(list[i]), 12000);
         const tb = im ? await this.makeThumbBlob(im) : null;
-        const t = tb ? await be.uploadThumbFor(list[i], tb) : null;
+        const t = tb ? await this._imgCap(be.uploadThumbFor(list[i], tb), 20000) : null;
         tmap[list[i]] = t ? 1 : 'x';
-      } catch (e) { tmap[list[i]] = 'x'; }
+        if (t) done++; else failed++;
+      } catch (e) { tmap[list[i]] = 'x'; failed++; }
       saveMap();                                     // บันทึกทีละรูป — หลุดกลางทางก็ไม่เสียของเดิม
       this.setState({ rehostPct: Math.round((i + 1) / list.length * 100) });
     }
     saveMap();
     this._thumbN = undefined;
+    return { done, failed, total: list.length };
   }
   // แยกข้อความเป็นชิ้นๆ เพื่อให้ URL กดออกไปได้จริง (template hole เรนเดอร์ได้แค่ text)
   _linkify(s) {
@@ -11847,6 +12537,9 @@ class Component extends DCLogic {
     } catch (e) { console.warn('[wtn] pushAllBodies', e); }
     this.setState({ bodyBusy: false, bodyMsg: 'ดันขึ้นคลาวด์ใหม่แล้ว ' + n + ' ตอน — ก้อนบนคลาวด์จะเท่ากับฉบับในเครื่องแล้ว' });
   }
+  // ตัวเลขไว้ดูของจริงแทนการเดา — เครื่องที่ตารางไม่ครบจะเห็นเลขนี้น้อยกว่าเครื่องอื่น
+  // (เคยเดาผิดสามรอบเรื่องกล่อง "ดูแลรูปภาพ" เพราะไม่มีเลขให้ดูจากมือถือ)
+  thumbMapN() { try { return Object.keys(JSON.parse(localStorage.getItem('wtn-thumb-map') || '{}')).length; } catch (e) { return 0; } }
   thumbMissingCount() {
     if (this._thumbN !== undefined && Date.now() - (this._thumbAt || 0) < 4000) return this._thumbN;
     let n = 0;
@@ -11957,9 +12650,14 @@ class Component extends DCLogic {
       keys.forEach(k => { const v = localStorage.getItem(k) || ''; raw[k] = v; (v.match(re) || []).forEach(u => urls.add(u)); });
       const list = [...urls];
       if (!list.length) {                                   // ไม่มีรูปค้างแล้ว — เหลือแค่สร้างรูปย่อให้ครบ
-        await this.backfillThumbs();
+        const r = await this.backfillThumbs();
         this._thumbN = undefined;
-        this.showToast('✓ รูปย่อครบแล้ว');
+        this.forceUpdate();
+        // ⚠ ห้ามบอก "ครบแล้ว" ลอยๆ — ของเดิมขึ้นข้อความนี้ทุกครั้งแม้ไม่ได้ทำอะไรเลยสักรูป
+        //   เจ้าของเลยเห็นว่าสำเร็จ แต่กล่องเด้งกลับมา งงว่าตกลงมันทำหรือไม่ทำ
+        this.showToast(!r ? 'ยังทำรูปย่อไม่ได้ — ต้องล็อกอินและเป็นสมาชิกพรีเมียมก่อน'
+          : (r.failed ? ('ทำรูปย่อแล้ว ' + r.done + ' รูป · ไม่สำเร็จ ' + r.failed + ' — กดซ้ำได้ ระบบจะข้ามที่ทำไปแล้ว')
+                      : ('✓ ทำรูปย่อครบ ' + r.done + ' รูป')));
         return;
       }
       let map = {};
@@ -13147,8 +13845,10 @@ class Component extends DCLogic {
           legacyImgNote: n > 0
             ? ('พบรูป ' + n + ' รูปที่ยังอยู่บนที่เก็บเดิม ทำให้ทำคลิปรีแคปไม่ได้ — ย้ายขึ้นคลาวด์ใหม่ครั้งเดียวจบ')
             : (this.lang === 'en'
-                ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter')
-                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป — ฟีดและตารางรูปจะโหลดเบาลงมาก')),
+                ? ('Generate thumbnails for ' + tn + ' older photos — the feed and photo grid get much lighter · ledger ' + this.thumbMapN() + ')')
+                : ('สร้างรูปย่อให้รูปเก่า ' + tn + ' รูป (ตารางที่ทำแล้วในเครื่องนี้ ' + this.thumbMapN() + ' รายการ) — ฟีดและตารางรูปจะโหลดเบาลงมาก · '
+                    + 'ใช้เวลาราว ' + Math.max(1, Math.round(tn * 1.7 / 60)) + ' นาที เปิดหน้านี้ทิ้งไว้จนเสร็จ '
+                    + '(หลุดกลางทางก็ไม่เสียของ กดซ้ำได้ ระบบจะทำต่อจากเดิม)')),
           rehostLabel: this.state.rehostBusy
             ? ('กำลังทำ… ' + (this.state.rehostPct || 0) + '%')
             : (n > 0 ? 'ย้ายรูปขึ้นคลาวด์ใหม่' : 'สร้างรูปย่อ'),
@@ -13294,6 +13994,7 @@ class Component extends DCLogic {
           ovDayCount: this.days.length, ovStopCount: this.days.reduce((a, d, i) => a + (d.stops || []).length + ((this.state.added || {})[this.state.trip + ':' + i] || []).length, 0),
           ovCiCount: totalCi,
           shareOverview: () => this.shareOverview(),
+          sharePlanPdf: () => this.sharePlanPdf(),
         };
       })(),
       goDocs: () => this.go('docs'),
@@ -13323,7 +14024,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.21f',
+      appVersion: '2026.09.23c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -13452,19 +14153,21 @@ class Component extends DCLogic {
             ? 'อ่านเล่มได้ในแอปเลย · อยากเก็บเป็นไฟล์ กด "ไฟล์ EPUB" — เปิดใน Apple Books / Play Books ได้'
             : 'อ่านเล่มในแอปใช้ได้ฟรีเต็มที่ · ไฟล์ EPUB (เปิดใน Apple Books / Play Books) เป็นของพรีเมียม',
           ...(() => {
-            const pe = this.pbEstimate(trip), pct2 = this.state.pbPct || 0;
+            // ⚠ บล็อกนี้ใช้ pbTrip ไม่ใช่ trip — การ์ดโฟโต้บุ๊กยึดทริปที่เปิดอยู่ (ดู pbTripId)
+            const pbTrip = this.pbTripId();
+            const pe = this.pbEstimate(pbTrip), pct2 = this.state.pbPct || 0;
             return {
               pbOpen: !!this.state.pbOpen,
               openPbook: () => this.setState({ pbOpen: true, pbUrl: '', pbPct: 0 }),
               closePbook: () => this.setState({ pbOpen: false }),
-              pbCoverId: 'wtn-pb-cover-' + trip,
+              pbCoverId: 'wtn-pb-cover-' + pbTrip,
               pbCardNote: pe.photos ? (pe.photos + ' รูป · ' + pe.days + ' วัน — เล่มแนวนอน ประมาณ ' + pe.pages + ' หน้า') : 'ยังไม่มีรูปในทริปนี้',
               pbSummary: pe.photos ? (pe.photos + ' รูป จาก ' + pe.days + ' วัน — จัดเป็นเล่มแนวนอนประมาณ ' + pe.pages + ' หน้า ไม่ต้องเขียนอะไรเพิ่ม')
-                                   : (this.ciRawPhotos(trip)
-                                      ? 'ทริปนี้มีรูปในโมเมนต์ ' + this.ciRawPhotos(trip) + ' รูป แต่ยังไม่ได้ติ๊กเข้าเล่มไว้'
+                                   : (this.ciRawPhotos(pbTrip)
+                                      ? 'ทริปนี้มีรูปในโมเมนต์ ' + this.ciRawPhotos(pbTrip) + ' รูป แต่ยังไม่ได้ติ๊กเข้าเล่มไว้'
                                       : 'ทริปนี้ยังไม่มีรูป — เช็คอินพร้อมรูประหว่างเที่ยวแล้วค่อยกลับมาทำเล่ม'),
-              pbNeedsPick: !pe.photos && this.ciRawPhotos(trip) > 0,
-              pbPickAll: () => this.ciSelectAllForPb(trip),
+              pbNeedsPick: !pe.photos && this.ciRawPhotos(pbTrip) > 0,
+              pbPickAll: () => this.ciSelectAllForPb(pbTrip),
               pbBusy: !!this.state.pbBusy, pbIdle: !this.state.pbBusy,
               pbBarStyle: 'width:' + pct2 + '%;height:6px;background:#c05f39;transition:width .3s',
               pbBusyLabel: pct2 < 70 ? 'กำลังรวบรวมรูป…' : pct2 < 92 ? 'กำลังจัดหน้า…' : 'เกือบเสร็จแล้ว…',
@@ -13491,6 +14194,8 @@ class Component extends DCLogic {
                       openPbFrame: () => this.openPbFrame(),
                   openPbCheck: () => this.openPbCheck(),
                   pbFrameBtnLabel: this.state.pbFrLoading ? 'กำลังเปิดรูป…' : 'ปรับกรอบรูปในเล่ม',
+                  pbHasOff: !!((((this._pbData || {}).off) || []).length),
+                  pbOffShots: ((((this._pbData || {}).off) || []).map(o => ({ u: o.u, day: o.day, on: () => this.pbRestoreShot(o.ref, o.i) }))),
                   sPbFrame: sc === 'pbFrame',
                   sPbCheck: sc === 'pbCheck',
                   ...(sc !== 'pbCheck' ? {} : (() => {
@@ -13552,7 +14257,8 @@ class Component extends DCLogic {
                       ebChRows: chs.map(x => {
                         const ins = this.ebInserts(x.ch.id);
                         return { title: x.ch.title || 'ตอนหนึ่ง',
-                          meta: (x.day != null ? this.ebDayHead(x.day) + ' · ' : '') + this.ebParasOf(x.ch).length + ' ย่อหน้า · วางรูปแล้ว ' + ins.length + ' ใบ',
+                          meta: (x.day != null ? this.ebDayHead(x.day) + ' · ' : '') + this.ebParasOf(x.ch).length + ' ย่อหน้า · วางรูปแล้ว ' + ins.length + ' ใบ'
+                            + (this.chInBook(x.ch) ? '' : ' · ไม่ลงเล่ม'),
                           on: () => this.setState({ ebChId: x.ch.id, ebPick: null }),
                           style: 'width:100%;text-align:left;background:#fffaf0;border:1px solid rgba(43,36,32,.1);border-radius:16px;padding:14px 15px;cursor:pointer;display:block' };
                       }) };
@@ -13632,6 +14338,8 @@ class Component extends DCLogic {
                       meta: g.hero ? 'รูปเต็มหน้า' : (g.items.length + ' รูป'),
                       upStyle: navP(gk > 0 && groups[gk - 1].dn === g.dn),
                       downStyle: navP(gk < groups.length - 1 && groups[gk + 1].dn === g.dn),
+                      addStyle: navP(!this.state.pbAddBusy && !!g.dn),
+                      addPhoto: () => this.pbPickExtra(g.dn),
                       up: () => this.pbMovePage(g.items.map(x => x.s.ref), -1),
                       down: () => this.pbMovePage(g.items.map(x => x.s.ref), 1),
                       pageStyle: 'position:relative;width:100%;aspect-ratio:210/148;background:' + T.pg + ';border:1px solid rgba(43,36,32,.12);border-radius:12px;overflow:hidden',
@@ -13672,6 +14380,8 @@ class Component extends DCLogic {
                   frZoom: fr ? Math.round(fr.z * 100) : 100,
                   frZoomLabel: (fr ? Math.round(fr.z * 100) : 100) + '%',
                   frSetZoom: e => { const z = Math.max(1, (+e.target.value || 100) / 100); this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, z } } : {}), () => this.frSave()); },
+                  frReplace: () => { if (fr) this.pbReplaceShot(fr.ref, fr.dn); },
+                  frDrop: () => { if (fr) this.pbDropShot(fr.ref, fr.dn); },
                   frReset: () => { if (fr) { this.savePbFocal(fr.ref, null); this.setPbSize(fr.ref, ''); } this.setState(s => (s.pbFr ? { pbFr: { ...s.pbFr, x: 50, y: 42, z: 1 } } : {})); },
                   frClose: () => { this.frSave(); this.setState({ pbFr: null }); },
                   frDown: e => this.frDown(e), frMove: e => this.frMove(e), frUp: () => this.frUp()
@@ -14436,6 +15146,7 @@ class Component extends DCLogic {
         };
       })(),
       dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
+      addTripDay: () => this.addTripDay(),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
@@ -15352,13 +16063,20 @@ class Component extends DCLogic {
             n: '#' + (i + 1), title: c.title, meta: fmtDT(c.updatedAt), words: (c.words || 0) + ' คำ',
             free: !!c.free, freeLabel: c.free ? 'ฟรี' : 'พรีเมียม',
             freeStyle: seg + (c.free ? 'background:#efe4d3;color:#5c5347' : 'background:#f3e2d5;color:#a4482a'),
+            inBook: this.chInBook(c), notInBook: !this.chInBook(c),
+            bookTrack: this.chInBook(c) ? 'background:#c05f39' : 'background:#d8ccb8',
+            bookKnob: this.chInBook(c) ? 'right:3px' : 'left:3px',
+            // ⚠ ต้องแตะ _m ด้วย — ตัวรวมข้อมูลสองเครื่องตัดสินด้วยเวลาแก้ล่าสุด (updatedAt/createdAt/_m)
+            //   ถ้าไม่แตะ สวิตช์ที่เพิ่งกดจะถูกฉบับของอีกเครื่องทับกลับเงียบๆ ตอนซิงก์
+            //   (ไม่แตะ updatedAt เพราะบรรทัด "แก้ไขเมื่อ…" ในรายชื่อตอนใช้ค่านั้น จะกลายเป็นโกหก)
+            toggleInBook: () => chPatch(c.id, { inBook: !this.chInBook(c), _m: Date.now() }),
             published: !!c.published, pubLabel: c.published ? 'เผยแพร่สู่สาธารณะ' : 'ร่าง',
             pubStyle: seg + (c.published ? 'background:rgba(143,206,155,.2);color:#4e8a5c' : 'background:#efe4d3;color:#7c7264'),
             pubTrack: c.published ? 'background:#c05f39' : 'background:#d8ccb8', pubKnob: c.published ? 'right:3px' : 'left:3px',
             canUp: i > 0, canDown: i < chs.length - 1,
             up: () => this.moveChapter(c.id, -1), down: () => this.moveChapter(c.id, 1),
             on: () => this.openChapterEdit(c.id),
-            toggleFree: () => chPatch(c.id, { free: !c.free }),
+            toggleFree: () => chPatch(c.id, { free: !c.free, _m: Date.now() }),   // เหตุผลเดียวกับ toggleInBook
             togglePub: () => this.setChapterPublished(os.id, c.id, !c.published),
             del: () => this.deleteChapter(c.id) })),
           addChapterFn: () => this.addChapter(),

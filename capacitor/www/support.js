@@ -21,6 +21,25 @@
   ));
 
   // src/parse.ts
+  // ⚠⚠ มาร์กอัปของคอมโพเนนต์ห่อไว้ใน <template data-dc-tpl> ได้ (22 ก.ย. 2569)
+  //   เหตุผล: เบราว์เซอร์ "ยิงคำขอจริง" จาก src="{{ ... }}" ตั้งแต่ตอนแตกหน้า ก่อนที่เอนจินจะแทนค่า
+  //   ในไฟล์ของ Vela มี 48 จุด ทุกใบ 404 แต่กินคอนเนกชัน — เคยทำหน้าเปิดค้าง 221 วินาที
+  //   เนื้อใน <template> เป็น DocumentFragment ที่ไม่โหลดอะไรเลย (ไม่โหลดรูป ไม่โหลด iframe ไม่รันสคริปต์)
+  //   ⚠ <helmet> ต้องอยู่ "นอก" ห่อเสมอ เพราะ <link>/<script> ข้างในต้องทำงานจริง
+  //   ฟังก์ชันนี้คลี่ห่อออกให้ได้สตริงเทมเพลตเดิมเป๊ะ · ไฟล์ที่ไม่ได้ห่อยังทำงานเหมือนเดิมทุกประการ
+  // ปักธงให้ index.html รู้ว่าเอนจินรุ่นนี้เข้าใจห่อ <template data-dc-tpl> แล้ว
+  // (ถ้าไม่มีธงนี้ index.html จะคลี่ห่อเองเป็นตาข่ายนิรภัย — ดูสคริปต์ท้าย </x-dc>)
+  try { window.__dcTplAware = true; } catch (e) {}
+  function dcTemplateHtml(dc) {
+    let hit = false, out = "";
+    dc.childNodes.forEach((n) => {
+      if (n.nodeType === 1 && n.tagName === "TEMPLATE" && n.hasAttribute("data-dc-tpl")) { hit = true; out += n.innerHTML; return; }
+      if (n.nodeType === 1) out += n.outerHTML;
+      else if (n.nodeType === 8) out += "<!--" + n.data + "-->";
+      else out += n.textContent || "";
+    });
+    return hit ? out : dc.innerHTML;
+  }
   function parseDcDocument(doc) {
     const dc = doc.querySelector("x-dc");
     if (!dc) return null;
@@ -29,7 +48,7 @@
       scriptEl?.getAttribute("data-props") ?? null
     );
     return {
-      template: dc.innerHTML,
+      template: dcTemplateHtml(dc),
       js: scriptEl ? scriptEl.textContent || "" : "",
       props,
       preview
@@ -40,7 +59,11 @@
     if (!openMatch) return null;
     const close = src.lastIndexOf("</x-dc>");
     if (close === -1 || close < openMatch.index) return null;
-    const template = src.slice(openMatch.index + openMatch[0].length, close);
+    let template = src.slice(openMatch.index + openMatch[0].length, close);
+    // คลี่ห่อ <template data-dc-tpl> แบบเดียวกับ dcTemplateHtml แต่ทำกับข้อความดิบ
+    // (เส้นทางนี้ใช้จริงเมื่อไม่มี window.__resources — support.js จะ fetch หน้าตัวเองมา parse ซ้ำ)
+    const wrap = /^([\s\S]*?)<template data-dc-tpl>([\s\S]*)<\/template>\s*$/.exec(template);
+    if (wrap) template = wrap[1] + wrap[2];
     const doc = new DOMParser().parseFromString(src, "text/html");
     const scriptEl = doc.querySelector("script[data-dc-script]");
     const { props, preview } = parseDataProps(
