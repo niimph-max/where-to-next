@@ -578,6 +578,10 @@ async function boot() {
       }
       if (data && data.error) throw new Error(data.error);
       if (data && typeof data.credits === "number") this._credits = data.credits;
+      // ⚠⚠ ธงนี้สำคัญ: true = คำตอบโดนตัดกลางคันเพราะชนเพดานโทเคนขาออก
+      //   ห้ามทิ้ง — ของเดิมหยิบแต่ data.text ทำให้แผนขาดวันแบบเงียบๆ (ตัวซ่อม JSON ปะให้เนียนจนไม่มีใครรู้)
+      //   ฝั่งแอปอ่านต่อที่ be._truncated ทันทีหลังเรียก (แบบเดียวกับ _credits)
+      this._truncated = !!(data && data.truncated);
       return (data && data.text) || "";
     },
     // ยอดเครดิตคงเหลือ (รีเซ็ตรายเดือนคิดฝั่งเซิร์ฟเวอร์)
