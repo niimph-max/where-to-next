@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vela</title>
+<!-- ⚠ กัน Google เก็บ "เปลือกแอป" ไฟล์นี้ 1.2 MB แต่เปิดมาว่างเปล่า เนื้อหาเกิดจาก JavaScript ทีหลัง
+     ถ้าปล่อยให้เก็บ จะได้หน้าที่ไม่มีอะไรให้อ่านมาหนึ่งหน้า ฉุดคุณภาพเว็บโดยรวม
+     ให้ Google ไปสนใจหน้าขาย/หน้าคู่มือที่มีเนื้อหาจริงแทน · follow = ยังเดินตามลิงก์ออกไปได้
+     ⚠ ตั้งใจไม่ bump appVersion ตอนใส่บรรทัดนี้ — Googlebot อ่านจากเซิร์ฟเวอร์ ไม่ได้อ่านจากแคชผู้ใช้
+     ผู้ใช้เลยไม่ต้องโหลดไฟล์ 1.2 MB ใหม่เพื่อ meta บรรทัดเดียว · รอบปล่อยถัดไปจะติดไปเอง -->
+<meta name="robots" content="noindex,follow">
 <meta name="description" content="วางแผนทริปรายวัน จดงบ เที่ยว แล้วเก็บเป็นเรื่องเล่า — Vela">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vela">
@@ -372,7 +378,7 @@
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">วางแผนทริป &amp; จดบันทึก</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ซิงก์แผน/เรื่องเล่าข้ามเครื่อง</span><span style="width:58px;text-align:center;color:#4e8a5c;font-weight:700">✓</span><span style="width:70px;text-align:center;color:#4e8a5c;font-weight:700">✓</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรอง<b>รูปภาพ</b>ขึ้นคลาวด์</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
-            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">5 ครั้ง/ด</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
+            <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">ผู้ช่วย AI วางแผน/เขียน</span><span style="width:58px;text-align:center;font:700 13px 'Anuphan';color:#a1927c">—</span><span style="width:70px;text-align:center;font:700 13px 'Anuphan';color:#c05f39">60–100</span></div>
             <div style="display:flex;align-items:center;padding:13px 15px;border-top:1px solid rgba(43,36,32,.06)"><span style="flex:1;font:500 14.5px 'Anuphan';color:#2b241f">สำรวจจุดหมายด้วย AI</span><span style="width:58px;text-align:center;color:#c9baa4;font-weight:700">—</span><span style="width:70px;text-align:center;color:#c05f39;font-weight:700">✓</span></div>
           </div>
           <sc-if value="{{ buyOnWeb }}" hint-placeholder-val="{{ false }}">
@@ -603,22 +609,22 @@
               <div style="font:500 13.5px/1.6 'Anuphan';color:#a99e90">ได้ทุกกิจกรรม เวลา โน้ต ที่พัก และชื่อ/ประเทศ/วัน/งบ ของทริป — แก้ต่อได้ทั้งหมด</div>
             </div>
           </sc-if>
-          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์/รูป แล้ว AI แยกเป็นรายวันให้ · แผนที่แชร์จาก Vela วางแล้วเข้าครบทันที</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div onClick="{{ toggleImport }}" style="display:flex;align-items:center;gap:13px;background:#c05f39;border-radius:16px;padding:15px;cursor:pointer;margin-bottom:12px"><span style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="font:600 16.5px 'Anuphan';color:#fff">โหลด/แยกโปรแกรมทัวร์ของคุณ</div><sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><span style="font:700 11.5px 'Anuphan';letter-spacing:.3px;color:#7a3a20;background:#ffd9a8;border-radius:999px;padding:3px 9px;flex:none;white-space:nowrap">พรีเมียม</span></sc-if></div><div style="font:500 14px 'Anuphan';color:#ffe4d6">วางข้อความ หรือแนบไฟล์ PDF แล้ว AI แยกเป็นรายวันให้</div><sc-if value="{{ impNeedsPremium }}" hint-placeholder-val="{{ false }}"><div style="font:500 13px 'Anuphan';color:#ffd9c4;margin-top:3px">ถ้าเพื่อนแชร์แผนจาก Vela มา ใช้การ์ดด้านบนได้ฟรี</div></sc-if></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="flex:none;transform:{{ impChevron }}"><path d="M6 9l6 6 6-6"/></svg></div>
           <sc-if value="{{ impOpen }}" hint-placeholder-val="{{ false }}">
             <div style="background:#fffaf0;border:1px solid rgba(192,95,57,.22);border-radius:16px;padding:15px;margin-bottom:14px">
               <textarea value="{{ impText }}" onInput="{{ setImpText }}" placeholder="วางโปรแกรมทัวร์ที่นี่ (ก็อปจากอีเมล/ไลน์)… เช่น&#10;วันที่ 1 บินไปอัลมาตี&#10;วันที่ 2 เที่ยวเมือง…" rows="5" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:11px 13px;font:500 16px/1.6 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2b241f;outline:none;resize:vertical"></textarea>
-              <sc-if value="{{ impHasFiles }}" hint-placeholder-val="{{ false }}">
+              <sc-if value="{{ impHasDocs }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-                  <sc-for list="{{ impFilesList }}" as="fl" hint-placeholder-count="0"><span style="position:relative;display:inline-flex;align-items:center;gap:6px;background:#f3ece0;border-radius:10px;padding:7px 10px;font:600 13px 'Anuphan';color:#5c5347"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg>{{ fl.label }}<button onClick="{{ fl.rm }}" style="border:none;background:transparent;color:#b7a992;font:700 15px 'Anuphan';cursor:pointer;line-height:1;padding:0 2px">✕</button></span></sc-for>
+                  <sc-for list="{{ impDocsList }}" as="fl" hint-placeholder-count="0"><span style="position:relative;display:inline-flex;align-items:center;gap:6px;background:#f3ece0;border-radius:10px;padding:7px 10px;font:600 13px 'Anuphan';color:#5c5347"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg>{{ fl.label }}<button onClick="{{ fl.rm }}" style="border:none;background:transparent;color:#b7a992;font:700 15px 'Anuphan';cursor:pointer;line-height:1;padding:0 2px">✕</button></span></sc-for>
                 </div>
               </sc-if>
               <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
-                <label style="display:inline-flex;align-items:center;gap:7px;border:1px dashed rgba(43,36,32,.24);border-radius:11px;padding:10px 13px;cursor:pointer;color:#8a7d6f;font:600 14px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>แนบไฟล์/รูป<input type="file" accept="image/*,application/pdf" ref="{{ multiRef }}" onChange="{{ addImpFiles }}" style="display:none"></label>
+                <label style="display:inline-flex;align-items:center;gap:7px;border:1px dashed rgba(43,36,32,.24);border-radius:11px;padding:10px 13px;cursor:pointer;color:#8a7d6f;font:600 14px 'Anuphan'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>แนบไฟล์ PDF<input type="file" accept="application/pdf,.pdf" ref="{{ multiRef }}" onChange="{{ addImpFiles }}" style="display:none"></label>
                 <span style="flex:1"></span>
                 <button onClick="{{ importProgramFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';padding:11px 20px;border-radius:13px;cursor:pointer;opacity:{{ impBtnOpacity }}">{{ impBtnLabel }}</button>
               </div>
               <sc-if value="{{ impHasErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font:500 14px/1.5 'Anuphan';color:#b23b2a">{{ impErr }}</div></sc-if>
-              <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้</div>
+              <div style="margin-top:10px;font:500 13px/1.5 'Anuphan';color:#a99e8e">AI จะอ่านแล้วแยกเป็นรายวันให้แก้ต่อได้ · ไฟล์ PDF อ่านในเครื่องคุณ ส่งขึ้นไปแค่ข้อความ · PDF ที่เป็นภาพสแกนอ่านไม่ได้ ให้ก็อปข้อความมาวางแทน</div>
             </div>
           </sc-if>
         </div>
@@ -5588,17 +5594,75 @@ class Component extends DCLogic {
     this.setState({ toast: msg });
     this._toastT = setTimeout(() => this.setState({ toast: '' }), 3200);
   }
-  async askLLMParts(promptText, files) {
+  async askLLMParts(promptText) {
     if (!this.aiAvailable()) throw new Error(this.AI_PREMIUM_MSG);
-    if ((files || []).length) throw new Error('ตอนนี้แนบรูป/PDF ยังไม่รองรับผ่าน AI ของ Vela — วางเป็นข้อความโปรแกรมแทนได้เลย');
     return await this.aiViaVela(window.WTNBackend, promptText + this.aiLangLine());
   }
-  addImpFiles(ev) {
+  // ── แนบ PDF โปรแกรมทัวร์ ──
+  // ⚠⚠ แกะ "ชั้นข้อความ" ของ PDF ในเครื่องผู้ใช้ แล้วส่งเป็นข้อความธรรมดาให้ AI — ไม่ได้ส่งตัวไฟล์ขึ้นเซิร์ฟเวอร์
+  //   เหตุผล: ai-complete (Supabase Edge Function) รับได้แค่ข้อความ ส่งต่อ Gemini เป็น parts:[{text}] อย่างเดียว
+  //   ถ้าจะส่งไฟล์จริงต้องแก้ฝั่งเซิร์ฟเวอร์ให้ใส่ inline_data ด้วย — ยังไม่ทำ เพราะกินโทเคนกว่ามากและต้องคิดเรื่องค่าใช้จ่ายก่อน
+  //   วิธีนี้ถูกกว่า แม่นกว่า (ได้ตัวอักษรจริง ไม่ใช่ OCR) และส่งขึ้นไปแค่ไม่กี่หมื่นตัวอักษรแทนไฟล์หลายเมกะไบต์
+  // ⚠ ใช้ได้เฉพาะ PDF ที่มีชั้นข้อความ — PDF ที่เป็นภาพสแกนล้วนจะได้ค่าว่าง ต้องบอกผู้ใช้ตรงๆ ห้ามเงียบ
+  // ⚠ รูปถ่ายโปรแกรมยังไม่รองรับ (ต้อง OCR = ต้องแก้เซิร์ฟเวอร์) — ช่องรับไฟล์จึงล็อกไว้ที่ PDF เท่านั้น
+  //   ห้ามเปิด accept กลับไปเป็น image/* จนกว่าฝั่งเซิร์ฟเวอร์จะรับไฟล์ได้จริง ไม่งั้นผู้ใช้จะแนบได้แต่ใช้ไม่ได้ (บั๊กเดิม)
+  PDFJS_VER = '4.10.38';
+  async _pdfjs() {
+    if (this._pdfjsMod) return this._pdfjsMod;
+    const base = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@' + this.PDFJS_VER + '/build/';
+    const m = await import(base + 'pdf.min.mjs');
+    m.GlobalWorkerOptions.workerSrc = base + 'pdf.worker.min.mjs';
+    this._pdfjsMod = m;
+    return m;
+  }
+  async pdfToText(file, maxPages = 40) {
+    const pdfjs = await this._pdfjs();
+    const buf = await file.arrayBuffer();
+    // ⚠ pdf.js ยึดบัฟเฟอร์ที่ส่งเข้าไป (โยนข้ามไปเธรด worker) ตัวเดิมจะใช้ต่อไม่ได้ — ส่งสำเนาเสมอ
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
+    const total = doc.numPages;
+    const N = Math.min(total, maxPages);
+    const out = [];
+    for (let p = 1; p <= N; p++) {
+      const tc = await (await doc.getPage(p)).getTextContent();
+      // pdf.js คืนข้อความมาเป็นชิ้นๆ ไม่มีขึ้นบรรทัด — ประกอบกลับเป็นบรรทัดด้วยพิกัดแนวตั้ง
+      const lines = []; let cur = [], curY = null;
+      for (const it of tc.items) {
+        if (typeof it.str !== 'string') continue;
+        const y = Math.round(it.transform[5]);
+        if (curY !== null && Math.abs(y - curY) > 2) { if (cur.length) lines.push(cur.join('')); cur = []; }
+        curY = y; cur.push(it.str);
+        if (it.hasEOL) { lines.push(cur.join('')); cur = []; curY = null; }
+      }
+      if (cur.length) lines.push(cur.join(''));
+      const t = lines.map(s => s.replace(/[ \t]+/g, ' ').trim()).filter(Boolean).join('\n');
+      if (t) out.push(t);
+    }
+    try { await doc.destroy(); } catch (e) {}
+    return { text: out.join('\n').replace(/\n{3,}/g, '\n\n').trim(), pages: total, read: N };
+  }
+  async addImpFiles(ev) {
     const files = Array.from(ev.target.files || []); ev.target.value = '';
-    files.slice(0, 4).forEach(f => {
-      if (/^image\//.test(f.type)) this.shrinkToUrl(f, 1500, url => this.setState(s => ({ impFiles: [...(s.impFiles || []), url].slice(0, 6) })));
-      else { const rd = new FileReader(); rd.onload = () => this.setState(s => ({ impFiles: [...(s.impFiles || []), rd.result].slice(0, 6) })); rd.readAsDataURL(f); }
-    });
+    for (const f of files.slice(0, 4)) {
+      if (!/pdf/i.test(f.type || '') && !/\.pdf$/i.test(f.name || '')) {
+        this.setState({ impErr: 'ตอนนี้รับเฉพาะไฟล์ PDF — ถ้าเป็นรูปถ่ายโปรแกรม ให้ก็อปข้อความมาวางในช่องด้านบนแทน' });
+        continue;
+      }
+      const id = 'd' + (++this._impSeq || (this._impSeq = 1));
+      const name = f.name || 'โปรแกรม.pdf';
+      this.setState(s => ({ impDocs: [...(s.impDocs || []), { id, name, text: '', busy: true }].slice(0, 4), impErr: '' }));
+      try {
+        const r = await this.pdfToText(f);
+        if (!r.text || r.text.length < 40) throw new Error('ไฟล์นี้ไม่มีชั้นข้อความ (น่าจะเป็นภาพสแกน) — ก็อปข้อความจากโปรแกรมมาวางแทนได้');
+        this.setState(s => ({ impDocs: (s.impDocs || []).map(d => d.id === id ? { id, name, text: r.text, pages: r.read, more: r.pages > r.read } : d) }));
+      } catch (e) {
+        this.setState(s => ({ impDocs: (s.impDocs || []).filter(d => d.id !== id), impErr: 'อ่าน ' + name + ' ไม่สำเร็จ: ' + (e.message || e) }));
+      }
+    }
+  }
+  get impDocText() {
+    return (this.state.impDocs || []).filter(d => d.text)
+      .map(d => '\n\n[จากไฟล์ ' + d.name + ']\n' + d.text).join('');
   }
   // ดึง JSON ออกจากคำตอบ AI แบบทนทาน: ตัดรั้ว ``` / ข้อความนำ-ท้าย และซ่อมกรณีคำตอบถูกตัดกลางทาง
   _impJSON(raw) {
@@ -5628,26 +5692,28 @@ class Component extends DCLogic {
   }
   async importProgram() {
     const text = (this.state.impText || '').trim();
-    const files = this.state.impFiles || [];
-    if (!text && !files.length) { this.setState({ impErr: 'วางข้อความ หรือแนบไฟล์โปรแกรมก่อน' }); return; }
+    const docText = this.impDocText;
+    const full = (text + docText).trim();
+    if ((this.state.impDocs || []).some(d => d.busy)) { this.setState({ impErr: 'กำลังอ่านไฟล์อยู่ รออีกครู่' }); return; }
+    if (!full) { this.setState({ impErr: 'วางข้อความ หรือแนบไฟล์ PDF โปรแกรมก่อน' }); return; }
     // ข้อความที่แชร์มาจาก Vela → อ่านตรงได้เลย ครบทุกกิจกรรม/เวลา/โน้ต ไม่ต้องใช้ AI
     const vp = this.velaParse(text);
     if (vp) { this.setState({ impErr: '' }); this.importVelaPlan(vp); return; }
     if (!this.aiGate()) return;
     this.setState({ impBusy: true, impErr: '' });
     const prompt = 'คุณคือตัวช่วยแยกโปรแกรมทัวร์เป็นแผนรายวันของแอปท่องเที่ยว\n' +
-      'อ่านโปรแกรมทัวร์ต่อไปนี้ (ข้อความ/รูป/PDF) แล้วตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอก JSON และห้ามใส่ ```\n' +
+      'อ่านโปรแกรมทัวร์ต่อไปนี้ แล้วตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นนอก JSON และห้ามใส่ ```\n' +
       'โครงสร้าง: {"name":"ชื่อทริปสั้นๆ","country":"ประเทศ","city":"เมืองหลัก","days":[{"city":"หัวข้อสั้นของวัน","summary":"สรุปวันสั้นๆ","stops":[{"period":"เช้า|สาย|บ่าย|เย็น|ค่ำ หรือ \'\'","time":"HH:MM แบบ 24 ชม. หรือ \'\'","kind":"ประเภทสั้นๆ เช่น เที่ยวบิน/ที่เที่ยว/กิน/เดินทาง/ที่พัก","title":"กิจกรรม","note":"รายละเอียดสั้น"}],"stayName":"ที่พักคืนนั้น","stayMeta":"เมือง/โน้ต"}]}\n' +
       'กฎเวลา (สำคัญมาก): ห้ามเดาหรือแต่งเวลาเองเด็ดขาด — ใส่ time เฉพาะตอนที่โปรแกรมระบุเวลาไว้จริง\n' +
       'ถ้าโปรแกรมบอกแค่ช่วง (เช้า/บ่าย/เย็น) ให้ใส่ period อย่างเดียว time เป็น \'\' · ถ้าไม่มีข้อมูลเลยให้ทั้ง period และ time เป็น \'\'\n' +
       'เรียง stops ตามลำดับที่เกิดจริงในวัน\n' +
       'ใช้ภาษาไทย จำนวน days ให้ตรงกับโปรแกรมจริง ช่องที่ไม่มีข้อมูลใส่ "" ' +
-      (text ? ('\n\nข้อความโปรแกรม:\n' + text) : '');
+      '\n\nข้อความโปรแกรม:\n' + full;
     try {
-      let raw = await this.askLLMParts(prompt, files);
+      let raw = await this.askLLMParts(prompt);
       let data = this._impJSON(raw);
       if (!data) {
-        raw = await this.askLLMParts(prompt + '\n\nย้ำ: ตอบเป็น JSON ล้วนเท่านั้น เริ่มด้วย { และจบด้วย } ห้ามมีข้อความอื่นหรือรั้วโค้ดนอก JSON', files);
+        raw = await this.askLLMParts(prompt + '\n\nย้ำ: ตอบเป็น JSON ล้วนเท่านั้น เริ่มด้วย { และจบด้วย } ห้ามมีข้อความอื่นหรือรั้วโค้ดนอก JSON');
         data = this._impJSON(raw);
       }
       if (!data) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ · ลองกดอีกครั้ง หรือแบ่งวางโปรแกรมเป็นช่วงสั้นลง');
@@ -5661,16 +5727,16 @@ class Component extends DCLogic {
           stops: (d.stops || []).map(s => ({ ...this.mkWhen(this.normPeriod(s.period) || this.parseLegacyT(s.t).period, s.time || s.t), kind: (s.kind || '').trim(), title: (s.title || '').trim(), note: (s.note || '').trim() })),
           stayName: (d.stayName || '').trim() || 'ยังไม่ได้เลือกที่พัก', stayMeta: (d.stayMeta || '').trim() };
       });
-      if (!days.length) throw new Error('แยกวันไม่สำเร็จ ลองวางข้อความให้ชัดขึ้น หรือแนบรูปโปรแกรม');
+      if (!days.length) throw new Error('แยกวันไม่สำเร็จ ลองวางข้อความให้ชัดขึ้น หรือแนบไฟล์ PDF ของโปรแกรม');
       const id = 't' + Date.now();
       const end = start && !isNaN(start) ? new Date(start.getTime() + (days.length - 1) * 86400000) : null;
-      const rec = { id, name: (data.name || '').trim() || text.slice(0, 40) || 'ทริปนำเข้า',
+      const rec = { id, name: (data.name || '').trim() || full.slice(0, 40) || 'ทริปนำเข้า',
         country: (data.country || '').trim(), city: (data.city || '').trim(),
         start: this.state.ncStart || '', end: this.state.ncEnd || (end ? end.toISOString().slice(0, 10) : ''),
         budget: parseInt((this.state.ncBudget || '').replace(/[^0-9]/g, ''), 10) || 0 };
       this.saveUserTrips([rec, ...this.userTrips]);
       this.saveItinerary(id, days);
-      this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
+      this.setState({ impBusy: false, impOpen: false, impText: '', impDocs: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
       this.showToast('✓ โหลดโปรแกรม ' + days.length + ' วันแล้ว');
       this.openTrip(id);
     } catch (e) {
@@ -9001,7 +9067,7 @@ class Component extends DCLogic {
     this.saveUserTrips([rec, ...this.userTrips]);
     this.saveItinerary(id, days);
     const stops = days.reduce((a, d) => a + (d.stops || []).length, 0);
-    this.setState({ impBusy: false, impOpen: false, impText: '', impFiles: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
+    this.setState({ impBusy: false, impOpen: false, impText: '', impDocs: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
     this.showToast('✓ นำเข้าแผนจาก Vela · ' + days.length + ' วัน · ' + stops + ' กิจกรรม');
     this.openTrip(id);
     this.nudgeInstall('import');
@@ -9779,19 +9845,35 @@ class Component extends DCLogic {
     }
   }
   // เรียก AI ของ Vela + คุมเครดิต (หมดแล้วพาไปหน้าเติม ไม่ใช่ error ดิบๆ)
+  // ⚠ Gemini คิวเต็มชั่วคราวได้บ่อยพอสมควร ("This model is currently experiencing high demand")
+  //   เจอจริง ~1 ใน 5 ครั้งตอนทดสอบ 24 ก.ย. 69 · เดิมข้อความอังกฤษดิบเด้งใส่หน้าผู้ใช้ตรงๆ
+  //   ลองใหม่ให้เอง 3 รอบ แล้วค่อยยอมแพ้เป็นภาษาไทย
+  //   ⚠ ลองใหม่ "ไม่เสียเครดิตเพิ่ม" เพราะ ai-complete หักเครดิตหลังได้คำตอบจริงเท่านั้น
+  //     (Gemini พัง → return 502 ตั้งแต่ก่อนถึงบรรทัดหักเครดิต) — ถ้าวันหลังย้ายลำดับตรงนั้น ต้องกลับมาคิดใหม่
+  AI_BUSY_RE = /high demand|overload|unavailable|try again later|503/i;
   async aiViaVela(be, prompt) {
-    try {
-      const t = await be.aiComplete(prompt);
-      if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
-      return t;
-    } catch (e) {
-      if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); }
-      else if (e && e.code === 'no-credits') {
-        this.setState({ aiCredits: 0 });
-        this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
+    let last = null;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const t = await be.aiComplete(prompt);
+        if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
+        return t;
+      } catch (e) {
+        if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); throw e; }
+        if (e && e.code === 'no-credits') {
+          this.setState({ aiCredits: 0 });
+          this.showToast('ใช้ AI ครบโควตาแล้ว — ซื้อ Trip Pass ฿99 เพื่อใช้ต่อ');
+          throw e;
+        }
+        last = e;
+        if (!this.AI_BUSY_RE.test(String((e && e.message) || ''))) throw e;
+        if (i < 2) await new Promise(r => setTimeout(r, 3000 * (i + 1)));
       }
-      throw e;
     }
+    const busy = new Error('ตอนนี้ AI มีคนใช้พร้อมกันเยอะจนคิวเต็ม — ไม่ใช่ปัญหาที่ไฟล์หรือข้อความของคุณ · รอสักครู่แล้วกดใหม่อีกครั้ง');
+    busy.code = 'ai-busy';
+    busy.cause = last;
+    throw busy;
   }
   async loadCredits() {
     const be = window.WTNBackend;
@@ -14024,7 +14106,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.23c',
+      appVersion: '2026.09.24d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14818,13 +14900,28 @@ class Component extends DCLogic {
       goTripKz: () => this.loadKazakh(),
       loadKazakh: () => this.loadKazakh(),
       goBlank: () => this.openTrip('blank'),
-      toggleImport: () => this.setState(s => ({ impOpen: !s.impOpen, impErr: '' })),
+      // ⚠⚠ การ์ดนี้เป็นพรีเมียม "ทั้งใบ" — คนใช้ฟรีเปิดไม่ได้เลย
+      //   เหตุผล: การแนบ PDF มีจุดประสงค์เดียวคือส่งต่อให้ AI แยกวัน ซึ่งเป็นพรีเมียม
+      //   ถ้าปล่อยให้เปิดการ์ดและแนบไฟล์ได้ แล้วไปตันตอนกดปุ่ม = หลอกให้เสียเวลาฟรีๆ (บั๊กแบบเดียวกับที่เพิ่งแก้ไป)
+      //   ⚠ ใช้ isPremium ไม่ใช่ aiAvailable() — aiAvailable() ต้องรอ backend โหลด คนจ่ายเงินแล้วจะโดนเด้งหน้าขายตอนเปิดแอป
+      //   ⚠ ในแอป native ห้ามพาไปหน้าขาย (กฎ App Store) — เด้งข้อความอย่างเดียว เหมือนที่ aiGate() ทำ
+      toggleImport: () => {
+        if (!this.isPremium) {
+          if (this.isNativeApp) this.showToast(this.AI_PREMIUM_MSG);
+          else this.go('premium');
+          return;
+        }
+        this.setState(s => ({ impOpen: !s.impOpen, impErr: '' }));
+      },
       impOpen: !!this.state.impOpen, impChevron: this.state.impOpen ? 'rotate(180deg)' : 'rotate(0deg)',
       impText: this.state.impText ?? '', setImpText: e => this.setState({ impText: e.target.value }),
-      impFilesList: (this.state.impFiles || []).map((f, i) => ({
-        label: /^data:application\/pdf/.test(f) ? ('PDF ' + (i + 1)) : ('รูป ' + (i + 1)),
-        rm: () => this.setState(s => ({ impFiles: (s.impFiles || []).filter((_, j) => j !== i) })) })),
-      impHasFiles: (this.state.impFiles || []).length > 0,
+      impDocsList: (this.state.impDocs || []).map(d => ({
+        label: d.busy ? (d.name + ' · กำลังอ่าน…')
+          : (d.name + ' · ' + d.text.length.toLocaleString('th-TH') + ' ตัวอักษร' + (d.more ? ' (อ่าน ' + d.pages + ' หน้าแรก)' : '')),
+        rm: () => this.setState(s => ({ impDocs: (s.impDocs || []).filter(x => x.id !== d.id) })) })),
+      impHasDocs: (this.state.impDocs || []).length > 0,
+      // ⚠ ใช้ isPremium ไม่ใช่ aiAvailable() — aiAvailable() ต้องรอ backend โหลดเสร็จ ป้ายจะกะพริบตอนเปิดแอป
+      impNeedsPremium: !this.isPremium,
       addImpFiles: e => this.addImpFiles(e),
       importProgramFn: () => this.importProgram(),
       impBusy: !!this.state.impBusy,
