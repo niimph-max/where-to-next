@@ -5709,11 +5709,19 @@ class Component extends DCLogic {
       'ใช้ภาษาไทย จำนวน days ให้ตรงกับโปรแกรมจริง ช่องที่ไม่มีข้อมูลใส่ "" ' +
       '\n\nข้อความโปรแกรม:\n' + full;
     try {
+      // ⚠⚠ คำตอบของโมเดลยาวไม่เท่ากันทุกรอบ แม้พรอมต์เดียวกัน (วัดจริง 24-25 ก.ย. 69: 10,560 กับ 17,728 ตัวอักษร)
+      //   รอบที่ยาวเกินเพดานโทเคนขาออกจะโดนตัดกลางคัน → _repairJSON ตัดถึงวันที่ครบแล้วปิดวงเล็บให้เอง
+      //   = ได้แผนหน้าตาปกติแต่ "วันหายไปเงียบๆ" ซึ่งอันตรายกว่าขึ้น error (เจ้าของเจอเองบน iOS)
+      //   จึงต้องลองใหม่เมื่อโดนตัด ไม่ใช่เฉพาะตอน parse ไม่ผ่าน
       let raw = await this.askLLMParts(prompt);
+      let cut = this._lastTruncated;
       let data = this._impJSON(raw);
-      if (!data) {
-        raw = await this.askLLMParts(prompt + '\n\nย้ำ: ตอบเป็น JSON ล้วนเท่านั้น เริ่มด้วย { และจบด้วย } ห้ามมีข้อความอื่นหรือรั้วโค้ดนอก JSON');
-        data = this._impJSON(raw);
+      if (!data || cut) {
+        const raw2 = await this.askLLMParts(prompt + '\n\nย้ำ: ตอบเป็น JSON ล้วนเท่านั้น เริ่มด้วย { และจบด้วย } ห้ามมีข้อความอื่นหรือรั้วโค้ดนอก JSON · เขียนโน้ตให้สั้นกระชับ อย่าบรรยายยาว');
+        const cut2 = this._lastTruncated;
+        const d2 = this._impJSON(raw2);
+        // เอารอบที่ดีกว่า: ไม่โดนตัดชนะโดนตัด · ถ้าโดนตัดทั้งคู่เอาอันที่ได้วันมากกว่า
+        if (d2 && (!cut2 || !data || ((d2.days || []).length > (data.days || []).length))) { data = d2; cut = cut2; }
       }
       if (!data) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ · ลองกดอีกครั้ง หรือแบ่งวางโปรแกรมเป็นช่วงสั้นลง');
       const M = this.thMonths();
@@ -5736,7 +5744,10 @@ class Component extends DCLogic {
       this.saveUserTrips([rec, ...this.userTrips]);
       this.saveItinerary(id, days);
       this.setState({ impBusy: false, impOpen: false, impText: '', impDocs: [], impErr: '', ncName: '', ncCountry: '', ncCity: '', ncStart: '', ncEnd: '', ncBudget: '' });
-      this.showToast('✓ โหลดโปรแกรม ' + days.length + ' วันแล้ว');
+      // ⚠ ถ้ายังโดนตัดอยู่ ห้ามบอกว่าสำเร็จเฉยๆ — ต้องบอกตรงๆ ว่าอาจไม่ครบ ผู้ใช้จะได้ไปตรวจ
+      this.showToast(cut
+        ? ('⚠ ได้ ' + days.length + ' วัน แต่ AI ตอบไม่จบ แผนอาจไม่ครบ — เทียบกับโปรแกรมต้นฉบับแล้วเพิ่มวันที่ขาดได้')
+        : ('✓ โหลดโปรแกรม ' + days.length + ' วันแล้ว'));
       this.openTrip(id);
     } catch (e) {
       this.setState({ impBusy: false, impErr: 'อ่านโปรแกรมไม่สำเร็จ: ' + (e.message || e) });
@@ -9856,6 +9867,7 @@ class Component extends DCLogic {
       try {
         const t = await be.aiComplete(prompt);
         if (typeof be._credits === 'number') this.setState({ aiCredits: be._credits });
+        this._lastTruncated = !!be._truncated;   // คำตอบรอบนี้โดนตัดกลางคันไหม — ผู้เรียกอ่านต่อได้
         return t;
       } catch (e) {
         if (e && e.code === 'premium-only') { this.setState({ aiCredits: 0 }); this.go('premium'); throw e; }
@@ -14105,7 +14117,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.24d',
+      appVersion: '2026.09.25a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
