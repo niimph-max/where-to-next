@@ -177,34 +177,59 @@
        (`_centerDayPill()` ที่เลื่อนแถบวันให้เองจะกลายเป็นไม่ทำอะไร ซึ่งถูกแล้วเพราะไม่มีอะไรตกขอบ) */
     html:not(.is-native) .wtn-chips{flex-wrap:wrap!important;overflow-x:visible!important;row-gap:6px!important}
 
-    /* ── โหมดคอม · หน้าเขียนเรื่องเล่า (29 ก.ย. 2569 รอบสอง) ─────────────────
-       รอบแรกแค่ถ่างกรอบมือถือให้อ้วนขึ้น เจ้าของบอก "ดูตลก ๆ" — ถูกแล้ว
-       แบบร่างที่อนุมัติไว้ไม่มีกรอบมือถือและไม่มีแถบเมนูล่าง (Artifact "Vela บนจอคอม — แบบร่าง")
-       รอบนี้ทำ "เปลือกนอก" ตามแบบร่าง: เต็มจอ · แถบเมนูล่างกลายเป็นแถบไอคอนซ้าย 72px · คอลัมน์เขียน 680px
-       ⚠ ยังไม่มีคอลัมน์รายชื่อตอน (ซ้าย) และแผงรูป (ขวา) ตามแบบร่าง
-          เพราะสองอันนั้นไม่มีอยู่ใน DOM ของหน้านี้ — อยู่คนละหน้า/เป็นชีตเด้ง
-          CSS สร้างของที่ไม่มีไม่ได้ ต้องแตะโครงแอปจริง ซึ่งเป็นงานอีกก้อน (เจ้าของเลือก "เปลือกนอกก่อน")
-       ⚠ ห้ามถอดการ์ดสองชั้น (min-width:900px + html:not(.is-native)) แอป native ต้องไม่โดน
-       ถอยกลับ: ลบบล็อกนี้ + ลบคลาส wtn-screen-write ที่ div หน้าเขียน จบ */
-    html:not(.is-native) body:has(.wtn-screen-write){background:#f6efe2!important}
-    html:not(.is-native) .wtn-body:has(.wtn-screen-write){
+    /* ── โหมดคอม · ชุด 4 หน้าตามแบบร่าง (29 ก.ย. 2569) ───────────────────────
+       แบบร่างที่อนุมัติไว้: Artifact "Vela บนจอคอม — แบบร่าง" 4 artboard 1440×900
+       หน้าไหนเข้าโหมดคอม = ใส่คลาส wtn-dt ที่ div ของหน้านั้น + คลาสเฉพาะหน้าอีกอัน
+       หน้าที่ไม่มี wtn-dt ยังเป็นกรอบมือถือจัดกลางเหมือนเดิม — ตั้งใจ ไม่ต้องมีครบทุกหน้า
+       ⚠ การ์ดกันแอป native สองชั้น (min-width:900px + html:not(.is-native)) ห้ามถอด
+       ⚠ ห้ามแตะ transform บน .wtn-body ข้างบน — position:fixed ยึดกับกรอบอยู่
+       ถอยกลับ: ลบบล็อกนี้ + ลบคลาส wtn-dt / wtn-screen-* / wtn-tripcard ที่ markup */
+
+    /* ── เปลือกนอกที่ใช้ร่วมกันทั้ง 4 หน้า ── */
+    html:not(.is-native) body:has(.wtn-dt){background:#f6efe2!important}
+    html:not(.is-native) .wtn-body:has(.wtn-dt){
       width:100vw!important;max-width:100vw!important;height:100dvh!important;
       border-radius:0!important;border:none!important;box-shadow:none!important}
     /* เว้นที่ให้แถบไอคอนซ้าย — เฉพาะตอนที่แถบยังอยู่ (โหมดเขียนเต็มจอซ่อนมันไป) */
-    html:not(.is-native) .wtn-body:has(.wtn-screen-write):has(.wtn-tabbar){padding-left:72px!important}
-    /* แถบเมนูล่าง → แถบไอคอนแนวตั้งด้านซ้าย  (font-size:0 = ซ่อนตัวหนังสือ ไอคอน svg ไม่โดน) */
-    html:not(.is-native) .wtn-body:has(.wtn-screen-write) .wtn-tabbar{
+    html:not(.is-native) .wtn-body:has(.wtn-dt):has(.wtn-tabbar){padding-left:72px!important}
+    /* แถบเมนูล่าง → แถบไอคอนแนวตั้งซ้าย  (font-size:0 = ซ่อนตัวหนังสือ ไอคอน svg ไม่โดน) */
+    html:not(.is-native) .wtn-body:has(.wtn-dt) .wtn-tabbar{
       position:fixed!important;left:0;top:0;bottom:0;width:72px;
       flex-direction:column!important;justify-content:flex-start!important;
       align-items:center!important;gap:6px;padding:18px 0!important;
       border-top:none!important;border-right:1px solid rgba(43,36,32,.10)}
-    html:not(.is-native) .wtn-body:has(.wtn-screen-write) .wtn-tabbar > button{
+    html:not(.is-native) .wtn-body:has(.wtn-dt) .wtn-tabbar > button{
       font-size:0!important;width:46px;height:46px;border-radius:12px;
       justify-content:center!important;gap:0!important}
-    /* คอลัมน์เขียน 680px ตามแบบร่าง — หัวเรื่องกับตัวหนังสืออยู่แนวเดียวกัน */
+
+    /* ── หน้าเขียนเรื่องเล่า · คอลัมน์เขียน 680px ── */
     html:not(.is-native) .wtn-screen-write > div{max-width:680px;margin-inline:auto;width:100%}
     html:not(.is-native) .wtn-screen-write > .wtn-s{max-width:none}
     html:not(.is-native) .wtn-screen-write .wtn-rte{max-width:680px;margin-inline:auto}
+
+    /* ── แผนของฉัน · การ์ดทริป 3 คอลัมน์ แทนที่จะซ้อนกันยาว ──
+       ของอื่น (แบนเนอร์ · การ์ดใหญ่ · แถบแท็บ · หัวข้อกลุ่ม) กินเต็มแถว
+       การ์ดทริปเท่านั้นที่ลงคอลัมน์ — จึงต้องมีคลาส wtn-tripcard กำกับไว้ */
+    html:not(.is-native) .wtn-screen-plans{
+      display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:0 16px;align-content:start;max-width:1180px;margin-inline:auto;
+      padding:26px 28px 40px!important}
+    html:not(.is-native) .wtn-screen-plans > *{grid-column:1 / -1}
+    html:not(.is-native) .wtn-screen-plans > .wtn-tripcard{grid-column:auto;margin-bottom:16px!important}
+
+    /* ── ลิงก์แชร์/ทดลองอ่าน · คอลัมน์อ่าน 760px ตัวหนังสือ 20px ตามแบบร่าง ── */
+    html:not(.is-native) .wtn-screen-read > div{max-width:760px!important;padding:44px 28px 64px!important}
+    html:not(.is-native) .wtn-screen-read .wtn-read,
+    html:not(.is-native) .wtn-screen-read .wtn-read p,
+    html:not(.is-native) .wtn-screen-read .wtn-read li{font-size:20px!important;line-height:1.95!important}
+    html:not(.is-native) .wtn-screen-read .wtn-read h3{font-size:23px!important}
+    html:not(.is-native) .wtn-screen-read .wtn-read h4{font-size:20px!important}
+
+    /* ── จัดรูปในเล่ม · คอลัมน์กลาง 760px ──
+       ⚠ ยังไม่มีคลังรูปคอลัมน์ขวาตามแบบร่าง เพราะคลังรูปเป็นชีตเด้ง ไม่ได้อยู่ใน DOM ของหน้านี้
+          ต้องเพิ่ม markup จริง = งานอีกก้อน ยังไม่ได้ทำ */
+    html:not(.is-native) .wtn-screen-book{
+      max-width:760px;margin-inline:auto;padding:26px 28px 48px!important}
   }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
@@ -530,7 +555,7 @@
 
       <!-- ========== MY PLANS (home) ========== -->
       <sc-if value="{{ sMyplans }}" hint-placeholder-val="{{ true }}">
-        <div class="wtn-screen" style="padding:18px 20px 30px">
+        <div class="wtn-screen wtn-dt wtn-screen-plans" style="padding:18px 20px 30px">
           <sc-if value="{{ showNow }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:center;gap:13px;background:#fbf3e6;border:1px solid rgba(192,95,57,.16);border-radius:18px;padding:14px 16px;margin-bottom:16px">
             <span style="position:relative;width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center">
@@ -556,7 +581,7 @@
           <sc-if value="{{ plansTabTrips }}" hint-placeholder-val="{{ true }}">
           <sc-for list="{{ myTrips }}" as="t" hint-placeholder-count="0">
             <sc-if value="{{ t.sec }}" hint-placeholder-val="{{ false }}"><div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin:6px 0 12px">{{ t.sec }}</div></sc-if>
-            <div onClick="{{ t.open }}" style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:pointer">
+            <div onClick="{{ t.open }}" class="wtn-tripcard" style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:18px;overflow:hidden;margin-bottom:14px;cursor:pointer">
               <div style="position:relative">
                 <photo-pick id="{{ t.coverId }}" readonly fallback="{{ t.cover }}" style="display:block;width:100%;height:110px"></photo-pick>
                 <sc-if value="{{ t.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:11px;left:11px;background:rgba(233,180,138,.95);color:#5b3115;font:600 12px 'Anuphan';padding:4px 10px;border-radius:20px">{{ t.badge }}</span></sc-if>
@@ -2003,7 +2028,7 @@
 
       <!-- ========== CHAPTER EDIT ========== -->
       <sc-if value="{{ sChapterEdit }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen wtn-screen-write" style="display:flex;flex-direction:column;height:100%">
+        <div class="wtn-screen wtn-dt wtn-screen-write" style="display:flex;flex-direction:column;height:100%">
           <sc-if value="{{ ceHeadSlim }}" hint-placeholder-val="{{ false }}">
             <div class="wtn-cehead" style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
               <button onClick="{{ openCeHead }}" title="แสดงหัวเรื่อง" style="width:34px;height:34px;flex:none;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:10px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 15l6-6 6 6"></path></svg></button>
@@ -2097,7 +2122,7 @@
 
       <!-- ========== CHAPTER READ ========== -->
       <sc-if value="{{ sChapterRead }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen" style="background:#fdfaf3;min-height:100%">
+        <div class="wtn-screen wtn-dt wtn-screen-read" style="background:#fdfaf3;min-height:100%">
           <div style="max-width:640px;margin:0 auto;padding:30px 26px 50px">
             <div style="text-align:center;margin-bottom:24px">
               <div style="font:500 14px 'Anuphan';color:#a99e8e;margin-bottom:8px">เรื่อง : {{ crStoryTitle }}</div>
@@ -2812,7 +2837,7 @@
       </sc-if>
 
       <sc-if value="{{ sEbPhotos }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen" style="padding:16px 20px 40px">
+        <div class="wtn-screen wtn-dt wtn-screen-book" style="padding:16px 20px 40px">
           <sc-if value="{{ ebChList }}" hint-placeholder-val="{{ true }}">
             <div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;margin-bottom:16px;text-wrap:pretty">{{ ebChIntro }}</div>
             <sc-if value="{{ ebChEmpty }}" hint-placeholder-val="{{ false }}">
@@ -14146,7 +14171,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29b',
+      appVersion: '2026.09.29c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
