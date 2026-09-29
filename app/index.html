@@ -953,8 +953,8 @@
           <sc-if value="{{ tripDesk }}" hint-placeholder-val="{{ false }}">
             <aside class="wtn-trip-map">
               <div ref="{{ tripMapRef }}" style="position:absolute;inset:0"></div>
-              <sc-if value="{{ tripMapEmpty }}" hint-placeholder-val="{{ false }}">
-                <div style="position:absolute;left:0;right:0;bottom:0;z-index:500;background:rgba(43,36,32,.88);color:#f6d9c6;font:500 13.5px/1.6 'Anuphan';padding:12px 16px;text-wrap:pretty">ทริปนี้ยังไม่มีเช็กอิน — หมุดจะขึ้นเองเมื่อเริ่มเช็กอินระหว่างทาง</div>
+              <sc-if value="{{ tripMapNoCountry }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;left:0;right:0;bottom:0;z-index:500;background:rgba(43,36,32,.88);color:#f6d9c6;font:500 13.5px/1.6 'Anuphan';padding:12px 16px;text-wrap:pretty">ยังไม่รู้ว่าทริปนี้อยู่ประเทศไหน — ใส่ประเทศในหน้าแก้ไขทริป แล้วแผนที่จะเลื่อนไปให้เอง</div>
               </sc-if>
             </aside>
           </sc-if>
@@ -5595,6 +5595,16 @@ class Component extends DCLogic {
     out.sort((a, b) => (a.d - b.d) || (a.at - b.at));
     return out;
   }
+  /* ประเทศของทริป → พิกัดกลางประเทศ
+     ทริปหลายประเทศ (เช่น "นามิเบีย, ซิมบับเว, แซมเบีย") ใช้ประเทศแรกเป็นตัวตั้ง
+     หาไม่เจอคืน null แล้วแผนที่จะค้างอยู่มุมกว้าง พร้อมป้ายบอกให้ไปใส่ประเทศในหน้าแก้ไขทริป */
+  tripCenter(tripId) {
+    const t = (this.trips || []).find(x => x.id === tripId);
+    if (!t) return null;
+    const first = String(t.country || '').split(/[,·\/]|และ/)[0].trim();
+    if (!first) return null;
+    return this.CTR_LL[(this.GEO_EN && this.GEO_EN[first]) || first] || null;
+  }
   /* แผนที่คอลัมน์ขวาของหน้าทริปบนจอคอม — คนละตัวกับแผนที่หน้า "แผนที่" (this._map)
      จงใจแยกอินสแตนซ์ เพราะสองหน้าอยู่คนละ DOM และเปิดพร้อมกันได้ */
   initTripMap() {
@@ -5613,19 +5623,14 @@ class Component extends DCLogic {
       setTimeout(() => m.invalidateSize(), 60);
     }
     const m = this._tMap;
-    if (this._tLayer) this._tLayer.remove();
-    this._tLayer = L.layerGroup().addTo(m);
-    const pts = this.ciPoints(this.state.trip);
-    if (pts.length > 1) L.polyline(pts.map(p => [p.lat, p.lng]), { color: '#c05f39', weight: 3, dashArray: '6 8' }).addTo(this._tLayer);
-    pts.forEach(p => {
-      L.marker([p.lat, p.lng], { icon: L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12],
-        html: '<div style="width:24px;height:24px;border-radius:50%;background:#c05f39;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);color:#fff;font:700 12px Anuphan,sans-serif;display:flex;align-items:center;justify-content:center">' + p.d + '</div>' }) })
-        .addTo(this._tLayer).bindPopup((p.t ? p.t + ' · ' : '') + p.name);
-    });
-    /* ซูมให้พอดีครั้งเดียวต่อทริป — ไม่งั้นเลื่อนแผนที่เองแล้วมันจะดีดกลับทุกครั้งที่เรนเดอร์ */
-    if (pts.length && this._tFit !== this.state.trip) {
-      m.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])).pad(0.2));
-      this._tFit = this.state.trip;
+    /* ⚠ 29h: จงใจ *ไม่* ปักหมุดและไม่ลากเส้นทาง — เจ้าของสั่งเอง
+       แผนที่ตรงนี้มีไว้ให้รู้ว่า "ประเทศที่เปิดอยู่อยู่ตรงไหนของโลก" เฉยๆ แล้วปล่อยให้คนเลื่อน/ซูมเอง
+       เหตุผลที่ไม่เอาหมุดเช็กอิน: พิกัดเช็กอินคือ "ตำแหน่งเครื่องตอนกดบันทึก" ไม่ใช่ตำแหน่งของสถานที่
+       ใบที่มาใส่ทีหลังตอนกลับถึงบ้านจึงได้พิกัดบ้านติดมา (ทริปคาซัคสถาน 81 ใบ เป็นพิกัดไทยไปแล้ว 41 ใบ)
+       เอามาวาดเส้นเมื่อไหร่ก็จะได้เส้นพาดข้ามทวีปแบบที่เห็นใน 29g */
+    if (this._tFit !== this.state.trip) {
+      const c = this.tripCenter(this.state.trip);
+      if (c) { m.setView([c[0], c[1]], c[2]); this._tFit = this.state.trip; }
     }
     setTimeout(() => m.invalidateSize(), 60);
   }
@@ -14020,6 +14025,10 @@ class Component extends DCLogic {
     this.setTab('stories');
   }
   GEO_EN = { 'ไทย':'Thailand','ญี่ปุ่น':'Japan','เกาหลีใต้':'South Korea','จีน':'China','ไต้หวัน':'Taiwan','เวียดนาม':'Vietnam','ลาว':'Laos','กัมพูชา':'Cambodia','เมียนมา':'Myanmar','มาเลเซีย':'Malaysia','อินโดนีเซีย':'Indonesia','ฟิลิปปินส์':'Philippines','อินเดีย':'India','เนปาล':'Nepal','ภูฏาน':'Bhutan','ศรีลังกา':'Sri Lanka','คาซัคสถาน':'Kazakhstan','อุซเบกิสถาน':'Uzbekistan','คีร์กีซสถาน':'Kyrgyzstan','จอร์เจีย':'Georgia','ตุรกี':'Turkey','สหรัฐอาหรับเอมิเรตส์':'United Arab Emirates','กาตาร์':'Qatar','ซาอุดีอาระเบีย':'Saudi Arabia','จอร์แดน':'Jordan','อิสราเอล':'Israel','โอมาน':'Oman','อิหร่าน':'Iran','อังกฤษ':'United Kingdom','ฝรั่งเศส':'France','อิตาลี':'Italy','สเปน':'Spain','โปรตุเกส':'Portugal','เยอรมนี':'Germany','สวิตเซอร์แลนด์':'Switzerland','ออสเตรีย':'Austria','เนเธอร์แลนด์':'Netherlands','เบลเยียม':'Belgium','กรีซ':'Greece','เช็ก':'Czechia','ฮังการี':'Hungary','โปแลนด์':'Poland','โครเอเชีย':'Croatia','นอร์เวย์':'Norway','สวีเดน':'Sweden','เดนมาร์ก':'Denmark','ฟินแลนด์':'Finland','ไอซ์แลนด์':'Iceland','ไอร์แลนด์':'Ireland','รัสเซีย':'Russia','อียิปต์':'Egypt','โมร็อกโก':'Morocco','แอฟริกาใต้':'South Africa','เคนยา':'Kenya','แทนซาเนีย':'Tanzania','สหรัฐฯ':'United States of America','แคนาดา':'Canada','เม็กซิโก':'Mexico','บราซิล':'Brazil','อาร์เจนตินา':'Argentina','เปรู':'Peru','ชิลี':'Chile','คิวบา':'Cuba','ออสเตรเลีย':'Australia','นิวซีแลนด์':'New Zealand','ฟิจิ':'Fiji','เอธิโอเปีย':'Ethiopia','มาดากัสการ์':'Madagascar','ตูนิเซีย':'Tunisia','แอลจีเรีย':'Algeria','นามิเบีย':'Namibia','บอตสวานา':'Botswana','ซิมบับเว':'Zimbabwe','แซมเบีย':'Zambia','โมซัมบิก':'Mozambique','ยูกันดา':'Uganda','รวันดา':'Rwanda','เซเนกัล':'Senegal','กานา':'Ghana','ไนจีเรีย':'Nigeria','เลบานอน':'Lebanon','คูเวต':'Kuwait','ทาจิกิสถาน':'Tajikistan','เติร์กเมนิสถาน':'Turkmenistan','อาเซอร์ไบจาน':'Azerbaijan','อาร์เมเนีย':'Armenia','มองโกเลีย':'Mongolia','บังกลาเทศ':'Bangladesh','ปากีสถาน':'Pakistan','บรูไน':'Brunei','ยูเครน':'Ukraine','โรมาเนีย':'Romania','บัลแกเรีย':'Bulgaria','เซอร์เบีย':'Serbia','สโลวีเนีย':'Slovenia','สโลวาเกีย':'Slovakia','เอสโตเนีย':'Estonia','ลัตเวีย':'Latvia','ลิทัวเนีย':'Lithuania','ไซปรัส':'Cyprus','แอลเบเนีย':'Albania','ลักเซมเบิร์ก':'Luxembourg','โคลอมเบีย':'Colombia','เอกวาดอร์':'Ecuador','โบลิเวีย':'Bolivia','อุรุกวัย':'Uruguay','คอสตาริกา':'Costa Rica','ปานามา':'Panama','กัวเตมาลา':'Guatemala','ปาปัวนิวกินี':'Papua New Guinea','วานูอาตู':'Vanuatu' };
+  /* จุดกึ่งกลางประเทศ + ระดับซูม — ใช้ตั้ง "มุมกล้อง" ของแผนที่ข้างหน้าทริปเท่านั้น
+     ไม่ได้เอาไปคำนวณระยะทางหรืออะไรทั้งนั้น ความละเอียดระดับนี้จึงพอแล้ว
+     คีย์เป็นชื่ออังกฤษ เพราะจับคู่กับ GEO_EN ข้างบนที่แปลชื่อไทย → อังกฤษอยู่แล้ว */
+  CTR_LL = { 'Thailand':[13,101.5,5],'Japan':[36.5,138,5],'South Korea':[36.5,127.8,6],'China':[35,104,4],'Taiwan':[23.7,121,7],'Vietnam':[16,106.5,5],'Laos':[18.5,104.5,6],'Cambodia':[12.8,104.9,6],'Myanmar':[21,96,5],'Malaysia':[4.2,102,5],'Indonesia':[-2.5,118,4],'Philippines':[12.5,122,5],'India':[22.5,79,4],'Nepal':[28.3,84.1,6],'Bhutan':[27.5,90.4,7],'Sri Lanka':[7.8,80.7,7],'Kazakhstan':[48,67,4],'Uzbekistan':[41.5,64.5,5],'Kyrgyzstan':[41.4,74.6,6],'Georgia':[42.2,43.4,6],'Turkey':[39,35,5],'United Arab Emirates':[24,54,6],'Qatar':[25.3,51.2,7],'Saudi Arabia':[24,45,5],'Jordan':[31.2,36.5,6],'Israel':[31.4,35,7],'Oman':[21,57,6],'Iran':[32.5,54,5],'United Kingdom':[54.5,-3,5],'France':[46.5,2.5,5],'Italy':[42.5,12.5,5],'Spain':[40.2,-3.5,5],'Portugal':[39.5,-8.2,6],'Germany':[51,10.3,5],'Switzerland':[46.8,8.2,7],'Austria':[47.6,14.1,6],'Netherlands':[52.2,5.5,7],'Belgium':[50.6,4.6,7],'Greece':[39,22.5,6],'Czechia':[49.8,15.4,6],'Hungary':[47.1,19.5,6],'Poland':[52,19.3,5],'Croatia':[45.1,16.3,6],'Norway':[64.5,13,4],'Sweden':[62.5,16.5,4],'Denmark':[56,10,6],'Finland':[64.5,26,4],'Iceland':[64.9,-18.5,6],'Ireland':[53.2,-8,6],'Russia':[60,95,3],'Egypt':[26.5,30,5],'Morocco':[31.8,-7,5],'South Africa':[-29,25,5],'Kenya':[0.5,37.9,6],'Tanzania':[-6.3,35,5],'United States of America':[39.5,-98.5,4],'Canada':[58,-100,3],'Mexico':[23.5,-102,4],'Brazil':[-10.5,-52,4],'Argentina':[-35,-64,4],'Peru':[-9.5,-75,5],'Chile':[-35,-71,4],'Cuba':[21.8,-79,6],'Australia':[-25.5,134,4],'New Zealand':[-41.5,172.5,5],'Fiji':[-17.8,178,7],'Ethiopia':[9.2,39.6,5],'Madagascar':[-19,46.8,5],'Tunisia':[34,9.5,6],'Algeria':[28,2.6,4],'Namibia':[-22,17.2,5],'Botswana':[-22.2,23.8,5],'Zimbabwe':[-19,29.8,6],'Zambia':[-13.5,27.8,5],'Mozambique':[-18.2,35.5,5],'Uganda':[1.3,32.4,6],'Rwanda':[-1.9,29.9,8],'Senegal':[14.4,-14.5,6],'Ghana':[7.9,-1.2,6],'Nigeria':[9.1,8.7,5],'Lebanon':[33.9,35.9,8],'Kuwait':[29.3,47.6,8],'Tajikistan':[38.9,71.3,6],'Turkmenistan':[39,59,5],'Azerbaijan':[40.3,47.8,7],'Armenia':[40.2,45,7],'Mongolia':[46.9,103.8,4],'Bangladesh':[23.8,90.3,6],'Pakistan':[30.3,69.5,5],'Brunei':[4.5,114.7,8],'Ukraine':[48.8,31.2,5],'Romania':[45.9,25,6],'Bulgaria':[42.7,25.5,6],'Serbia':[44.2,20.9,7],'Slovenia':[46.1,14.8,8],'Slovakia':[48.7,19.7,7],'Estonia':[58.6,25,7],'Latvia':[56.9,24.6,7],'Lithuania':[55.2,23.9,7],'Cyprus':[35.1,33.2,8],'Albania':[41.1,20.1,7],'Luxembourg':[49.8,6.1,9],'Colombia':[4.6,-74,5],'Ecuador':[-1.5,-78.5,6],'Bolivia':[-16.5,-64.5,5],'Uruguay':[-32.8,-56,6],'Costa Rica':[9.8,-84,7],'Panama':[8.5,-80,7],'Guatemala':[15.5,-90.3,7],'Papua New Guinea':[-6.5,145,5],'Vanuatu':[-16.3,167.5,7] };
   // แผนที่เวกเตอร์: Natural Earth 110m (world-atlas) → เส้นทางแบบ equirectangular
   geoX(lng) { return (lng + 180) / 360 * 1000; }
   geoY(lat) { return (84 - lat) / 144 * 400; }
@@ -14331,7 +14340,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29g',
+      appVersion: '2026.09.29h',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15246,7 +15255,7 @@ class Component extends DCLogic {
         if (on) setTimeout(() => this.initTripMap(), 0);
         return on;
       })(),
-      tripMapEmpty: !this.ciPoints(this.state.trip).length,
+      tripMapNoCountry: !this.tripCenter(this.state.trip),
       tripMapRef: el => { this._tMapEl = el; if (el) setTimeout(() => this.initTripMap(), 0); },
       ciDays: this.days.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
         style: (i === active
