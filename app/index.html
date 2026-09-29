@@ -177,25 +177,34 @@
        (`_centerDayPill()` ที่เลื่อนแถบวันให้เองจะกลายเป็นไม่ทำอะไร ซึ่งถูกแล้วเพราะไม่มีอะไรตกขอบ) */
     html:not(.is-native) .wtn-chips{flex-wrap:wrap!important;overflow-x:visible!important;row-gap:6px!important}
 
-    /* ── หน้าเขียนบนจอคอม: ขยายพื้นที่เขียน (29 ก.ย. 2569) ──────────────────
-       เจ้าของ: "คิดถึงหน้าที่เขียนแหละ" — กรอบ 430px แคบเกินไปสำหรับงานเขียนยาว ๆ
-       ทำเป็นชั้นเสริมล้วน ๆ: ไม่แตะ inline style เดิมสักจุด ไม่แตะ JS เลย
-       เกาะด้วย :has(.wtn-screen-write) → กว้างเฉพาะตอนอยู่หน้าเขียนจริง หน้าอื่นเหมือนเดิม
-       ⚠ อยู่ในบล็อกเดียวกับกรอบมือถือ จึงได้การ์ดกันแอป native สองชั้นไปด้วย
-          (min-width:900px + html:not(.is-native)) — ห้ามย้ายออกไปไว้ข้างนอก
-       ⚠ ห้ามแตะ transform บน .wtn-body ข้างบน ของที่เป็น position:fixed ยึดกับกรอบอยู่
-       ถอยกลับ: ลบบล็อกนี้ทิ้งทั้งก้อน + ลบคลาส wtn-screen-write ที่ div หน้าเขียน จบ */
+    /* ── โหมดคอม · หน้าเขียนเรื่องเล่า (29 ก.ย. 2569 รอบสอง) ─────────────────
+       รอบแรกแค่ถ่างกรอบมือถือให้อ้วนขึ้น เจ้าของบอก "ดูตลก ๆ" — ถูกแล้ว
+       แบบร่างที่อนุมัติไว้ไม่มีกรอบมือถือและไม่มีแถบเมนูล่าง (Artifact "Vela บนจอคอม — แบบร่าง")
+       รอบนี้ทำ "เปลือกนอก" ตามแบบร่าง: เต็มจอ · แถบเมนูล่างกลายเป็นแถบไอคอนซ้าย 72px · คอลัมน์เขียน 680px
+       ⚠ ยังไม่มีคอลัมน์รายชื่อตอน (ซ้าย) และแผงรูป (ขวา) ตามแบบร่าง
+          เพราะสองอันนั้นไม่มีอยู่ใน DOM ของหน้านี้ — อยู่คนละหน้า/เป็นชีตเด้ง
+          CSS สร้างของที่ไม่มีไม่ได้ ต้องแตะโครงแอปจริง ซึ่งเป็นงานอีกก้อน (เจ้าของเลือก "เปลือกนอกก่อน")
+       ⚠ ห้ามถอดการ์ดสองชั้น (min-width:900px + html:not(.is-native)) แอป native ต้องไม่โดน
+       ถอยกลับ: ลบบล็อกนี้ + ลบคลาส wtn-screen-write ที่ div หน้าเขียน จบ */
+    html:not(.is-native) body:has(.wtn-screen-write){background:#f6efe2!important}
     html:not(.is-native) .wtn-body:has(.wtn-screen-write){
-      width:min(1040px,100vw)!important;max-width:1040px!important;
-      height:calc(100dvh - 32px)!important}
-    /* หัวเรื่อง/แถบเครื่องมือ จัดกลางให้ตรงแนวกับข้อความ ไม่ยืดเต็มความกว้าง */
-    html:not(.is-native) .wtn-screen-write > div{max-width:780px;margin-inline:auto;width:100%}
-    html:not(.is-native) .wtn-screen-write > .wtn-s{max-width:none}
-    /* ความยาวบรรทัดที่อ่านสบาย — กว้างกว่านี้ตาจะไล่บรรทัดลำบาก */
-    html:not(.is-native) .wtn-screen-write .wtn-rte{max-width:740px;margin-inline:auto}
-    /* แถบเมนูล่าง 5 ปุ่มใช้ space-around ถ้าปล่อยเต็ม 1040px ปุ่มจะกระจายห่างผิดรูป */
+      width:100vw!important;max-width:100vw!important;height:100dvh!important;
+      border-radius:0!important;border:none!important;box-shadow:none!important}
+    /* เว้นที่ให้แถบไอคอนซ้าย — เฉพาะตอนที่แถบยังอยู่ (โหมดเขียนเต็มจอซ่อนมันไป) */
+    html:not(.is-native) .wtn-body:has(.wtn-screen-write):has(.wtn-tabbar){padding-left:72px!important}
+    /* แถบเมนูล่าง → แถบไอคอนแนวตั้งด้านซ้าย  (font-size:0 = ซ่อนตัวหนังสือ ไอคอน svg ไม่โดน) */
     html:not(.is-native) .wtn-body:has(.wtn-screen-write) .wtn-tabbar{
-      max-width:430px;margin-inline:auto;width:100%}
+      position:fixed!important;left:0;top:0;bottom:0;width:72px;
+      flex-direction:column!important;justify-content:flex-start!important;
+      align-items:center!important;gap:6px;padding:18px 0!important;
+      border-top:none!important;border-right:1px solid rgba(43,36,32,.10)}
+    html:not(.is-native) .wtn-body:has(.wtn-screen-write) .wtn-tabbar > button{
+      font-size:0!important;width:46px;height:46px;border-radius:12px;
+      justify-content:center!important;gap:0!important}
+    /* คอลัมน์เขียน 680px ตามแบบร่าง — หัวเรื่องกับตัวหนังสืออยู่แนวเดียวกัน */
+    html:not(.is-native) .wtn-screen-write > div{max-width:680px;margin-inline:auto;width:100%}
+    html:not(.is-native) .wtn-screen-write > .wtn-s{max-width:none}
+    html:not(.is-native) .wtn-screen-write .wtn-rte{max-width:680px;margin-inline:auto}
   }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
@@ -14137,7 +14146,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29a',
+      appVersion: '2026.09.29b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
