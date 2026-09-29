@@ -5599,7 +5599,9 @@ class Component extends DCLogic {
      ทริปหลายประเทศ (เช่น "นามิเบีย, ซิมบับเว, แซมเบีย") ใช้ประเทศแรกเป็นตัวตั้ง
      หาไม่เจอคืน null แล้วแผนที่จะค้างอยู่มุมกว้าง พร้อมป้ายบอกให้ไปใส่ประเทศในหน้าแก้ไขทริป */
   tripCenter(tripId) {
-    const t = (this.trips || []).find(x => x.id === tripId);
+    /* ⚠ ต้องเป็น userTrips — `get trips()` เป็นโค้ดสาธิตเก่าที่ return [] ทิ้งไว้เฉยๆ
+       ใช้ผิดตัวแล้วจะไม่ error อะไรเลย แค่คืน null เงียบๆ แล้วแผนที่ค้างอยู่มุมโลก (เจอจริงใน 29h) */
+    const t = (this.userTrips || []).find(x => x.id === tripId);
     if (!t) return null;
     const first = String(t.country || '').split(/[,·\/]|และ/)[0].trim();
     if (!first) return null;
@@ -14340,7 +14342,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29h',
+      appVersion: '2026.09.29i',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
