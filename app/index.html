@@ -253,7 +253,11 @@
        แบบเดียวกับที่ Wanderlog ทำ: จอคอมกว้างพอให้เห็นแผนกับแผนที่พร้อมกัน
        ⚠ หมุดบนแผนที่มาจาก "เช็กอิน" เท่านั้น — กิจกรรมในแผนไม่มีพิกัดเก็บไว้
           ทริปที่ยังไม่ได้ไปจะไม่มีหมุด แล้วขึ้นป้ายบอกแทน ไม่ปล่อยให้เงียบ */
-    html:not(.is-native) .wtn-screen-trip{flex-direction:row!important;overflow:hidden!important}
+    /* ⚠ .wtn-screen เป็น display:block — ใส่แค่ flex-direction จะไม่เกิดอะไรขึ้นเลย (เจอจริงใน 29f)
+       ต้องปั้นเป็น flex เองที่นี่ และตรึงความสูงไว้ ไม่งั้นสองคอลัมน์จะยาวตามเนื้อหาแทนที่จะสูงเท่าจอ */
+    html:not(.is-native) .wtn-screen-trip{
+      display:flex!important;flex-direction:row!important;
+      height:100%!important;min-height:0!important;overflow:hidden!important}
     html:not(.is-native) .wtn-trip-main{flex:1;min-width:0;height:100%;overflow-y:auto}
     html:not(.is-native) .wtn-trip-main > *{
       max-width:720px;margin-inline:auto!important;width:100%;box-sizing:border-box}
@@ -14327,7 +14331,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29f',
+      appVersion: '2026.09.29g',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
