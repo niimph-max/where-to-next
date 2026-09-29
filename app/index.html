@@ -155,6 +155,7 @@
      ⚠ transform บน .wtn-body จงใจใส่ ทำให้ลูกที่เป็น position:fixed
        (แถบเมนูล่าง · toast · ชีตเด้งขึ้น) ยึดกับกรอบแทนขอบจอ ถ้าเอาออกของพวกนี้จะหลุดไปติดขอบจอ */
   @media (min-width:900px){
+    :root{--wtn-map-w:clamp(360px,36vw,620px)}
     html:not(.is-native), html:not(.is-native) body{height:100%!important;overflow:hidden!important}
     html:not(.is-native) body{background:#d9cdb9!important;display:flex!important;align-items:center!important;
       justify-content:center!important;padding:0!important}
@@ -247,6 +248,26 @@
       padding:26px 28px 40px!important}
     html:not(.is-native) .wtn-screen-plans > *{grid-column:1 / -1}
     html:not(.is-native) .wtn-screen-plans > .wtn-tripcard{grid-column:auto;margin-bottom:16px!important}
+
+    /* ── หน้าทริป · แผนซ้าย + แผนที่ขวา (29f) ──
+       แบบเดียวกับที่ Wanderlog ทำ: จอคอมกว้างพอให้เห็นแผนกับแผนที่พร้อมกัน
+       ⚠ หมุดบนแผนที่มาจาก "เช็กอิน" เท่านั้น — กิจกรรมในแผนไม่มีพิกัดเก็บไว้
+          ทริปที่ยังไม่ได้ไปจะไม่มีหมุด แล้วขึ้นป้ายบอกแทน ไม่ปล่อยให้เงียบ */
+    html:not(.is-native) .wtn-screen-trip{flex-direction:row!important;overflow:hidden!important}
+    html:not(.is-native) .wtn-trip-main{flex:1;min-width:0;height:100%;overflow-y:auto}
+    html:not(.is-native) .wtn-trip-main > *{
+      max-width:720px;margin-inline:auto!important;width:100%;box-sizing:border-box}
+    html:not(.is-native) .wtn-trip-main > input,
+    html:not(.is-native) .wtn-trip-main > button,
+    html:not(.is-native) .wtn-trip-main > textarea,
+    html:not(.is-native) .wtn-trip-main > select,
+    html:not(.is-native) .wtn-trip-main > img{display:block}
+    html:not(.is-native) .wtn-trip-map{
+      flex:none;width:var(--wtn-map-w);position:relative;height:100%;
+      background:#e8dfc9;border-left:1px solid rgba(43,36,32,.10)}
+    /* ปุ่มลอยต้องหลบแผนที่ ไม่งั้นไปนั่งทับอยู่บนแผนที่ */
+    html:not(.is-native) .wtn-body:has(.wtn-screen-trip) .wtn-fab{
+      right:calc(var(--wtn-map-w) + 18px)!important}
 
     /* ── ลิงก์แชร์/ทดลองอ่าน · คอลัมน์อ่าน 760px ตัวหนังสือ 20px ตามแบบร่าง ── */
     html:not(.is-native) .wtn-screen-read > div{max-width:760px!important;padding:44px 28px 64px!important}
@@ -821,7 +842,8 @@
         </div>
       </sc-if>
       <sc-if value="{{ sTrip }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen">
+        <div class="wtn-screen wtn-dt wtn-screen-trip">
+          <div class="wtn-trip-main">
           <div style="position:relative;height:140px"><photo-pick id="{{ coverSlotId }}" placeholder="แตะเพื่อเพิ่มรูปปกทริป" style="position:absolute;inset:0;width:100%;height:140px"></photo-pick><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(43,36,32,.15),rgba(43,36,32,.72));pointer-events:none"></div><div style="position:absolute;left:20px;bottom:14px;pointer-events:none"><div style="font-family:'Chonburi',serif;font-size:24px;color:#fff">{{ tripTitle }}</div><div style="display:flex;gap:6px;margin-top:7px"><sc-if value="{{ tripLive }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#c05f39;color:#fff;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px"><span style="width:6px;height:6px;border-radius:50%;background:#8fce9b;box-shadow:0 0 0 2.5px rgba(143,206,155,.45)"></span>{{ tripLiveLabel }}</span></sc-if><sc-if value="{{ tripPlanned }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;background:#e9b48a;color:#5b3115;font:600 12.5px 'Anuphan';padding:3px 10px;border-radius:16px">{{ tripStatus }}</span></sc-if><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM1 }}</span><span style="background:rgba(246,239,226,.92);color:#2b241f;font:600 12.5px 'Anuphan';padding:3px 9px;border-radius:16px">{{ tripM2 }}</span></div></div></div>
           <div class="wtn-s wtn-chips" style="display:flex;gap:6px;padding:14px 20px 4px;overflow-x:auto;scrollbar-width:none">
             <button onClick="{{ goOverview }}" style="flex:none;background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:9px 15px;border-radius:11px;border:none;cursor:pointer;white-space:nowrap">ภาพรวม</button>
@@ -922,6 +944,16 @@
               </div>
             </sc-if>
           </div>
+          </div>
+          <!-- คอลัมน์แผนที่ขวา · เฉพาะจอคอม (เรนเดอร์เฉพาะ tripDesk = true) -->
+          <sc-if value="{{ tripDesk }}" hint-placeholder-val="{{ false }}">
+            <aside class="wtn-trip-map">
+              <div ref="{{ tripMapRef }}" style="position:absolute;inset:0"></div>
+              <sc-if value="{{ tripMapEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;left:0;right:0;bottom:0;z-index:500;background:rgba(43,36,32,.88);color:#f6d9c6;font:500 13.5px/1.6 'Anuphan';padding:12px 16px;text-wrap:pretty">ทริปนี้ยังไม่มีเช็กอิน — หมุดจะขึ้นเองเมื่อเริ่มเช็กอินระหว่างทาง</div>
+              </sc-if>
+            </aside>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -1077,7 +1109,6 @@
         <div class="wtn-screen">
           <div style="position:relative;height:280px;background:#e8dfc9">
             <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
-            <span style="position:absolute;top:12px;left:14px;z-index:500;background:rgba(43,36,32,.82);color:#f6d9c6;font:600 12.5px 'Anuphan';padding:5px 11px;border-radius:20px;pointer-events:none">เส้นทาง 11 วัน · เริ่ม-จบที่อัลมาตี</span>
             <button onClick="{{ recenterMe }}" aria-label="ตำแหน่งของฉัน" style="position:absolute;bottom:14px;right:14px;z-index:500;width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 3px 10px rgba(43,36,32,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e78d2" stroke-width="1.9"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round"></path></svg></button>
           </div>
           <div style="padding:16px 20px 30px">
@@ -5497,13 +5528,9 @@ class Component extends DCLogic {
         { n: 'บัสท้องถิ่น + แท็กซี่', d: 'จากสถานีไป Ginzan/Zao มีบัสตามรอบ เช็กเวลาล่วงหน้า' },
         { n: 'JR East Pass (Tohoku)', d: 'คุ้มถ้าไปหลายเมือง ใช้ขึ้นชินคันเซ็นได้' } ] } }
   };
-  kzRoute = [
-    { d: '1', ll: [43.238, 76.889], name: 'อัลมาตี' },
-    { d: '3', ll: [43.87, 78.73], name: 'Basshi · Altyn Emel' },
-    { d: '5', ll: [42.986, 78.383], name: 'Saty · Kolsay' },
-    { d: '7', ll: [43.352, 79.083], name: 'Charyn Canyon' },
-    { d: '8', ll: [43.33, 77.73], name: 'Turgen' },
-    { d: '11', ll: [43.238, 76.889], name: 'กลับอัลมาตี' } ];
+  /* ⚠ 29f: เดิมมี kzRoute — พิกัดทริปคาซัคสถาน 6 จุดที่เขียนตายไว้ในโค้ด
+     แล้ว initMap() วาดเส้นประนั้นทับ *ทุกทริป* เปิดทริปอิตาลีก็ยังเห็นเส้นคาซัคสถาน
+     เอาออกแล้ว — เส้นทางกับหมุดมาจากเช็กอินจริงของทริปนั้นเท่านั้น (ciPoints) */
   // WordPress ต้องย่อรูปให้ใหม่ตอนถูกขอขนาด 640 ครั้งแรก บางใบค้างไม่ตอบเลย
   // ใบไหนยังไม่มาใน 4 วิ → เปลี่ยนไปขอไฟล์ต้นฉบับ (มีอยู่แล้วบนเซิร์ฟเวอร์เขา ตอบทันที)
   wpStuckWatch() {
@@ -5548,6 +5575,56 @@ class Component extends DCLogic {
       document.head.appendChild(js);
     } catch (e) { this._leafletAsked = false; }
   }
+  /* จุดทั้งหมดของทริปหนึ่ง เรียงตามวัน แล้วตามเวลาที่เช็กอิน
+     ⚠ มีแต่ "เช็กอิน" เท่านั้นที่มีพิกัด — กิจกรรมในแผนเป็นข้อความล้วน ไม่มี lat/lng
+        ทริปที่ยังไม่ได้ไปจึงไม่มีหมุด และนั่นถูกแล้ว ไม่ใช่บั๊ก */
+  ciPoints(tripId) {
+    const out = [], all = this.checkins || {}, pre = String(tripId) + ':';
+    Object.keys(all).forEach(k => {
+      if (k.indexOf(pre) !== 0) return;
+      const di = parseInt(k.slice(pre.length), 10);
+      (all[k] || []).forEach(c => {
+        if (c.lat == null || c.lng == null) return;
+        out.push({ lat: c.lat, lng: c.lng, name: c.name || '', t: c.t || '', d: isNaN(di) ? 0 : di + 1, at: c.at || 0 });
+      });
+    });
+    out.sort((a, b) => (a.d - b.d) || (a.at - b.at));
+    return out;
+  }
+  /* แผนที่คอลัมน์ขวาของหน้าทริปบนจอคอม — คนละตัวกับแผนที่หน้า "แผนที่" (this._map)
+     จงใจแยกอินสแตนซ์ เพราะสองหน้าอยู่คนละ DOM และเปิดพร้อมกันได้ */
+  initTripMap() {
+    const el = this._tMapEl;
+    if (!el || !this.state.isDesktop || this.state.screen !== 'trip') {
+      if (this._tMap) { this._tMap.remove(); this._tMap = null; }
+      return;
+    }
+    if (!window.L) { this.ensureLeaflet(); clearTimeout(this._tMapWait); this._tMapWait = setTimeout(() => this.initTripMap(), 300); return; }
+    if (this._tMap && this._tMap.getContainer() !== el) { this._tMap.remove(); this._tMap = null; }
+    if (!this._tMap) {
+      const m = L.map(el, { zoomControl: true, attributionControl: true });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
+      m.setView([13.75, 100.5], 2);
+      this._tMap = m;
+      setTimeout(() => m.invalidateSize(), 60);
+    }
+    const m = this._tMap;
+    if (this._tLayer) this._tLayer.remove();
+    this._tLayer = L.layerGroup().addTo(m);
+    const pts = this.ciPoints(this.state.trip);
+    if (pts.length > 1) L.polyline(pts.map(p => [p.lat, p.lng]), { color: '#c05f39', weight: 3, dashArray: '6 8' }).addTo(this._tLayer);
+    pts.forEach(p => {
+      L.marker([p.lat, p.lng], { icon: L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12],
+        html: '<div style="width:24px;height:24px;border-radius:50%;background:#c05f39;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);color:#fff;font:700 12px Anuphan,sans-serif;display:flex;align-items:center;justify-content:center">' + p.d + '</div>' }) })
+        .addTo(this._tLayer).bindPopup((p.t ? p.t + ' · ' : '') + p.name);
+    });
+    /* ซูมให้พอดีครั้งเดียวต่อทริป — ไม่งั้นเลื่อนแผนที่เองแล้วมันจะดีดกลับทุกครั้งที่เรนเดอร์ */
+    if (pts.length && this._tFit !== this.state.trip) {
+      m.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])).pad(0.2));
+      this._tFit = this.state.trip;
+    }
+    setTimeout(() => m.invalidateSize(), 60);
+  }
   initMap() {
     const el = this._mapEl;
     if (this.state.screen !== 'map') {
@@ -5563,14 +5640,7 @@ class Component extends DCLogic {
       const m = L.map(el, { zoomControl: false, attributionControl: true });
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(m);
-      const pts = this.kzRoute.map(r => r.ll);
-      L.polyline(pts, { color: '#c05f39', weight: 3, dashArray: '6 8' }).addTo(m);
-      this.kzRoute.forEach(r => {
-        L.marker(r.ll, { icon: L.divIcon({ className: '', iconSize: [24, 24], iconAnchor: [12, 12],
-          html: '<div style="width:24px;height:24px;border-radius:50%;background:#c05f39;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);color:#fff;font:700 13px Anuphan,sans-serif;display:flex;align-items:center;justify-content:center">' + r.d + '</div>' }) })
-          .addTo(m).bindPopup(r.name);
-      });
-      m.fitBounds(L.latLngBounds(pts).pad(0.15));
+      m.setView([13.75, 100.5], 2);   /* ตั้งต้นกว้างๆ ไว้ก่อน เดี๋ยวซูมตามเช็กอินจริงข้างล่าง */
       this._map = m;
       setTimeout(() => m.invalidateSize(), 60);
     }
@@ -5587,6 +5657,10 @@ class Component extends DCLogic {
         if (this._flashLL && Math.abs(c.lat - this._flashLL.lat) < 1e-6 && Math.abs(c.lng - this._flashLL.lng) < 1e-6) flashMk = mk;
       });
     });
+    if (!flashMk && this._mapFit !== this.state.trip) {
+      const cp = this.ciPoints(this.state.trip);
+      if (cp.length) { this._map.fitBounds(L.latLngBounds(cp.map(p => [p.lat, p.lng])).pad(0.2)); this._mapFit = this.state.trip; }
+    }
     if (flashMk) { const ll = flashMk.getLatLng(); this._map.setView(ll, Math.max(this._map.getZoom(), 13), { animate: true }); setTimeout(() => flashMk.openPopup(), 350); this._flashLL = null; }
     this.startLocate();
     if (this._me) this.renderMe();
@@ -14253,7 +14327,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29e',
+      appVersion: '2026.09.29f',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15162,6 +15236,14 @@ class Component extends DCLogic {
       days: this.days, sMap: sc === 'map',
       ciSheetHost: sc === 'trip' || sc === 'map',   // ชีตเช็คอินต้องโผล่ทั้งหน้าทริปและหน้าแผนที่
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
+      tripDesk: (() => {
+        const on = !!this.state.isDesktop && sc === 'trip';
+        /* เรียกซ้ำทุกเรนเดอร์ เพราะ ref ยิงแค่ตอนสร้าง element — เปลี่ยนทริป/เช็กอินใหม่ต้องวาดหมุดใหม่ */
+        if (on) setTimeout(() => this.initTripMap(), 0);
+        return on;
+      })(),
+      tripMapEmpty: !this.ciPoints(this.state.trip).length,
+      tripMapRef: el => { this._tMapEl = el; if (el) setTimeout(() => this.initTripMap(), 0); },
       ciDays: this.days.map((d, i) => ({ label: 'วันที่ ' + d.n, on: () => this.setState({ day: i }),
         style: (i === active
           ? 'flex:none;background:#c05f39;color:#fff;'
