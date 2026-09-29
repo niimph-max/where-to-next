@@ -202,10 +202,19 @@
       font-size:0!important;width:46px;height:46px;border-radius:12px;
       justify-content:center!important;gap:0!important}
 
-    /* ── หน้าเขียนเรื่องเล่า · คอลัมน์เขียน 680px ── */
-    html:not(.is-native) .wtn-screen-write > div{max-width:680px;margin-inline:auto;width:100%}
-    html:not(.is-native) .wtn-screen-write > .wtn-s{max-width:none}
-    html:not(.is-native) .wtn-screen-write .wtn-rte{max-width:680px;margin-inline:auto}
+    /* ── หน้าเขียนเรื่องเล่า · สามคอลัมน์ตามแบบร่าง ──
+       รายชื่อตอน 262 | พื้นที่เขียน (ข้อความ 680) | แผงรูป 272
+       สองแผงข้างเรนเดอร์เฉพาะตอน ceDesk = true (โครงมือถือไม่เรนเดอร์เลย คนละสาขากัน) */
+    html:not(.is-native) .wtn-screen-write{flex-direction:row!important}
+    html:not(.is-native) .wtn-ce-main{flex:1;min-width:0;display:flex;flex-direction:column;height:100%}
+    html:not(.is-native) .wtn-ce-side{
+      flex:none;box-sizing:border-box;background:#fffaf0;height:100%;overflow-y:auto;
+      padding:22px 16px;display:flex;flex-direction:column}
+    html:not(.is-native) .wtn-ce-chaps{width:262px;border-right:1px solid rgba(43,36,32,.10)}
+    html:not(.is-native) .wtn-ce-photos{width:272px;border-left:1px solid rgba(43,36,32,.10)}
+    html:not(.is-native) .wtn-ce-main > div{max-width:680px;margin-inline:auto;width:100%}
+    html:not(.is-native) .wtn-ce-main > .wtn-s{max-width:none}
+    html:not(.is-native) .wtn-ce-main .wtn-rte{max-width:680px;margin-inline:auto}
 
     /* ── แผนของฉัน · การ์ดทริป 3 คอลัมน์ แทนที่จะซ้อนกันยาว ──
        ของอื่น (แบนเนอร์ · การ์ดใหญ่ · แถบแท็บ · หัวข้อกลุ่ม) กินเต็มแถว
@@ -2029,6 +2038,22 @@
       <!-- ========== CHAPTER EDIT ========== -->
       <sc-if value="{{ sChapterEdit }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen wtn-dt wtn-screen-write" style="display:flex;flex-direction:column;height:100%">
+          <sc-if value="{{ ceDesk }}" hint-placeholder-val="{{ false }}">
+            <aside class="wtn-ce-side wtn-ce-chaps">
+              <div style="font:500 12.5px 'Anuphan';color:#a99e8e">เรื่องเล่า</div>
+              <h2 style="margin:2px 0 14px;font-family:'Chonburi',serif;font-size:18px;font-weight:400;line-height:1.4;color:#2b241f">{{ ceStoryTitle }}</h2>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ ceChapters }}" as="cc" hint-placeholder-count="3">
+                  <button onClick="{{ cc.on }}" style="{{ cc.style }}"><span style="{{ cc.subStyle }}">{{ cc.sub }}</span><br>{{ cc.title }}</button>
+                </sc-for>
+              </div>
+              <button onClick="{{ addChapterFn }}" style="margin-top:10px;border:1.5px dashed rgba(43,36,32,.22);background:none;border-radius:11px;padding:11px;cursor:pointer;font:500 14px 'Anuphan';color:#8a7d6f;width:100%">+ เพิ่มตอน</button>
+              <div style="margin-top:auto;border-top:1px solid rgba(43,36,32,.09);padding-top:14px">
+                <button onClick="{{ seOpenEbook }}" style="width:100%;border:none;background:#2b241f;color:#f6efe2;font:600 14px 'Anuphan';padding:11px;border-radius:11px;cursor:pointer">รวมเป็นอีบุ๊ก</button>
+              </div>
+            </aside>
+          </sc-if>
+          <div class="wtn-ce-main">
           <sc-if value="{{ ceHeadSlim }}" hint-placeholder-val="{{ false }}">
             <div class="wtn-cehead" style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
               <button onClick="{{ openCeHead }}" title="แสดงหัวเรื่อง" style="width:34px;height:34px;flex:none;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:10px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 15l6-6 6 6"></path></svg></button>
@@ -2117,6 +2142,32 @@
             <button onClick="{{ previewChapterFn }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14.5px 'Anuphan';padding:10px 14px;border-radius:12px;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>ดูตัวอย่าง</button>
             <button onClick="{{ saveChapterFn }}" style="border:none;background:#c05f39;color:#fff;font:600 15.5px 'Anuphan';padding:10px 20px;border-radius:12px;cursor:pointer">บันทึก</button>
           </div>
+          </div>
+          <sc-if value="{{ ceDesk }}" hint-placeholder-val="{{ false }}">
+            <aside class="wtn-ce-side wtn-ce-photos">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <h2 style="margin:0;font:700 15px 'Anuphan';color:#2b241f">รูปของตอนนี้</h2>
+                <span style="font:500 12.5px 'Anuphan';color:#a99e8e">{{ chPhotoCount }} ใบ</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px">
+                <sc-for list="{{ chPhotos }}" as="ph" hint-placeholder-count="2">
+                  <div style="position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;background:#e6dbc7">
+                    <img src="{{ ph.src }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+                    <button onClick="{{ ph.rm }}" title="เอารูปออก" style="position:absolute;top:5px;right:5px;width:22px;height:22px;border:none;border-radius:50%;background:rgba(20,16,13,.62);color:#fff;font:700 13px 'Anuphan';cursor:pointer;line-height:1">×</button>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="font:500 12.5px/1.7 'Anuphan';color:#8a7d6f;margin-top:12px">รูปที่แนบไว้จะติดไปในไฟล์ EPUB ด้วย · ใส่ได้สูงสุด 4 ใบ</div>
+              <sc-if value="{{ chCanAddPhoto }}" hint-placeholder-val="{{ true }}">
+                <label style="margin-top:10px;display:block;border:1px solid rgba(43,36,32,.16);font:500 14px 'Anuphan';color:#5c5347;padding:11px;border-radius:11px;cursor:pointer;text-align:center">＋ อัปรูปจากเครื่อง<input type="file" accept="image/*" multiple onChange="{{ addChPhotos }}" style="display:none"></label>
+              </sc-if>
+              <div style="margin-top:auto;border-top:1px solid rgba(43,36,32,.09);padding-top:14px">
+                <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-bottom:6px">ตอนนี้ยาว</div>
+                <div style="font-family:'Chonburi',serif;font-size:22px;color:#2b241f">{{ ceWords }} คำ</div>
+                <div style="font:500 12.5px 'Anuphan';color:#a99e8e;margin-top:8px">{{ ceSavedAt }}</div>
+              </div>
+            </aside>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -8860,6 +8911,15 @@ class Component extends DCLogic {
     };
     this._topInset();
     window.addEventListener('orientationchange', () => setTimeout(this._topInset, 250));
+    // โหมดคอม: จอกว้างพอ และไม่ใช่แอป native — ใช้ตัดสินว่าจะเรนเดอร์โครงคอมหรือโครงมือถือ
+    // ⚠ เกณฑ์ต้องตรงกับ @media (min-width:900px) ในสไตล์ ไม่งั้นจะได้โครงคอมแต่ CSS ยังเป็นมือถือ
+    this._dtSet = () => {
+      let on = false;
+      try { on = window.innerWidth >= 900 && !document.documentElement.classList.contains('is-native'); } catch (e) {}
+      if (!!this.state.isDesktop !== on) this.setState({ isDesktop: on });
+    };
+    this._dtSet();
+    window.addEventListener('resize', () => { clearTimeout(this._dtT); this._dtT = setTimeout(this._dtSet, 150); });
     // คีย์บอร์ดขึ้น/ลง: ตัดระยะ safe-area ของแถบล่าง + โชว์ปุ่ม "เสร็จ"
     this._kbSet = (open, px) => {
       document.documentElement.classList.toggle('wtn-kb-up', !!open);
@@ -14171,7 +14231,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29c',
+      appVersion: '2026.09.29d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -16305,6 +16365,17 @@ class Component extends DCLogic {
           chPhotos: (this.state.chPhotos || []).map((p, i) => ({ src: p, rm: () => this.setState(st => ({ chPhotos: (st.chPhotos || []).filter((_, j) => j !== i) })) })),
           chPhotoCount: (this.state.chPhotos || []).length, chCanAddPhoto: (this.state.chPhotos || []).length < 4, chAtMax: (this.state.chPhotos || []).length >= 4,
           addChPhotos: e => this.addChPhotos(e),
+          ceDesk: !!this.state.isDesktop,
+          ceStoryTitle: os.title || 'เรื่องเล่า',
+          ceChapters: (os.chapters || []).map((c, i) => {
+            const on = c.id === this.state.openChapterId;
+            return { title: c.title || ('ตอนที่ ' + (i + 1)), sub: 'ตอนที่ ' + (i + 1),
+              subStyle: 'font:500 12.5px \'Anuphan\';color:' + (on ? '#8a7d6f' : '#a99e8e'),
+              style: 'display:block;width:100%;text-align:left;border:none;cursor:pointer;padding:11px 12px;border-radius:11px;line-height:1.5;'
+                + 'font:' + (on ? '600' : '500') + ' 14.5px \'Anuphan\';'
+                + (on ? 'background:#f1e3cd;color:#2b241f' : 'background:transparent;color:#5c5347'),
+              on: () => this.openChapterEdit(c.id) };
+          }),
           chClip: this.state.chClip ?? '', setChClip: e => this.setState({ chClip: e.target.value }),
           ceChars: this.state.chChars || 0, ceWords: this.state.chWords || 0, ceSavedAt: oc ? fmtDT(oc.updatedAt) : '',
           saveChapterFn: () => this.saveChapter(),
