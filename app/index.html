@@ -176,6 +176,26 @@
        และตัวที่ตกขอบขวาก็กดไม่ถึง — บนจอกว้างให้ขึ้นบรรทัดใหม่แทน เห็นครบทุกตัวไม่ต้องเลื่อน
        (`_centerDayPill()` ที่เลื่อนแถบวันให้เองจะกลายเป็นไม่ทำอะไร ซึ่งถูกแล้วเพราะไม่มีอะไรตกขอบ) */
     html:not(.is-native) .wtn-chips{flex-wrap:wrap!important;overflow-x:visible!important;row-gap:6px!important}
+
+    /* ── หน้าเขียนบนจอคอม: ขยายพื้นที่เขียน (29 ก.ย. 2569) ──────────────────
+       เจ้าของ: "คิดถึงหน้าที่เขียนแหละ" — กรอบ 430px แคบเกินไปสำหรับงานเขียนยาว ๆ
+       ทำเป็นชั้นเสริมล้วน ๆ: ไม่แตะ inline style เดิมสักจุด ไม่แตะ JS เลย
+       เกาะด้วย :has(.wtn-screen-write) → กว้างเฉพาะตอนอยู่หน้าเขียนจริง หน้าอื่นเหมือนเดิม
+       ⚠ อยู่ในบล็อกเดียวกับกรอบมือถือ จึงได้การ์ดกันแอป native สองชั้นไปด้วย
+          (min-width:900px + html:not(.is-native)) — ห้ามย้ายออกไปไว้ข้างนอก
+       ⚠ ห้ามแตะ transform บน .wtn-body ข้างบน ของที่เป็น position:fixed ยึดกับกรอบอยู่
+       ถอยกลับ: ลบบล็อกนี้ทิ้งทั้งก้อน + ลบคลาส wtn-screen-write ที่ div หน้าเขียน จบ */
+    html:not(.is-native) .wtn-body:has(.wtn-screen-write){
+      width:min(1040px,100vw)!important;max-width:1040px!important;
+      height:calc(100dvh - 32px)!important}
+    /* หัวเรื่อง/แถบเครื่องมือ จัดกลางให้ตรงแนวกับข้อความ ไม่ยืดเต็มความกว้าง */
+    html:not(.is-native) .wtn-screen-write > div{max-width:780px;margin-inline:auto;width:100%}
+    html:not(.is-native) .wtn-screen-write > .wtn-s{max-width:none}
+    /* ความยาวบรรทัดที่อ่านสบาย — กว้างกว่านี้ตาจะไล่บรรทัดลำบาก */
+    html:not(.is-native) .wtn-screen-write .wtn-rte{max-width:740px;margin-inline:auto}
+    /* แถบเมนูล่าง 5 ปุ่มใช้ space-around ถ้าปล่อยเต็ม 1040px ปุ่มจะกระจายห่างผิดรูป */
+    html:not(.is-native) .wtn-body:has(.wtn-screen-write) .wtn-tabbar{
+      max-width:430px;margin-inline:auto;width:100%}
   }
   /* full-screen on every device (mobile app) */
   .wtn-rte:empty:before{content:attr(data-ph);color:#b3a897;pointer-events:none}
@@ -1974,7 +1994,7 @@
 
       <!-- ========== CHAPTER EDIT ========== -->
       <sc-if value="{{ sChapterEdit }}" hint-placeholder-val="{{ false }}">
-        <div class="wtn-screen" style="display:flex;flex-direction:column;height:100%">
+        <div class="wtn-screen wtn-screen-write" style="display:flex;flex-direction:column;height:100%">
           <sc-if value="{{ ceHeadSlim }}" hint-placeholder-val="{{ false }}">
             <div class="wtn-cehead" style="flex:none;display:flex;align-items:center;gap:8px;padding:7px 12px 7px 14px;background:#fffaf0;border-bottom:1px solid rgba(43,36,32,.08)">
               <button onClick="{{ openCeHead }}" title="แสดงหัวเรื่อง" style="width:34px;height:34px;flex:none;border:1px solid rgba(43,36,32,.12);background:#fff;border-radius:10px;color:#8a7d6f;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M6 15l6-6 6 6"></path></svg></button>
@@ -14117,7 +14137,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.25a',
+      appVersion: '2026.09.29a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
