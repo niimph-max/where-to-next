@@ -3261,6 +3261,9 @@
           <div style="font:500 12px/1.55 'Anuphan';color:#a99e8e;margin-top:3px;text-wrap:pretty">{{ ebPhotoHint }}</div>
         </sc-if>
       </div>
+      <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">ชื่อเล่ม</div>
+      <input value="{{ ebTitleVal }}" onInput="{{ setEbTitle }}" placeholder="{{ ebTitlePh }}" maxlength="120" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.18);background:#fffaf0;border-radius:12px;padding:0 13px;font:500 15px 'Anuphan';color:#2b241f">
+      <div style="font:500 12px/1.55 'Anuphan';color:#a99e8e;margin:6px 0 18px;text-wrap:pretty">เว้นว่าง = ใช้ชื่อเรื่องเหมือนเดิม · ชื่อนี้ขึ้นบนปก ในไฟล์ EPUB และลิงก์แชร์เล่ม</div>
       <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">รูปหน้าปก</div>
       <photo-pick id="{{ ebCoverId }}" placeholder="เลือกรูปปก" style="display:block;width:100%;height:150px;border-radius:14px;margin-bottom:18px"></photo-pick>
       <sc-if value="{{ ebBusy }}" hint-placeholder-val="{{ false }}">
@@ -10245,6 +10248,30 @@ class Component extends DCLogic {
     const s = this.ebStory();
     return (s && s.id) ? 'st' + s.id : '';
   }
+  /* ── ชื่อเล่ม ตั้งแยกจากชื่อเรื่องได้ (1 ต.ค. 2569) ──
+     เหตุผลจากเจ้าของ: บางเล่มเลือกลงแค่บางตอนของการเดินทางนั้น ชื่อเรื่องเต็มเลยไม่เหมาะ
+     ว่าง = ใช้ชื่ออัตโนมัติเหมือนเดิม เล่มเก่าจึงหน้าตาไม่เปลี่ยนสักเล่ม
+     ⚠ ผูกกับ ebKey() เหมือนรูปปก = หนึ่งเรื่อง/ทริปมีชื่อเล่มได้ชื่อเดียว
+        ถ้าวันหลังอยากเก็บหลายเล่มจากเรื่องเดียว ต้องรื้อให้ "เล่ม" เป็นรายการของตัวเองก่อน ไม่ใช่แค่เพิ่มช่องนี้ */
+  ebTitleKey() { const k = this.ebKey(); return k ? ('wtn-eb-title-' + k) : ''; }
+  ebTitleOf() { try { const k = this.ebTitleKey(); return k ? (localStorage.getItem(k) || '').trim() : ''; } catch (e) { return ''; } }
+  saveEbTitle(v) {
+    const k = this.ebTitleKey(); if (!k) return;
+    try {
+      const t = String(v == null ? '' : v).slice(0, 120).trim();
+      if (t) localStorage.setItem(k, t); else localStorage.removeItem(k);
+    } catch (e) {}
+    this.scheduleCloudPush();
+  }
+  /* ชื่อที่ระบบตั้งให้เอง — เดิมคิดอยู่ใน ebGather() ย้ายออกมาเพื่อให้ช่องกรอกเอาไปทำ placeholder ได้ */
+  ebAutoTitle() {
+    const trip = this.ebTripId();
+    if (trip) {
+      const t = (this.userTrips || []).find(x => x.id === trip) || this.curTripRec() || {};
+      return (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '');
+    }
+    return ((this.ebStory() || {}).title || '').trim() || 'เล่มของฉัน';
+  }
   ebExpenses(trip) {
     try { return (JSON.parse(localStorage.getItem('wtn-expenses')) || {})[trip] || []; } catch (e) { return []; }
   }
@@ -10453,9 +10480,7 @@ class Component extends DCLogic {
         return a === b ? String(a) : (a + '–' + b);
       } catch (e) { return ''; }
     })();
-    const ttl = trip
-      ? (t.name || this.tripInfo.title || 'ทริปของฉัน').replace(/\s*·\s*\d+\s*วัน\s*$/, '')
-      : (((ebSt || {}).title || '').trim() || 'เล่มของฉัน');
+    const ttl = this.ebTitleOf() || this.ebAutoTitle();   // ตั้งเอง > ชื่ออัตโนมัติ · คุมทั้งปก A5 · เมตาดาทา EPUB · ลิงก์แชร์เล่ม
     return {
       title: ttl,
       sub: trip
@@ -14337,7 +14362,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.09.29j',
+      appVersion: '2026.10.01a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14427,10 +14452,13 @@ class Component extends DCLogic {
         const pct = this.state.ebPct || 0;
         return {
           ebOpen: !!this.state.ebOpen,
-          openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0, ebStoryId: null }),
+          openEbook: () => this.setState({ ebOpen: true, ebUrl: '', ebPct: 0, ebStoryId: null, ebTitle: this.ebTitleOf() }),
           closeEbook: () => this.setState({ ebOpen: false }),
           openEbPhotos: () => { this.setState({ ebOpen: false, ebChId: null, ebPick: null }); this.go('ebPhotos'); },
           ebCoverId: 'wtn-eb-cover-' + this.ebKey(),
+          ebTitleVal: this.state.ebTitle == null ? this.ebTitleOf() : this.state.ebTitle,
+          ebTitlePh: this.ebAutoTitle(),
+          setEbTitle: e => { const v = e.target.value; this.setState({ ebTitle: v }); this.saveEbTitle(v); },
           ebSummary: d
             ? (noTrip ? (est.chapters + ' ตอน — ประมาณ ' + est.pages + ' หน้า')
                       : (est.chapters + ' ตอนเรื่องเล่า · ' + est.days + ' วัน · ' + n + ' เช็คอิน — ประมาณ ' + est.pages + ' หน้า'))
