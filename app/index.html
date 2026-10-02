@@ -2789,6 +2789,13 @@
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
               </sc-if>
+              <sc-if value="{{ photoPendShow }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#fff4ec;border:1px solid rgba(192,95,57,.3);border-radius:12px;margin-bottom:11px">
+                  <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">{{ photoPendTitle }}</div>
+                  <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px;text-wrap:pretty">รูปพวกนี้ยังอยู่ในเครื่องนี้ครบ ไม่หาย · แต่เครื่องอื่นจะเห็นเป็นกรอบว่างจนกว่าจะอัปขึ้นได้ — และซ่อมได้จากเครื่องนี้เท่านั้น</div>
+                  <button onClick="{{ retryPhotos }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ retryPhotosLabel }}</button>
+                </div>
+              </sc-if>
               <sc-if value="{{ hasLegacyImgs }}" hint-placeholder-val="{{ false }}">
                 <div style="padding:12px 13px;background:#f6efe2;border-radius:12px;margin-bottom:11px">
                   <div style="font:600 14.5px 'Anuphan';color:#2b241f;margin-bottom:4px">ดูแลรูปภาพ</div>
@@ -3150,7 +3157,7 @@
       <button onClick="{{ tabTodayFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cToday }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>วันนี้</button>
       <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ฟีด</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
-      <button onClick="{{ tabMeFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
+      <button onClick="{{ tabMeFn }}" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><sc-if value="{{ photoPendShow }}" hint-placeholder-val="{{ false }}"><span title="มีรูปยังไม่ขึ้นคลาวด์" style="position:absolute;top:-1px;left:calc(50% + 6px);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px #f6efe2"></span></sc-if><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
     </div>
     </sc-if>
 
@@ -3614,6 +3621,7 @@ class Component extends DCLogic {
     // เช็คสถานะพรีเมียมจากเซิร์ฟเวอร์ให้เสร็จก่อน แล้วค่อยดึง/ซิงก์ (กันจังหวะที่ธงยังไม่ตั้ง)
     try { if (this.lsStats().total > 3.6e6) this.purgeCaches(true); } catch (e) {}   // ใกล้เต็ม → ทิ้งสำเนา/แคชที่สร้างใหม่ได้
     Promise.resolve(this.syncPremium()).then(() => { this.cloudPull(); this.subscribeCloud(); this.retryPendingPush(); this.loadCredits(); });
+    setTimeout(() => this._pendPhotosRefresh(), 1500);   // นับรูปค้างหนึ่งรอบหลังเปิดแอป
   }
   // ---------- CLOUD SYNC (ซิงก์ทั้งแอปขึ้นคลาวด์) ----------
   gatherLocal() {
@@ -3888,9 +3896,11 @@ class Component extends DCLogic {
     });
     // ref ที่ชี้ไป IDB → ดึงตัวรูปมาเตรียมอัพด้วย
     const dataOfRef = {};
+    let missRef = 0;
     for (const r of refs) {
       const d = await this.idbGet(r.slice(4));
       if (d && d.indexOf('data:image') === 0) { dataOfRef[r] = d; found.add(d); }
+      else missRef++;   /* ⚠ ตัวชี้ที่หาไฟล์ในเครื่องนี้ไม่เจอ — เดิมข้ามเงียบ แล้วไปรายงานว่า "สำเร็จ" */
     }
     // เนื้อตอนที่แยกเก็บใน IDB (idb:h...) — รูป base64 ฝังในเนื้อก็ต้องยกขึ้นด้วย ไม่งั้นก้อนซิงก์บวม
     const bodyOf = {};
@@ -3903,10 +3913,17 @@ class Component extends DCLogic {
         if (v && v.indexOf('data:image') !== -1) { bodyOf[id] = v; const m = v.match(re); if (m) m.forEach(d => found.add(d)); }
       }
     }
-    if (!found.size) return;
+    if (!found.size) {
+      /* ⚠ 2 ต.ค. 2569: เดิม return เฉยๆ โดยไม่ตั้งสถิติ → syncNow เห็น 0 แล้วขึ้น "เรียบร้อย ✓"
+         ทั้งที่มีตัวชี้ idb: ค้างอยู่ซึ่งเครื่องอื่นเปิดมาได้แต่กรอบขาว (เคส Fold 1 ต.ค. 2569)
+         ของแบบนี้ซ่อมได้จากเครื่องที่มีไฟล์จริงเท่านั้น จึงต้องฟ้อง ไม่ใช่เงียบ */
+      this._hoistStat = missRef ? { total: 0, ok: 0, fail: 0, cached: 0, missing: missRef, lastErr: '' } : null;
+      this._pendPhotosRefresh();
+      return;
+    }
     // สถิติรอบนี้ — syncNow อ่านไปแจ้งผู้ใช้ (เดิม catch ว่างเปล่า รูปอัปไม่ขึ้นก็เงียบ
     // แล้วไปโผล่เป็น "รูปหาย" ตอนเปิดอีกเครื่อง — เคสแหลมสิงห์ 9 ก.ย. 2026)
-    const stat = this._hoistStat = { total: found.size, ok: 0, fail: 0, cached: 0, lastErr: '' };
+    const stat = this._hoistStat = { total: found.size, ok: 0, fail: 0, cached: 0, missing: missRef, lastErr: '' };
     const urlFor = {};
     for (const d of found) {
       const h = hash(d);
@@ -3943,8 +3960,57 @@ class Component extends DCLogic {
       try { localStorage.setItem('wtn-img-map', JSON.stringify(map)); } catch (e) {}
     } finally { this._applyingCloud = false; }
     this.dedupeCheckins();
+    this._pendPhotosRefresh();
     window.dispatchEvent(new Event('photopick-change'));
     this.forceUpdate();
+  }
+  /* ── รูปที่ยังไม่ขึ้นคลาวด์ (2 ต.ค. 2569) ──────────────────────────────────────
+     นับตัวชี้ idb: ที่ยังค้าง + รูปโปรไฟล์/ปกที่ยังเป็น data: — ตัวเลขนี้คือ "จำนวนรูปที่
+     เครื่องอื่นจะเห็นเป็นกรอบว่าง" ใช้ทั้งในหน้าตั้งค่าและจุดเตือนที่แถบล่าง
+     ⚠ ไล่ localStorage ทั้งก้อน จึงห้ามเรียกทุกเรนเดอร์ — เก็บผลไว้แล้วอ่านจากที่เก็บแทน */
+  countPendingPhotos() {
+    let n = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || k === 'wtn-img-map') continue;
+        if (!(/^wtn-/.test(k) || k.indexOf('photopick:') === 0)) continue;
+        const v = localStorage.getItem(k) || '';
+        n += (v.match(/idb:p\d+/g) || []).length;
+        if (k.indexOf('photopick:') === 0 && v.indexOf('data:image') === 0) n++;
+      }
+    } catch (e) {}
+    return n;
+  }
+  _pendPhotosRefresh() {
+    const n = this.countPendingPhotos();
+    const was = this._pendPhotos;
+    this._pendPhotos = n;
+    try { if (n) localStorage.setItem('wtn-photo-pending', String(n)); else localStorage.removeItem('wtn-photo-pending'); } catch (e) {}
+    if (was !== n) this.forceUpdate();
+    return n;
+  }
+  pendPhotos() {
+    if (this._pendPhotos == null) {
+      try { this._pendPhotos = Number(localStorage.getItem('wtn-photo-pending') || 0) || 0; } catch (e) { this._pendPhotos = 0; }
+    }
+    return this._pendPhotos;
+  }
+  /* ปุ่ม "ลองอัปรูปที่ค้างอีกครั้ง" — เครื่องที่มีไฟล์จริงเท่านั้นที่ซ่อมของค้างได้ */
+  async retryPendingPhotos() {
+    if (this._retryPh) return;
+    this._retryPh = true; this.setState({ retryPhBusy: true });
+    try {
+      await this.hoistImages();
+      await this.cloudPush();
+      const left = this._pendPhotosRefresh();
+      const hs = this._hoistStat || null;
+      this.showToast(left
+        ? ('ยังเหลือรูป ' + left + ' ใบที่ยังไม่ขึ้นคลาวด์' + (hs && hs.lastErr ? (' · ' + hs.lastErr) : ''))
+        : '✓ รูปขึ้นคลาวด์ครบแล้ว');
+    } catch (e) {
+      this.showToast('ลองอัปไม่สำเร็จ: ' + ((e && (e.code || e.message)) || String(e)));
+    } finally { this._retryPh = false; this.setState({ retryPhBusy: false }); }
   }
   // ไฟล์แนบ (ตั๋ว/PDF/รูปเอกสาร) เก็บเป็น data URL ในเครื่อง → ยกขึ้น R2 แล้วแทนด้วยลิงก์
   // ทำให้ไฟล์แนบขึ้นคลาวด์ได้จริง (เดิม PDF ไม่เคยถูกยก และก้อนใหญ่เกินโควตาจะถูกตัดตอนส่ง)
@@ -8416,12 +8482,12 @@ class Component extends DCLogic {
       // ตรวจว่ามีรูปที่ยังอัปไม่ขึ้นไหม
       // เดิมนับเฉพาะคีย์ photopick: (รูปโปรไฟล์/ปก) — รูปในโมเมนต์/ตอนเก็บเป็น idb: ref
       // ใน wtn-moments / wtn-stories จึงไม่เคยถูกนับ ซิงก์เลยขึ้น "สำเร็จ" ทั้งที่รูปไม่ได้ไปไหน
-      let pending = 0;
-      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('photopick:') === 0 && (localStorage.getItem(k) || '').indexOf('data:image') !== -1) pending++; }
+      /* ⚠ นับจาก "ของที่ยังค้างอยู่จริง" หลังซิงก์เสร็จ ไม่ใช่นับเฉพาะที่อัปแล้วพลาด
+         เดิมนับแคบเกินไป เลยขึ้น ✓ ทั้งที่รูปยังไม่ไปไหน — เสียเวลาไล่หาสาเหตุไปสามรอบ */
+      const pending = this._pendPhotosRefresh();
       const hs = this._hoistStat || null;
-      if (hs && hs.fail) pending += hs.fail;
       alert(pending
-        ? ('ซิงก์ข้อมูลขึ้นคลาวด์แล้ว ✓\nแต่ยังมีรูป ' + pending + ' รูปที่อัปไม่สำเร็จ — ยังอยู่ในเครื่องนี้ครบ ไม่หาย\nแต่จะยังไม่เห็นบนเครื่องอื่นจนกว่าจะอัปขึ้นได้\nแอปจะลองใหม่ให้อัตโนมัติ หรือกดซิงก์อีกครั้งเมื่อเน็ตดีขึ้น'
+        ? ('ซิงก์ข้อมูลขึ้นคลาวด์แล้ว ✓\nแต่ยังมีรูป ' + pending + ' ใบที่ยังไม่ขึ้นคลาวด์ — ยังอยู่ในเครื่องนี้ครบ ไม่หาย\nเครื่องอื่นจะเห็นเป็นกรอบว่างจนกว่าจะอัปขึ้นได้\n⚠ ซ่อมได้จากเครื่องนี้เท่านั้น (เครื่องที่มีไฟล์จริง) — กด "ลองอัปรูปที่ค้างอีกครั้ง" ในหน้านี้เมื่อเน็ตดีขึ้น'
             + (hs && hs.lastErr ? ('\n\n(' + hs.lastErr + ')') : ''))
         : 'ซิงก์ขึ้นคลาวด์เรียบร้อย ✓ รูปและข้อมูลพร้อมข้ามเครื่องแล้ว');
     } catch (e) {
@@ -14362,7 +14428,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.01a',
+      appVersion: '2026.10.02a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15274,6 +15340,10 @@ class Component extends DCLogic {
       days: this.days, sMap: sc === 'map',
       ciSheetHost: sc === 'trip' || sc === 'map',   // ชีตเช็คอินต้องโผล่ทั้งหน้าทริปและหน้าแผนที่
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
+      photoPendShow: this.pendPhotos() > 0,
+      photoPendTitle: 'รูปที่ยังไม่ขึ้นคลาวด์ · ' + this.pendPhotos() + ' ใบ',
+      retryPhotos: () => this.retryPendingPhotos(),
+      retryPhotosLabel: this.state.retryPhBusy ? 'กำลังลองอัป…' : 'ลองอัปรูปที่ค้างอีกครั้ง',
       tripDesk: (() => {
         const on = !!this.state.isDesktop && !!this.TRIP_SIDE[sc];
         /* เรียกซ้ำทุกเรนเดอร์ เพราะ ref ยิงแค่ตอนสร้าง element — เปลี่ยนทริป/เช็กอินใหม่ต้องวาดหมุดใหม่ */
