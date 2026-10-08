@@ -618,10 +618,6 @@
             <p style="font:500 15px/1.6 'Anuphan';color:#f6d9c6;margin:0 0 16px">ตั้งชื่อ ใส่ช่วงวันกับงบ แล้วเริ่มวางแผนรายวันได้เลย</p>
             <button onClick="{{ goCreate }}" style="border:none;background:#fff;color:#a4482a;font:600 16px 'Anuphan';padding:12px 20px;border-radius:22px;cursor:pointer">+ สร้างทริปใหม่</button>
           </div>
-          <div style="display:flex;gap:7px;margin-bottom:16px">
-            <button onClick="{{ setPlansTrips }}" style="{{ plansTripsStyle }}">ทริป</button>
-            <button onClick="{{ setPlansInspire }}" style="{{ plansInspireStyle }}">แรงบันดาลใจ</button>
-          </div>
           <sc-if value="{{ plansTabTrips }}" hint-placeholder-val="{{ true }}">
           <sc-for list="{{ myTrips }}" as="t" hint-placeholder-count="0">
             <sc-if value="{{ t.sec }}" hint-placeholder-val="{{ false }}"><div style="font:600 14px 'Anuphan';color:#8a7d6f;letter-spacing:.3px;margin:6px 0 12px">{{ t.sec }}</div></sc-if>
@@ -645,25 +641,6 @@
           </sc-if>
           </sc-if>
 
-          <sc-if value="{{ plansTabInspire }}" hint-placeholder-val="{{ false }}">
-            <sc-if value="{{ inspireEmpty }}" hint-placeholder-val="{{ true }}">
-              <div style="padding:26px 16px 34px;text-align:center"><div style="font:600 16px 'Anuphan';color:#6f6157;margin-bottom:5px">ยังไม่มีแรงบันดาลใจ</div><div style="font:500 14.5px/1.6 'Anuphan';color:#9c8d7e">กด “เก็บไว้ในแรงบันดาลใจ” ตอนอ่านเรื่องเล่าในฟีดทั่วโลก แล้วมันจะมารวมที่นี่</div></div>
-            </sc-if>
-            <sc-for list="{{ inspireGroups }}" as="g" hint-placeholder-count="0">
-              <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:8px">{{ g.continent }}</div>
-              <sc-for list="{{ g.countries }}" as="c" hint-placeholder-count="0">
-                <div style="font:600 14px 'Anuphan';color:#2b241f;margin-bottom:8px">{{ c.name }} · {{ c.count }} เรื่อง</div>
-                <div style="display:flex;gap:10px;overflow-x:auto;margin-bottom:18px">
-                  <sc-for list="{{ c.items }}" as="it" hint-placeholder-count="0">
-                    <div onClick="{{ it.on }}" style="flex:none;width:150px;border-radius:16px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);cursor:pointer">
-                      <sc-if value="{{ it.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ it.cover }}" alt="" style="width:100%;height:96px;object-fit:cover;background:#efe4d3;display:block"></sc-if>
-                      <div style="padding:9px 10px 11px"><div style="font:600 12.5px/1.4 'Anuphan';color:#2b241f">{{ it.title }}</div></div>
-                    </div>
-                  </sc-for>
-                </div>
-              </sc-for>
-            </sc-for>
-          </sc-if>
         </div>
       </sc-if>
 
@@ -1539,10 +1516,6 @@
 
           <sc-if value="{{ segIsStories }}" hint-placeholder-val="{{ true }}">
             <div style="padding:6px 20px 30px">
-              <div style="display:flex;background:#efe4d3;border-radius:12px;padding:3px;margin-bottom:12px">
-                <button onClick="{{ setScopeGlobal }}" style="{{ scopeGlobalStyle }}">ทั่วโลก</button>
-                <button onClick="{{ setScopeMine }}" style="{{ scopeMineStyle }}">ของฉัน</button>
-              </div>
               <sc-if value="{{ storyScopeMine }}" hint-placeholder-val="{{ true }}">
               <div style="display:flex;gap:7px;margin-bottom:14px">
                 <button onClick="{{ setFeedLatest }}" style="{{ pillFeedLatest }}">ล่าสุด</button>
@@ -1600,47 +1573,6 @@
               </sc-if>
               </sc-if>
 
-              <sc-if value="{{ storyScopeGlobal }}" hint-placeholder-val="{{ false }}">
-                <sc-if value="{{ globalHasVela }}" hint-placeholder-val="{{ false }}">
-                  <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:9px">เรื่องเล่าจาก Vela</div>
-                  <sc-for list="{{ velaFeed }}" as="st" hint-placeholder-count="0">
-                    <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
-                      <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><div style="position:relative"><img src="{{ st.photo }}" alt="" loading="lazy" decoding="async" style="width:100%;height:170px;background:#efe4d3;object-fit:cover;display:block"><span style="position:absolute;top:10px;left:10px;background:rgba(43,36,32,.55);color:#f6efe2;font:600 11px 'Anuphan';padding:4px 9px;border-radius:20px">Vela</span></div></sc-if>
-                      <div style="padding:13px 15px 15px">
-                        <div style="font:600 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:4px">{{ st.byline }}<sc-if value="{{ st.hasPlace }}" hint-placeholder-val="{{ false }}"> · {{ st.place }}</sc-if> · {{ st.series }}</div>
-                        <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
-                        <p style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin:0 0 9px">{{ st.excerpt }}</p>
-                        <div style="display:flex;align-items:center;gap:5px;color:#a1927c">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-                          <sc-if value="{{ st.showViews }}" hint-placeholder-val="{{ false }}"><span style="font:600 12px 'Anuphan'">{{ st.viewsLabel }}</span></sc-if>
-                          <sc-if value="{{ st.isNew }}" hint-placeholder-val="{{ true }}"><span style="font:600 12px 'Anuphan';color:#c9a876">ใหม่</span></sc-if>
-                        </div>
-                      </div>
-                    </div>
-                  </sc-for>
-                </sc-if>
-                <sc-if value="{{ globalHasUsers }}" hint-placeholder-val="{{ false }}">
-                  <div style="font:700 12.5px 'Anuphan';color:#a1927c;letter-spacing:.5px;margin-bottom:9px">จากผู้ใช้ Vela</div>
-                  <sc-for list="{{ usersFeed }}" as="st" hint-placeholder-count="0">
-                    <div onClick="{{ st.on }}" style="border-radius:20px;overflow:hidden;background:#fffaf0;border:1px solid rgba(43,36,32,.08);box-shadow:0 3px 12px rgba(43,36,32,.06);margin-bottom:16px;cursor:pointer">
-                      <sc-if value="{{ st.hasCover }}" hint-placeholder-val="{{ false }}"><img src="{{ st.photo }}" alt="" loading="lazy" decoding="async" style="width:100%;height:170px;background:#efe4d3;object-fit:cover;display:block"></sc-if>
-                      <div style="padding:13px 15px 15px">
-                        <div style="font:600 12.5px 'Anuphan';color:#8a7d6f;margin-bottom:4px">{{ st.byline }}<sc-if value="{{ st.hasPlace }}" hint-placeholder-val="{{ false }}"> · {{ st.place }}</sc-if> · {{ st.series }}</div>
-                        <div style="font-family:'Chonburi',serif;font-size:18px;color:#2b241f;margin-bottom:5px">{{ st.title }}</div>
-                        <p style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin:0 0 9px">{{ st.excerpt }}</p>
-                        <div style="display:flex;align-items:center;gap:5px;color:#a1927c">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-                          <sc-if value="{{ st.showViews }}" hint-placeholder-val="{{ false }}"><span style="font:600 12px 'Anuphan'">{{ st.viewsLabel }}</span></sc-if>
-                          <sc-if value="{{ st.isNew }}" hint-placeholder-val="{{ true }}"><span style="font:600 12px 'Anuphan';color:#c9a876">ใหม่</span></sc-if>
-                        </div>
-                      </div>
-                    </div>
-                  </sc-for>
-                </sc-if>
-                <sc-if value="{{ globalEmpty }}" hint-placeholder-val="{{ false }}">
-                  <div style="text-align:center;padding:54px 24px"><div style="width:56px;height:56px;border-radius:50%;background:#efe4d3;margin:0 auto 14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></div><div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:5px">ยังไม่มีเรื่องเล่าสาธารณะ</div><div style="font:500 15px/1.6 'Anuphan';color:#8a7d6f">เมื่อมีคนกดเผยแพร่เรื่องเล่า จะมาโผล่ที่นี่</div></div>
-                </sc-if>
-              </sc-if>
             </div>
           </sc-if>
 
@@ -8228,6 +8160,7 @@ class Component extends DCLogic {
     }));
   }
   async loadFeed(force) {
+    return;   // ฟีดทั่วโลกถอดออก 2026.10.08a — ไม่ต้องดึงฟีดสาธารณะอีก (ประหยัด egress) · โค้ดเดิมคงไว้เผื่อย้อนกลับ
     const be = window.WTNBackend;
     if (!be || !be._uid) return;
     // เพิ่งดึงไปไม่นานและมีของอยู่แล้ว — ใช้ของเดิม (ประหยัด egress + ไม่กระพริบ)
@@ -14428,7 +14361,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.02a',
+      appVersion: '2026.10.08a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15293,34 +15226,8 @@ class Component extends DCLogic {
         del: e => { if (e && e.stopPropagation) e.stopPropagation(); if (confirm('ลบทริป “' + (t.name || '') + '”?')) this.saveUserTrips(this.userTrips.filter(x => x.id !== t.id)); } }));
       })(),
       hasMyTrips: this.userTrips.length > 0, noMyTrips: this.userTrips.length === 0,
-      ...(() => {
-        const tab = this.state.plansTab || 'trips';
-        const btn = on => 'flex:1;min-height:40px;border-radius:11px;cursor:pointer;font:600 13.5px \'Anuphan\';'
-          + (on ? 'border:none;background:#2b241f;color:#f6efe2' : 'border:1px solid rgba(43,36,32,.14);background:transparent;color:#6f6455');
-        const insp = this.inspiration;
-        const UNS = 'ยังไม่จัดหมวด';
-        const byCont = {};
-        insp.forEach(x => {
-          const cont = (x.continent || '').trim() || UNS;
-          const ctry = (x.country || '').trim() || 'อื่นๆ';
-          byCont[cont] = byCont[cont] || {};
-          (byCont[cont][ctry] = byCont[cont][ctry] || []).push(x);
-        });
-        const groups = Object.keys(byCont).sort((a, b) => (a === UNS) - (b === UNS) || a.localeCompare(b, 'th')).map(cont => ({
-          continent: cont,
-          countries: Object.keys(byCont[cont]).sort((a, b) => a.localeCompare(b, 'th')).map(ctry => ({
-            name: ctry, count: byCont[cont][ctry].length,
-            items: byCont[cont][ctry].map(x => ({ hasCover: !!x.cover, cover: x.cover || '', title: x.title || 'เรื่องเล่า',
-              on: () => this.reopenInspiration(x) }))
-          }))
-        }));
-        return {
-          plansTabTrips: tab === 'trips', plansTabInspire: tab === 'inspiration',
-          setPlansTrips: () => this.setState({ plansTab: 'trips' }), setPlansInspire: () => this.setState({ plansTab: 'inspiration' }),
-          plansTripsStyle: btn(tab === 'trips'), plansInspireStyle: btn(tab === 'inspiration'),
-          inspireGroups: groups, inspireEmpty: insp.length === 0
-        };
-      })(),
+      // แรงบันดาลใจถอดออก 2026.10.08a — แผนของฉันเหลือแท็บเดียว
+      plansTabTrips: true,
       tripTitle: this.tripInfo.title, tripHero: this.tripInfo.hero, coverSlotId: 'wtn-cover-' + this.state.trip, tripM1: this.tripInfo.m1, tripM2: this.tripInfo.m2,
       tripLive: this.tripPhaseInfo().live, tripPlanned: !this.tripPhaseInfo().live, tripStatus: this.tripPhaseInfo().status,
       tripLiveLabel: (() => {
@@ -15886,30 +15793,8 @@ class Component extends DCLogic {
               feedMore: () => this.setState({ feedLimit: lim + 20 })
             };
           })(),
-          ...(() => {
-            const remote = this.state.remoteFeed || [];
-            const scopeSaved = (() => { try { return localStorage.getItem('wtn-story-scope'); } catch (e) { return null; } })();
-            const scope = this.state.storyScope || scopeSaved || (this.stories.length ? 'mine' : 'global');
-            const setScope = v => { try { localStorage.setItem('wtn-story-scope', v); } catch (e) {} this.setState({ storyScope: v }); if (v === 'global') this.loadFeed(); };
-            const scopeBtn = on => 'flex:1;text-align:center;padding:9px 0;border-radius:9px;border:none;cursor:pointer;font:600 14px \'Anuphan\';' + (on ? 'background:#2b241f;color:#f6efe2' : 'background:transparent;color:#8a7d6f');
-            const mkCard = item => ({
-              hasCover: !!item.hasCover, photo: this.pxT(item.photo),
-              byline: item.author, hasPlace: !!item.country && item.country.trim() !== (item.series || '').trim(), place: item.country,
-              series: item.series, title: item.title, excerpt: item.excerpt,
-              showViews: (item.views || 0) >= 5, viewsLabel: (item.views || 0) + ' คนอ่าน', isNew: (item.views || 0) < 5,
-              on: () => this.openRemoteChapter(item)
-            });
-            const velaFeed = remote.filter(r => r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
-            const usersFeed = remote.filter(r => !r.isFromVela).sort((a, b) => b._t - a._t).map(mkCard);
-            this.warmImgs(velaFeed.concat(usersFeed).map(c => c.photo));
-            return {
-              storyScopeMine: scope === 'mine', storyScopeGlobal: scope === 'global',
-              setScopeMine: () => setScope('mine'), setScopeGlobal: () => setScope('global'),
-              scopeMineStyle: scopeBtn(scope === 'mine'), scopeGlobalStyle: scopeBtn(scope === 'global'),
-              velaFeed, usersFeed, globalHasVela: velaFeed.length > 0, globalHasUsers: usersFeed.length > 0,
-              globalEmpty: velaFeed.length === 0 && usersFeed.length === 0
-            };
-          })(),
+          // ฟีดทั่วโลกถอดออก 2026.10.08a — เรื่องเล่าเหลือเฉพาะของเจ้าของเครื่อง
+          storyScopeMine: true,
           myStories: (() => { const c = all.map(card); this.warmImgs(c.slice(0, 20).map(x => x.photo)); return c; })(), noStories: all.length === 0,
           storyCount: all.length,
           composeNew: () => this.openStoryEdit(null),
@@ -16605,7 +16490,7 @@ class Component extends DCLogic {
             this.setState({ shareLinkOpen: false });
           },
           shareLinkClose: () => this.setState({ shareLinkOpen: false }),
-          crShowSave: this.isRemoteOpen,
+          crShowSave: false,   // ถอดพร้อมแรงบันดาลใจ 2026.10.08a
           crSaveLabel: this.crInspiredNow ? 'เก็บไว้แล้ว' : 'เก็บไว้ในแรงบันดาลใจ',
           crSaveFill: this.crInspiredNow ? '#c05f39' : 'none',
           crSaveStyle: 'display:inline-flex;align-items:center;gap:7px;border:1px solid ' + (this.crInspiredNow ? 'rgba(192,95,57,.4)' : 'rgba(43,36,32,.14)') + ';background:' + (this.crInspiredNow ? '#fbf0e8' : '#fffaf0') + ';font:600 15px \'Anuphan\';color:' + (this.crInspiredNow ? '#c05f39' : '#5c5347') + ';padding:9px 15px;border-radius:22px;cursor:pointer',
