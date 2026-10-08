@@ -1071,7 +1071,7 @@
           </div>
           <div style="padding:16px 20px 30px">
             <div style="font:500 13px 'Anuphan';color:#a99e8e;text-align:center;margin-bottom:14px">จุดฟ้ากะพริบ = ตำแหน่งคุณตอนนี้ · จุดส้ม = ที่ที่เช็คอินจริง · กดปุ่มเป้าเพื่อกลับมาที่ตัวคุณ</div>
-            <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
+            <div class="wtn-chips" style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
               <sc-for list="{{ ciDays }}" as="cd" hint-placeholder-count="5">
                 <button onClick="{{ cd.on }}" style="{{ cd.style }}">{{ cd.label }}</button>
               </sc-for>
@@ -1647,7 +1647,7 @@
                 </div>
               </div>
 
-              <div class="wtn-s" style="display:flex;gap:7px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px">
+              <div class="wtn-s wtn-chips" style="display:flex;gap:7px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px">
                 <sc-for list="{{ catFilters }}" as="cf" hint-placeholder-count="6"><button onClick="{{ cf.on }}" style="{{ cf.style }}">{{ cf.name }}</button></sc-for>
               </div>
 
@@ -2214,7 +2214,7 @@
           </sc-if>
           <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:18px 0 3px"><div style="font-family:'Chonburi',serif;font-size:22px;color:#2b241f;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ destName }}</div><div style="font:500 14px 'Anuphan';color:#8a7d6f;flex:none">{{ destCity }}</div></div>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px"><div style="font:500 14px 'Anuphan';color:#a1927c">{{ destSubtitle }}</div><sc-if value="{{ aiMode }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearExplore }}" style="flex:none;border:none;background:transparent;color:#c05f39;font:600 13.5px 'Anuphan';cursor:pointer;padding:4px">← จุดหมายแนะนำ</button></sc-if></div>
-          <div style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
+          <div class="wtn-chips" style="display:flex;gap:7px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scrollbar-width:none">
             <button onClick="{{ catPlace }}" style="{{ catPlaceStyle }}">สถานที่น่าสนใจ</button>
             <button onClick="{{ catAct }}" style="{{ catActStyle }}">กิจกรรม</button>
             <button onClick="{{ catFood }}" style="{{ catFoodStyle }}">ร้านอาหาร</button>
@@ -14361,7 +14361,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.08a',
+      appVersion: '2026.10.08b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
