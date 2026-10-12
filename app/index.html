@@ -834,7 +834,7 @@
             </div>
           </div>
           <div class="wtn-s wtn-chips" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
-<sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ canPrependDay }}" hint-placeholder-val="{{ false }}">
               <button onClick="{{ prependTripDay }}" title="เพิ่มวันก่อนวันแรก" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:600 20px 'Anuphan';line-height:1">+</span><span style="font:500 11px 'Anuphan';margin-top:2px">ก่อน</span></button>
             </sc-if>
             <sc-for list="{{ dayPills }}" as="p" hint-placeholder-count="8">
@@ -4154,6 +4154,8 @@ class Component extends DCLogic {
     return out;
   }
   _mergeVal(k, bs, ls, rs) {
+    // สมุดการเลื่อนวัน — เลขขึ้นอย่างเดียว เอาค่ามากสุดของแต่ละทริป (ห้ามทับกัน ดู _alignDayShift)
+    if (k === 'wtn-day-shift') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}, o = Object.assign({}, r); Object.keys(l).forEach(t => { o[t] = Math.max(+l[t] || 0, +r[t] || 0); }); return JSON.stringify(o); }
     if (k === 'wtn-tombs' || k === 'wtn-stop-tombs') { const l = this._parseJSON(ls) || {}, r = this._parseJSON(rs) || {}; return JSON.stringify(Object.assign({}, r, l)); } // รวมคำสั่งลบ (โมเมนต์ · รายกิจกรรมในแผน) — ต้องรวม ห้ามทับ
     // ⚠⚠ ตาราง "งานที่ทำไปแล้ว" ต้องรวมกัน ห้ามทับกัน — เคยพังจริง (22 ก.ย. 2569)
     //   เจ้าของทำรูปย่อครบ 434 รูปบนเดสก์ท็อป แล้วกล่อง "ดูแลรูปภาพ" กลับมาขึ้นอีกเองทั้งที่ไม่ได้ทำอะไร
@@ -4362,9 +4364,13 @@ class Component extends DCLogic {
   }
   _mergeData(remoteData) {
     try { if (!localStorage.getItem('wtn-base-v2')) { localStorage.removeItem('wtn-sync-base'); this._baseMem = null; localStorage.setItem('wtn-base-v2', '1'); } } catch (e) {} // ล้าง baseline เก่าที่นับรูปค้างผิด
-    const base = this._getBase() || {};
-    const local = this._gatherRaw();
-    const remote = remoteData || {};
+    let base = this._getBase() || {};
+    let local = this._gatherRaw();
+    let remote = remoteData || {};
+    // จัดแนวการเลื่อนวันก่อนรวม — ทุกฝั่งเลื่อนให้เท่าฝั่งที่เลื่อนไปไกลสุด
+    const dsT = {};
+    [base, local, remote].forEach(m => { const o = this._parseJSON(m['wtn-day-shift']) || {}; Object.keys(o).forEach(t => { dsT[t] = Math.max(dsT[t] || 0, +o[t] || 0); }); });
+    if (Object.keys(dsT).length) { base = this._alignDayShift(base, dsT); local = this._alignDayShift(local, dsT); remote = this._alignDayShift(remote, dsT); }
     const lt = this._parseJSON(local['wtn-tombs']) || {}, rt = this._parseJSON(remote['wtn-tombs']) || {};
     this._mTombs = Object.assign({}, rt, lt); // รวมคำสั่งลบจากทุกเครื่อง
     const lst = this._parseJSON(local['wtn-stop-tombs']) || {}, rst = this._parseJSON(remote['wtn-stop-tombs']) || {};
@@ -5306,6 +5312,9 @@ class Component extends DCLogic {
   //   wtn-itinerary · wtn-checkins ('tid:i') · wtn-stop-tombs ('tid:i:…') · wtn-pb-extra · wtn-pb-off ('tid:i')
   //   wtn-pb-order ({tid:{i}}) · ตอนเรื่องเล่าของทริป (gen 'day<i>')
   //   ถ้าวันหลังเพิ่มข้อมูลใหม่ที่คีย์ด้วยลำดับวัน ต้องมาเติมที่นี่ด้วย
+  // ⚠ ปิดไว้ก่อน (12 ต.ค. 2569) — ปล่อยตัวจัดแนวซิงก์ (_alignDayShift) ไปกับเว็บและ iOS 1.0.10 ก่อน
+  //   เปิดได้เมื่อ iPhone ของเจ้าของอัปเดตเป็น 1.0.10 แล้วเท่านั้น ไม่งั้นแอปเก่าจะรวมแผนผิดวันแล้วดันขึ้นคลาวด์
+  DAY_PREPEND_ON = false;
   prependTripDay() {
     if (this.days.length >= 90) { this.showToast('ทริปหนึ่งเก็บได้ไม่เกิน 90 วัน'); return; }
     const tid = this.state.trip;
@@ -5318,56 +5327,116 @@ class Component extends DCLogic {
       () => this._prependTripDay(tid, ns), 'เพิ่มวัน');
   }
   _prependTripDay(tid, ns) {
-    const pre = tid + ':';
-    const shiftMap = (obj) => {
-      const out = {};
-      Object.keys(obj || {}).forEach(k => {
-        const m = k.indexOf(pre) === 0 ? /^(\d+)(.*)$/.exec(k.slice(pre.length)) : null;
-        out[m ? pre + (+m[1] + 1) + m[2] : k] = obj[k];
-      });
-      return out;
-    };
-    const rw = (key, f) => { try { const o = JSON.parse(localStorage.getItem(key) || 'null'); if (o && typeof o === 'object') localStorage.setItem(key, JSON.stringify(f(o))); } catch (e) {} };
     // 1) ของที่คีย์ด้วยลำดับวัน — ต้องทำก่อน saveItinerary เพราะ _sweepSTombs อ่านใบสั่งลบตามลำดับวันใหม่
-    this.saveCheckins(shiftMap(this.checkins));
-    rw('wtn-stop-tombs', shiftMap);
-    rw('wtn-pb-extra', shiftMap);
-    rw('wtn-pb-off', shiftMap);
-    rw('wtn-pb-order', all => {
-      const o = all[tid]; if (!o || typeof o !== 'object') return all;
-      const n = {}; Object.keys(o).forEach(k => { n[/^\d+$/.test(k) ? String(+k + 1) : k] = o[k]; });
-      return { ...all, [tid]: n };
+    this.saveCheckins(this._shKeyMap(this.checkins, tid, 1));
+    const rw = (key, f) => { try { const o = JSON.parse(localStorage.getItem(key) || 'null'); if (o && typeof o === 'object') localStorage.setItem(key, JSON.stringify(f(o))); } catch (e) {} };
+    rw('wtn-stop-tombs', o => this._shKeyMap(o, tid, 1));
+    rw('wtn-pb-extra', o => this._shKeyMap(o, tid, 1));
+    rw('wtn-pb-off', o => this._shKeyMap(o, tid, 1));
+    rw('wtn-pb-order', o => this._shPbOrder(o, tid, 1));
+    // 2) ตอนเรื่องเล่าที่ผูกกับวัน — แตะ _m ของตอน (ไม่แตะ updatedAt) ให้ฉบับใหม่ชนะตอนรวมสองเครื่อง
+    const st = this.stories || [], st2 = this._shStories(st, tid, 1, Date.now());
+    if (st2 !== st) this.saveStories(st2);
+    // 3) วันเริ่มทริปถอยหนึ่งวัน — ต้องบันทึกก่อนแผน ไม่งั้น padDays เห็นจำนวนวันเก่า
+    //    เลื่อนจากแผนที่บันทึกไว้ (ไม่ใช่ this.days ที่เติมวันที่สำหรับแสดงผล) — ให้ผลตรงกับที่ตัวซิงก์เลื่อนของอีกเครื่องทุกตัวอักษร
+    const raw = this.itineraryOf(tid);
+    const days = this._shItin((raw && raw.length) ? this.padDays(raw, tid) : this.days, 1);
+    if (ns) this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, start: ns } : x));
+    // 4) จดลงสมุด — ตัวซิงก์ใช้เลขนี้เลื่อนข้อมูลของเครื่องที่ยังไม่เห็นการเพิ่มวัน ก่อนรวม (ดู _alignDayShift)
+    rw('wtn-day-shift', o => ({ ...o, [tid]: (+o[tid] || 0) + 1 }));
+    try { if (!localStorage.getItem('wtn-day-shift')) localStorage.setItem('wtn-day-shift', JSON.stringify({ [tid]: 1 })); } catch (e) {}
+    this.saveItinerary(tid, days);
+    this.setState({ day: 0 });
+    const d0 = this.days[0] || {};
+    this.showToast(ns ? 'เพิ่มวันที่ 1 แล้ว · ทริปเริ่ม ' + d0.date : 'เพิ่มวันที่ 1 แล้ว · วันเดิมเลื่อนไปหนึ่งลำดับ');
+  }
+  // ---------- เลื่อนข้อมูลที่ผูกกับลำดับวันไป k วัน (ใช้ทั้งตอนกด + ก่อน และตอนซิงก์จัดแนวสองเครื่อง) ----------
+  // ฟังก์ชันพวกนี้ต้อง "บริสุทธิ์" — คืนของใหม่ ไม่แตะ localStorage ไม่แตะ state
+  _shItin(days, k) {
+    if (!Array.isArray(days) || !(k > 0)) return days;
+    const out = days.map(d => ({ ...d, stops: [...((d && d.stops) || [])] }));
+    for (let j = 0; j < k; j++) out.unshift(this.blankDay(0));
+    out.forEach((d, i) => {
+      d.n = String(i + 1);
+      if (/^(วันที่|Day) \d+/.test(d.tag || '')) d.tag = d.tag.replace(/^(วันที่|Day) \d+/, '$1 ' + (i + 1));
+      if (/^วัน \d+$/.test(d.date || '')) d.date = 'วัน ' + (i + 1);
     });
-    // 2) ตอนเรื่องเล่าที่ผูกกับวัน — แตะ _m ทั้งตอน ไม่งั้นตัวรวมสองเครื่องจะเลือกฉบับเก่าทับกลับ (ไม่แตะ updatedAt)
-    const now = Date.now(); let chg = false;
-    const stories = (this.stories || []).map(st => {
+    return out;
+  }
+  _shKeyMap(obj, tid, k) {
+    if (!obj || typeof obj !== 'object' || !(k > 0)) return obj;
+    const pre = tid + ':', out = {};
+    Object.keys(obj).forEach(key => {
+      const m = key.indexOf(pre) === 0 ? /^(\d+)(.*)$/.exec(key.slice(pre.length)) : null;
+      out[m ? pre + (+m[1] + k) + m[2] : key] = obj[key];
+    });
+    return out;
+  }
+  _shPbOrder(all, tid, k) {
+    const o = all && all[tid];
+    if (!o || typeof o !== 'object' || !(k > 0)) return all;
+    const n = {}; Object.keys(o).forEach(x => { n[/^\d+$/.test(x) ? String(+x + k) : x] = o[x]; });
+    return { ...all, [tid]: n };
+  }
+  _shStories(list, tid, k, stamp) {
+    if (!Array.isArray(list) || !(k > 0)) return list;
+    let chg = false;
+    const out = list.map(st => {
       if (!st || st.tripId !== tid || !Array.isArray(st.chapters)) return st;
       let hit = false;
       const chapters = st.chapters.map(c => {
         const m = c && /^day(\d+)$/.exec(c.gen || ''); if (!m) return c;
         hit = true;
-        const k = +m[1] + 1;
-        const title = /^วันที่ \d+/.test(c.title || '') ? c.title.replace(/^วันที่ \d+/, 'วันที่ ' + (k + 1)) : c.title;
-        return { ...c, gen: 'day' + k, title, _m: now };
+        const nd = +m[1] + k;
+        const title = /^วันที่ \d+/.test(c.title || '') ? c.title.replace(/^วันที่ \d+/, 'วันที่ ' + (nd + 1)) : c.title;
+        const nc = { ...c, gen: 'day' + nd, title };
+        if (stamp) nc._m = stamp;
+        return nc;
       });
       if (!hit) return st;
       chg = true; return { ...st, chapters };
     });
-    if (chg) this.saveStories(stories);
-    // 3) แผนรายวัน — ใส่วันว่างไว้หน้าสุด แล้วเรียงเลขวันใหม่
-    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
-    days.unshift(this.blankDay(0));
-    days.forEach((d, i) => {
-      d.n = String(i + 1);
-      if (/^(วันที่|Day) \d+/.test(d.tag || '')) d.tag = (d.tag || '').replace(/^(วันที่|Day) \d+/, '$1 ' + (i + 1));
-      if (/^วัน \d+$/.test(d.date || '')) d.date = 'วัน ' + (i + 1);
+    return chg ? out : list;
+  }
+  _shTrips(list, tid, k) {
+    if (!Array.isArray(list) || !(k > 0)) return list;
+    return list.map(t => {
+      if (!t || t.id !== tid || !t.start) return t;
+      const d = new Date(t.start); if (isNaN(d)) return t;
+      return { ...t, start: new Date(d.getTime() - k * 86400000).toISOString().slice(0, 10) };
     });
-    // 4) วันเริ่มทริปถอยหนึ่งวัน (ทริปที่ยังไม่ตั้งวัน ไม่ต้องแตะ) — ต้องบันทึกก่อนแผน ไม่งั้น padDays เห็นจำนวนวันเก่า
-    if (ns) this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, start: ns } : x));
-    this.saveItinerary(tid, days);
-    this.setState({ day: 0 });
-    const d0 = this.days[0] || {};
-    this.showToast(ns ? 'เพิ่มวันที่ 1 แล้ว · ทริปเริ่ม ' + d0.date : 'เพิ่มวันที่ 1 แล้ว · วันเดิมเลื่อนไปหนึ่งลำดับ');
+  }
+  // ⚠⚠ จัดแนวสามฝั่งก่อนรวม (base / ในเครื่อง / คลาวด์) — 12 ต.ค. 2569
+  //   ตัวรวมข้อมูลเทียบ "วันที่ i" ของแต่ละฝั่งตรงๆ และไม่รู้จักการย้ายของข้ามวัน
+  //   ทดลองแล้ว: เครื่อง A เพิ่มวันหน้า → เครื่อง B ที่ยังไม่เห็นได้กิจกรรมซ้อนผิดวัน แล้วดันกลับขึ้นคลาวด์
+  //   ทางแก้: สมุด wtn-day-shift = {tripId: จำนวนวันที่เคยเพิ่มไว้หน้าแผน} ทุกฝั่งพกเลขของตัวเอง
+  //   ฝั่งที่เลขน้อยกว่า → เลื่อนข้อมูลของฝั่งนั้นด้วย _sh* ก่อน แล้วค่อยรวมตามปกติ
+  //   ⚠ แอปที่ไม่มีโค้ดนี้ (iOS ≤ 1.0.9) ยังทำพังได้ — ปุ่ม + ก่อน จึงปิดไว้จนกว่าเครื่องทุกเครื่องจะอัปเดต (DAY_PREPEND_ON)
+  //   ⚠ ถ้าเพิ่มข้อมูลใหม่ที่คีย์ด้วยลำดับวัน ต้องเติมทั้งที่นี่และใน _prependTripDay
+  _alignDayShift(side, target) {
+    const own = this._parseJSON(side['wtn-day-shift']) || {};
+    let out = side;
+    Object.keys(target).forEach(tid => {
+      const k = (+target[tid] || 0) - (+own[tid] || 0);
+      if (!(k > 0)) return;
+      if (out === side) out = { ...side };
+      const tx = (key, f) => {
+        if (out[key] === undefined) return;
+        const o = this._parseJSON(out[key]); if (o == null || typeof o !== 'object') return;
+        const n = f(o); if (n !== o) out[key] = JSON.stringify(n);
+      };
+      tx('wtn-itinerary', o => (Array.isArray(o) || !Array.isArray(o[tid])) ? o : { ...o, [tid]: this._shItin(o[tid], k) });
+      tx('wtn-checkins', o => this._shKeyMap(o, tid, k));
+      tx('wtn-stop-tombs', o => this._shKeyMap(o, tid, k));
+      tx('wtn-pb-extra', o => this._shKeyMap(o, tid, k));
+      tx('wtn-pb-off', o => this._shKeyMap(o, tid, k));
+      tx('wtn-pb-order', o => this._shPbOrder(o, tid, k));
+      tx('wtn-stories', o => this._shStories(o, tid, k, 0));
+      tx('wtn-trips', o => this._shTrips(o, tid, k));
+      own[tid] = +target[tid];
+      out['wtn-day-shift'] = JSON.stringify(own);
+    });
+    return out;
   }
   openAddPick(payload) {
     const trips = this.userTrips;
@@ -14467,7 +14536,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.11a',
+      appVersion: '2026.10.12a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15595,6 +15664,7 @@ class Component extends DCLogic {
       dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
       addTripDay: () => this.addTripDay(),
       prependTripDay: () => this.prependTripDay(),
+      canPrependDay: !!(this.state.editing && this.DAY_PREPEND_ON),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
