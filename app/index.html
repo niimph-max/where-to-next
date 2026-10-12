@@ -5504,19 +5504,14 @@ class Component extends DCLogic {
       : k === 'li' ? 'display:flex;gap:7px;margin-top:3px;padding-left:2px' + (chk ? ';align-items:flex-start' : '') : 'margin-top:4px';
     const push = (kind, raw, src) => {
       let t = (raw || '').trim(); if (!t) return;
-      if (kind === 'h') { out.push({ style: st('h'), bullet: false, isCheck: false, hasLabel: false, label: '', text: t.replace(/[:：]\s*$/, ''), textStyle: '' }); return; }
+      if (kind === 'h') { sec = t; out.push({ _k: 'h', style: st('h'), bullet: false, isCheck: false, hasLabel: false, label: '', text: t.replace(/[:：]\s*$/, ''), textStyle: '' }); return; }
       let done = false;
       if (kind === 'li') { const mk = MK.exec(t); if (mk) { done = /[xX✓]/.test(mk[1]); t = t.slice(mk[0].length).trim(); if (!t) return; } }
-      const isCheck = chk && kind === 'li';
       const m = t.match(/^([^:：\n]{2,60}?)[:：]\s+(\S[\s\S]*)$/);
-      out.push({ style: st(kind), bullet: kind === 'li' && !isCheck, isCheck, done,
-        toggle: isCheck ? opt.toggle(src.line, src.part) : null,
-        boxMark: done ? '✓' : '',
-        boxStyle: 'flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;cursor:pointer;padding:0;font:700 14px/20px \'Anuphan\';text-align:center;' +
-          (done ? 'border:1.5px solid #4e8a5c;background:#4e8a5c;color:#fff' : 'border:1.5px solid #c9b9a3;background:#fff;color:#fff'),
-        textStyle: isCheck && done ? 'text-decoration:line-through;opacity:.55' : '',
-        hasLabel: !!m, label: m ? m[1].trim() + ':' : '', text: (!isCheck && done ? '✓ ' : '') + (m ? m[2] : t) });
+      out.push({ _k: kind, _src: src, _sec: sec, style: st(kind), done,
+        hasLabel: !!m, label: m ? m[1].trim() + ':' : '', _t: m ? m[2] : t });
     };
+    let sec = '';
     String(note || '').split(/\r?\n/).forEach((line, ln) => {
       line = line.trim(); if (!line) return;
       const bm = line.match(/^(?:[-•*–]|\d{1,2}[.)])\s+(.*)$/);
@@ -5534,7 +5529,21 @@ class Component extends DCLogic {
       } else push('p', lead);
       parts.forEach((x, pi) => push('li', x, { line: ln, part: pi }));
     });
-    return out;
+    // ติ๊กได้เฉพาะข้อใต้หัวข้อที่มีคำว่า "ช็อต" (เจ้าของขอ 12 ต.ค. 69 — บทพูด/ข้อควรระวังไม่ต้องติ๊ก)
+    // ถ้าบันทึกไม่มีหัวข้อ "ช็อต" เลย (พิมพ์เอง) → ติ๊กได้ทุกข้อเหมือนเดิม
+    const shotSec = x => /ช็อต|ช๊อต|shot/i.test(x || '');
+    const hasShot = out.some(b => b._k === 'h' && shotSec(b.text));
+    return out.map(b => {
+      if (b._k === 'h') return b;
+      const isCheck = chk && b._k === 'li' && (!hasShot || shotSec(b._sec)), done = b.done;
+      return { style: b.style, bullet: b._k === 'li' && !isCheck, isCheck, done,
+        toggle: isCheck ? opt.toggle(b._src.line, b._src.part) : null,
+        boxMark: done ? '✓' : '',
+        boxStyle: 'flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;cursor:pointer;padding:0;font:700 14px/20px \'Anuphan\';text-align:center;' +
+          (done ? 'border:1.5px solid #4e8a5c;background:#4e8a5c;color:#fff' : 'border:1.5px solid #c9b9a3;background:#fff;color:#fff'),
+        textStyle: isCheck && done ? 'text-decoration:line-through;opacity:.55' : '',
+        hasLabel: b.hasLabel, label: b.label, text: (!isCheck && done ? '✓ ' : '') + b._t };
+    });
   }
   // ติ๊ก/เอาติ๊กออกหนึ่งข้อ — แก้ตัวบันทึกตรงบรรทัดนั้น (ข้อแบบ "หัวข้อ: - ก - ข" ในบรรทัดเดียว จะถูกแตกเป็นหลายบรรทัดตอนติ๊กครั้งแรก)
   _toggleShotNote(note, line, part) {
@@ -5580,7 +5589,7 @@ class Component extends DCLogic {
       (notes ? '\nรายละเอียดของแต่ละกิจกรรม:\n' + notes : '') +
       '\n\nร่างสคริปต์ถ่ายคลิปของวันนี้ แบ่งเป็นฉากตามลำดับเวลา 4–8 ฉาก ต้องมีฉากเปิดคลิปและฉากปิดคลิป' +
       '\nตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น รูปแบบ: {"scenes":[{"time":"HH:MM แบบ 24 ชม. หรือ \'\'","title":"ชื่อฉากสั้นๆ","say":["บทพูดหน้ากล้อง"],"shots":["ช็อตที่ต้องถ่าย"],"tips":["ข้อควรระวัง"]}]}' +
-      '\nบทพูดเป็นภาษาพูดเป็นกันเอง ฉากละไม่เกิน 3 ประโยค · ช็อตฉากละ 2–5 ช็อต เจาะจงพอที่จะถ่ายตามได้ทันที' +
+      '\nบทพูดเป็นภาษาพูดเป็นกันเอง ใช้คำลงท้าย "ค่ะ" (ห้ามใช้ "ครับ") ฉากละไม่เกิน 3 ประโยค · ช็อตฉากละ 2–5 ช็อต เจาะจงพอที่จะถ่ายตามได้ทันที' +
       '\ntips ใส่เฉพาะที่จำเป็นจริง เช่น กฎห้ามถ่าย โดรน ขาตั้ง แสง ถ้าไม่มีให้เป็น []';
     this.setState({ clipBusy: true, clipErr: '', clipScenes: null, clipDay: i });
     try {
@@ -14645,7 +14654,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.12b',
+      appVersion: '2026.10.12c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
