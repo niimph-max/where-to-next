@@ -5483,7 +5483,7 @@ class Component extends DCLogic {
     const i = this.state.day;
     const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[i]) return;
-    days[i].stops.push({ ...this.mkWhen(this.state.addPeriod, this.state.addTime), kind: this.state.addKind, title, note: (this.state.addNote || '').trim() });
+    days[i].stops.push({ ...this.mkWhen(this.state.addPeriod, this.state.addTime), kind: this.state.addKind, title, note: this._tidyClipNote(this.state.addNote, this.state.addKind) });
     this.saveItinerary(this.state.trip, days);
     this.setState({ addTitle: '', addTime: '', addPeriod: '', addNote: '' });
     const d = days[i];
@@ -5581,6 +5581,22 @@ class Component extends DCLogic {
   // ผลลัพธ์ = กิจกรรมประเภท "ถ่ายคลิป" หนึ่งรายการต่อฉาก บันทึกเป็นข้อย่อยที่ติ๊กได้ระหว่างถ่าย
   // ⚠ ให้ดูตัวอย่างก่อนเสมอ ไม่ใส่ลงแผนเองทันที — AI ร่างผิดได้ และลบทีละฉากเหนื่อย
   CLIP_KIND = 'ถ่ายคลิป';
+  // โครงบันทึกที่ใส่ให้เองตอนเลือกประเภท "ถ่ายคลิป" แล้วบันทึกยังว่าง (เจ้าของขอ 12 ต.ค. 69 — อยากพิมพ์เองโดยไม่ใช้ AI)
+  CLIP_TPL = 'พูดหน้ากล้อง:\n- \nช็อตที่ต้องได้:\n- \nข้อควรระวัง:\n- ';
+  // ตอนบันทึกกิจกรรมถ่ายคลิป: ตัดข้อย่อยที่ว่าง ("- " ที่ไม่ได้พิมพ์อะไร) และหัวข้อที่ไม่มีอะไรอยู่ข้างใต้ออก
+  // ประเภทอื่นไม่แตะ — แค่ trim เหมือนเดิม
+  _tidyClipNote(note, kind) {
+    const t = String(note || '').trim();
+    if (kind !== this.CLIP_KIND) return t;
+    const isHead = l => /[:：]$/.test(l) && l.length <= 70 && !/^(?:[-•*–]|\d{1,2}[.)])\s/.test(l);
+    const lines = t.split(/\r?\n/).map(l => l.replace(/\s+$/, '')).filter(l => !/^\s*[-•*–]\s*(\[[ xX✓]\]\s*)?$/.test(l));
+    const out = lines.filter((l, i) => {
+      if (!isHead(l.trim())) return true;
+      const nx = lines.slice(i + 1).find(x => x.trim());
+      return !!nx && !isHead(nx.trim());
+    });
+    return out.join('\n').trim();
+  }
   async genClipScript() {
     const i = this.state.day, d = this.days[i] || {};
     const notes = (d.stops || []).filter(x => x && (x.note || '').trim() && x.kind !== this.CLIP_KIND)
@@ -5718,7 +5734,7 @@ class Component extends DCLogic {
   cancelStopEdit() { this.setState({ stopEdit: null }); }
   saveStopEdit() {
     const se = this.state.stopEdit; if (!se) return;
-    const patch = { ...this.mkWhen(this.state.sePeriod, this.state.seTime), kind: (this.state.seKind || '').trim(), title: (this.state.seTitle || '').trim(), note: (this.state.seNote || '').trim() };
+    const patch = { ...this.mkWhen(this.state.sePeriod, this.state.seTime), kind: (this.state.seKind || '').trim(), title: (this.state.seTitle || '').trim(), note: this._tidyClipNote(this.state.seNote, this.state.seKind) };
     const i = this.state.day;
     if (se.origin === 'base') {
       const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
@@ -14428,7 +14444,7 @@ class Component extends DCLogic {
     const kinds = ['เที่ยวบิน','ที่พัก','เดินทาง','กิน','ที่เที่ยว','อื่นๆ'].concat(this.isPremium ? [this.CLIP_KIND] : []);
     const chipOn = "background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
     const chipOff = "background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
-    const addChips = kinds.map(k => ({ label: k, on: () => this.setState({ addKind: k }), style: this.state.addKind === k ? chipOn : chipOff }));
+    const addChips = kinds.map(k => ({ label: k, on: () => this.setState(st => ({ addKind: k, ...(k === this.CLIP_KIND && !String(st.addNote || '').trim() ? { addNote: this.CLIP_TPL } : {}) })), style: this.state.addKind === k ? chipOn : chipOff }));
     if (!this._migT) { this._migT = 1; this.migrateStopTimes(); }
     const addTimeVal = this.normHHMM(this.state.addTime);
     const addPeriodSel = this.normPeriod(this.state.addPeriod);
@@ -14670,7 +14686,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.12d',
+      appVersion: '2026.10.12e',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15826,7 +15842,7 @@ class Component extends DCLogic {
       dayCity: dayCityVal, daySummary: daySummaryVal,
       setDayCity: e => this.patchDay(this.state.day, { city: e.target.value }),
       setDaySummary: e => this.patchDay(this.state.day, { summary: e.target.value }),
-      stopKindChips: kinds.map(k => ({ label: k, on: () => this.setState({ seKind: k }), style: (this.state.seKind === k ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#6f6558;') + "font:600 13px 'Anuphan';padding:6px 11px;border-radius:14px;border:none;cursor:pointer" })),
+      stopKindChips: kinds.map(k => ({ label: k, on: () => this.setState(st => ({ seKind: k, ...(k === this.CLIP_KIND && !String(st.seNote || '').trim() ? { seNote: this.CLIP_TPL } : {}) })), style: (this.state.seKind === k ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#6f6558;') + "font:600 13px 'Anuphan';padding:6px 11px;border-radius:14px;border:none;cursor:pointer" })),
       seTime: this.state.seTime ?? '', setSeTime: e => this.setState({ seTime: e.target.value }),
       sePeriodChips: this.PERIODS.map(p => ({ label: p, on: () => this.setState({ sePeriod: this.normPeriod(this.state.sePeriod) === p ? '' : p }),
         style: (this.normPeriod(this.state.sePeriod) === p ? 'background:#c05f39;color:#fff;' : 'background:#efe4d3;color:#6f6558;') + "font:600 13px 'Anuphan';padding:7px 12px;border-radius:16px;border:none;cursor:pointer" })),
