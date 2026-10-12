@@ -834,11 +834,14 @@
             </div>
           </div>
           <div class="wtn-s wtn-chips" ref="{{ dayStripRef }}" style="display:flex;gap:8px;overflow-x:auto;padding:12px 20px 14px">
+<sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ prependTripDay }}" title="เพิ่มวันก่อนวันแรก" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:600 20px 'Anuphan';line-height:1">+</span><span style="font:500 11px 'Anuphan';margin-top:2px">ก่อน</span></button>
+            </sc-if>
             <sc-for list="{{ dayPills }}" as="p" hint-placeholder-count="8">
               <button onClick="{{ p.on }}" style="{{ p.style }}"><span style="font:700 17px 'Anuphan';line-height:1">{{ p.n }}</span><span style="font:500 12px 'Anuphan';opacity:.75;margin-top:2px">{{ p.date }}</span></button>
             </sc-for>
             <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ addTripDay }}" title="เพิ่มอีกหนึ่งวัน" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;font:600 20px 'Anuphan';cursor:pointer">+</button>
+              <button onClick="{{ addTripDay }}" title="เพิ่มอีกหนึ่งวันต่อท้าย" style="flex:none;width:50px;height:54px;border-radius:14px;border:1.5px dashed rgba(43,36,32,.25);background:transparent;color:#a1927c;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font:600 20px 'Anuphan';line-height:1">+</span><span style="font:500 11px 'Anuphan';margin-top:2px">หลัง</span></button>
             </sc-if>
           </div>
           <div style="padding:2px 20px 0">
@@ -5295,6 +5298,76 @@ class Component extends DCLogic {
     this.saveItinerary(tid, days);
     this.setState({ day: i });
     this.showToast('เพิ่มวันที่ ' + (i + 1) + ' แล้ว');
+  }
+  // ปุ่ม + หน้าวันแรก — เพิ่มวันก่อนวันที่ 1 แล้วเลื่อน "วันเริ่มทริป" ถอยไปหนึ่งวัน (12 ต.ค. 2569)
+  // เจ้าของ: "บางทีอยากเพิ่มวันก่อนหน้า" — เดิมทำได้แค่ต่อท้าย และถ้าแก้วันเริ่มในฟอร์มทริปเอง
+  // แผนจะไม่ขยับตาม (กิจกรรมวันที่ 1 ไปตกวันที่ใหม่ แล้วงอกวันว่างท้ายทริปแทน)
+  // ⚠⚠ ทุกอย่างที่คีย์ด้วยลำดับวันต้องเลื่อน +1 พร้อมกัน ไม่งั้นเช็กอิน/รูป/ตอนเรื่องเล่าจะไปผูกผิดวัน:
+  //   wtn-itinerary · wtn-checkins ('tid:i') · wtn-stop-tombs ('tid:i:…') · wtn-pb-extra · wtn-pb-off ('tid:i')
+  //   wtn-pb-order ({tid:{i}}) · ตอนเรื่องเล่าของทริป (gen 'day<i>')
+  //   ถ้าวันหลังเพิ่มข้อมูลใหม่ที่คีย์ด้วยลำดับวัน ต้องมาเติมที่นี่ด้วย
+  prependTripDay() {
+    if (this.days.length >= 90) { this.showToast('ทริปหนึ่งเก็บได้ไม่เกิน 90 วัน'); return; }
+    const tid = this.state.trip;
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    let ns = '';
+    if (t && t.start) { const st = new Date(t.start); if (!isNaN(st)) ns = new Date(st.getTime() - 86400000).toISOString().slice(0, 10); }
+    let when = '';
+    if (ns) { const d = new Date(ns), M = this.thMonths(); when = ' (' + d.getDate() + ' ' + M[d.getMonth()] + ')'; }
+    this.askConfirm('เพิ่มวันใหม่ก่อนวันที่ 1' + when + '? วันเดิมทุกวันจะเลื่อนไปหนึ่งลำดับ กิจกรรม เช็กอิน และรูปตามไปกับวันของมันเหมือนเดิม',
+      () => this._prependTripDay(tid, ns), 'เพิ่มวัน');
+  }
+  _prependTripDay(tid, ns) {
+    const pre = tid + ':';
+    const shiftMap = (obj) => {
+      const out = {};
+      Object.keys(obj || {}).forEach(k => {
+        const m = k.indexOf(pre) === 0 ? /^(\d+)(.*)$/.exec(k.slice(pre.length)) : null;
+        out[m ? pre + (+m[1] + 1) + m[2] : k] = obj[k];
+      });
+      return out;
+    };
+    const rw = (key, f) => { try { const o = JSON.parse(localStorage.getItem(key) || 'null'); if (o && typeof o === 'object') localStorage.setItem(key, JSON.stringify(f(o))); } catch (e) {} };
+    // 1) ของที่คีย์ด้วยลำดับวัน — ต้องทำก่อน saveItinerary เพราะ _sweepSTombs อ่านใบสั่งลบตามลำดับวันใหม่
+    this.saveCheckins(shiftMap(this.checkins));
+    rw('wtn-stop-tombs', shiftMap);
+    rw('wtn-pb-extra', shiftMap);
+    rw('wtn-pb-off', shiftMap);
+    rw('wtn-pb-order', all => {
+      const o = all[tid]; if (!o || typeof o !== 'object') return all;
+      const n = {}; Object.keys(o).forEach(k => { n[/^\d+$/.test(k) ? String(+k + 1) : k] = o[k]; });
+      return { ...all, [tid]: n };
+    });
+    // 2) ตอนเรื่องเล่าที่ผูกกับวัน — แตะ _m ทั้งตอน ไม่งั้นตัวรวมสองเครื่องจะเลือกฉบับเก่าทับกลับ (ไม่แตะ updatedAt)
+    const now = Date.now(); let chg = false;
+    const stories = (this.stories || []).map(st => {
+      if (!st || st.tripId !== tid || !Array.isArray(st.chapters)) return st;
+      let hit = false;
+      const chapters = st.chapters.map(c => {
+        const m = c && /^day(\d+)$/.exec(c.gen || ''); if (!m) return c;
+        hit = true;
+        const k = +m[1] + 1;
+        const title = /^วันที่ \d+/.test(c.title || '') ? c.title.replace(/^วันที่ \d+/, 'วันที่ ' + (k + 1)) : c.title;
+        return { ...c, gen: 'day' + k, title, _m: now };
+      });
+      if (!hit) return st;
+      chg = true; return { ...st, chapters };
+    });
+    if (chg) this.saveStories(stories);
+    // 3) แผนรายวัน — ใส่วันว่างไว้หน้าสุด แล้วเรียงเลขวันใหม่
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    days.unshift(this.blankDay(0));
+    days.forEach((d, i) => {
+      d.n = String(i + 1);
+      if (/^(วันที่|Day) \d+/.test(d.tag || '')) d.tag = (d.tag || '').replace(/^(วันที่|Day) \d+/, '$1 ' + (i + 1));
+      if (/^วัน \d+$/.test(d.date || '')) d.date = 'วัน ' + (i + 1);
+    });
+    // 4) วันเริ่มทริปถอยหนึ่งวัน (ทริปที่ยังไม่ตั้งวัน ไม่ต้องแตะ) — ต้องบันทึกก่อนแผน ไม่งั้น padDays เห็นจำนวนวันเก่า
+    if (ns) this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, start: ns } : x));
+    this.saveItinerary(tid, days);
+    this.setState({ day: 0 });
+    const d0 = this.days[0] || {};
+    this.showToast(ns ? 'เพิ่มวันที่ 1 แล้ว · ทริปเริ่ม ' + d0.date : 'เพิ่มวันที่ 1 แล้ว · วันเดิมเลื่อนไปหนึ่งลำดับ');
   }
   openAddPick(payload) {
     const trips = this.userTrips;
@@ -15521,6 +15594,7 @@ class Component extends DCLogic {
       })(),
       dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
       addTripDay: () => this.addTripDay(),
+      prependTripDay: () => this.prependTripDay(),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
