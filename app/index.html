@@ -5604,18 +5604,34 @@ class Component extends DCLogic {
     const sec = (h, a) => { const xs = (Array.isArray(a) ? a : []).map(x => String(x || '').trim()).filter(Boolean); return xs.length ? h + ':\n' + xs.map(x => '- ' + x).join('\n') : ''; };
     return [sec('พูดหน้ากล้อง', sc.say), sec('ช็อตที่ต้องได้', sc.shots), sec('ข้อควรระวัง', sc.tips)].filter(Boolean).join('\n');
   }
+  // ถ้าวันนั้นมีฉากถ่ายคลิปอยู่แล้ว ต้องถามก่อน — เดิมเพิ่มต่อท้ายเสมอ เจ้าของกดร่างใหม่แล้วได้ฉากซ้ำสองชุด (12 ต.ค. 69)
+  // "แทนที่" = ลบฉากถ่ายคลิปเดิมของวันนั้น (จดใบสั่งลบด้วย ไม่งั้นอีกเครื่องดันกลับ) แล้วใส่ชุดใหม่
   addClipScenes() {
     const sc = this.state.clipScenes || [], i = this.state.clipDay;
     if (!sc.length || i == null || !this.isPremium) return;
-    const tid = this.state.trip;
+    const old = ((this.days[i] || {}).stops || []).filter(x => x && x.kind === this.CLIP_KIND).length;
+    if (!old) { this._putClipScenes(false); return; }
+    this.askConfirm('วันนี้มีฉากถ่ายคลิปอยู่แล้ว ' + old + ' ฉาก — แทนที่ด้วยร่างใหม่ไหม? ฉากเดิมรวมถึงช็อตที่ติ๊กไว้จะถูกลบ (ถ้าอยากเก็บไว้ทั้งคู่ กดยกเลิก แล้วลบหรือแก้เองทีละฉาก)',
+      () => this._putClipScenes(true), 'แทนที่ฉากเดิม');
+  }
+  _putClipScenes(replace) {
+    const sc = this.state.clipScenes || [], i = this.state.clipDay, tid = this.state.trip;
     const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[i]) return;
+    let removed = 0;
+    if (replace) {
+      days[i].stops = days[i].stops.filter(x => {
+        if (!x || x.kind !== this.CLIP_KIND) return true;
+        this._addSTomb(tid, i, x); removed++; return false;   // ⚠ จดใบสั่งลบก่อนตัด แบบเดียวกับ delStop
+      });
+    }
     sc.forEach(x => days[i].stops.push({ ...this.mkWhen('', x.time || ''), kind: this.CLIP_KIND, title: String(x.title).trim().slice(0, 120), note: this._clipNote(x) }));
     this.saveItinerary(tid, days);
     this.setState({ clipScenes: null, day: i });
-    this.showToast('🎬 เพิ่ม ' + sc.length + ' ฉากลง' + ((days[i] || {}).tag || ('วันที่ ' + (i + 1))) + ' แล้ว');
+    this.showToast('🎬 ' + (removed ? 'แทนที่ ' + removed + ' ฉากเดิม · ' : '') + 'ใส่ ' + sc.length + ' ฉากลง' + ((days[i] || {}).tag || ('วันที่ ' + (i + 1))) + ' แล้ว');
     this.back();
   }
+
   editStop(origin, si, s) { const w = this.stopWhen(s); this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', sePeriod: w.period, seTime: w.time, seTitle: s.title || '', seNote: s.note || '' }); }
   // ที่มาของ iframe คลิป — บนแอป (capacitor://) YouTube ปฏิเสธการฝัง (Error 153) จึงฝานผ่านหน้าเล่นคลิปบนโดเมนจริง
   // เลื่อนให้บรรทัดที่กำลังพิมพ์อยู่ในสายตาเสมอ (ไม่ให้โดนแป้นพิมพ์/แถบล่างบัง)
@@ -14654,7 +14670,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.12c',
+      appVersion: '2026.10.12d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
