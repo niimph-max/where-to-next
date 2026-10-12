@@ -49,6 +49,23 @@ workflows:
     name: Vela iOS · TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 45
+    # บิลด์อัตโนมัติเมื่อ push เข้า main (ตั้ง 12 ต.ค. 2569) — แต่เฉพาะคอมมิตที่แตะ capacitor/www/ เท่านั้น
+    # แก้เว็บอย่างเดียว (app/) จะไม่บิลด์ ไม่เปลืองนาที — ตามนโยบาย "ไม่ต้อง sync native ทุกครั้งที่แก้เว็บ"
+    # ⚠ ต้องเปิด webhook ใน Codemagic ด้วย ไม่งั้นบล็อกนี้ไม่มีผล (กด Start new build เองได้เสมอ)
+    # ⚠ ซิงก์ www รอบใหม่หลังเวอร์ชันเก่าถูกปล่อยแล้ว ต้องขยับ VELA_VERSION ในคอมมิตเดียวกัน
+    #   ไม่งั้นบิลด์ผ่านแต่ publish ล้ม (iris-code 90186 · train closed) เสียนาทีไปฟรี
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+      cancel_previous_builds: true
+    when:
+      changeset:
+        includes:
+          - 'capacitor/www/'
     # ชื่อ key ต้องตรงกับที่ตั้งไว้ใน Codemagic UI (Teams > Integrations > App Store Connect)
     integrations:
       app_store_connect: Vela ASC

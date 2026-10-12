@@ -754,12 +754,15 @@ admin ไม่จำกัด · `peek` · เพดานขาเข้า 30
 1. วางไฟล์ deploy ชุดล่าสุดไว้ที่ `_dist`
 2. `node capacitor/sync-web.mjs` — ก็อปเข้า `capacitor/www/` แล้วปรับให้เหมาะ native (เติม `native.js`, ปิด https-redirect เมื่อรันใน Capacitor, ไม่เอา `sw.js` เข้าไป)
 3. ถ้าขึ้นเวอร์ชันการตลาดใหม่ แก้ `VELA_VERSION` ใน `codemagic.yaml` — build number นับต่อจาก TestFlight ให้เอง
-4. push → เข้า Codemagic **กด Start new build เอง** (branch `main`, workflow `Vela iOS · TestFlight`)
+4. push เข้า `main` → Codemagic **บิลด์เองถ้าคอมมิตแตะ `capacitor/www/`** (ตั้ง 12 ต.ค. 69 · ดูข้างล่าง) · ไม่ขึ้นก็กด Start new build เองได้ (workflow `Vela iOS · TestFlight`)
+5. บิลด์ขึ้น TestFlight แล้ว **เจ้าของกด Submit for Review ใน App Store Connect เอง** (`submit_to_app_store` ปิดไว้โดยตั้งใจ — ลองบน TestFlight ก่อนปล่อย)
 
 ⚠ ทั้งสอง workflow เช็ค `capacitor/www/index.html` ก่อนเริ่ม ลืมขั้น 2 = fail ทันที
 
-⚠ **Codemagic ไม่ได้บิลด์อัตโนมัติตอน push** (ไม่ได้เปิด webhook) — 21 ก.ย. 69 พบว่าบิลด์ล่าสุดค้างอยู่ที่ 8 ก.ย.
-ทั้งที่มี commit หลังจากนั้นหลายตัว **push แล้วต้องเข้าไปกดเองเสมอ**
+⚠ **บิลด์อัตโนมัติ (12 ต.ค. 69)** `ios-release` มี `triggering` (push เข้า `main`) + `when.changeset` (เฉพาะ `capacitor/www/`)
+แก้เว็บอย่างเดียวจึงไม่บิลด์ ไม่เปลืองนาที · **ต้องเปิด webhook ใน Codemagic ด้วย** ไม่งั้นไม่มีผล
+(เดิม 21 ก.ย. 69 ไม่มี webhook — บิลด์ค้างที่ 8 ก.ย. ทั้งที่มี commit ตามมาหลายตัว)
+⚠ **ยังไม่ได้พิสูจน์ว่ายิงจริง** — ครั้งแรกที่ซิงก์ www รอบหน้า ให้ดูว่า Codemagic ขึ้นบิลด์เองไหม
 
 ⚠ **`VELA_VERSION` ต้องขยับทุกครั้งที่ส่งรอบใหม่หลังตัวเก่าถูกปล่อยไปแล้ว**
 ถ้าใช้เลขเดิม Apple จะตอบกลับตอน publish ว่า *"Invalid Pre-Release Train. The train version 'x.y.z' is closed for new build submissions"* (iris-code 90186)
