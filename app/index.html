@@ -862,13 +862,14 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
             </div>
           </div>
+          <sc-if value="{{ showClipFilter }}" hint-placeholder-val="{{ false }}"><div style="padding:0 20px 10px"><button onClick="{{ toggleClipOnly }}" style="{{ clipFilterStyle }}">{{ clipFilterLabel }}</button></div></sc-if>
           <div style="padding:0 20px">
             <sc-for list="{{ cur.stops }}" as="s" hint-placeholder-count="3">
               <div style="display:flex;gap:12px">
                 <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex:none;padding-top:3px"><span style="font:600 12.5px 'Anuphan';color:#5c5347;text-align:center;line-height:1.3;white-space:pre-line">{{ s.t }}</span><span style="width:10px;height:10px;border-radius:50%;background:#c05f39;margin:6px 0 0;box-shadow:0 0 0 4px #f2e3d4"></span><span style="flex:1;width:2px;background:rgba(43,36,32,.12)"></span></div>
                 <div style="flex:1;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:11px">
                   <sc-if value="{{ s.viewMode }}" hint-placeholder-val="{{ true }}">
-                    <span style="display:inline-block;background:#efe4d3;color:#6f6558;font:600 12px 'Anuphan';padding:3px 9px;border-radius:8px;margin-bottom:6px">{{ s.kind }}</span><div style="font:600 16.5px 'Anuphan';color:#2b241f;line-height:1.3">{{ s.title }}</div><sc-if value="{{ s.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 14.5px/1.55 'Anuphan';color:#6f6558;margin-top:3px"><sc-for list="{{ s.noteBlocks }}" as="nb" hint-placeholder-count="0"><div style="{{ nb.style }}"><sc-if value="{{ nb.bullet }}" hint-placeholder-val="{{ false }}"><span style="flex:none;color:#c05f39;font-weight:700">•</span></sc-if><span style="flex:1;min-width:0;text-wrap:pretty"><sc-if value="{{ nb.hasLabel }}" hint-placeholder-val="{{ false }}"><b style="font-weight:600;color:#2b241f;margin-right:4px">{{ nb.label }}</b></sc-if>{{ nb.text }}</span></div></sc-for></div></sc-if>
+                    <span style="display:inline-block;background:#efe4d3;color:#6f6558;font:600 12px 'Anuphan';padding:3px 9px;border-radius:8px;margin-bottom:6px">{{ s.kind }}</span><div style="font:600 16.5px 'Anuphan';color:#2b241f;line-height:1.3">{{ s.title }}</div><sc-if value="{{ s.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 14.5px/1.55 'Anuphan';color:#6f6558;margin-top:3px"><sc-for list="{{ s.noteBlocks }}" as="nb" hint-placeholder-count="0"><div style="{{ nb.style }}"><sc-if value="{{ nb.bullet }}" hint-placeholder-val="{{ false }}"><span style="flex:none;color:#c05f39;font-weight:700">•</span></sc-if><sc-if value="{{ nb.isCheck }}" hint-placeholder-val="{{ false }}"><button onClick="{{ nb.toggle }}" aria-label="ติ๊กช็อตนี้" style="{{ nb.boxStyle }}">{{ nb.boxMark }}</button></sc-if><span style="flex:1;min-width:0;text-wrap:pretty;{{ nb.textStyle }}"><sc-if value="{{ nb.hasLabel }}" hint-placeholder-val="{{ false }}"><b style="font-weight:600;color:#2b241f;margin-right:4px">{{ nb.label }}</b></sc-if>{{ nb.text }}</span></div></sc-for></div></sc-if>
                     <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(43,36,32,.08)"><button onClick="{{ s.edit }}" style="display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;font:600 13.5px 'Anuphan';color:#5c5347;cursor:pointer;padding:2px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20h4L18 10l-4-4L4 16z"/></svg>แก้ไข</button><button onClick="{{ s.del }}" style="display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;font:600 13.5px 'Anuphan';color:#b5563a;margin-left:auto;cursor:pointer;padding:2px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>ลบ</button></div></sc-if>
                   </sc-if>
                   <sc-if value="{{ s.editingThis }}" hint-placeholder-val="{{ false }}">
@@ -1219,6 +1220,27 @@
               <div style="font:500 15.5px/1.8 'Anuphan';color:#413931;white-space:pre-wrap">{{ aiPlanText }}</div>
             </div>
             <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:12px">ข้อมูลจาก AI · ตรวจสอบเวลาเปิด-ปิดจริงอีกครั้ง</div>
+          </sc-if>
+          <!-- ถ่ายคลิป: AI ร่างสคริปต์ทั้งวัน (พรีเมียม) -->
+          <div style="height:1px;background:rgba(43,36,32,.1);margin:22px 0 18px"></div>
+          <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:4px">ถ่ายคลิปวันนี้</div>
+          <div style="font:500 14.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:12px">AI อ่านแผน "{{ aiDayLabel }}" แล้วร่างเป็นฉาก — บทพูดหน้ากล้อง · ช็อตที่ต้องได้ · ข้อควรระวัง ใส่ลงแผนแล้วติ๊กช็อตระหว่างถ่ายได้</div>
+          <button onClick="{{ genClipScript }}" style="width:100%;border:none;background:#2b241f;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer;margin-bottom:14px">{{ clipBtnLabel }}</button>
+          <sc-if value="{{ clipBusy }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px;font:500 15px 'Anuphan';color:#a1927c">🎬 AI กำลังร่างสคริปต์…</div></sc-if>
+          <sc-if value="{{ clipErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border:1px solid rgba(192,86,58,.25);border-radius:14px;padding:13px 15px;font:500 14.5px/1.5 'Anuphan';color:#b3402a">{{ clipErr }}</div></sc-if>
+          <sc-if value="{{ hasClipScenes }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ clipTrunc }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border-radius:12px;padding:10px 13px;font:500 14px/1.5 'Anuphan';color:#b3402a;margin-bottom:10px">⚠ AI ตอบไม่จบ ฉากท้ายๆ อาจขาดไป</div></sc-if>
+            <sc-for list="{{ clipScenes }}" as="cs" hint-placeholder-count="0">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:10px">
+                <div style="display:flex;gap:8px;align-items:baseline"><span style="font:600 13px 'Anuphan';color:#c05f39;flex:none">{{ cs.time }}</span><span style="font:600 16px 'Anuphan';color:#2b241f">{{ cs.title }}</span></div>
+                <div style="font:500 14.5px/1.55 'Anuphan';color:#6f6558;margin-top:3px"><sc-for list="{{ cs.blocks }}" as="nb" hint-placeholder-count="0"><div style="{{ nb.style }}"><sc-if value="{{ nb.bullet }}" hint-placeholder-val="{{ false }}"><span style="flex:none;color:#c05f39;font-weight:700">•</span></sc-if><span style="flex:1;min-width:0;text-wrap:pretty">{{ nb.text }}</span></div></sc-for></div>
+              </div>
+            </sc-for>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <button onClick="{{ dropClipScenes }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">ทิ้งร่างนี้</button>
+              <button onClick="{{ addClipScenes }}" style="flex:2;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">ใส่ลงแผนวันนี้</button>
+            </div>
+            <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:10px">แต่ละฉากจะเป็นกิจกรรมประเภท "ถ่ายคลิป" แก้หรือลบทีละฉากได้ตามปกติ</div>
           </sc-if>
         </div>
       </sc-if>
@@ -5472,20 +5494,33 @@ class Component extends DCLogic {
   // · ขึ้นบรรทัดใหม่ตามที่พิมพ์ไว้ · บรรทัดขึ้นต้น - • * หรือ 1. = ข้อย่อย
   // · "หัวข้อ: - ข้อ - ข้อ" ที่วางมาเป็นบรรทัดเดียว (เช่นจาก AI/เว็บ) แตกเป็นข้อย่อย — ข้าม " - " ที่ตามด้วยตัวเลข (ช่วงเวลา 08:00 - 17:00)
   // · "ป้าย: ข้อความ" ทำป้ายตัวหนา — ป้ายต้องสั้นและตามด้วยช่องว่าง จึงไม่ชนเวลา 04:30 หรือ https://
-  noteBlocks(note) {
-    const out = [];
+  // · โหมดเช็กลิสต์ (opt.toggle) — ข้อย่อยกลายเป็นช่องติ๊ก ใช้กับกิจกรรมประเภท "ถ่ายคลิป" (พรีเมียม · 12 ต.ค. 2569)
+  //   สถานะติ๊กเก็บในตัวบันทึกเอง ("- [x] ช็อต") ไม่มีคีย์ใหม่ → ซิงก์ไปกับบันทึกตามปกติ ไม่ต้องแตะตัวรวมข้อมูล
+  //   ข้อย่อยแต่ละข้อจำ src {line, part} ไว้ให้ toggleShot เขียนกลับถูกบรรทัด (part -1 = ข้อที่อยู่บรรทัดของตัวเอง)
+  noteBlocks(note, opt) {
+    const out = [], chk = !!(opt && opt.toggle);
+    const MK = /^\[( |x|X|✓)\]\s*/;
     const st = (k) => k === 'h' ? 'font:600 14.5px/1.45 \'Anuphan\';color:#2b241f;margin-top:8px'
-      : k === 'li' ? 'display:flex;gap:7px;margin-top:3px;padding-left:2px' : 'margin-top:4px';
-    const push = (kind, raw) => {
+      : k === 'li' ? 'display:flex;gap:7px;margin-top:3px;padding-left:2px' + (chk ? ';align-items:flex-start' : '') : 'margin-top:4px';
+    const push = (kind, raw, src) => {
       let t = (raw || '').trim(); if (!t) return;
-      if (kind === 'h') { out.push({ style: st('h'), bullet: false, hasLabel: false, label: '', text: t.replace(/[:：]\s*$/, '') }); return; }
+      if (kind === 'h') { out.push({ style: st('h'), bullet: false, isCheck: false, hasLabel: false, label: '', text: t.replace(/[:：]\s*$/, ''), textStyle: '' }); return; }
+      let done = false;
+      if (kind === 'li') { const mk = MK.exec(t); if (mk) { done = /[xX✓]/.test(mk[1]); t = t.slice(mk[0].length).trim(); if (!t) return; } }
+      const isCheck = chk && kind === 'li';
       const m = t.match(/^([^:：\n]{2,60}?)[:：]\s+(\S[\s\S]*)$/);
-      out.push({ style: st(kind), bullet: kind === 'li', hasLabel: !!m, label: m ? m[1].trim() + ':' : '', text: m ? m[2] : t });
+      out.push({ style: st(kind), bullet: kind === 'li' && !isCheck, isCheck, done,
+        toggle: isCheck ? opt.toggle(src.line, src.part) : null,
+        boxMark: done ? '✓' : '',
+        boxStyle: 'flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;cursor:pointer;padding:0;font:700 14px/20px \'Anuphan\';text-align:center;' +
+          (done ? 'border:1.5px solid #4e8a5c;background:#4e8a5c;color:#fff' : 'border:1.5px solid #c9b9a3;background:#fff;color:#fff'),
+        textStyle: isCheck && done ? 'text-decoration:line-through;opacity:.55' : '',
+        hasLabel: !!m, label: m ? m[1].trim() + ':' : '', text: (!isCheck && done ? '✓ ' : '') + (m ? m[2] : t) });
     };
-    String(note || '').split(/\r?\n/).forEach(line => {
+    String(note || '').split(/\r?\n/).forEach((line, ln) => {
       line = line.trim(); if (!line) return;
       const bm = line.match(/^(?:[-•*–]|\d{1,2}[.)])\s+(.*)$/);
-      if (bm) { push('li', bm[1]); return; }
+      if (bm) { push('li', bm[1], { line: ln, part: -1 }); return; }
       if (!/[:：]\s+[-•]\s+\D/.test(line)) { if (/[:：]$/.test(line) && line.length <= 70) push('h', line); else push('p', line); return; }
       const parts = line.split(/\s+[-•]\s+(?=\D)/);
       let lead = parts.shift();
@@ -5497,9 +5532,80 @@ class Component extends DCLogic {
         if (cut > 0 && L.length - cut - 1 <= 70) { push('p', L.slice(0, cut)); push('h', L.slice(cut + 1)); }
         else if (L.length <= 70) push('h', L); else push('p', L);
       } else push('p', lead);
-      parts.forEach(x => push('li', x));
+      parts.forEach((x, pi) => push('li', x, { line: ln, part: pi }));
     });
     return out;
+  }
+  // ติ๊ก/เอาติ๊กออกหนึ่งข้อ — แก้ตัวบันทึกตรงบรรทัดนั้น (ข้อแบบ "หัวข้อ: - ก - ข" ในบรรทัดเดียว จะถูกแตกเป็นหลายบรรทัดตอนติ๊กครั้งแรก)
+  _toggleShotNote(note, line, part) {
+    const lines = String(note || '').split(/\r?\n/), L = lines[line];
+    if (L == null) return note;
+    const MK = /^\[( |x|X|✓)\]\s*/;
+    const flip = t => { t = String(t).trim(); const m = MK.exec(t); const done = !!(m && /[xX✓]/.test(m[1])); return (done ? '[ ] ' : '[x] ') + (m ? t.slice(m[0].length) : t); };
+    if (part < 0) {
+      const m = /^(\s*(?:[-•*–]|\d{1,2}[.)])\s+)(.*)$/.exec(L); if (!m) return note;
+      lines[line] = m[1] + flip(m[2]);
+    } else {
+      const parts = L.trim().split(/\s+[-•]\s+(?=\D)/), lead = parts.shift();
+      if (part >= parts.length) return note;
+      parts[part] = flip(parts[part]);
+      lines.splice(line, 1, lead, ...parts.map(x => '- ' + x.trim()));
+    }
+    return lines.join('\n');
+  }
+  toggleShot(origin, si, line, part) {
+    if (!this.isPremium) return;
+    const i = this.state.day;
+    if (origin === 'base') {
+      const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+      const s0 = days[i] && days[i].stops[si]; if (!s0) return;
+      days[i].stops[si] = { ...s0, note: this._toggleShotNote(s0.note, line, part) };
+      this.saveItinerary(this.state.trip, days); this.forceUpdate();
+    } else {
+      const key = this.state.trip + ':' + i, added = { ...(this.state.added || {}) }, list = [...(added[key] || [])];
+      if (!list[si]) return;
+      list[si] = { ...list[si], note: this._toggleShotNote(list[si].note, line, part) }; added[key] = list; this.setState({ added });
+    }
+  }
+  // ---------- ถ่ายคลิป: AI ร่างสคริปต์ทั้งวัน (พรีเมียม · 12 ต.ค. 2569) ----------
+  // เจ้าของถ่ายคลิประหว่างเที่ยว — ให้ AI อ่านแผนวันนั้นแล้วร่างเป็นฉาก (บทพูด · ช็อต · ข้อควรระวัง)
+  // ผลลัพธ์ = กิจกรรมประเภท "ถ่ายคลิป" หนึ่งรายการต่อฉาก บันทึกเป็นข้อย่อยที่ติ๊กได้ระหว่างถ่าย
+  // ⚠ ให้ดูตัวอย่างก่อนเสมอ ไม่ใส่ลงแผนเองทันที — AI ร่างผิดได้ และลบทีละฉากเหนื่อย
+  CLIP_KIND = 'ถ่ายคลิป';
+  async genClipScript() {
+    const i = this.state.day, d = this.days[i] || {};
+    const notes = (d.stops || []).filter(x => x && (x.note || '').trim() && x.kind !== this.CLIP_KIND)
+      .map(x => '- ' + (x.title || '') + ': ' + String(x.note).replace(/\s+/g, ' ').slice(0, 300)).join('\n');
+    const prompt = 'คุณคือผู้ช่วยวางแผนถ่ายคลิปท่องเที่ยว (vlog) ของแอป "Vela"\n' + this.dayContext() +
+      (notes ? '\nรายละเอียดของแต่ละกิจกรรม:\n' + notes : '') +
+      '\n\nร่างสคริปต์ถ่ายคลิปของวันนี้ แบ่งเป็นฉากตามลำดับเวลา 4–8 ฉาก ต้องมีฉากเปิดคลิปและฉากปิดคลิป' +
+      '\nตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น รูปแบบ: {"scenes":[{"time":"HH:MM แบบ 24 ชม. หรือ \'\'","title":"ชื่อฉากสั้นๆ","say":["บทพูดหน้ากล้อง"],"shots":["ช็อตที่ต้องถ่าย"],"tips":["ข้อควรระวัง"]}]}' +
+      '\nบทพูดเป็นภาษาพูดเป็นกันเอง ฉากละไม่เกิน 3 ประโยค · ช็อตฉากละ 2–5 ช็อต เจาะจงพอที่จะถ่ายตามได้ทันที' +
+      '\ntips ใส่เฉพาะที่จำเป็นจริง เช่น กฎห้ามถ่าย โดรน ขาตั้ง แสง ถ้าไม่มีให้เป็น []';
+    this.setState({ clipBusy: true, clipErr: '', clipScenes: null, clipDay: i });
+    try {
+      const text = await this.askLLM(prompt);
+      const j = this._impJSON(text);
+      const sc = (j && Array.isArray(j.scenes)) ? j.scenes.filter(x => x && String(x.title || '').trim()).slice(0, 12) : [];
+      if (!sc.length) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ ลองกดใหม่อีกครั้ง');
+      this.setState({ clipBusy: false, clipScenes: sc, clipTrunc: !!this._lastTruncated });
+    } catch (e) { this.setState({ clipBusy: false, clipErr: String(e.message || e) }); }
+  }
+  _clipNote(sc) {
+    const sec = (h, a) => { const xs = (Array.isArray(a) ? a : []).map(x => String(x || '').trim()).filter(Boolean); return xs.length ? h + ':\n' + xs.map(x => '- ' + x).join('\n') : ''; };
+    return [sec('พูดหน้ากล้อง', sc.say), sec('ช็อตที่ต้องได้', sc.shots), sec('ข้อควรระวัง', sc.tips)].filter(Boolean).join('\n');
+  }
+  addClipScenes() {
+    const sc = this.state.clipScenes || [], i = this.state.clipDay;
+    if (!sc.length || i == null || !this.isPremium) return;
+    const tid = this.state.trip;
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    if (!days[i]) return;
+    sc.forEach(x => days[i].stops.push({ ...this.mkWhen('', x.time || ''), kind: this.CLIP_KIND, title: String(x.title).trim().slice(0, 120), note: this._clipNote(x) }));
+    this.saveItinerary(tid, days);
+    this.setState({ clipScenes: null, day: i });
+    this.showToast('🎬 เพิ่ม ' + sc.length + ' ฉากลง' + ((days[i] || {}).tag || ('วันที่ ' + (i + 1))) + ' แล้ว');
+    this.back();
   }
   editStop(origin, si, s) { const w = this.stopWhen(s); this.setState({ stopEdit: { origin, idx: si }, seKind: s.kind || '', sePeriod: w.period, seTime: w.time, seTitle: s.title || '', seNote: s.note || '' }); }
   // ที่มาของ iframe คลิป — บนแอป (capacitor://) YouTube ปฏิเสธการฝัง (Error 153) จึงฝานผ่านหน้าเล่นคลิปบนโดเมนจริง
@@ -14284,14 +14390,17 @@ class Component extends DCLogic {
     const baseDay = this.days[active] || this.days[0];
     const curMerged = { ...baseDay, stops: [...baseDay.stops, ...curExtra] };
     const seSel = this.state.stopEdit || null;
-    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, t: this.stopTLabel(s), _rank: this.stopRank(s), hasNote: !!(s.note || '').trim(), noteBlocks: this.noteBlocks(s.note), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.askConfirm('ลบ “' + ((s.title || '').trim() || (s.kind || '').trim() || 'รายการนี้') + '” ออกจากแผนวันนี้?', () => this.delStop(origin, si)) }; };
+    const mkStop = (s, origin, si) => { const et = !!(seSel && seSel.origin === origin && seSel.idx === si); return { ...s, t: this.stopTLabel(s), _rank: this.stopRank(s), hasNote: !!(s.note || '').trim(), noteBlocks: this.noteBlocks(s.note, (s.kind === this.CLIP_KIND && this.isPremium) ? { toggle: (ln, pt) => () => this.toggleShot(origin, si, ln, pt) } : null), editingThis: et, viewMode: !et, edit: () => this.editStop(origin, si, s), del: () => this.askConfirm('ลบ “' + ((s.title || '').trim() || (s.kind || '').trim() || 'รายการนี้') + '” ออกจากแผนวันนี้?', () => this.delStop(origin, si)) }; };
     const stopItems = (baseDay.stops || []).map((s, si) => mkStop(s, 'base', si)).concat((curExtra || []).map((s, si) => mkStop(s, 'added', si)));
     stopItems.sort((a, b) => a._rank - b._rank);
-    const curWithStops = { ...curMerged, stops: stopItems };
+    // กรองเฉพาะคิวถ่ายคลิป (พรีเมียม) — ปุ่มโผล่เมื่อวันนั้นมีกิจกรรมประเภทถ่ายคลิปอย่างน้อยหนึ่งรายการ
+    const clipCount = stopItems.filter(x => x.kind === this.CLIP_KIND).length;
+    const clipOnly = !!(this.state.clipOnly && clipCount && this.isPremium);
+    const curWithStops = { ...curMerged, stops: clipOnly ? stopItems.filter(x => x.kind === this.CLIP_KIND) : stopItems };
     const _rawCity = baseDay.city || '', _rawSum = baseDay.summary || '';
     const dayCityVal = ['ยังไม่มีชื่อวัน'].includes(_rawCity) ? '' : _rawCity;
     const daySummaryVal = _rawSum.startsWith('แตะ') ? '' : _rawSum;
-    const kinds = ['เที่ยวบิน','ที่พัก','เดินทาง','กิน','ที่เที่ยว','อื่นๆ'];
+    const kinds = ['เที่ยวบิน','ที่พัก','เดินทาง','กิน','ที่เที่ยว','อื่นๆ'].concat(this.isPremium ? [this.CLIP_KIND] : []);
     const chipOn = "background:#c05f39;color:#fff;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
     const chipOff = "background:#efe4d3;color:#5c5347;font:600 14px 'Anuphan';padding:8px 14px;border-radius:18px;border:none;cursor:pointer";
     const addChips = kinds.map(k => ({ label: k, on: () => this.setState({ addKind: k }), style: this.state.addKind === k ? chipOn : chipOff }));
@@ -14536,7 +14645,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.12a',
+      appVersion: '2026.10.12b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15668,6 +15777,10 @@ class Component extends DCLogic {
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
+      showClipFilter: !!(clipCount && this.isPremium),
+      clipFilterLabel: clipOnly ? '🎬 เฉพาะคิวถ่าย · ' + clipCount + ' — แตะเพื่อดูทั้งหมด' : '🎬 ดูเฉพาะคิวถ่าย (' + clipCount + ')',
+      clipFilterStyle: (clipOnly ? 'background:#2b241f;color:#fff;' : 'background:#efe4d3;color:#5c5347;') + "border:none;font:600 13.5px 'Anuphan';padding:8px 13px;border-radius:16px;cursor:pointer;min-height:36px",
+      toggleClipOnly: () => this.setState(st => ({ clipOnly: !st.clipOnly })),
       notEditing: !this.state.editing,
       stayView: !this.state.stayEdit, stayEditing: !!this.state.stayEdit,
       openStayEdit: () => { const d = this.days[active] || {}; const nm = d.stayName || '', mt = d.stayMeta || ''; this.setState({ stayEdit: true, stayNameDraft: /ยังไม่ได้เลือก/.test(nm) ? '' : nm, stayMetaDraft: /เพิ่มได้ในโหมด/.test(mt) ? '' : mt.replace(/\s*·?\s*คืนที่\s*\d+\s*$/, ''), stayInDraft: d.stayIn || this.tripDayIso(active), stayOutDraft: d.stayOut || this.tripDayIso(active + 1) }); },
@@ -15733,6 +15846,14 @@ class Component extends DCLogic {
       setAiBudgetDay: e => this.setState({ aiBudgetDay: e.target.value.replace(/[^\d]/g, '') }),
       aiDayLabel: (this.days[active] || {}).tag || '',
       genDayPlan: () => { if (this.aiGate()) this.genDayPlan(); },
+      genClipScript: () => { if (this.aiGate()) this.genClipScript(); },
+      clipBtnLabel: this.aiAvailable() ? '🎬 ร่างสคริปต์ถ่ายคลิปวันนี้' : '🎬 ร่างสคริปต์ถ่ายคลิป (พรีเมียม)',
+      clipBusy: !!this.state.clipBusy, clipErr: this.state.clipErr || '',
+      hasClipScenes: !!(this.state.clipScenes || []).length,
+      clipTrunc: !!(this.state.clipScenes && this.state.clipTrunc),
+      clipScenes: (this.state.clipScenes || []).map(x => ({ time: String(x.time || '').trim(), title: String(x.title || '').trim(), blocks: this.noteBlocks(this._clipNote(x)) })),
+      addClipScenes: () => this.addClipScenes(),
+      dropClipScenes: () => this.setState({ clipScenes: null }),
       aiPlanBtnLabel: this.aiAvailable() ? 'ให้ AI ร่างวันนี้' : '✦ ให้ AI ช่วยจัดวันนี้ (พรีเมียม)',
       aiPlanBusy: !!this.state.aiPlanBusy, aiPlanErr: this.state.aiPlanErr || '',
       aiPlanText: this.state.aiPlanText || '', hasAiPlan: !!this.state.aiPlanText,
