@@ -770,7 +770,9 @@ admin ไม่จำกัด · `peek` · เพดานขาเข้า 30
 (เดิม 21 ก.ย. 69 ไม่มี webhook — บิลด์ค้างที่ 8 ก.ย. ทั้งที่มี commit ตามมาหลายตัว)
 ⚠ **ลองจริงครั้งแรก 13 ต.ค. 69 (1.0.11) — ไม่ขึ้นเอง** เจ้าของต้องกด Start new build เอง
    แก้ที่ทำได้จากฝั่ง repo: pattern เป็น `'capacitor/www/**'` (เดิม `'capacitor/www/'` เป็นชื่อโฟลเดอร์เปล่า อาจไม่ match ไฟล์ข้างใน)
-   ที่ยังต้องเช็กในหน้าเว็บ: Codemagic → แอป → แท็บ Webhooks ว่ามี webhook และมีรายการ push ล่าสุดไหม (ถ้าไม่มีเลย = GitHub ไม่ได้ส่งมา)
+   **ต้นเหตุจริง = ไม่มี webhook ใน GitHub เลย** (Codemagic แท็บ Webhooks: "No deliveries yet")
+   เจ้าของกด **Update webhook** ในหน้า Codemagic (แอป → ⚙ → Webhooks) → GitHub มี hook `api.codemagic.io/hooks/6a8e…` (create, pull_request, push) แล้ว
+   เช็กได้ที่ GitHub → Settings → Webhooks · ⚠ ระวัง `cancel_previous_builds: true` — push ที่แตะ www ระหว่างบิลด์วิ่ง จะยกเลิกบิลด์เดิม
    ⚠ ถ้ายังไม่ขึ้นรอบหน้า ให้เลิกพึ่งอัตโนมัติ กดเองต่อไป — ไม่เสียอะไร
 
 ⚠ **บิลด์ค้าง "queued" ไม่ยอมวิ่ง (12 ต.ค. 69)** — #50–#53 ค้างหมด ทั้งที่บัญชีปกติ (0/500 นาที) และหน้าสถานะเขียว
