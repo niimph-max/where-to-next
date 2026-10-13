@@ -65,7 +65,7 @@ workflows:
     when:
       changeset:
         includes:
-          - 'capacitor/www/'
+          - 'capacitor/www/**'
     # ชื่อ key ต้องตรงกับที่ตั้งไว้ใน Codemagic UI (Teams > Integrations > App Store Connect)
     integrations:
       app_store_connect: Vela ASC
