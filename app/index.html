@@ -5334,9 +5334,9 @@ class Component extends DCLogic {
   //   wtn-itinerary · wtn-checkins ('tid:i') · wtn-stop-tombs ('tid:i:…') · wtn-pb-extra · wtn-pb-off ('tid:i')
   //   wtn-pb-order ({tid:{i}}) · ตอนเรื่องเล่าของทริป (gen 'day<i>')
   //   ถ้าวันหลังเพิ่มข้อมูลใหม่ที่คีย์ด้วยลำดับวัน ต้องมาเติมที่นี่ด้วย
-  // ⚠ ปิดไว้ก่อน (12 ต.ค. 2569) — ปล่อยตัวจัดแนวซิงก์ (_alignDayShift) ไปกับเว็บและ iOS 1.0.10 ก่อน
-  //   เปิดได้เมื่อ iPhone ของเจ้าของอัปเดตเป็น 1.0.10 แล้วเท่านั้น ไม่งั้นแอปเก่าจะรวมแผนผิดวันแล้วดันขึ้นคลาวด์
-  DAY_PREPEND_ON = false;
+  // เปิดแล้ว (13 ต.ค. 2569 · จังหวะสอง) — iOS 1.0.10 ที่มีตัวจัดแนว (_alignDayShift) ผ่าน App Store แล้ว
+  //   และ iPhone ของเจ้าของมี 1.0.10 (ติดตั้งจาก TestFlight ตอนลอง) · แอป ≤ 1.0.9 ยังรวมแผนผิดวันได้ ถ้าต้องปิดฉุกเฉินให้กลับเป็น false
+  DAY_PREPEND_ON = true;
   prependTripDay() {
     if (this.days.length >= 90) { this.showToast('ทริปหนึ่งเก็บได้ไม่เกิน 90 วัน'); return; }
     const tid = this.state.trip;
@@ -14686,7 +14686,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.12e',
+      appVersion: '2026.10.13a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
