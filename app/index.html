@@ -14799,7 +14799,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.16b',
+      appVersion: '2026.10.16c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15930,7 +15930,7 @@ class Component extends DCLogic {
       deleteTripDay: () => this.deleteTripDay(),
       canDeleteDay: !!(this.state.editing && this.days.length > 1),
       canPrependDay: !!(this.state.editing && this.DAY_PREPEND_ON),
-      dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
+      dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347;border-color:rgba(43,36,32,.1)' })),   // ⚠ ต้องมี border-color ทั้งสองฝั่ง — ตัวเรนเดอร์ลบคีย์ที่หายไป แต่ไม่ใส่ shorthand border กลับ กรอบเลยกลายเป็นสีตัวอักษร (ค้างที่ทุกวันที่เคยกด)
       cur: curWithStops,
       dayEmpty: stopItems.length === 0, dayNotEmpty: stopItems.length > 0,
       showClipFilter: !!(clipCount && this.isPremium),
