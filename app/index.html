@@ -1908,6 +1908,7 @@
           </sc-for>
           <sc-if value="{{ noDocs }}" hint-placeholder-val="{{ false }}"><div style="padding:22px 12px 26px;text-align:center;font:500 14.5px/1.6 'Anuphan';color:#a1927c">ยังไม่มีเอกสารในทริปนี้<br>แนบตั๋ว พาสปอร์ต วีซ่า หรือใบจองที่พักไว้ได้เลย</div></sc-if>
           <label style="display:block;width:100%;box-sizing:border-box;border:1.5px dashed rgba(43,36,32,.2);background:transparent;color:#a1927c;font:600 15px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer;margin-top:4px;text-align:center">+ เพิ่มเอกสาร (พาสปอร์ต, วีซ่า, ประกัน)<input type="file" accept="image/*,application/pdf" onChange="{{ addDocFile }}" style="display:none"></label>
+          <button onClick="{{ addDocNote }}" style="display:block;width:100%;box-sizing:border-box;border:1.5px dashed rgba(43,36,32,.2);background:transparent;color:#a1927c;font:600 15px 'Anuphan';padding:14px;border-radius:14px;cursor:pointer;margin-top:10px">+ เพิ่มโน้ต (ข้อควรรู้ เช่น เงื่อนไขตั๋ว)</button>
         </div>
       </sc-if>
 
@@ -1920,6 +1921,18 @@
           <sc-if value="{{ dvIsImg }}" hint-placeholder-val="{{ false }}">
             <div style="flex:1;overflow-y:auto;background:#2b241f;display:flex;align-items:flex-start;justify-content:center;padding:14px"><img src="{{ dvUrl }}" alt="" style="max-width:100%;border-radius:10px"></div>
           </sc-if>
+          <sc-if value="{{ dvIsNote }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;overflow-y:auto;padding:16px 20px 24px">
+              <sc-if value="{{ dnView }}" hint-placeholder-val="{{ true }}">
+                <div style="font:500 15.5px/1.6 'Anuphan';color:#4a4239"><sc-for list="{{ dnBlocks }}" as="nb" hint-placeholder-count="0"><div style="{{ nb.style }}"><sc-if value="{{ nb.bullet }}" hint-placeholder-val="{{ false }}"><span style="flex:none;color:#c05f39;font-weight:700">•</span></sc-if><span style="flex:1;min-width:0;text-wrap:pretty"><sc-if value="{{ nb.hasLabel }}" hint-placeholder-val="{{ false }}"><b style="font-weight:600;color:#2b241f;margin-right:4px">{{ nb.label }}</b></sc-if>{{ nb.text }}</span></div></sc-for></div>
+                <sc-if value="{{ dnEmpty }}" hint-placeholder-val="{{ false }}"><div style="font:500 14.5px 'Anuphan';color:#a1927c">ยังไม่มีข้อความ — กด “แก้ไข” เพื่อเขียน</div></sc-if>
+              </sc-if>
+              <sc-if value="{{ dnEdit }}" hint-placeholder-val="{{ false }}">
+                <input value="{{ dnName }}" onInput="{{ setDnName }}" placeholder="หัวข้อ เช่น ข้อควรรู้เรื่องตั๋ว" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:10px 12px;font:600 17px 'Anuphan';color:#2b241f;outline:none;margin-bottom:10px">
+                <textarea value="{{ dnText }}" onInput="{{ setDnText }}" placeholder="พิมพ์หรือวางข้อความ ขึ้นบรรทัดด้วย - หรือ * จะเป็นข้อๆ" rows="14" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:10px 12px;font:500 15px/1.55 'IBM Plex Sans Thai Looped',sans-serif;color:#4a4239;outline:none;resize:vertical"></textarea>
+              </sc-if>
+            </div>
+          </sc-if>
           <sc-if value="{{ dvNoFile }}" hint-placeholder-val="{{ true }}">
             <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px 24px;text-align:center">
               <div style="width:60px;height:60px;border-radius:16px;background:#efe4d3;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9baa4" stroke-width="1.6"><path d="M14 3v5h5M8 3h7l5 5v13H4V3z"/></svg></div>
@@ -1931,8 +1944,11 @@
             <sc-if value="{{ dvHasFile }}" hint-placeholder-val="{{ false }}">
               <label style="border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 14.5px 'Anuphan';padding:10px 15px;border-radius:12px;cursor:pointer">เปลี่ยนไฟล์<input type="file" accept="image/*,application/pdf" onChange="{{ attachDocFile }}" style="display:none"></label>
             </sc-if>
+            <sc-if value="{{ dvIsNote }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ toggleDnEdit }}" style="border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';padding:10px 18px;border-radius:12px;cursor:pointer;min-height:44px">{{ dnEditLabel }}</button>
+            </sc-if>
             <span style="flex:1"></span>
-            <button onClick="{{ deleteDocFn }}" style="border:none;background:transparent;color:#b3402a;font:600 14.5px 'Anuphan';cursor:pointer;padding:10px 8px">ลบเอกสาร</button>
+            <button onClick="{{ deleteDocFn }}" style="border:none;background:transparent;color:#b3402a;font:600 14.5px 'Anuphan';cursor:pointer;padding:10px 8px">{{ dvDelLabel }}</button>
           </div>
         </div>
       </sc-if>
@@ -8742,7 +8758,7 @@ class Component extends DCLogic {
     this.forceUpdate();
   }
   get openDoc() { return this.docs.find(d => d.id === this.state.openDocId) || null; }
-  openDocument(d) { if (d.kind === 'flight' && this.state.trip === 'kazakh' && !d.url) { this.setState({ openDocId: d.id }); this.go('ticket'); return; } this.setState({ openDocId: d.id }); this.go('docView'); }
+  openDocument(d) { if (d.kind === 'flight' && this.state.trip === 'kazakh' && !d.url) { this.setState({ openDocId: d.id }); this.go('ticket'); return; } this.setState({ openDocId: d.id, dnEdit: d.kind === 'note' && !String(d.text || '').trim() }); this.go('docView'); }
   _readDoc(f, cb) { if (f.type.startsWith('image/')) this.shrinkToUrl(f, 1600, cb); else { const rd = new FileReader(); rd.onload = () => cb(rd.result); rd.readAsDataURL(f); } }
   addDocFile(ev) {
     const f = (ev.target.files || [])[0]; ev.target.value = '';
@@ -8763,6 +8779,22 @@ class Component extends DCLogic {
     this.showToast && this.showToast('✓ เปลี่ยนชื่อแล้ว');
   }
   deleteDoc(id) { this.saveDocs(this.docs.filter(d => d.id !== id)); this.back(); }
+  // โน้ตในหน้า "ตั๋ว & เอกสาร" (16 ต.ค. 2569) — เจ้าของอยากเก็บ "ข้อควรรู้เรื่องตั๋ว" ไว้ข้างตั๋ว
+  //   เป็นรายการใน wtn-docs ชนิด kind:'note' + text · ซิงก์ไปกับเอกสารเดิม (รวมรายชิ้นด้วย id) ไม่ต้องแตะตัวรวมข้อมูล
+  //   ⚠ ไม่ลง PDF แผนเดินทาง (เจ้าของสั่ง: "ไม่ต้องให้ไปอยู่ใน pdf") — เป็นโน้ตส่วนตัว
+  //   แอปรุ่นเก่าเห็นเป็นเอกสารที่ "ยังไม่ได้แนบไฟล์" — ไม่พัง แค่อ่านข้อความไม่ได้
+  addDocNote() {
+    const id = 'note' + Date.now(), list = this.docs.slice();
+    list.push({ id, name: 'โน้ต', sub: '', kind: 'note', text: '' });
+    this.saveDocs(list);
+    this.setState({ openDocId: id, dnEdit: true });
+    this.go('docView');
+  }
+  patchDocNote(patch) {
+    const id = this.state.openDocId; if (!id) return;
+    this.saveDocs(this.docs.map(d => d.id === id ? { ...d, ...patch } : d));
+  }
+  _noteSub(t) { const l = String(t || '').split(/\r?\n/).map(x => x.replace(/^\s*(?:[-•*–]|\d{1,2}[.)])\s+/, '').trim()).find(Boolean) || ''; return l.length > 48 ? l.slice(0, 47) + '…' : l; }
   // เซสชันคืนค่าแบบ async — ถ้ากดก่อนคืนเสร็จ _uid ยังว่าง ต้องเช็คของจริงก่อนค่อยฟ้อง
   async ensureUid() {
     const be = window.WTNBackend;
@@ -14732,17 +14764,27 @@ class Component extends DCLogic {
       })(),
       goDocs: () => this.go('docs'),
       goTicket: () => this.go('ticket'),
-      docItems: this.docs.map(d => ({ name: d.name, sub: d.sub || (d.url ? '' : 'ยังไม่ได้แนบไฟล์'),
+      docItems: this.docs.map(d => ({ name: d.name, sub: d.kind === 'note' ? ('โน้ต' + (this._noteSub(d.text) ? ' · ' + this._noteSub(d.text) : '')) : (d.sub || (d.url ? '' : 'ยังไม่ได้แนบไฟล์')),
         isFlight: d.kind === 'flight', hasFile: !!d.url, on: () => this.openDocument(d),
         rename: e => { if (e && e.stopPropagation) e.stopPropagation(); this.renameDoc(d.id); } })),
       noDocs: this.docs.length === 0,
       addDocFile: e => this.addDocFile(e),
+      addDocNote: () => this.addDocNote(),
       viewFlightFile: () => { this.setState({ openDocId: 'flight' }); this.go('docView'); },
       ...(() => {
         const d = this.openDoc;
-        if (!d) return { dvName: '', dvNoFile: true, dvHasFile: false, dvIsPdf: false, dvIsImg: false };
+        if (!d) return { dvName: '', dvNoFile: true, dvHasFile: false, dvIsPdf: false, dvIsImg: false, dvIsNote: false, dvDelLabel: 'ลบเอกสาร' };
+        if (d.kind === 'note') {
+          const ed = !!this.state.dnEdit, blocks = this.noteBlocks(d.text);
+          return { dvName: d.name, dvUrl: '', dvHasFile: false, dvNoFile: false, dvIsPdf: false, dvIsImg: false, dvIsNote: true,
+            dnEdit: ed, dnView: !ed, dnBlocks: blocks, dnEmpty: !blocks.length, dnName: d.name === 'โน้ต' ? '' : (d.name || ''), dnText: d.text || '',
+            setDnName: e => this.patchDocNote({ name: e.target.value.trim() ? e.target.value : 'โน้ต' }),
+            setDnText: e => this.patchDocNote({ text: e.target.value }),
+            dnEditLabel: ed ? 'เสร็จ' : 'แก้ไข', toggleDnEdit: () => this.setState({ dnEdit: !ed }),
+            dvDelLabel: 'ลบโน้ต', deleteDocFn: () => this.askConfirm('ลบโน้ต “' + (d.name || 'โน้ต') + '”?', () => this.deleteDoc(d.id)) };
+        }
         const isPdf = /pdf/i.test(d.mime || '') || /\.pdf($|\?)/i.test(d.url || '');
-        return { dvName: d.name, dvUrl: d.url || '', dvHasFile: !!d.url, dvNoFile: !d.url,
+        return { dvName: d.name, dvUrl: d.url || '', dvHasFile: !!d.url, dvNoFile: !d.url, dvIsNote: false, dvDelLabel: 'ลบเอกสาร',
           dvIsPdf: !!d.url && isPdf, dvIsImg: !!d.url && !isPdf,
           attachDocFile: e => this.attachDocFile(e), deleteDocFn: () => this.deleteDoc(d.id) };
       })(),
@@ -14757,7 +14799,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.16a',
+      appVersion: '2026.10.16b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
