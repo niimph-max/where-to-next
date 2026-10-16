@@ -853,6 +853,7 @@
             <sc-if value="{{ editing }}" hint-placeholder-val="{{ false }}">
               <input value="{{ dayCity }}" onInput="{{ setDayCity }}" placeholder="ตั้งชื่อวันนี้ เช่น เที่ยวเมืองเก่า" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:9px 12px;font:600 18px 'Anuphan';color:#2b241f;outline:none;margin:2px 0 8px">
               <textarea value="{{ daySummary }}" onInput="{{ setDaySummary }}" placeholder="รายละเอียดสั้นๆ ของวันนี้" rows="2" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:11px;padding:9px 12px;font:500 15px/1.5 'IBM Plex Sans Thai Looped',sans-serif;color:#4a4239;outline:none;resize:vertical;margin-bottom:10px"></textarea>
+              <sc-if value="{{ canDeleteDay }}" hint-placeholder-val="{{ false }}"><div style="text-align:right;margin:-2px 0 8px"><button onClick="{{ deleteTripDay }}" style="border:none;background:transparent;color:#b0452f;font:600 13.5px 'Anuphan';padding:6px 2px;min-height:32px;cursor:pointer">ลบวันนี้ออกจากแผน</button></div></sc-if>
             </sc-if>
           </div>
           <div style="padding:0 20px 14px">
@@ -4966,7 +4967,11 @@ class Component extends DCLogic {
   }
   get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
   itineraryOf(id) { return this.itineraries[id] || null; }
-  saveItinerary(id, days) { const all = this.itineraries; all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this._sweepSTombs(id, days); }
+  // ⚠ หางวัน gone (จากปุ่ม "ลบวันนี้") ต้องติดไปทุกครั้งที่บันทึก — this.days ซ่อนมันไว้ ถ้าบันทึกแผนที่สั้นกว่าเดิม
+  //   _mergeItin จะเอาวันเดิมของอีกเครื่องกลับมาเต็มๆ (ทดลองแล้ว: ลบวันแล้วแก้ชื่อวันก่อนซิงก์ = วันที่ลบโผล่กลับ)
+  saveItinerary(id, days) { const all = this.itineraries; const prev = all[id];
+    if (Array.isArray(days) && Array.isArray(prev) && prev.length > days.length && prev.slice(days.length).every(d => d && d.gone)) days = days.concat(prev.slice(days.length));
+    all[id] = days; try { localStorage.setItem('wtn-itinerary', JSON.stringify(all)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this._sweepSTombs(id, days); }
   patchDay(i, patch) {
     const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
     if (!days[i]) return;
@@ -5273,6 +5278,7 @@ class Component extends DCLogic {
   //     และเช็กอิน/โมเมนต์คีย์ด้วย 'tripId:index' ถ้าตัดวัน ของพวกนั้นจะกลายเป็นขยะที่หาไม่เจอ
   //     (ย่นวันเดินทางให้สั้นลงจึงไม่ลบวันให้ ต้องให้คนตัดสินใจเอง)
   padDays(days, tid) {
+    days = this._dropGone(days);   // วันท้ายที่ปุ่ม "ลบวันนี้" ทิ้งไว้ — ซ่อนก่อนเติม (ดู deleteTripDay)
     const t = (this.userTrips || []).find(x => x.id === tid);
     const n = t ? this.dayCount(t.start, t.end) : 0;
     if (!n || n <= days.length) return days;
@@ -5281,7 +5287,8 @@ class Component extends DCLogic {
     return out;
   }
   blankDay(i) {
-    return { n: String(i + 1), date: '', tag: 'วันที่ ' + (i + 1),
+    // gone:false ต้องมีชัดๆ — ตัวรวมข้อมูลทำ {...อีกเครื่อง, ...เครื่องนี้} ถ้าไม่มีคีย์ ธง gone ของอีกเครื่องจะติดมาแล้วซ่อนวันที่เพิ่งเพิ่ม
+    return { n: String(i + 1), date: '', tag: 'วันที่ ' + (i + 1), gone: false,
       city: 'ยังไม่มีชื่อวัน', summary: 'แตะ “แก้ไข” เพื่อตั้งชื่อวัน แล้วเพิ่มกิจกรรมแรก', stops: [],
       stayName: 'ยังไม่ได้เลือกที่พัก', stayMeta: 'เพิ่มได้ในโหมดแก้ไข' };
   }
@@ -5371,6 +5378,70 @@ class Component extends DCLogic {
     this.setState({ day: 0 });
     const d0 = this.days[0] || {};
     this.showToast(ns ? 'เพิ่มวันที่ 1 แล้ว · ทริปเริ่ม ' + d0.date : 'เพิ่มวันที่ 1 แล้ว · วันเดิมเลื่อนไปหนึ่งลำดับ');
+  }
+  // ปุ่ม "ลบวันนี้" (โหมดแก้ไข · 16 ต.ค. 2569)
+  // เจ้าของ: "ทริปยาวไป จะลดวันเที่ยวช่วง 2-3 วันแรก ก็เลยทำไม่ได้" · "ถ้าเที่ยวแล้วก็ไม่ควรมาสลับ"
+  // ⚠⚠ ย้าย "เนื้อหาในแผน" ของวันถัดไปขึ้นมาแทน — ไม่เลื่อนลำดับวันของข้อมูลอื่น (คนละแบบกับ + ก่อน)
+  //   ตัวซิงก์จึงเห็นเป็น "แก้กิจกรรม + ลบกิจกรรม (มีใบสั่งลบ)" ธรรมดา แอปทุกรุ่นที่มี wtn-stop-tombs รวมได้ถูก
+  //   ไม่ต้องมีสมุดเลื่อนวัน ไม่ต้องปล่อยสองจังหวะ
+  //   แลกกับเงื่อนไข: ตั้งแต่วันที่ลบไปจนสุดทริปต้องไม่มีเช็กอิน/โมเมนต์/ตอนเรื่องเล่า/รูปในเล่ม (คีย์ด้วยลำดับวัน ไม่ได้ย้ายตาม)
+  // ⚠⚠ วันท้ายที่ว่างลง "ห้ามตัดอาร์เรย์สั้นลง" — _mergeItin รวมด้วยความยาวมากสุด และ _mergeDay คืนวันของอีกฝั่งทั้งก้อน
+  //   เมื่อฝั่งเราไม่มีวันนั้น = วันที่ตัดกลับมาพร้อมกิจกรรมครบตอนซิงก์ · จึงเก็บไว้เป็นวันว่างปัก gone:1 แล้ว _dropGone ซ่อน
+  _dropGone(days) {
+    if (!Array.isArray(days)) return days;
+    let n = days.length;
+    while (n > 1 && days[n - 1] && days[n - 1].gone) n--;
+    return n === days.length ? days : days.slice(0, n);
+  }
+  // ของที่ผูกกับลำดับวัน ตั้งแต่วัน from ไปจนสุดทริป — มีอย่างใดอย่างหนึ่ง = ทริปเริ่มเที่ยวแล้ว ห้ามลบวัน
+  _dayAttachments(tid, from) {
+    const pre = tid + ':', idx = k => { const m = k.indexOf(pre) === 0 ? /^(\d+)/.exec(k.slice(pre.length)) : null; return m ? +m[1] : -1; };
+    const hasIn = o => !!o && typeof o === 'object' && Object.keys(o).some(k => idx(k) >= from && !(Array.isArray(o[k]) && !o[k].length));
+    const ls = key => { try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; } };
+    const out = [];
+    if (hasIn(this.checkins)) out.push('เช็กอิน/โมเมนต์');
+    if ((this.stories || []).some(st => st && st.tripId === tid && (st.chapters || []).some(c => { const m = c && /^day(\d+)$/.exec(c.gen || ''); return m && +m[1] >= from; }))) out.push('ตอนเรื่องเล่า');
+    const po = (ls('wtn-pb-order') || {})[tid];
+    if (hasIn(ls('wtn-pb-extra')) || hasIn(ls('wtn-pb-off')) || (po && Object.keys(po).some(x => /^\d+$/.test(x) && +x >= from))) out.push('รูปในโฟโต้บุ๊ก');
+    return out;
+  }
+  deleteTripDay() {
+    const tid = this.state.trip, i = Number(this.state.day) || 0, days = this.days;
+    if (days.length <= 1) { this.showToast('ทริปต้องมีอย่างน้อยหนึ่งวัน'); return; }
+    const att = this._dayAttachments(tid, i);
+    if (att.length) {
+      this.showToast('ลบวันไม่ได้ — ตั้งแต่วันนี้ไปมี' + att.join(' · ') + 'แล้ว ลบวันได้เฉพาะแผนที่ยังไม่ได้เที่ยว');
+      return;
+    }
+    const d = days[i] || {}, nm = (d.city && !this.STAY_PH.test(d.city)) ? ' “' + d.city + '”' : '';
+    const n = (d.stops || []).length;
+    const tail = i === 0 ? 'วันเริ่มทริปเลื่อนไปหนึ่งวัน' : 'วันถัดไปทุกวันเลื่อนขึ้นมาหนึ่งวัน วันจบทริปเร็วขึ้นหนึ่งวัน';
+    this.askConfirm('ลบวันที่ ' + (i + 1) + nm + ' ออกจากแผน?' + (n ? ' กิจกรรม ' + n + ' รายการในวันนี้จะหายไปด้วย' : '') + ' · ' + tail, () => this._deleteTripDay(tid, i), 'ลบวัน');
+  }
+  _deleteTripDay(tid, i) {
+    const days = this.days.map(d => ({ ...d, stops: [...(d.stops || [])] }));
+    if (!days[i] || days.length <= 1) return;
+    const t = (this.userTrips || []).find(x => x.id === tid);
+    const iso = (s, k) => { const d = new Date(s); return (s && !isNaN(d)) ? new Date(d.getTime() + k * 86400000).toISOString().slice(0, 10) : s; };
+    // วันจบเลื่อน = เนื้อหาที่ย้ายขึ้นมาไปตกวันที่ก่อนหน้าหนึ่งวัน → วันเข้า/ออกที่พักต้องถอยตาม (วันแรก: วันเริ่มเลื่อนแทน วันที่ไม่ขยับ)
+    const datesMove = i > 0 && t && t.start && t.end;
+    const moved = days.slice(i + 1).map(d => datesMove ? { ...d, stayIn: iso(d.stayIn, -1), stayOut: iso(d.stayOut, -1) } : d);
+    const next = [...days.slice(0, i), ...moved, { ...this.blankDay(days.length - 1), gone: 1 }];
+    next.forEach((d, k) => {
+      if (d.gone) return;
+      d.n = String(k + 1);
+      if (/^(วันที่|Day) \d+/.test(d.tag || '')) d.tag = d.tag.replace(/^(วันที่|Day) \d+/, '$1 ' + (k + 1));
+    });
+    // ใบสั่งลบ: กิจกรรมเดิมของแต่ละวันที่ไม่ได้อยู่ในเนื้อหาใหม่ของวันนั้น — จดก่อนบันทึก (แบบเดียวกับ delStop)
+    for (let j = i; j < days.length; j++) {
+      const keep = new Set(((next[j] && next[j].stops) || []).map(s => this._stopKey(s)));
+      (days[j].stops || []).forEach(s => { if (!keep.has(this._stopKey(s))) this._addSTomb(tid, j, s); });
+    }
+    if (t && t.start && t.end) this.saveUserTrips(this.userTrips.map(x => x.id !== tid ? x : (i === 0 ? { ...x, start: iso(x.start, 1) } : { ...x, end: iso(x.end, -1) })));
+    else if (t && t.start && i === 0) this.saveUserTrips(this.userTrips.map(x => x.id === tid ? { ...x, start: iso(x.start, 1) } : x));
+    this.saveItinerary(tid, next);
+    this.setState({ day: Math.min(i, this.days.length - 1) });
+    this.showToast('ลบวันที่ ' + (i + 1) + ' แล้ว · ทริปเหลือ ' + this.days.length + ' วัน');
   }
   // ---------- เลื่อนข้อมูลที่ผูกกับลำดับวันไป k วัน (ใช้ทั้งตอนกด + ก่อน และตอนซิงก์จัดแนวสองเครื่อง) ----------
   // ฟังก์ชันพวกนี้ต้อง "บริสุทธิ์" — คืนของใหม่ ไม่แตะ localStorage ไม่แตะ state
@@ -14686,7 +14757,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.13a',
+      appVersion: '2026.10.16a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15814,6 +15885,8 @@ class Component extends DCLogic {
       dayStripRef: el => { if (el && el !== this._dayStrip) this._dayPillAt = null; this._dayStrip = el || null; },
       addTripDay: () => this.addTripDay(),
       prependTripDay: () => this.prependTripDay(),
+      deleteTripDay: () => this.deleteTripDay(),
+      canDeleteDay: !!(this.state.editing && this.days.length > 1),
       canPrependDay: !!(this.state.editing && this.DAY_PREPEND_ON),
       dayPills: this.days.map((d,i) => ({ n:d.n, date:d.date, on:()=>this.setState({day:i}), style: i===active ? pillBase+';background:#c05f39;color:#fff;border-color:#c05f39' : pillBase+';background:#fffaf0;color:#5c5347' })),
       cur: curWithStops,
