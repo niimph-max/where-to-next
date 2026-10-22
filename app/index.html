@@ -2888,6 +2888,7 @@
               </div>
               <div style="font:500 12px/1.6 'Anuphan';color:#a99e8e;margin-top:8px">ใช้เวลาท้องถิ่นของที่ที่อยู่ · วันไหนบันทึกแล้วจะไม่เตือน</div>
               <div style="font:500 12px/1.6 'Anuphan';color:#8a7d6f;margin-top:8px">{{ notiDiag }}</div>
+              <sc-if value="{{ notiWebTest }}" hint-placeholder-val="{{ false }}"><button onClick="{{ notiTestFn }}" style="margin-top:8px;border:1px solid rgba(43,36,32,.16);background:#fff;color:#5c5347;font:600 13.5px 'Anuphan';padding:8px 14px;border-radius:12px;cursor:pointer;min-height:40px">ส่งการเตือนทดสอบ</button></sc-if>
             </sc-if>
           </div>
           <button onClick="{{ goSupport }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:12px;background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:14px 15px;cursor:pointer">
@@ -9386,7 +9387,9 @@ class Component extends DCLogic {
     this.rebuildCiMoments();
     setTimeout(() => this.backfillPlaces(), 2500);   // เติมชื่อสถานที่ + ภูมิอากาศให้บันทึกเก่า
     this.initA2HS();
-    try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); } catch (e) {}
+    try { const g = new URLSearchParams(location.search).get('go'); if (g === 'plan' || g === 'stories') setTimeout(() => this.setTab(g), 0); else if (g === 'today') setTimeout(() => this.go('today'), 0); } catch (e) {}
+    // แตะการเตือน Web Push ตอนแอปเปิดค้างอยู่ — sw ส่งข้อความมาแทนการเปิดหน้าต่างใหม่
+    try { navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', ev => { const g = ev.data && ev.data.wtnGo; if (g === 'stories') this.setTab('stories'); else if (g === 'today') this.go('today'); }); } catch (e) {}
     try { const q = new URLSearchParams(location.search); if (q.get('paid')) { this.showToast('ขอบคุณ! กำลังยืนยันการชำระเงิน…'); let n = 0; const t = setInterval(() => { this.syncPremium(); if (++n >= 8) clearInterval(t); }, 2500); history.replaceState(null, '', location.pathname); } } catch (e) {}
     this._pp = () => this.forceUpdate();
     window.__wtn = this;   // ช่องทางตรวจสอบจากคอนโซล (อ่านอย่างเดียว)
@@ -9418,7 +9421,7 @@ class Component extends DCLogic {
     };
     window.addEventListener('online', this._onOff);
     window.addEventListener('offline', this._onOff);
-    this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); this.notiSync(); } else this.flushCloudPush(); };
+    this._visSync = () => { if (document.visibilityState === 'visible') { if (navigator.onLine !== false) { this.cloudPull(); this.retryPendingPush(); } this.setState({ online: navigator.onLine !== false }); this.notiSync(); } else { this.flushCloudPush(); this.webPushSync(); } };
     document.addEventListener('visibilitychange', this._visSync);
     this.notiBindTap();
     setTimeout(() => this.notiSync(), 1500);   // ตั้งรอบแรกตอนเปิดแอป
@@ -10332,7 +10335,7 @@ class Component extends DCLogic {
   // และการตั้งใหม่ทุกครั้งที่เปิดแอป ทำให้ย้าย timezone แล้วเวลาเตือนตามไปเอง
   async notiSync() {
     const LN = this._LN;
-    if (!LN) return 'no-native';
+    if (!LN) { this.webPushSync(); return 'no-native'; }   // เว็บแอป: ส่งค่าตั้ง/บริบทขึ้นเซิร์ฟเวอร์แทน (Web Push)
     // ⚠ ห้ามทิ้งคำขอที่ชนกัน — เคยเป็นบั๊ก: เปลี่ยนเวลาเตือนตอนที่รอบเปิดแอปยังทำไม่เสร็จ
     // ค่าใหม่ถูกบันทึกลง localStorage แต่ไม่เคยถูกตั้งจริง แล้วเงียบโดยไม่มีสัญญาณอะไรเลย
     if (this._notiBusy) { this._notiAgain = true; return 'busy'; }
@@ -10446,6 +10449,70 @@ class Component extends DCLogic {
         this.forceUpdate();
       });
     } catch (e) {}
+  }
+  // ── Web Push: เตือนบันทึกบนเว็บแอป (22 ต.ค. 2569) ────────────────────────────
+  // เจ้าของใช้เว็บแอปมากกว่าแอป iOS แล้ว · เว็บตั้งนาฬิกาปลุกในเครื่องไม่ได้ → ให้เซิร์ฟเวอร์ยิงมาแทน
+  // ตาราง push_subs (supabase/web-push.sql) เก็บต่อเครื่อง: เวลา · เขตเวลา · ข้อความ · วันที่บันทึกแล้ว · ทริปที่ต้องชวนเรียบเรียง
+  // ฟังก์ชัน push-reminders (cron ทุก 15 นาที) อ่านตารางแล้วยิงตามกติกาเดียวกับแอป iOS
+  // ⚠ iPhone รับ push ได้เฉพาะเว็บที่ "เพิ่มลงหน้าจอโฮม" แล้วเปิดจากไอคอน — ในแท็บ Safari ไม่มี PushManager
+  webPushSupported() {
+    try { return !this._LN && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && !!((window.WTN_SUPABASE || {}).vapidPublic); }
+    catch (e) { return false; }
+  }
+  _b64u(s) {
+    const p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from(b, c => c.charCodeAt(0));
+  }
+  async _wpSub(create) {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub && create) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: this._b64u(window.WTN_SUPABASE.vapidPublic) });
+    return sub;
+  }
+  // เรียกจากการแตะสวิตช์เท่านั้น — iOS ขอสิทธิ์แจ้งเตือนได้เฉพาะตอนผู้ใช้แตะ (ต้องเรียก requestPermission ก่อน await อื่น)
+  async webPushEnable() {
+    if (!this.webPushSupported()) return 'unsupported';
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return 'no-perm';
+    const uid = await this.ensureUid();
+    if (!uid) return 'no-login';
+    try { await this._wpSub(true); } catch (e) { console.warn('[wtn] push subscribe', e); return 'err'; }
+    this._wpSig = '';
+    return await this.webPushSync();
+  }
+  // ส่งค่าตั้ง + บริบทของวันนี้ขึ้นไปให้เซิร์ฟเวอร์ — เรียกตอนเปิดแอป/กลับมาหน้าจอ/ออกจากแอป/เปลี่ยนค่าตั้ง
+  // ⚠ ต้องเรียกตอน "ออกจากแอป" ด้วย ไม่งั้นบันทึกตอนบ่ายแล้วปิดแอป เซิร์ฟเวอร์ยังไม่รู้ ตอนเย็นจะทวงของที่ทำไปแล้ว
+  async webPushSync() {
+    try {
+      if (!this.webPushSupported() || Notification.permission !== 'granted') return 'no-perm';
+      const sub = await this._wpSub(false);
+      if (!sub) return 'no-sub';
+      const be = window.WTNBackend, uid = await this.ensureUid();
+      if (!be || !be._sb || !uid) return 'no-login';
+      const cfg = this.notiCfg, j = sub.toJSON(), keys = j.keys || {};
+      const due = this.notiTripsDue().map(d => { const at = new Date(d.end); at.setDate(at.getDate() + 3); return { id: d.id, name: d.name, items: d.items, photos: d.photos, at: this._ymd(at) }; });
+      let tz = 'Asia/Bangkok'; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
+      const row = { endpoint: j.endpoint, user_id: uid, p256dh: keys.p256dh, auth: keys.auth, on_: !!cfg.on,
+        at_time: cfg.time || '20:30', tz, body: this.notiDailyBody(), logged: this.notiLoggedToday() ? this._ymd() : '',
+        trips_due: due, updated_at: new Date().toISOString() };
+      const sig = JSON.stringify(row).replace(/"updated_at":"[^"]*"/, '');
+      if (sig === this._wpSig) return 'same';
+      const { error } = await be._sb.from('push_subs').upsert(row, { onConflict: 'endpoint' });
+      if (error) { console.warn('[wtn] push_subs', error); return 'err'; }
+      this._wpSig = sig;
+      return 'ok';
+    } catch (e) { console.warn('[wtn] webPushSync', e); return 'err'; }
+  }
+  // ยิงทดสอบหาเครื่องของตัวเองทันที — ไม่ต้องรอถึงเวลาเตือน
+  async webPushTest() {
+    const be = window.WTNBackend;
+    if (!be || !be._sb) { this.showToast('ยังไม่ได้เชื่อมคลาวด์'); return; }
+    await this.webPushSync();
+    try {
+      const { data, error } = await be._sb.functions.invoke('push-reminders', { body: { test: true } });
+      if (error) throw error;
+      this.showToast(data && data.devices ? 'ส่งแล้ว — ภายในไม่กี่วินาทีควรเด้ง' : 'ยังไม่พบเครื่องนี้ในระบบ ลองปิดแล้วเปิดสวิตช์ใหม่');
+    } catch (e) { this.showToast('ส่งทดสอบไม่สำเร็จ: ' + ((e && e.message) || e)); }
   }
   get isNativeApp() {
     try {
@@ -14799,7 +14866,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.22a',
+      appVersion: '2026.10.22b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15425,10 +15492,27 @@ class Component extends DCLogic {
             + ';width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25)',
           // บอกตรงๆ ว่าบนเว็บยังเด้งไม่ได้ ดีกว่าให้เปิดแล้วเงียบโดยไม่รู้สาเหตุ
           notiNote: !cfg.on ? 'ปิดอยู่'
-            : (nat ? ('เตือน ' + (cfg.time || '20:30') + ' น. เฉพาะวันที่ยังไม่ได้บันทึก')
-                   : 'เปิดไว้แล้ว — จะเด้งเมื่อเปิดในแอป iOS/Android'),
+            : (nat || (this.webPushSupported() && typeof Notification !== 'undefined' && Notification.permission === 'granted')
+                ? ('เตือน ' + (cfg.time || '20:30') + ' น. เฉพาะวันที่ยังไม่ได้บันทึก')
+                : (this.webPushSupported() ? 'เปิดไว้แล้ว — แตะสวิตช์ปิดแล้วเปิดใหม่ เพื่ออนุญาตการแจ้งเตือน'
+                   : 'บน iPhone ต้องเพิ่ม Vela ลงหน้าจอโฮม แล้วเปิดจากไอคอน ถึงจะเตือนได้')),
+          notiWebTest: !nat && !!cfg.on && this.webPushSupported() && typeof Notification !== 'undefined' && Notification.permission === 'granted',
+          notiTestFn: () => this.webPushTest(),
           notiToggle: async () => {
             const next = !this.notiCfg.on;
+            // เว็บแอป: ขอสิทธิ์ทันทีตอนแตะ (iOS ยอมเฉพาะจังหวะที่ผู้ใช้แตะ) ก่อน await อื่นใด
+            if (!nat && next && this.webPushSupported()) {
+              this.saveNotiCfg({ on: true }); this.forceUpdate();
+              const w = await this.webPushEnable();
+              if (w === 'no-perm') { this.saveNotiCfg({ on: false }); this.showToast('ยังไม่ได้อนุญาตให้แจ้งเตือน — เปิดได้ที่ ตั้งค่า › การแจ้งเตือน › Vela'); }
+              else if (w === 'no-login') { this.saveNotiCfg({ on: false }); this.showToast('ต้องเข้าสู่ระบบก่อน ถึงจะเตือนผ่านเว็บได้'); }
+              else if (w === 'err') { this.saveNotiCfg({ on: false }); this.showToast('เปิดการเตือนไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+              else this.showToast('✓ เปิดเตือนแล้ว · ' + (this.notiCfg.time || '20:30') + ' น.');
+              this.forceUpdate();
+              return;
+            }
+            if (!nat && !next) { this.saveNotiCfg({ on: false }); this.forceUpdate(); this.webPushSync(); return; }
+            if (!nat && next) { this.saveNotiCfg({ on: true }); this.forceUpdate(); this.showToast('บน iPhone ต้องเพิ่ม Vela ลงหน้าจอโฮม แล้วเปิดจากไอคอน ถึงจะเตือนได้'); return; }
             this.saveNotiCfg({ on: next });
             this.forceUpdate();
             const r = await this.notiSync();

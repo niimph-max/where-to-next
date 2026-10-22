@@ -1,6 +1,6 @@
 // where to next? — service worker
 // เป้าหมาย: ใช้งานได้เต็มรูปแบบตอนไม่มีเน็ต + ไม่ค้างตอนสัญญาณอ่อน (มีเน็ตแต่ช้ามาก)
-const CACHE = 'wtn-2026.10.22a';
+const CACHE = 'wtn-2026.10.22b';
 const MEDIA = 'wtn-media-v1'; // รูปจากคลาวด์ — เก็บถาวร ไม่ล้างตอนอัปเวอร์ชัน
 const NET_TIMEOUT = 2500; // สัญญาณอ่อน: รอเน็ตเท่านี้ ไม่มาก็ใช้ของในแคชทันที
 
@@ -34,6 +34,33 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('message', (e) => { if (e.data === 'skipWaiting') self.skipWaiting(); });
+
+// ── Web Push: เตือนบันทึกบนเว็บแอป (22 ต.ค. 2569) ──
+// เซิร์ฟเวอร์ (Supabase function push-reminders) ยิงมาตอนถึงเวลาท้องถิ่นของเครื่อง · แอป iOS ใช้นาฬิกาปลุกในเครื่องแทน ไม่ผ่านตรงนี้
+// ⚠ iOS ต้องแสดงแจ้งเตือนทุกครั้งที่รับ push — ห้าม return เงียบๆ ไม่งั้น Safari ถอนสิทธิ์รับ push ของเว็บนี้
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Vela', {
+    body: d.body || '',
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    tag: d.go === 'stories' ? 'vela-trip-' + (d.trip || '') : 'vela-daily',
+    data: { go: d.go || 'today' }
+  }));
+});
+// แตะแล้วเปิดหน้าที่ควรไป ไม่ใช่หน้าแรก — มีหน้าต่างเปิดอยู่แล้วใช้อันเดิม
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const go = (e.notification.data || {}).go || 'today';
+  const url = new URL('./?go=' + encodeURIComponent(go), self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    for (const c of list) {
+      if (c.url.indexOf(self.registration.scope) === 0 && 'focus' in c) { c.postMessage({ wtnGo: go }); return c.focus(); }
+    }
+    return self.clients.openWindow(url);
+  }));
+});
 
 function put(req, res) {
   if (!res || !res.ok && res.type !== 'opaque') return;

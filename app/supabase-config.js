@@ -19,7 +19,10 @@ window.WTN_SUPABASE = {
   // ปลายทางของลิงก์ในอีเมล (ตั้งรหัสผ่านใหม่ ฯลฯ)
   // ในแอป iOS/Android origin คือ capacitor://localhost ซึ่ง Supabase ไม่ยอมรับ → ไม่ส่งอีเมลเลย
   // จึงบังคับใช้ URL เว็บจริงแทน (ต้องอยู่ใน Auth → URL Configuration → Redirect URLs)
-  webBase: "https://onevela.net/app/"
+  webBase: "https://onevela.net/app/",
+  // Web Push (เตือนบันทึกบนเว็บแอป · 22 ต.ค. 69) — กุญแจสาธารณะ VAPID เปิดเผยได้
+  //   คู่กับ VAPID_PRIVATE ใน secrets ของฟังก์ชัน push-reminders · ⚠ เปลี่ยนคู่นี้ = ทุกเครื่องต้องกดเปิดเตือนใหม่
+  vapidPublic: "BOhi1eqlQbhXCHp2KfcW8OVtDkTs0OiP8eYcFAzWs13Ul3Qp2XWZqgL3jYyxdhqZmhNrDJ_Omr5bDAINtN4ITW0"
 };
 // true = ใช้คลาวด์, false = โหมด local อย่างเดียว
 window.WTN_BACKEND_ENABLED = true;

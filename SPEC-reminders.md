@@ -99,7 +99,7 @@ _เก็บไว้เป็นบันทึกว่าเคยพิจ�
 
 **สถานะ 21 ก.ย. 2569: เขียนแล้วใน `app/index.html`** — `notiCfg` / `notiLoggedToday()` / `notiDailyBody()` / `notiTripsDue()` / `notiSync()` / `notiBindTap()` + การ์ดตั้งค่าในแท็บ "ฉัน"
 
-**ทำใน native ก่อน ไม่ใช่เว็บ**
+**ทำใน native ก่อน ไม่ใช่เว็บ** · ⚠ อัปเดต 22 ต.ค. 69: เว็บทำแล้วด้วย Web Push (ดู CLAUDE.md หัวข้อ Web Push) เพราะเจ้าของใช้เว็บแอปเป็นหลัก
 
 | | native (Capacitor) | เว็บ |
 |---|---|---|
