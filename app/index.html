@@ -1088,7 +1088,7 @@
               <sc-for list="{{ ciList }}" as="ci" hint-placeholder-count="2">
                 <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:16px;padding:13px 14px">
                   <div style="display:flex;align-items:center;gap:9px"><span style="background:#efe4d3;color:#c05f39;font:700 13px 'Anuphan';padding:4px 10px;border-radius:12px;flex:none">{{ ci.t }}</span><div style="flex:1;min-width:0;font:600 16px 'Anuphan';color:#2b241f">{{ ci.name }}</div><button onClick="{{ ci.edit }}" style="border:none;background:transparent;color:#c05f39;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">แก้ไข</button><button onClick="{{ ci.del }}" style="border:none;background:transparent;color:#b7a992;font:600 13.5px 'Anuphan';cursor:pointer;padding:6px">ลบ</button></div>
-                  <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 16.5px/1.7 'IBM Plex Sans Thai Looped','Anuphan',sans-serif;color:#4a4239;margin-top:8px;text-wrap:pretty">{{ ci.note }}</div></sc-if>
+                  <sc-if value="{{ ci.hasNote }}" hint-placeholder-val="{{ false }}"><div style="font:500 16.5px/1.7 'IBM Plex Sans Thai Looped','Anuphan',sans-serif;color:#4a4239;margin-top:8px;text-wrap:pretty;white-space:pre-line">{{ ci.note }}</div></sc-if>
                   <sc-if value="{{ ci.hasPhotos }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:7px;overflow-x:auto;margin-top:9px;scrollbar-width:none"><sc-for list="{{ ci.photos }}" as="ph" hint-placeholder-count="2"><span onClick="{{ ph.on }}" style="{{ ph.wrapStyle }}"><img src="{{ ph.src }}" alt="" style="{{ ph.imgStyle }}"><span style="{{ ph.sprStyle }}"></span><span style="{{ ph.badgeStyle }}">▶</span></span></sc-for></div></sc-if>
                   <sc-if value="{{ ci.clipShowCard }}" hint-placeholder-val="{{ false }}">
                     <div onClick="{{ ci.clipOpen }}" style="margin-top:10px;border-radius:14px;overflow:hidden;background:#2b241f;cursor:pointer">
@@ -3080,11 +3080,11 @@
                   <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 13.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 13px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="font:600 13.5px 'Anuphan';color:#8a7d6f">วันและเวลาที่เกิดขึ้นจริง</div>
-                    <input type="datetime-local" value="{{ ciWhenVal }}" onInput="{{ setCiWhen }}" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15.5px 'Anuphan';color:#2b241f;outline:none">
+                    <input type="datetime-local" value="{{ ciWhenVal }}" onInput="{{ setCiWhen }}" style="display:block;width:100%;max-width:100%;min-width:0;-webkit-appearance:none;appearance:none;text-align:left;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 15.5px 'Anuphan';color:#2b241f;outline:none">
                     <sc-if value="{{ ciHasPhotoMeta }}" hint-placeholder-val="{{ false }}"><div style="font:600 12.5px 'Anuphan';color:#6f8f6a">ดึงจากข้อมูลในรูป · {{ ciFromPhoto }}</div></sc-if>
                   </div>
                   <input value="{{ ciName }}" onInput="{{ setCiName }}" placeholder="อยู่ที่ไหน เช่น สนามบิน DMK" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:600 16px 'Anuphan';color:#2b241f;outline:none">
-                  <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
+                  <textarea value="{{ ciNote }}" onInput="{{ setCiNote }}" onFocus="{{ growTa }}" rows="5" placeholder="กินอะไร เจอใคร เป็นยังไงบ้าง — เขียนยาวได้เลย (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:150px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:14px;padding:13px 14px;font:500 17px/1.7 'IBM Plex Sans Thai Looped','Sarabun',sans-serif;color:#2f2a24;outline:none;resize:vertical"></textarea>
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="display:flex;align-items:center;gap:7px;font:600 13.5px 'Anuphan';color:#8a7d6f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" style="flex:none"><rect x="2.5" y="6" width="19" height="12" rx="3"></rect><path d="M10.5 9.6l4.2 2.4-4.2 2.4z" fill="currentColor" stroke="none"></path></svg>ลิงก์คลิปของโมเมนต์นี้</div>
                     <input value="{{ ciClip }}" onInput="{{ setCiClip }}" inputMode="url" placeholder="วางลิงก์ YouTube / TikTok / Reels (ไม่บังคับ)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 14.5px 'Anuphan';color:#2b241f;outline:none">
@@ -4709,6 +4709,11 @@ class Component extends DCLogic {
   }
   // โมเมนต์ใหม่: ระหว่างทริปใช้เวลาตอนกดเสมอ (ต่อให้แถบวันเปิดวันอื่นค้างไว้) — ตอนบันทึกจัดลงวันตามเวลานี้เอง
   //   จดย้อนหลังยังทำได้ แก้เวลาในฟอร์มก่อนบันทึก · นอกช่วงทริปใช้ dayTs แบบเดิม (เที่ยงของวันที่เปิด)
+  growTa(e) {
+    const el = e && e.target; if (!el || !el.style) return;
+    // โตอย่างเดียว ไม่หดกลับ — การตั้ง height:auto ชั่วคราวเพื่อวัดใหม่ทำให้หน้าที่เลื่อนอยู่กระโดด
+    if (el.scrollHeight > el.clientHeight) el.style.height = (el.scrollHeight + 2) + 'px';
+  }
   newMomentTs() { return this.liveDayIdx(this.state.trip) != null ? Date.now() : this.dayTs(this.state.day || 0); }
   kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'default-cover.jpg' }; }
   loadKazakh() {
@@ -14880,7 +14885,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.28a',
+      appVersion: '2026.10.28b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15946,7 +15951,9 @@ class Component extends DCLogic {
       ciWhenVal: this.tsToInput(this.state.ciAt || this.dayTs(this.state.day)),
       setCiWhen: e => { const t = this.inputToTs(e.target.value); if (t) this.setState({ ciAt: t, ciFromPhoto: '' }); },
       ciFromPhoto: this.state.ciFromPhoto || '', ciHasPhotoMeta: !!this.state.ciFromPhoto,
-      setCiNote: e => this.setState({ ciNote: e.target.value }),
+      // มือถือลากมุมขยายช่องไม่ได้ (iOS ไม่มีที่จับ resize) → ช่องโตตามข้อความเอง · คอมยังลากขยายได้เหมือนเดิม
+      setCiNote: e => { this.growTa(e); this.setState({ ciNote: e.target.value }); },
+      growTa: e => this.growTa(e),
       ciDraftPhotos: (this.state.ciPhotos || []).map((p, i) => ({ src: this.px(p),
         clipStyle: this.spriteOf(p) ? "position:absolute;left:-5px;top:-5px;width:21px;height:21px;border-radius:50%;background:#2b241f;color:#fff;font:700 9px 'Anuphan';display:flex;align-items:center;justify-content:center;z-index:2" : 'display:none',
         hasMeta: !!this.photoMeta(p), metaLabel: this.photoMetaLabel(this.photoMeta(p)),
