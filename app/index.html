@@ -4695,7 +4695,21 @@ class Component extends DCLogic {
   }
   back() { this.setState(s => { if (!s.history.length) return s; const prev = s.history[s.history.length-1]; return { screen: prev, history: s.history.slice(0,-1), tab: this.tabOf[prev] || s.tab }; }); }
   setTab(tab) { this.setState({ tab, screen: this.tabRoot[tab], history: [] }); if (tab === 'stories') { this.loadFeed(); } }
-  openTrip(id) { this.setState({ trip: id, day: id === 'yamagata' ? 2 : 0 }); this.go('trip'); }
+  // ระหว่างทริป เปิดที่ "วันนี้" ไม่ใช่วันที่ 1 (เจ้าของเจอเองระหว่างเที่ยวเซี่ยะเหมิน 27 ต.ค. 69)
+  openTrip(id) { const li = this.liveDayIdx(id); this.setState({ trip: id, day: li != null ? li : (id === 'yamagata' ? 2 : 0) }); this.go('trip'); }
+  // วันนี้คือวันที่เท่าไหร่ของทริป (0-based) · null = ไม่ได้อยู่ระหว่างทริปนั้น
+  liveDayIdx(id) {
+    const t = this.userTrips.find(x => x.id === id);
+    if (!t || !t.start || !t.end) return null;
+    const st = new Date(t.start + 'T00:00:00'), en = new Date(t.end + 'T00:00:00');
+    if (isNaN(st) || isNaN(en)) return null;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (today < st || today > en) return null;
+    return Math.round((today - st) / 86400000);
+  }
+  // โมเมนต์ใหม่: ระหว่างทริปใช้เวลาตอนกดเสมอ (ต่อให้แถบวันเปิดวันอื่นค้างไว้) — ตอนบันทึกจัดลงวันตามเวลานี้เอง
+  //   จดย้อนหลังยังทำได้ แก้เวลาในฟอร์มก่อนบันทึก · นอกช่วงทริปใช้ dayTs แบบเดิม (เที่ยงของวันที่เปิด)
+  newMomentTs() { return this.liveDayIdx(this.state.trip) != null ? Date.now() : this.dayTs(this.state.day || 0); }
   kzSeed() { return { id: 'kazakh', name: 'คาซัคสถาน · 11 วัน', country: 'คาซัคสถาน', city: 'อัลมาตี', start: '2026-07-24', end: '2026-08-03', badge: 'โปรแกรมทัวร์', metaOverride: 'โหลดจากตั๋ว+ทัวร์ · 24 ก.ค.–3 ส.ค. · Jeep ส่วนตัว', cover: 'default-cover.jpg' }; }
   loadKazakh() {
     const list = this.userTrips;
@@ -14866,7 +14880,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.22b',
+      appVersion: '2026.10.28a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15821,7 +15835,7 @@ class Component extends DCLogic {
       goCheckIn: () => {
         this._ciFromFab = true;
         this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciClip: '', ciPhotos: [], ciPos: null, ciUseBook: true, ciUsePb: true,
-          ciGeoStatus: 'locating', ciAcc: null, ciAt: this.dayTs(this.state.day || 0), ciAmt: '', ciCat: null, ciFromPhoto: '' });
+          ciGeoStatus: 'locating', ciAcc: null, ciAt: this.newMomentTs(), ciAmt: '', ciCat: null, ciFromPhoto: '' });
         this.grabCiPos();
       },
       ciUseBook: this.state.ciUseBook !== false, ciUsePb: this.state.ciUsePb !== false,
@@ -15833,7 +15847,7 @@ class Component extends DCLogic {
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
         const opening = !this.state.ciFormOpen;
-        this.setState({ ciUseBook: true, ciUsePb: true, ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.dayTs(this.state.day) : null, ciFromPhoto: '' });
+        this.setState({ ciUseBook: true, ciUsePb: true, ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.newMomentTs() : null, ciFromPhoto: '' });
         if (opening) this.grabCiPos();
       },
       ciGeoLocating: this.state.ciGeoStatus === 'locating',
