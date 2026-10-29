@@ -6863,6 +6863,13 @@ class Component extends DCLogic {
     (all[k] || []).sort((a, b) => (a.at || 0) - (b.at || 0));
     this.saveCheckins(all);
     if (ei == null && saved) this.upsertLocalMoment(this.ciMoment(saved, true));
+    // แก้บันทึกที่ขึ้นฟีดไปแล้ว → ฉบับในฟีดต้องแก้ตาม (เดิมค้างข้อความแรกไว้ เจ้าของถึงขั้นลบทิ้งเพื่อใส่ใหม่ · 29 ต.ค. 69)
+    //   เก็บดาว/หมวด/ไลก์ของโมเมนต์เดิมไว้ เปลี่ยนเฉพาะเนื้อหาที่มาจากบันทึก
+    else if (saved && saved.published && saved.mid) {
+      const old = this.moments.find(x => x.id === saved.mid), nm = this.ciMoment(saved, true);
+      this.upsertLocalMoment(old ? { ...old, name: nm.name, text: nm.text, photos: nm.photos, at: nm.at,
+        lat: nm.lat != null ? nm.lat : old.lat, lng: nm.lng != null ? nm.lng : old.lng } : nm);
+    }
     const amt = Number(this.state.ciAmt);
     if (ei == null && amt > 0) this.addExpense(this.state.ciCat || 'อาหาร', amt, name, cts);
     const located = pos.lat != null;
@@ -14929,7 +14936,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.29a',
+      appVersion: '2026.10.29b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
