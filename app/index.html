@@ -2463,6 +2463,7 @@
             <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 14.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
             <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><button onClick="{{ goAdmin }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.2);background:#fff;color:#2b241f;font:600 13px 'Anuphan';padding:7px 13px;border-radius:20px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="14" width="3" height="3"/></svg>แดชบอร์ดแอดมิน</button></div></sc-if>
             <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:700 12.5px 'Anuphan';padding:5px 12px;border-radius:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg>พรีเมียม</span></div></sc-if>
+            <sc-if value="{{ syncWarnShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goSettings }}" style="display:block;width:100%;text-align:left;margin-top:12px;padding:11px 13px;min-height:44px;background:#fff4ec;border:1px solid rgba(192,95,57,.35);border-radius:12px;cursor:pointer;font:600 14px/1.5 'Anuphan';color:#b3563a;text-wrap:pretty">⚠ {{ syncWarnText }}<span style="display:block;font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">ข้อมูลยังอยู่ในเครื่องนี้ครบ · แตะเพื่อดู/ซิงก์ใหม่</span></button></sc-if>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profTripCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profStoryCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profMomentCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">โมเมนต์</span></div></div>
           </div>
           <div style="padding:16px 20px 0">
@@ -2789,6 +2790,13 @@
                 <div style="font:500 13.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:11px">ข้อมูลซิงก์ขึ้นคลาวด์อัตโนมัติ · ถ้ารูป/ข้อมูลไม่ข้ามเครื่อง กด "ซิงก์ตอนนี้"</div>
                 <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#2b241f;color:#f6efe2;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:8px">{{ syncNowLabel }}</button>
                 <button onClick="{{ forceRestore }}" style="width:100%;min-height:46px;border:1px solid rgba(192,95,57,.4);background:#fff;color:#c05f39;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer;margin-bottom:11px">{{ forceRestoreLabel }}</button>
+              </sc-if>
+              <sc-if value="{{ syncWarnShow }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:12px 13px;background:#fff4ec;border:1px solid rgba(192,95,57,.3);border-radius:12px;margin-bottom:11px">
+                  <div style="font:600 14.5px/1.5 'Anuphan';color:#2b241f;margin-bottom:4px;text-wrap:pretty">⚠ {{ syncWarnText }}</div>
+                  <div style="font:500 13px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:10px;text-wrap:pretty">ข้อมูลยังอยู่ในเครื่องนี้ครบ ไม่หาย · แต่เครื่องอื่นจะยังไม่เห็น จนกว่าจะซิงก์ได้</div>
+                  <button onClick="{{ syncNow }}" style="width:100%;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ syncNowLabel }}</button>
+                </div>
               </sc-if>
               <sc-if value="{{ photoPendShow }}" hint-placeholder-val="{{ false }}">
                 <div style="padding:12px 13px;background:#fff4ec;border:1px solid rgba(192,95,57,.3);border-radius:12px;margin-bottom:11px">
@@ -3165,7 +3173,7 @@
       <button onClick="{{ tabTodayFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cToday }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 1.8"></path></svg>วันนี้</button>
       <button onClick="{{ tabStoriesFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cStories }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h11l3 3v13H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>ฟีด</button>
       <button onClick="{{ tabPlanFn }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cPlan }};font:500 12px 'Anuphan'"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>แผนของฉัน</button>
-      <button onClick="{{ tabMeFn }}" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><sc-if value="{{ photoPendShow }}" hint-placeholder-val="{{ false }}"><span title="มีรูปยังไม่ขึ้นคลาวด์" style="position:absolute;top:-1px;left:calc(50% + 6px);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px #f6efe2"></span></sc-if><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
+      <button onClick="{{ tabMeFn }}" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;color:{{ cMe }};font:500 12px 'Anuphan'"><sc-if value="{{ meDotShow }}" hint-placeholder-val="{{ false }}"><span title="{{ meDotTitle }}" style="position:absolute;top:-1px;left:calc(50% + 6px);width:9px;height:9px;border-radius:50%;background:#c05f39;box-shadow:0 0 0 2px #f6efe2"></span></sc-if><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>ฉัน</button>
     </div>
     </sc-if>
 
@@ -3657,11 +3665,31 @@ class Component extends DCLogic {
     try { const sj = this.storiesFullJson(); if (sj) data['wtn-stories'] = sj; } catch (e) {}
     return data;
   }
+  // มีของรอส่งขึ้นคลาวด์ — จดเวลา "เริ่มค้าง" ไว้ครั้งแรก (คีย์ vela- ไม่ซิงก์ข้ามเครื่อง) ให้ syncWarn รู้ว่าค้างนานแค่ไหน
+  _markPending() {
+    localStorage.setItem('wtn-sync-pending', '1');
+    if (!localStorage.getItem('vela-pending-at')) localStorage.setItem('vela-pending-at', String(Date.now()));
+  }
+  // จุดเตือนบนไอคอน "ฉัน" — เจ้าของ: "ไม่รู้ว่าโมเมนต์จะหายไปตอนไหน" (30 ต.ค. 69)
+  //   เรื่องเล่าเคยหยุดซิงก์เงียบๆ ตั้งแต่ 12 ต.ค. เพราะสถานะซ่อนอยู่ท้ายหน้า "ฉัน" ไม่มีใครเลื่อนไปดู
+  //   คืนข้อความเหตุผล หรือ '' ถ้าปกติ · ค้างส่งนับเฉพาะตอนออนไลน์ (ออฟไลน์ระหว่างเที่ยว = ปกติ ไม่ต้องเตือน)
+  syncWarn() {
+    const be = window.WTNBackend;
+    if (!be || !be._uid) return '';
+    if (this.state.cloud === 'error') return 'ซิงก์ไม่สำเร็จ (' + (this.state.cloudErr || '?') + ')';
+    let held = 0, since = 0;
+    try { held = Number(localStorage.getItem('vela-stories-held') || 0); since = localStorage.getItem('wtn-sync-pending') ? Number(localStorage.getItem('vela-pending-at') || 0) : 0; } catch (e) {}
+    if (held) return 'เรื่องเล่าไม่ได้ซิงก์ — ข้อมูลรวม ' + (held / 1e6).toFixed(2) + ' MB เกินเพดาน';
+    if (since && navigator.onLine !== false && Date.now() - since > 3600000) {
+      return 'มีของที่ยังไม่ได้ส่งขึ้นคลาวด์ ค้างตั้งแต่ ' + new Date(since).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+    return '';
+  }
   scheduleCloudPush() {
     const be = window.WTNBackend;
     if (!be || !be._uid || this._applyingCloud) return;
     this._pendingPush = true;
-    try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {} // มาร์กไว้ถาวร — เน็ตช้า/โดนพักกลางคัน ก็รีทรายรอบหน้าได้
+    try { this._markPending(); } catch (e) {} // มาร์กไว้ถาวร — เน็ตช้า/โดนพักกลางคัน ก็รีทรายรอบหน้าได้
     clearTimeout(this._cloudT);
     this._cloudT = setTimeout(() => this.cloudPush(), 12000);
   }
@@ -4512,14 +4540,14 @@ class Component extends DCLogic {
     if (!this._synced) { return; } // ยังไม่ได้รับข้อมูลล่าสุดจากคลาวด์ — ห้ามดัน (กันเครื่องเปล่าทับ)
     if (navigator.onLine === false) {                                   // ออฟไลน์ — เก็บค้างไว้ ไม่ต้องยิงให้ค้าง
       this._pendingPush = true;
-      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      try { this._markPending(); } catch (e) {}
       this.setState({ cloud: 'idle' });
       return;
     }
     if (!this.localHasData()) { this.setState({ cloud: 'idle' }); return; }
     if (this.storyBodiesPending() && (this._sbDefer = (this._sbDefer || 0) + 1) <= 3) {   // เนื้อเรื่องยังอ่านไม่ครบ — รอไม่เกิน 3 รอบ
       this._pendingPush = true;
-      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      try { this._markPending(); } catch (e) {}
       this.setState({ cloud: 'idle' });
       setTimeout(() => this.scheduleCloudPush(), 4000);
       return;
@@ -4527,7 +4555,7 @@ class Component extends DCLogic {
     this._sbDefer = 0;
     if (this.egCapped('push')) {                                        // ชนเพดานข้อมูลของวันนี้ — พักไว้ก่อน ค่อยดันพรุ่งนี้
       this._pendingPush = true;
-      try { localStorage.setItem('wtn-sync-pending', '1'); } catch (e) {}
+      try { this._markPending(); } catch (e) {}
       this.setState({ cloud: 'idle' });
       return;
     }
@@ -4560,7 +4588,7 @@ class Component extends DCLogic {
         await be.pushBackup({ _app: 'where-to-next', _at: at, data: payload });
         try { localStorage.setItem('wtn-cloud-at', String(at)); } catch (e) {}
       }
-      this._errN = 0; try { localStorage.removeItem('wtn-sync-pending'); } catch (e) {} this.setState({ cloud: 'saved' }); this.forceUpdate();
+      this._errN = 0; try { localStorage.removeItem('wtn-sync-pending'); localStorage.removeItem('vela-pending-at'); } catch (e) {} this.setState({ cloud: 'saved' }); this.forceUpdate();
     } catch (e) {
       console.warn('[wtn] cloud push', e);
       this.setState({ cloud: 'error', cloudErr: 'push: ' + ((e && (e.code || e.message)) || String(e)) });
@@ -14961,7 +14989,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.30c',
+      appVersion: '2026.10.30d',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15867,6 +15895,10 @@ class Component extends DCLogic {
       ciSheetHost: sc === 'trip' || sc === 'map',   // ชีตเช็คอินต้องโผล่ทั้งหน้าทริปและหน้าแผนที่
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
       photoPendShow: this.pendPhotos() > 0,
+      meDotShow: this.pendPhotos() > 0 || !!this.syncWarn(),
+      meDotTitle: this.syncWarn() || 'มีรูปยังไม่ขึ้นคลาวด์',
+      syncWarnShow: !!this.syncWarn(),
+      syncWarnText: this.syncWarn(),
       photoPendTitle: 'รูปที่ยังไม่ขึ้นคลาวด์ · ' + this.pendPhotos() + ' ใบ',
       retryPhotos: () => this.retryPendingPhotos(),
       retryPhotosLabel: this.state.retryPhBusy ? 'กำลังลองอัป…' : 'ลองอัปรูปที่ค้างอีกครั้ง',
