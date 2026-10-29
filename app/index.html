@@ -154,6 +154,9 @@
           (กัน iPad จอใหญ่ในแอป native ไม่ให้กลายเป็นกรอบลอยกลางจอ)
      ⚠ transform บน .wtn-body จงใจใส่ ทำให้ลูกที่เป็น position:fixed
        (แถบเมนูล่าง · toast · ชีตเด้งขึ้น) ยึดกับกรอบแทนขอบจอ ถ้าเอาออกของพวกนี้จะหลุดไปติดขอบจอ */
+  /* ฟอร์มโมเมนต์: บนมือถือสองกล่องนี้ไม่มีตัวตน (ลูกเรียงในการ์ดเหมือนเดิม) · จอคอมดูชั้นเสริมข้างล่าง */
+  .wtn-ci-main,.wtn-ci-side{display:contents}
+  .wtn-ci-drop-hint{display:none}
   @media (min-width:900px){
     :root{--wtn-map-w:clamp(360px,36vw,620px)}
     html:not(.is-native), html:not(.is-native) body{height:100%!important;overflow:hidden!important}
@@ -260,6 +263,25 @@
     /* ปุ่มลอยต้องหลบแผนที่ ไม่งั้นไปนั่งทับอยู่บนแผนที่ */
     html:not(.is-native) .wtn-body:has(.wtn-map-side) .wtn-fab{
       right:calc(var(--wtn-map-w) + 18px)!important}
+
+    /* ── ฟอร์มบันทึกโมเมนต์ · สองคอลัมน์ (29 ต.ค. 69) ──
+       ซ้าย = ช่องเขียน · ขวา = รูป (ลากไฟล์มาวางได้) + ลงที่ไหน + ปุ่มบันทึก
+       มือถือ: .wtn-ci-main / .wtn-ci-side เป็น display:contents = ลำดับและหน้าตาเหมือนเดิมทุกอย่าง */
+    html:not(.is-native) .wtn-ciform{
+      display:grid!important;grid-template-columns:minmax(0,1fr) 340px;gap:0 22px!important;
+      max-width:1100px;margin-inline:auto;padding:22px!important;align-items:start}
+    html:not(.is-native) .wtn-ci-main,
+    html:not(.is-native) .wtn-ci-side{display:flex;flex-direction:column;gap:9px;min-width:0}
+    html:not(.is-native) .wtn-ci-side{position:sticky;top:0;border-left:1px solid rgba(43,36,32,.08);padding-left:22px}
+    html:not(.is-native) .wtn-ci-drop-hint{display:block;font:600 13px 'Anuphan';color:#8a7d6f}
+    html:not(.is-native) .wtn-ci-side.drag{outline:2px dashed #c05f39;outline-offset:6px;border-radius:12px}
+    html:not(.is-native) .wtn-ci-phs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))}
+    html:not(.is-native) .wtn-ci-phs > *{width:auto!important;height:auto!important;aspect-ratio:1}
+    html:not(.is-native) .wtn-ci-phs > * img{width:100%!important;height:100%!important}
+    html:not(.is-native) .wtn-ci-phs > label{grid-column:1 / -1;aspect-ratio:auto;height:110px!important;width:100%!important}
+    html:not(.is-native) .wtn-ci-side > div[style*="border-top"]{border-top:none!important;padding-top:4px!important}
+    html:not(.is-native) .wtn-ci-side button[style*="min-width:140px"],
+    html:not(.is-native) .wtn-ci-side button[style*="min-width: 140px"]{flex:1 1 100%!important}
 
     /* ── ลิงก์แชร์/ทดลองอ่าน · คอลัมน์อ่าน 760px ตัวหนังสือ 20px ตามแบบร่าง ── */
     html:not(.is-native) .wtn-screen-read > div{max-width:760px!important;padding:44px 28px 64px!important}
@@ -1070,7 +1092,8 @@
       <!-- ========== MAP ========== -->
       <sc-if value="{{ sMap }}" hint-placeholder-val="{{ false }}">
         <div class="wtn-screen">
-          <div style="position:relative;height:280px;background:#e8dfc9">
+          <!-- isolation: ปุ่ม/ชั้นของ Leaflet (z 400–1000) ต้องอยู่ในกล่องนี้ ไม่งั้นทะลุขึ้นมาทับฟอร์มบันทึกโมเมนต์ (z 40) -->
+          <div style="position:relative;height:280px;background:#e8dfc9;isolation:isolate">
             <div ref="{{ mapRef }}" style="position:absolute;inset:0"></div>
             <button onClick="{{ recenterMe }}" aria-label="ตำแหน่งของฉัน" style="position:absolute;bottom:14px;right:14px;z-index:500;width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 3px 10px rgba(43,36,32,.35);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e78d2" stroke-width="1.9"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-linecap="round"></path></svg></button>
           </div>
@@ -3074,9 +3097,11 @@
           <div style="font:400 19px 'Chonburi',serif;color:#2b241f">บันทึกโมเมนต์</div>
         </div>
         <div class="wtn-s" style="flex:1;min-height:0;overflow-y:auto;padding:14px 16px 26px">
-                <div data-ci-form="1" style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                <div data-ci-form="1" class="wtn-ciform" style="background:#fffaf0;border:1px solid rgba(192,95,57,.2);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px">
+                <div class="wtn-ci-main">
                   <sc-if value="{{ ciGeoLocating }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#8a7d6f"><span style="width:15px;height:15px;border:2px solid #d8ccb8;border-top-color:#c05f39;border-radius:50%;flex:none;animation:wtnSpin .8s linear infinite"></span>กำลังหาตำแหน่ง GPS…</div></sc-if>
                   <sc-if value="{{ ciGeoOk }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#edf6ee;border-radius:11px;padding:9px 12px;font:600 14px 'Anuphan';color:#2f7d47"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2f7d47" stroke-width="2.2" style="flex:none"><path d="M20 6L9 17l-5-5"></path></svg>ได้ตำแหน่งแล้ว {{ ciAccText }}· จะปักหมุดบนแผนที่ให้</div></sc-if>
+                  <sc-if value="{{ ciGeoStale }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#f3ece0;border-radius:11px;padding:9px 12px;font:600 13.5px/1.5 'Anuphan';color:#8a7d6f"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex:none"><circle cx="12" cy="10" r="3"></circle><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"></path></svg>โมเมนต์นี้ไม่ใช่วันนี้ · ไม่ใช้ตำแหน่งที่อยู่ตอนนี้ (ใส่รูปที่มีพิกัด แอปจะปักหมุดจากรูปให้)</div></sc-if>
                   <sc-if value="{{ ciGeoFail }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:9px;background:#fbeee6;border-radius:11px;padding:9px 12px;font:600 13.5px 'Anuphan';color:#b25a2a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b25a2a" stroke-width="2" style="flex:none"><path d="M12 8v5M12 16.5v.5"></path><circle cx="12" cy="12" r="9"></circle></svg><span style="flex:1;min-width:0;line-height:1.4">หาตำแหน่งไม่ได้ — เช็คอินได้ แต่จะไม่ขึ้นหมุด</span><button onClick="{{ retryCiGeo }}" style="flex:none;border:1px solid rgba(178,90,42,.4);background:#fff;color:#b25a2a;font:600 13px 'Anuphan';padding:6px 11px;border-radius:11px;cursor:pointer">ลองอีกครั้ง</button></div></sc-if>
                   <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="font:600 13.5px 'Anuphan';color:#8a7d6f">วันและเวลาที่เกิดขึ้นจริง</div>
@@ -3093,7 +3118,10 @@
                   </div>
                   <input value="{{ ciAmt }}" onInput="{{ setCiAmt }}" inputMode="numeric" placeholder="จ่ายไปเท่าไหร่ (บาท ไม่บังคับ — ลงหน้างบให้เอง)" style="width:100%;box-sizing:border-box;min-height:46px;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:0 13px;font:500 15.5px 'Anuphan';color:#2b241f;outline:none">
                   <sc-if value="{{ ciHasAmt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ ciCats }}" as="cc" hint-placeholder-count="5"><button onClick="{{ cc.on }}" style="{{ cc.style }}">{{ cc.label }}</button></sc-for></div></sc-if>
-                  <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+                </div>
+                <div class="wtn-ci-side" onDragOver="{{ ciDragOver }}" onDragLeave="{{ ciDragLeave }}" onDrop="{{ ciDrop }}">
+                  <div class="wtn-ci-drop-hint">ลากรูปจากโฟลเดอร์มาวางตรงนี้ได้</div>
+                  <div class="wtn-ci-phs" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">
                     <sc-for list="{{ ciDraftPhotos }}" as="dp" hint-placeholder-count="0">
                       <span style="position:relative;width:64px;height:64px;flex:none"><span style="{{ dp.clipStyle }}">▶</span><img src="{{ dp.src }}" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:10px;display:block"><button onClick="{{ dp.rm }}" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:#2b241f;color:#f6efe2;font:700 13px 'Anuphan';cursor:pointer;line-height:1">✕</button><button onClick="{{ dp.useDate }}" title="ใช้วัน-เวลาจากรูปนี้ · {{ dp.metaLabel }}" style="position:absolute;bottom:-6px;left:-6px;width:26px;height:26px;border-radius:50%;border:1.5px solid #fffaf0;background:#c05f39;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></button></span>
                     </sc-for>
@@ -3108,6 +3136,7 @@
                     </div>
                   </div>
                   <div style="display:flex;gap:8px"><button onClick="{{ toggleCiForm }}" style="flex:1;min-height:46px;border:1px solid rgba(43,36,32,.15);background:transparent;color:#2b241f;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">ยกเลิก</button><button onClick="{{ saveCi }}" style="flex:1.4;min-height:46px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:12px;cursor:pointer">{{ ciSaveLabel }}</button></div>
+                </div>
                 </div>
         </div>
       </div>
@@ -6135,7 +6164,7 @@ class Component extends DCLogic {
     if (!navigator.geolocation) { this.setState({ ciGeoStatus: 'fail' }); return; }
     this.setState({ ciGeoStatus: 'locating', ciAcc: null });
     navigator.geolocation.getCurrentPosition(
-      p => this.setState({ ciPos: { lat: p.coords.latitude, lng: p.coords.longitude }, ciAcc: Math.round(p.coords.accuracy), ciGeoStatus: 'ok' }),
+      p => { if (this.state.ciPosSrc === 'photo') return; this.setState({ ciPos: { lat: p.coords.latitude, lng: p.coords.longitude }, ciPosSrc: 'gps', ciAcc: Math.round(p.coords.accuracy), ciGeoStatus: 'ok' }); },
       () => this.setState({ ciGeoStatus: 'fail' }),
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
   }
@@ -6747,7 +6776,7 @@ class Component extends DCLogic {
     if (!ex) { this.showToast('รูปนี้ไม่มีวัน-เวลาติดมากับไฟล์ (หากส่งมาทางแชท/HEIC มักจะถูกตัดทิ้ง)'); return; }
     const patch = {};
     if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
-    if (ex.lat != null) { patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) }; patch.ciGeoStatus = 'ok'; }
+    if (ex.lat != null) { patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) }; patch.ciPosSrc = 'photo'; patch.ciGeoStatus = 'ok'; }
     this.setState(patch);
     this.showToast('✓ ใช้เวลาจากรูปนี้: ' + this.photoMetaLabel(ex));
   }
@@ -6769,17 +6798,32 @@ class Component extends DCLogic {
     if (!ex) return;
     const patch = {};
     if (ex.at) { patch.ciAt = ex.at; patch.ciFromPhoto = new Date(ex.at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
-    if (ex.lat != null && !(this.state.ciPos && this.state.ciPos.lat != null)) {
+    // พิกัดในรูป = ที่ที่ถ่ายจริง ชนะตำแหน่งเครื่องตอนนี้เสมอ (จดย้อนหลังบนคอม ตำแหน่งเครื่องคือบ้าน)
+    if (ex.lat != null && this.state.ciPosSrc !== 'photo') {
       patch.ciPos = { lat: +ex.lat.toFixed(5), lng: +ex.lng.toFixed(5) };
+      patch.ciPosSrc = 'photo';
       patch.ciGeoStatus = 'ok';
     }
     if (Object.keys(patch).length) this.setState(patch);
   }
+  // ตำแหน่งเครื่องตอนนี้ใช้ได้เฉพาะโมเมนต์ของ "วันนี้" — จดย้อนหลังแล้วปักหมุดที่บ้านคือหมุดผิด (เจ้าของเจอ 29 ต.ค. 69)
+  ciPosStale() {
+    if (this.state.ciPosSrc !== 'gps' || !this.state.ciPos) return false;
+    const at = new Date(this.state.ciAt || this.dayTs(this.state.day));
+    return at.toDateString() !== new Date().toDateString();
+  }
+  ciDropFiles(e) {
+    e.preventDefault(); this._ciDragEl(e, false);
+    const files = Array.from((e.dataTransfer && e.dataTransfer.files) || []).filter(f => /^(image|video)\//.test(f.type || ''));
+    if (!files.length) { this.showToast('วางได้เฉพาะรูปหรือคลิป'); return; }
+    this.addCiPhotos({ target: { files, value: '' } });
+  }
+  _ciDragEl(e, on) { const el = e && e.currentTarget; if (el && el.classList) el.classList.toggle('drag', on); }
   saveCi() {
     const name = (this.state.ciName || '').trim();
     if (!name) return;
     const all = this.checkins;
-    const pos = this.state.ciPos || {};
+    const pos = this.ciPosStale() ? {} : (this.state.ciPos || {});
     const ei = this.state.ciEditIdx;
     const cts = this.state.ciAt || this.dayTs(this.state.day);
     const tLabel = new Date(cts).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
@@ -14885,7 +14929,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.28b',
+      appVersion: '2026.10.29a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15836,10 +15880,10 @@ class Component extends DCLogic {
             id: c.mid || ('ci' + idx), author: this.profile.name || 'nimjourney' });
         },
         del: () => this.askConfirm('ลบเช็คอินนี้? ข้อความและรูปที่บันทึกไว้จะหายไป กู้คืนไม่ได้', () => { const all = this.checkins, k = this.ciKey; const c2 = (all[k] || [])[idx]; if (c2 && c2.mid) this.deleteMoment(c2.mid); (all[k] || []).splice(idx, 1); this.saveCheckins(all); this.forceUpdate(); }),
-        edit: () => this.setState({ ciUseBook: this.ciWantsBook(c), ciUsePb: this.ciWantsPb(c), ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: this.clipBody(c.note || '', this.clipOf(c.note || '')), ciClip: (this.clipOf(c.note || '') || {}).raw || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
+        edit: () => this.setState({ ciUseBook: this.ciWantsBook(c), ciUsePb: this.ciWantsPb(c), ciFormOpen: true, ciEditIdx: idx, ciName: c.name, ciNote: this.clipBody(c.note || '', this.clipOf(c.note || '')), ciClip: (this.clipOf(c.note || '') || {}).raw || '', ciPhotos: [...(c.photos || [])], ciPos: null, ciPosSrc: null, ciGeoStatus: null, ciAt: c.at || this.dayTs(this.state.day), ciFromPhoto: '' }) })),
       goCheckIn: () => {
         this._ciFromFab = true;
-        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciClip: '', ciPhotos: [], ciPos: null, ciUseBook: true, ciUsePb: true,
+        this.setState({ ciFormOpen: true, ciEditIdx: null, ciName: '', ciNote: '', ciClip: '', ciPhotos: [], ciPos: null, ciPosSrc: null, ciUseBook: true, ciUsePb: true,
           ciGeoStatus: 'locating', ciAcc: null, ciAt: this.newMomentTs(), ciAmt: '', ciCat: null, ciFromPhoto: '' });
         this.grabCiPos();
       },
@@ -15852,11 +15896,15 @@ class Component extends DCLogic {
       ciFormOpen: !!this.state.ciFormOpen, ciFormClosed: !this.state.ciFormOpen,
       toggleCiForm: () => {
         const opening = !this.state.ciFormOpen;
-        this.setState({ ciUseBook: true, ciUsePb: true, ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.newMomentTs() : null, ciFromPhoto: '' });
+        this.setState({ ciUseBook: true, ciUsePb: true, ciFormOpen: opening, ciEditIdx: null, ciName: '', ciNote: '', ciPhotos: [], ciPos: null, ciPosSrc: null, ciGeoStatus: opening ? 'locating' : null, ciAcc: null, ciAt: opening ? this.newMomentTs() : null, ciFromPhoto: '' });
         if (opening) this.grabCiPos();
       },
       ciGeoLocating: this.state.ciGeoStatus === 'locating',
-      ciGeoOk: this.state.ciGeoStatus === 'ok',
+      ciGeoOk: this.state.ciGeoStatus === 'ok' && !this.ciPosStale(),
+      ciGeoStale: this.state.ciGeoStatus === 'ok' && this.ciPosStale(),
+      ciDragOver: e => { e.preventDefault(); this._ciDragEl(e, true); },
+      ciDragLeave: e => this._ciDragEl(e, false),
+      ciDrop: e => this.ciDropFiles(e),
       ciGeoFail: this.state.ciGeoStatus === 'fail',
       ciAccText: this.state.ciAcc ? ('ความแม่น ~' + this.state.ciAcc + ' ม. ') : '',
       retryCiGeo: () => this.grabCiPos(),
