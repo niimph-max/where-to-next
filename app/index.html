@@ -2463,7 +2463,7 @@
             <sc-if value="{{ profHasLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:7px;margin-top:9px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="1.9" style="flex:none"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg><a href="{{ profLinkHref }}" target="_blank" style="font:600 14.5px 'Anuphan';color:#c05f39;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ profLink }}</a></div></sc-if>
             <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><button onClick="{{ goAdmin }}" style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(43,36,32,.2);background:#fff;color:#2b241f;font:600 13px 'Anuphan';padding:7px 13px;border-radius:20px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c05f39" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="14" width="3" height="3"/></svg>แดชบอร์ดแอดมิน</button></div></sc-if>
             <sc-if value="{{ isPremium }}" hint-placeholder-val="{{ false }}"><div style="margin-top:11px"><span style="display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#c05f39,#8a3f24);color:#fff;font:700 12.5px 'Anuphan';padding:5px 12px;border-radius:14px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l2.4 6.9L22 9l-6 4.6L18 22l-6-4-6 4 2-8.4L2 9l7.6-.1z"/></svg>พรีเมียม</span></div></sc-if>
-            <sc-if value="{{ syncWarnShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goSettings }}" style="display:block;width:100%;text-align:left;margin-top:12px;padding:11px 13px;min-height:44px;background:#fff4ec;border:1px solid rgba(192,95,57,.35);border-radius:12px;cursor:pointer;font:600 14px/1.5 'Anuphan';color:#b3563a;text-wrap:pretty">⚠ {{ syncWarnText }}<span style="display:block;font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">ข้อมูลยังอยู่ในเครื่องนี้ครบ · แตะเพื่อดู/ซิงก์ใหม่</span></button></sc-if>
+            <sc-if value="{{ meDotShow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goSettings }}" style="display:block;width:100%;text-align:left;margin-top:12px;padding:11px 13px;min-height:44px;background:#fff4ec;border:1px solid rgba(192,95,57,.35);border-radius:12px;cursor:pointer;font:600 14px/1.5 'Anuphan';color:#b3563a;text-wrap:pretty">⚠ {{ meDotTitle }}<span style="display:block;font:500 12.5px/1.5 'Anuphan';color:#8a7d6f">ข้อมูลยังอยู่ในเครื่องนี้ครบ · แตะเพื่อดู/ซิงก์ใหม่</span></button></sc-if>
             <div style="display:flex;gap:22px;margin-top:14px;padding:14px 0;border-top:1px solid rgba(43,36,32,.08);border-bottom:1px solid rgba(43,36,32,.08)"><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profTripCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">ทริป</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profStoryCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">เรื่องเล่า</span></div><div><span style="font-family:'Chonburi',serif;font-size:20px;color:#2b241f">{{ profMomentCount }}</span> <span style="font:500 14px 'Anuphan';color:#8a7d6f">โมเมนต์</span></div></div>
           </div>
           <div style="padding:16px 20px 0">
@@ -14989,7 +14989,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.30d',
+      appVersion: '2026.10.30e',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -15896,7 +15896,7 @@ class Component extends DCLogic {
       mapRef: el => { this._mapEl = el; if (el) setTimeout(() => this.initMap(), 0); },
       photoPendShow: this.pendPhotos() > 0,
       meDotShow: this.pendPhotos() > 0 || !!this.syncWarn(),
-      meDotTitle: this.syncWarn() || 'มีรูปยังไม่ขึ้นคลาวด์',
+      meDotTitle: this.syncWarn() || ('มีรูปยังไม่ขึ้นคลาวด์ ' + this.pendPhotos() + ' ใบ'),   // จุดเดียวกัน ต้องบอกเหตุผลเดียวกันบนหน้า "ฉัน" (เจ้าของเคยเห็นจุดแล้วไม่รู้ว่าทำไม)
       syncWarnShow: !!this.syncWarn(),
       syncWarnText: this.syncWarn(),
       photoPendTitle: 'รูปที่ยังไม่ขึ้นคลาวด์ · ' + this.pendPhotos() + ' ใบ',
