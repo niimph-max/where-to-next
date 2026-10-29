@@ -4667,9 +4667,11 @@ class Component extends DCLogic {
     this.setState({ cloud: 'saving' });
     try {
       // เช็คเวลาก่อน — ถ้าคลาวด์ไม่มีอะไรใหม่กว่าที่เครื่องนี้มี ไม่ต้องโหลดก้อนสำรองทั้งก้อนซ้ำ
+      let cloudNewer = false;
       if (be.backupAt) {
         const rAt = await be.backupAt();
         const knownAt = Number(localStorage.getItem('wtn-cloud-at') || 0);
+        cloudNewer = rAt > 0 && rAt > knownAt;
         if (rAt > 0 && knownAt && rAt === knownAt && this.localHasData()) {
           this._synced = true;
           this.setState({ cloud: 'saved' });
@@ -4677,7 +4679,9 @@ class Component extends DCLogic {
         }
       }
       // กันดึงก้อนเต็มซ้ำๆ ตอนสลับแท็บ (ประหยัด egress) — 5 นาที/ครั้ง ถ้าเครื่องนี้ซิงก์แล้วและมีข้อมูลอยู่
-      const fresh = this._lastFullPull && (Date.now() - this._lastFullPull) < 300000;
+      //   ⚠ ใช้เฉพาะตอน "ไม่รู้" ว่าคลาวด์ใหม่กว่าไหม — ถ้ารู้แน่แล้วว่าใหม่กว่า (อีกเครื่องเพิ่งดันขึ้น) ต้องดึงเลย
+      //   เดิมกั้นเสมอ: เขียนเรื่องเล่าบนมือถือ เปิดคอม → คอมรู้ว่ามีของใหม่แต่รออีก 5 นาที (เจ้าของ: "ซิงค์กันช้าจัง" 30 ต.ค. 69)
+      const fresh = !cloudNewer && this._lastFullPull && (Date.now() - this._lastFullPull) < 300000;
       if (fresh && this._synced && this.localHasData()) { this.setState({ cloud: 'saved' }); return; }
       const bk = await be.pullBackup();
       this._lastFullPull = Date.now();
@@ -14951,7 +14955,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.30a',
+      appVersion: '2026.10.30b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
