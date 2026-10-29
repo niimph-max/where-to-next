@@ -1040,7 +1040,11 @@
           <sc-if value="{{ hasAiAnswer }}" hint-placeholder-val="{{ false }}">
             <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:16px;padding:15px">
               <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px"><svg width="15" height="15" viewBox="0 0 24 24" fill="#c05f39"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg><span style="font:600 15px 'Anuphan';color:#c05f39">{{ aiLastQ }}</span></div>
-              <p style="font:500 16px/1.75 'Anuphan';color:#413931;margin:0;white-space:pre-wrap">{{ aiAnswer }}</p>
+              <p style="font:500 16px/1.75 'Anuphan';color:#413931;margin:0;white-space:pre-wrap;-webkit-user-select:text;user-select:text">{{ aiAnswer }}</p>
+              <div style="display:flex;gap:8px;margin-top:13px;flex-wrap:wrap">
+                <button onClick="{{ aiCopy }}" style="flex:1;min-width:120px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(43,36,32,.15);background:#fff;color:#2b241f;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 012-2h9"></path></svg>คัดลอก</button>
+                <sc-if value="{{ aiCanSaveNote }}" hint-placeholder-val="{{ true }}"><button onClick="{{ aiSaveNote }}" style="flex:1;min-width:150px;min-height:44px;display:flex;align-items:center;justify-content:center;gap:7px;border:none;background:#c05f39;color:#fff;font:600 14.5px 'Anuphan';border-radius:12px;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"></path><path d="M14 3v6h6"></path></svg>เก็บเป็นโน้ตในทริป</button></sc-if>
+              </div>
             </div>
           </sc-if>
           <sc-if value="{{ notConnected }}" hint-placeholder-val="{{ false }}"><div style="background:#fff4ec;border:1px solid rgba(192,95,57,.22);border-radius:14px;padding:13px 15px;margin-top:4px"><div style="font:500 14.5px/1.6 'Anuphan';color:#8a7d6f;text-wrap:pretty">{{ aiPremiumMsg }}</div><button onClick="{{ goPremium }}" style="margin-top:10px;min-height:42px;padding:0 16px;border:none;border-radius:12px;background:#c05f39;color:#fff;font:600 14px 'Anuphan';cursor:pointer">ดูแพ็กพรีเมียม</button></div></sc-if>
@@ -8854,6 +8858,17 @@ class Component extends DCLogic {
   //   เป็นรายการใน wtn-docs ชนิด kind:'note' + text · ซิงก์ไปกับเอกสารเดิม (รวมรายชิ้นด้วย id) ไม่ต้องแตะตัวรวมข้อมูล
   //   ⚠ ไม่ลง PDF แผนเดินทาง (เจ้าของสั่ง: "ไม่ต้องให้ไปอยู่ใน pdf") — เป็นโน้ตส่วนตัว
   //   แอปรุ่นเก่าเห็นเป็นเอกสารที่ "ยังไม่ได้แนบไฟล์" — ไม่พัง แค่อ่านข้อความไม่ได้
+  aiPlain(t) { return String(t || '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,4}\s+/gm, ''); }
+  // เก็บคำตอบ AI เป็นโน้ตในหน้า "ตั๋ว & เอกสาร" ของทริปที่เปิดอยู่ — เจ้าของ: "จะได้ไม่ต้องถามซ้ำหลายๆครั้ง" (30 ต.ค. 69)
+  aiSaveAsNote() {
+    const text = this.aiPlain(this.state.aiAnswer).trim(); if (!text) return;
+    const q = String(this.state.aiLastQ || '').trim();
+    const name = q ? (q.length > 60 ? q.slice(0, 59) + '…' : q) : 'จาก AI';
+    const list = this.docs.slice();
+    list.push({ id: 'note' + Date.now(), name, sub: '', kind: 'note', text });
+    this.saveDocs(list);
+    this.showToast('✓ เก็บไว้ใน "ตั๋ว & เอกสาร" แล้ว');
+  }
   addDocNote() {
     const id = 'note' + Date.now(), list = this.docs.slice();
     list.push({ id, name: 'โน้ต', sub: '', kind: 'note', text: '' });
@@ -14936,7 +14951,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.29b',
+      appVersion: '2026.10.30a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -16180,7 +16195,11 @@ class Component extends DCLogic {
       aiSuggest: ['วันนี้ควรเตรียมอะไรบ้าง', 'ของฝากแถวนี้ซื้ออะไรดี', 'ประโยคภาษาท้องถิ่นที่ควรรู้'].map(q => ({ label: q,
         on: () => this.askTravelAi(q) })),
       aiBusy: !!this.state.aiBusy, aiErr: this.state.aiErr || '',
-      aiAnswer: this.state.aiAnswer || '', hasAiAnswer: !!this.state.aiAnswer,
+      // ตัด **ตัวหนา** แบบ markdown ที่ AI ใส่มา — จอนี้แสดงข้อความล้วน ดอกจันจึงโผล่ให้เห็นตรงๆ
+      aiAnswer: this.aiPlain(this.state.aiAnswer), hasAiAnswer: !!this.state.aiAnswer,
+      aiCopy: () => { if (this.copyText(this.aiPlain(this.state.aiAnswer))) this.showToast('✓ คัดลอกแล้ว'); else this.showToast('คัดลอกไม่ได้ · กดค้างที่ข้อความเพื่อเลือกเองได้'); },
+      aiCanSaveNote: !!this.userTrips.find(t => t.id === this.state.trip),
+      aiSaveNote: () => this.aiSaveAsNote(),
       aiLastQ: this.state.aiLastQ || '',
       addTitle: this.state.addTitle, addTime: addTimeVal, addNote: this.state.addNote ?? '',
       periodChips, addWhenNote, addDayLabel, addHasTime: !!addTimeVal,
