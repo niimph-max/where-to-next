@@ -21,8 +21,9 @@
   }
   const g = w.gatherLocal();
   const sz = JSON.stringify(g).length, st = (g['wtn-stories'] || '').length;
-  console.log('ขนาดก้อนที่จะส่ง', (sz / 1e6).toFixed(2), 'MB · เรื่องเล่า', (st / 1e6).toFixed(2), 'MB', sz > 3500000 ? '← เกิน 3.5 MB: เรื่องเล่าจะถูกคงฉบับคลาวด์ไว้ ไม่ส่งของเครื่องนี้' : '');
+  console.log('ขนาดก้อนที่จะส่ง', (sz / 1e6).toFixed(2), 'MB · เรื่องเล่า', (st / 1e6).toFixed(2), 'MB', sz > (w.STORIES_HOLD_AT || 3500000) ? '← เกินเส้น (' + (w.STORIES_HOLD_AT || 3500000) / 1e6 + ' MB): เรื่องเล่าจะถูกคงฉบับคลาวด์ไว้ ไม่ส่งของเครื่องนี้' : '');
 
+  console.table(Object.keys(g).map(k => ({ คีย์: k, KB: Math.round((g[k] || '').length / 1000) })).sort((a, b) => b.KB - a.KB).slice(0, 15));
   console.log('— บนคลาวด์ —');
   const bk = await be.pullBackup();
   console.log('คลาวด์อัปเดตล่าสุด', d(bk && bk._at), '· เครื่องนี้รู้จักถึง', d(+localStorage.getItem('wtn-cloud-at')));

@@ -4325,6 +4325,7 @@ class Component extends DCLogic {
   // ตัดเฉพาะ "ตอนส่ง": ข้อมูลในเครื่องยังครบ และค่าเดิมบนคลาวด์ไม่ถูกลบทับ
   SYNC_MAX_FREE = 500000;
   SYNC_MAX_PREMIUM = 850000;
+  STORIES_HOLD_AT = 3900000;   // ก้อนเกินนี้ = ไม่ส่งเรื่องเล่าของเครื่องนี้ (pushBackup ปฏิเสธที่ 4,000,000 ทั้งก้อน)
   syncMax() { return this.isPremium ? this.SYNC_MAX_PREMIUM : this.SYNC_MAX_FREE; }
   _filterForPush(map, remoteData) {
     const TOTAL_MAX = this.syncMax();
@@ -4350,11 +4351,16 @@ class Component extends DCLogic {
       else delete out['wtn-stories'];
     }
     // กันชนลิมิตเซิร์ฟเวอร์ 4MB — ก้อนยังใหญ่เกิน (รูปในเนื้อตอนยังยกขึ้นคลาวด์ไม่เสร็จ) ให้คงเรื่องเล่าฉบับคลาวด์ไว้ก่อน ส่วนอื่นซิงก์ตามปกติ รอบหน้าค่อยดัน
+    //   ⚠⚠ เดิมเส้นอยู่ที่ 3.5 MB แล้ว "เงียบ" — บัญชีเจ้าของโตถึง 3.51 MB เรื่องเล่าเลยหยุดซิงก์ทุกเครื่องตั้งแต่ 12 ต.ค. 69 โดยไม่มีใครรู้
+    //   (มือถือเขียนวันที่ 2–6 · คอมเห็นแค่ 3 ตอน) → ขยับเส้นมาใกล้เพดานจริงใน pushBackup (4 MB ทั้งก้อน) + จดไว้ให้ขึ้นเตือนในหน้า "ฉัน"
     let sz = 0; try { sz = JSON.stringify(out).length; } catch (e) {}
-    if (sz > 3500000) {
+    let held = 0;
+    if (sz > this.STORIES_HOLD_AT) {
+      held = sz;
       if (remote['wtn-stories'] !== undefined) out['wtn-stories'] = remote['wtn-stories'];
       else delete out['wtn-stories'];
     }
+    try { if (held) localStorage.setItem('vela-stories-held', String(held)); else localStorage.removeItem('vela-stories-held'); } catch (e) {}
     return out;
   }
   // หลังกู้ไฟล์สำรอง (โดยเฉพาะข้ามบัญชี) baseline เก่าใช้ไม่ได้แล้ว — ถือว่า "ไม่มีตัวเทียบ"
@@ -14955,7 +14961,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.30b',
+      appVersion: '2026.10.30c',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -14976,9 +14982,11 @@ class Component extends DCLogic {
         const EN = this.lang === 'en';
         const t = at ? new Date(at).toLocaleString(this.LC, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + (EN ? '' : ' น.') : (EN ? 'never' : 'ยังไม่เคย');
         if (this.state.cloud === 'error') return (EN ? 'Sync failed (' : 'ซิงก์ไม่สำเร็จ (') + (this.state.cloudErr || '?') + (EN ? ') · last success ' : ') · สำเร็จล่าสุด ') + t;
+        const held = Number(localStorage.getItem('vela-stories-held') || 0);
+        if (held) return (EN ? '⚠ Stories are NOT syncing — data is ' : '⚠ เรื่องเล่าไม่ได้ซิงก์ — ข้อมูลรวม ') + (held / 1e6).toFixed(2) + (EN ? ' MB, over the limit · other data synced ' : ' MB เกินเพดาน · ส่วนอื่นซิงก์แล้ว ') + t;
         return (EN ? 'Last successful cloud sync ' : 'ซิงก์กับคลาวด์สำเร็จล่าสุด ') + t;
       })(),
-      syncLineColor: this.state.cloud === 'error' ? '#b3563a' : '#8a9b7d',
+      syncLineColor: (this.state.cloud === 'error' || localStorage.getItem('vela-stories-held')) ? '#b3563a' : '#8a9b7d',
       egLine: (() => {
         const o = this._egRead();
         const mb = n => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round((n || 0) / 1024) + ' KB');
