@@ -10421,14 +10421,25 @@ class Component extends DCLogic {
     } catch (e) { return false; }
   }
   // ข้อความต้องพกบริบทมาด้วย ไม่ใช่สั่งงานเปล่าๆ ("อย่าลืมบันทึก" = คนปิดการแจ้งเตือน)
-  notiDailyBody() {
+  //   ⚠ ชื่อที่ต้องมาจากทริปที่ "กำลังเที่ยวในวันนั้น" ไม่ใช่ทริปที่เปิดค้างในแอป (curTripRec)
+  //   เดิมใช้ทริปที่เปิดอยู่ กลับจากเซี่ยะเหมินแล้วยังเตือน "วันนี้ที่เซี่ยะเหมิน" ทุกคืน (เจ้าของเจอ 2 พ.ย. 69)
+  //   at = วันที่จะเตือน (แอป iOS ตั้งล่วงหน้า 14 วัน แต่ละวันต้องคิดของตัวเอง)
+  notiDailyBody(at) {
     let where = '';
     try {
-      const t = this.curTripRec() || {};
+      const day = this._ymd(at == null ? Date.now() : at);
+      const t = (this.userTrips || []).find(x => x && x.start && x.end && x.start <= day && day <= x.end) || {};
       where = String(t.city || t.name || '').replace(/\s*·\s*\d+\s*วัน\s*$/, '').trim();
     } catch (e) {}
     return where ? ('วันนี้ที่' + where + ' — เลือกรูปสักสองสามใบ แล้วเขียนสองบรรทัด')
                  : 'เลือกรูปของวันนี้สักสองสามใบ แล้วเขียนสองบรรทัด';
+  }
+  // Web Push: เซิร์ฟเวอร์เก็บข้อความไว้ก้อนเดียว ใช้ซ้ำทุกคืนจนกว่าแอปจะซิงก์ใหม่
+  //   ใส่ชื่อทริปเฉพาะตอน "วันนี้กับพรุ่งนี้ยังอยู่ในทริปเดียวกัน" — วันสุดท้ายของทริปใช้ข้อความกลาง
+  //   ไม่งั้นกลับบ้านแล้วไม่ได้เปิดแอป จะยังได้ "วันนี้ที่เซี่ยะเหมิน" ต่อไปเรื่อยๆ
+  _webPushBody() {
+    const a = this.notiDailyBody(), b = this.notiDailyBody(Date.now() + 86400000);
+    return a === b ? a : this.notiDailyBody(0);   // 0 = ปี 1970 ไม่มีทริป = ข้อความกลาง
   }
   // ทริปที่เพิ่งจบและมีของพอจะเรียบเรียง (เฟส 2) — จังหวะเดียวที่ชวนทำเล่มแล้วได้ผล
   notiTripsDue() {
@@ -10475,7 +10486,8 @@ class Component extends DCLogic {
       // เคยเป็นบั๊ก: เปิดแอปก่อนเวลาเตือนไม่กี่วินาที → ยกเลิกของเดิมทิ้งหมด แล้วตัวที่ใกล้ถึงเวลา
       // ก็ตั้งใหม่ไม่ได้เพราะติดกันชนเวลา → การเตือนของวันนั้นหายไปเงียบๆ โดยผู้ใช้ไม่รู้เลย
       const sig = JSON.stringify([cfg.on, cfg.time, this._ymd(), this.notiLoggedToday(),
-        new Date().getTimezoneOffset(), this.notiTripsDue().map(d => d.id + ':' + d.items)]);
+        new Date().getTimezoneOffset(), this.notiTripsDue().map(d => d.id + ':' + d.items),
+        (this.userTrips || []).map(t => t && [t.id, t.start, t.end, t.city || t.name])]);   // ข้อความรายวันขึ้นกับช่วงวันของทริป
       if (sig === this._notiSig) return 'same';
       try {
         const pend = await LN.getPending();
@@ -10486,14 +10498,13 @@ class Component extends DCLogic {
       const hm = String(cfg.time || '20:30').split(':');
       const hh = Math.min(23, Math.max(0, parseInt(hm[0], 10) || 20));
       const mm = Math.min(59, Math.max(0, parseInt(hm[1], 10) || 30));
-      const body = this.notiDailyBody();
       const skipToday = this.notiLoggedToday();
       const list = [];
       for (let i = 0; i < 14; i++) {
         if (i === 0 && skipToday) continue;
         const at = new Date(); at.setDate(at.getDate() + i); at.setHours(hh, mm, 0, 0);
         if (at.getTime() <= Date.now() + 2000) continue;   // กันชนแค่พอให้ตั้งทัน ไม่ใช่ 30 วิ
-        list.push({ id: 1000 + i, title: 'บันทึกวันนี้', body,
+        list.push({ id: 1000 + i, title: 'บันทึกวันนี้', body: this.notiDailyBody(at),
           schedule: { at, allowWhileIdle: true }, extra: { go: 'moment' } });
       }
       this.notiTripsDue().forEach((d, i) => {
@@ -10616,7 +10627,7 @@ class Component extends DCLogic {
       const due = this.notiTripsDue().map(d => { const at = new Date(d.end); at.setDate(at.getDate() + 3); return { id: d.id, name: d.name, items: d.items, photos: d.photos, at: this._ymd(at) }; });
       let tz = 'Asia/Bangkok'; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
       const row = { endpoint: j.endpoint, user_id: uid, p256dh: keys.p256dh, auth: keys.auth, on_: !!cfg.on,
-        at_time: cfg.time || '20:30', tz, body: this.notiDailyBody(), logged: this.notiLoggedToday() ? this._ymd() : '',
+        at_time: cfg.time || '20:30', tz, body: this._webPushBody(), logged: this.notiLoggedToday() ? this._ymd() : '',
         trips_due: due, updated_at: new Date().toISOString() };
       const sig = JSON.stringify(row).replace(/"updated_at":"[^"]*"/, '');
       if (sig === this._wpSig) return 'same';
@@ -14989,7 +15000,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.10.30e',
+      appVersion: '2026.11.02a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
