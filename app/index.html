@@ -3820,7 +3820,8 @@ class Component extends DCLogic {
     return await this.rescueSave(key, obj, label);
   }
   // ---------- พื้นที่เก็บในเครื่อง ----------
-  lsStats() {
+  lsStats() { return this._lsCache('lsStats', () => this._lsStats()); }
+  _lsStats() {
     let total = 0, b64 = 0, imgs = 0, rows = {};
     const re = /data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g;
     try {
@@ -3843,7 +3844,8 @@ class Component extends DCLogic {
   }
   LS_LABEL = { 'wtn-stories': 'เรื่องเล่า', 'wtn-moments': 'โมเมนต์', 'wtn-checkins': 'เช็คอิน', 'wtn-sprite': 'ฟิล์มคลิปวิดีโอ', 'wtn-docs': 'เอกสาร/ตั๋ว', 'wtn-itinerary': 'แผนรายวัน', 'wtn-trips': 'ทริป', 'wtn-sync-base': 'สำเนาสำหรับเทียบซิงก์', 'wtn-expenses': 'ค่าใช้จ่าย', 'wtn-packing': 'ของที่ต้องเตรียม', 'wtn-explore-cache': 'แคชสำรวจ' };
   mb(b) { return b >= 1048576 ? (Math.round(b / 1048576 * 10) / 10 + ' MB') : (Math.max(1, Math.round(b / 1024)) + ' KB'); }
-  storyBodyBytes() {                                    // เนื้อตอนที่ยังนอนในพื้นที่หลัก
+  storyBodyBytes() { return this._lsCache('bodyBytes', () => this._storyBodyBytes()); }
+  _storyBodyBytes() {                                    // เนื้อตอนที่ยังนอนในพื้นที่หลัก
     let b = 0;
     try {
       const raw = JSON.parse(localStorage.getItem('wtn-stories') || '[]');
@@ -4826,7 +4828,7 @@ class Component extends DCLogic {
     this.saveUserTrips(this.userTrips.filter(x => x.id !== id));
     this.setState({ editTripId: null }); this.setTab('plan');
   }
-  get userTrips() { try { return JSON.parse(localStorage.getItem('wtn-trips')) || []; } catch (e) { return []; } }
+  get userTrips() { return this._rvMemo('trips', () => { try { return JSON.parse(localStorage.getItem('wtn-trips')) || []; } catch (e) { return []; } }); }
   saveUserTrips(list) { list = this._stampChanged(this.userTrips, list, 'id'); try { localStorage.setItem('wtn-trips', JSON.stringify(list)); } catch (e) { alert('พื้นที่เก็บในเครื่องเต็ม'); } this.forceUpdate(); }
   get packing() { try { const all = JSON.parse(localStorage.getItem('wtn-packing')) || {}; const p = all[this.state.trip] || {}; const items = (p.items || []).map(i => ({ ...i, cat: i.cat || 'other' })); return { items, note: p.note || '' }; } catch (e) { return { items: [], note: '' }; } }
   savePacking(p) { try { const all = JSON.parse(localStorage.getItem('wtn-packing')) || {}; all[this.state.trip] = p; localStorage.setItem('wtn-packing', JSON.stringify(all)); } catch (e) {} this.forceUpdate(); }
@@ -5070,9 +5072,10 @@ class Component extends DCLogic {
   }
 
   get days() {
-    return this.baseDaysFor(this.state.trip);
+    const tid = this.state.trip;
+    return this._rvMemo('days:' + tid, () => this.baseDaysFor(tid));
   }
-  get itineraries() { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }
+  get itineraries() { return this._rvMemo('itin', () => { try { return JSON.parse(localStorage.getItem('wtn-itinerary')) || {}; } catch (e) { return {}; } }); }
   itineraryOf(id) { return this.itineraries[id] || null; }
   // ⚠ หางวัน gone (จากปุ่ม "ลบวันนี้") ต้องติดไปทุกครั้งที่บันทึก — this.days ซ่อนมันไว้ ถ้าบันทึกแผนที่สั้นกว่าเดิม
   //   _mergeItin จะเอาวันเดิมของอีกเครื่องกลับมาเต็มๆ (ทดลองแล้ว: ลบวันแล้วแก้ชื่อวันก่อนซิงก์ = วันที่ลบโผล่กลับ)
@@ -6545,7 +6548,7 @@ class Component extends DCLogic {
     } catch (e) { this.setState({ aiBusy: false, aiErr: String(e.message || e) }); }
   }
   get checkins() {
-    try { return JSON.parse(localStorage.getItem('wtn-checkins')) || {}; } catch (e) { return {}; }
+    return this._rvMemo('checkins', () => { try { return JSON.parse(localStorage.getItem('wtn-checkins')) || {}; } catch (e) { return {}; } });
   }
   saveCheckins(o) {
     o = o || {};
@@ -6654,7 +6657,7 @@ class Component extends DCLogic {
   // ── โมเมนต์เคลื่อนไหว: คลิปสั้นจากมือถือ → เก็บเป็นเฟรมนิ่ง 1 ใบ + สตริป 12 เฟรมที่เล่นวนได้ ──
   // ตัวไฟล์วิดีโอไม่ถูกเก็บและไม่อัปคลาวด์ — รวมสองไฟล์แค่ ~รูปนิ่งใบครึ่ง
   SPR = { n: 12, w: 330, fps: 6, span: 3 };   // n×w ต้อง < 4096px — เกินนี้ canvas บน iOS คืนภาพเปล่า (n ผูกกับ @keyframes wtnSpr ที่ -1200%)
-  get sprites() { try { return JSON.parse(localStorage.getItem('wtn-sprite')) || {}; } catch (e) { return {}; } }
+  get sprites() { return this._rvMemo('sprites', () => { try { return JSON.parse(localStorage.getItem('wtn-sprite')) || {}; } catch (e) { return {}; } }); }
   spriteOf(ref) { const v = this.sprites[String(ref || '')]; return (v && v.ref) ? v : null; }
   saveSprite(ref, info) {
     try {
@@ -6948,7 +6951,7 @@ class Component extends DCLogic {
     try { location.reload(); } catch (e) { this.forceUpdate(); }
   }
   get profile() {
-    try { return JSON.parse(localStorage.getItem('wtn-profile')) || {}; } catch (e) { return {}; }
+    return this._rvMemo('profile', () => { try { return JSON.parse(localStorage.getItem('wtn-profile')) || {}; } catch (e) { return {}; } });
   }
   // ชื่อ/ไบโอเริ่มต้น: บัญชีใหม่ใช้ชื่อของตัวเอง ไม่ใช่ค่า hardcode ของ Nim
   get defName() { return (this.profile.name || '').trim() || (this.acct && this.acct.name) || 'ฉัน'; }
@@ -7957,7 +7960,7 @@ class Component extends DCLogic {
   }
 
   // ---------- MOMENTS (โพสต์สั้น / เช็คอินเผยแพร่) ----------
-  get moments() { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }
+  get moments() { return this._rvMemo('moments', () => { try { return JSON.parse(localStorage.getItem('wtn-moments')) || []; } catch (e) { return []; } }); }
   saveMoments(a) { a = this._stampChanged(this.moments, a, 'id'); try { localStorage.setItem('wtn-moments', JSON.stringify(a)); } catch (e) { this.rescueSave('wtn-moments', a, '(โมเมนต์)'); } }
   upsertLocalMoment(m) {
     m._m = Date.now();
@@ -7965,7 +7968,7 @@ class Component extends DCLogic {
     if (m.published !== false) a.unshift(m);
     this.saveMoments(a);
   }
-  get mlikes() { try { return JSON.parse(localStorage.getItem('wtn-mlikes')) || {}; } catch (e) { return {}; } }
+  get mlikes() { return this._rvMemo('mlikes', () => { try { return JSON.parse(localStorage.getItem('wtn-mlikes')) || {}; } catch (e) { return {}; } }); }
   momentLiked(id) { return !!this.mlikes[id]; }
   get mcats() { try { const a = JSON.parse(localStorage.getItem('wtn-mcats')); if (Array.isArray(a) && a.length) return a; } catch (e) {} return ['ท่องเที่ยว', 'อาหาร', 'ที่พัก', 'ผู้คน', 'ความรู้สึก']; }
   saveMcats(a) { try { localStorage.setItem('wtn-mcats', JSON.stringify(a)); } catch (e) {} }
@@ -7978,7 +7981,7 @@ class Component extends DCLogic {
     if (s < 3600) return Math.floor(s / 60) + ' นาทีที่แล้ว';
     if (s < 86400) return Math.floor(s / 3600) + ' ชม.ที่แล้ว';
     if (s < 604800) return Math.floor(s / 86400) + ' วันก่อน';
-    try { return new Date(ts).toLocaleDateString(this.LC, { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
+    try { return this._dtf(this.LC, { day: 'numeric', month: 'short' }).format(new Date(ts)); } catch (e) { return ''; }
   }
   // ลิงก์คลิปในเนื้อโมเมนต์ (วางลิงก์ YouTube / TikTok / Instagram ไว้ในบันทึกได้เลย)
   clipOf(text) {
@@ -10380,7 +10383,7 @@ class Component extends DCLogic {
     }
   }
   get acct() {
-    try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; }
+    return this._rvMemo('acct', () => { try { return JSON.parse(localStorage.getItem('wtn-auth')) || {}; } catch (e) { return {}; } });
   }
   get isGuest() { const a = this.acct; return !(a && (a.name || a.email || a.uid)); }
   gotoSignup() { try { history.replaceState(null, '', location.pathname); } catch (e) {} this._deepDone = true; this.setState({ screen: 'onboard', history: [], auth: 'choice', deepLoading: false, deepErr: false }); }
@@ -14726,7 +14729,45 @@ class Component extends DCLogic {
       .then(() => { this._geoLoading = false; this.forceUpdate(); });
   }
   WORLD = [["ไทย","🇹🇭",15,101],["ญี่ปุ่น","🇯🇵",36.2,138.3],["เกาหลีใต้","🇰🇷",36.5,127.8],["จีน","🇨🇳",35.9,104.2],["ฮ่องกง","🇭🇰",22.3,114.2],["ไต้หวัน","🇹🇼",23.7,121],["เวียดนาม","🇻🇳",16,108],["ลาว","🇱🇦",19.9,102.5],["กัมพูชา","🇰🇭",12.5,105],["เมียนมา","🇲🇲",21.9,95.9],["มาเลเซีย","🇲🇾",4.2,101.9],["สิงคโปร์","🇸🇬",1.35,103.8],["อินโดนีเซีย","🇮🇩",-2,117],["ฟิลิปปินส์","🇵🇭",12.8,121.7],["อินเดีย","🇮🇳",22.6,79],["เนปาล","🇳🇵",28.4,84.1],["ภูฏาน","🇧🇹",27.5,90.4],["ศรีลังกา","🇱🇰",7.9,80.7],["มัลดีฟส์","🇲🇻",3.2,73],["คาซัคสถาน","🇰🇿",48,66.9],["อุซเบกิสถาน","🇺🇿",41.4,64.6],["คีร์กีซสถาน","🇰🇬",41.2,74.8],["จอร์เจีย","🇬🇪",42.3,43.4],["ตุรกี","🇹🇷",39,35.2],["สหรัฐอาหรับเอมิเรตส์","🇦🇪",23.4,53.8],["กาตาร์","🇶🇦",25.3,51.2],["ซาอุดีอาระเบีย","🇸🇦",23.9,45.1],["จอร์แดน","🇯🇴",30.6,36.2],["อิสราเอล","🇮🇱",31,34.9],["โอมาน","🇴🇲",21,57],["อิหร่าน","🇮🇷",32.4,53.7],["อังกฤษ","🇬🇧",54,-2.4],["ฝรั่งเศส","🇫🇷",46.6,2.2],["อิตาลี","🇮🇹",42.5,12.6],["สเปน","🇪🇸",40,-3.7],["โปรตุเกส","🇵🇹",39.5,-8],["เยอรมนี","🇩🇪",51.2,10.4],["สวิตเซอร์แลนด์","🇨🇭",46.8,8.2],["ออสเตรีย","🇦🇹",47.5,14.5],["เนเธอร์แลนด์","🇳🇱",52.1,5.3],["เบลเยียม","🇧🇪",50.5,4.5],["กรีซ","🇬🇷",39.1,21.8],["เช็ก","🇨🇿",49.8,15.5],["ฮังการี","🇭🇺",47.2,19.5],["โปแลนด์","🇵🇱",51.9,19.1],["โครเอเชีย","🇭🇷",45.1,15.2],["นอร์เวย์","🇳🇴",60.5,8.5],["สวีเดน","🇸🇪",60.1,18.6],["เดนมาร์ก","🇩🇰",56,10],["ฟินแลนด์","🇫🇮",64,26],["ไอซ์แลนด์","🇮🇸",64.9,-19],["ไอร์แลนด์","🇮🇪",53.4,-8],["รัสเซีย","🇷🇺",61.5,105],["อียิปต์","🇪🇬",26.8,30.8],["โมร็อกโก","🇲🇦",31.8,-7.1],["แอฟริกาใต้","🇿🇦",-30.6,22.9],["เคนยา","🇰🇪",-0.02,37.9],["แทนซาเนีย","🇹🇿",-6.4,34.9],["สหรัฐฯ","🇺🇸",39.8,-100.4],["แคนาดา","🇨🇦",56.1,-106.3],["เม็กซิโก","🇲🇽",23.6,-102.5],["บราซิล","🇧🇷",-10.3,-53.2],["อาร์เจนตินา","🇦🇷",-38.4,-63.6],["เปรู","🇵🇪",-9.2,-75],["ชิลี","🇨🇱",-35.7,-71.5],["คิวบา","🇨🇺",21.5,-77.8],["ออสเตรเลีย","🇦🇺",-25.3,133.8],["นิวซีแลนด์","🇳🇿",-40.9,174.9],["ฟิจิ","🇫🇯",-17.7,178],["เอธิโอเปีย","🇪🇹",9.1,40.5],["มาดากัสการ์","🇲🇬",-18.8,46.9],["ตูนิเซีย","🇹🇳",33.9,9.5],["แอลจีเรีย","🇩🇿",28,1.7],["นามิเบีย","🇳🇦",-22.6,18.5],["บอตสวานา","🇧🇼",-22.3,24.7],["ซิมบับเว","🇿🇼",-19,29.2],["แซมเบีย","🇿🇲",-13.1,27.8],["โมซัมบิก","🇲🇿",-18.7,35.5],["ยูกันดา","🇺🇬",1.4,32.3],["รวันดา","🇷🇼",-1.9,29.9],["เซเนกัล","🇸🇳",14.5,-14.5],["กานา","🇬🇭",7.9,-1],["ไนจีเรีย","🇳🇬",9.1,8.7],["มอริเชียส","🇲🇺",-20.3,57.6],["เซเชลส์","🇸🇨",-4.7,55.5],["เลบานอน","🇱🇧",33.9,35.9],["คูเวต","🇰🇼",29.3,47.5],["บาห์เรน","🇧🇭",26,50.5],["ทาจิกิสถาน","🇹🇯",38.9,71.3],["เติร์กเมนิสถาน","🇹🇲",38.9,59.6],["อาเซอร์ไบจาน","🇦🇿",40.1,47.6],["อาร์เมเนีย","🇦🇲",40.1,45],["มองโกเลีย","🇲🇳",46.9,103.8],["บังกลาเทศ","🇧🇩",23.7,90.4],["ปากีสถาน","🇵🇰",30.4,69.3],["บรูไน","🇧🇳",4.5,114.7],["ยูเครน","🇺🇦",48.4,31.2],["โรมาเนีย","🇷🇴",45.9,24.9],["บัลแกเรีย","🇧🇬",42.7,25.5],["เซอร์เบีย","🇷🇸",44,21],["สโลวีเนีย","🇸🇮",46.1,14.8],["สโลวาเกีย","🇸🇰",48.7,19.7],["เอสโตเนีย","🇪🇪",58.6,25],["ลัตเวีย","🇱🇻",56.9,24.6],["ลิทัวเนีย","🇱🇹",55.2,23.9],["มอลตา","🇲🇹",35.9,14.4],["ไซปรัส","🇨🇾",35.1,33.4],["แอลเบเนีย","🇦🇱",41.2,20.2],["ลักเซมเบิร์ก","🇱🇺",49.8,6.1],["โคลอมเบีย","🇨🇴",4.6,-74.3],["เอกวาดอร์","🇪🇨",-1.8,-78.2],["โบลิเวีย","🇧🇴",-16.3,-63.6],["อุรุกวัย","🇺🇾",-32.5,-55.8],["คอสตาริกา","🇨🇷",9.7,-83.8],["ปานามา","🇵🇦",8.5,-80.8],["กัวเตมาลา","🇬🇹",15.8,-90.2],["ปาปัวนิวกินี","🇵🇬",-6.3,143.9],["เฟรนช์โปลินีเซีย","🇵🇫",-17.7,-149.4],["ซามัว","🇼🇸",-13.8,-172.1],["วานูอาตู","🇻🇺",-15.4,166.9]];
+  // ⚡ พิมพ์ทีละตัว = renderVals ทั้งก้อน (ดู CLAUDE.md "พิมพ์อืดบน Android")
+  //   getter อย่าง days/checkins/moments/userTrips อ่าน localStorage + JSON.parse ใหม่ทุกครั้งที่ถูกเรียก
+  //   และในรอบเดียวถูกเรียกหลายสิบครั้ง → จำผลไว้ "ภายในรอบเรนเดอร์เดียว" เท่านั้น
+  //   ⚠ นอก renderVals (ปุ่ม/handler) _rvm = null → ได้ของสดเหมือนเดิมทุกครั้ง — โค้ดที่แก้แล้วบันทึกไม่ถูกแตะ
+  //   ⚠ มีการเขียน localStorage ระหว่างรอบ (เช่น migrateStopTimes) → _lsGen ขยับ → ทิ้งที่จำไว้ทั้งหมด
+  _lsGen() {
+    if (!window.__wtnLsGenOn) {
+      window.__wtnLsGenOn = 1; window.__wtnLsGen = 0;
+      try {
+        const P = Storage.prototype, bump = () => { window.__wtnLsGen++; };
+        ['setItem', 'removeItem', 'clear'].forEach(f => { const o = P[f]; P[f] = function () { bump(); return o.apply(this, arguments); }; });
+        window.addEventListener('storage', bump);   // อีกแท็บเขียน
+      } catch (e) {}
+    }
+    return window.__wtnLsGen;
+  }
+  _rvMemo(key, fn) {
+    const m = this._rvm; if (!m) return fn();
+    const g = this._lsGen(); if (m.g !== g) { m.g = g; m.c = Object.create(null); }
+    if (key in m.c) return m.c[key];
+    const v = fn(); if (m.g === this._lsGen()) m.c[key] = v;   // fn เขียนเองระหว่างทาง = ไม่จำ
+    return v;
+  }
+  // จำข้ามรอบได้ เฉพาะค่าที่เป็นตัวเลข/สรุป (ไม่มีใครเอาไปแก้ต่อ) — หมดอายุเมื่อมีการเขียน localStorage
+  _lsCache(key, fn) {
+    const c = this._lsc || (this._lsc = {}), g = this._lsGen(), e = c[key];
+    if (e && e.g === g) return e.v;
+    const v = fn(); c[key] = { g: this._lsGen(), v }; return v;
+  }
+  // Intl.DateTimeFormat สร้างใหม่ทุกครั้งที่เรียก toLocaleDateString — แพงมากบนมือถือ · ผลลัพธ์ตรงกันทุกตัวอักษร
+  _dtf(loc, opts) {
+    const c = this._dtfC || (this._dtfC = {}), k = loc + '|' + JSON.stringify(opts);
+    return c[k] || (c[k] = new Intl.DateTimeFormat(loc, opts));
+  }
   renderVals() {
+    const prev = this._rvm; this._rvm = { g: -1, c: null };
+    try { return this._renderVals(); } finally { this._rvm = prev; }
+  }
+  _renderVals() {
     const sc = this.state.screen, active = this.state.day;
     const nowCard = this.nowBanner();
     const nowK = nowCard.k, nowT = nowCard.t, nowS = nowCard.s;
@@ -15000,7 +15041,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.11.02a',
+      appVersion: '2026.11.21a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -16114,7 +16155,7 @@ class Component extends DCLogic {
         const ms = this.moments.slice().sort((a, b) => (b.at || 0) - (a.at || 0));
         const cats = this.mcats;
         const catName = i => cats[i] || cats[0] || '';
-        const tHour = ts => new Date(ts).toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
+        const tHour = ts => this._dtf(this.LC, { hour: '2-digit', minute: '2-digit' }).format(new Date(ts));
         const mkRow = m => ({ title: (m.text || '').trim().slice(0, 70) || (m.place || 'โมเมนต์'),
           meta: [tHour(m.at || 0), m.place || '', catName(m.cat || 0)].filter(Boolean).join(' · '),
           hasPhoto: !!(m.photos || []).length, photo: (m.photos || [])[0] ? this.pxT((m.photos || [])[0]) : '',
@@ -16335,8 +16376,8 @@ class Component extends DCLogic {
           const av = m.authorAvatar || '';
           const ci = Math.max(0, Math.min(cats.length - 1, m.cat || 0));
           const _dt = new Date(m.at || Date.now());
-          const dateStr = isNaN(_dt) ? '' : _dt.toLocaleDateString(this.LC, { weekday: 'short', day: 'numeric', month: 'short' });
-          const timeStr = isNaN(_dt) ? '' : _dt.toLocaleTimeString(this.LC, { hour: '2-digit', minute: '2-digit' });
+          const dateStr = isNaN(_dt) ? '' : this._dtf(this.LC, { weekday: 'short', day: 'numeric', month: 'short' }).format(_dt);
+          const timeStr = isNaN(_dt) ? '' : this._dtf(this.LC, { hour: '2-digit', minute: '2-digit' }).format(_dt);
           const _pos = m.pos && typeof m.pos.lat === 'number' ? m.pos : null;
           const _clip = this.clipOf(m.text);
           const _body = this.clipBody(m.text, _clip);
