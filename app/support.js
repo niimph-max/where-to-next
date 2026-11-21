@@ -411,7 +411,17 @@
   function kebabToCamel(s) {
     return s.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
   }
+  // ⚡ สไตล์ในแท็กเป็นข้อความเดิมเกือบทุกครั้ง → จำผลแปลงไว้ (React แค่อ่าน style ไม่แก้)
+  var CSS_CACHE = /* @__PURE__ */ new Map();
   function cssToObj(css) {
+    let o = CSS_CACHE.get(css);
+    if (o) return o;
+    o = cssToObjRaw(css);
+    if (CSS_CACHE.size > 5e3) CSS_CACHE.clear();
+    CSS_CACHE.set(css, o);
+    return o;
+  }
+  function cssToObjRaw(css) {
     const o = {};
     for (const decl of css.split(";")) {
       const i = decl.indexOf(":");
@@ -592,7 +602,11 @@
         getReact().Fragment,
         { key },
         list.map((item, i) => {
-          const sub = { ...vals, [asName]: item, $index: i };
+          // ⚡ เดิม { ...vals, ... } ก๊อปค่าทั้งก้อนของ renderVals (หลายพันคีย์) ต่อทุกแถวของทุกรายการ ทุกครั้งที่พิมพ์
+          //   ใช้ prototype แทน — resolvePath อ่านด้วย vals[name] อย่างเดียว (ไม่มีที่ไหนไล่คีย์) ผลจึงเท่าเดิม
+          const sub = Object.create(vals);
+          sub[asName] = item;
+          sub.$index = i;
           return h(
             getReact().Fragment,
             { key: i },

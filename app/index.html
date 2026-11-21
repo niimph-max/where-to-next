@@ -7115,7 +7115,9 @@ class Component extends DCLogic {
   get stories() {
     // localStorage.getItem คืน string ทุกครั้ง แต่ JSON.parse ของบล็อบนี้แพง — และหน้าฟีด/โปรไฟล์เรียก this.stories หลายจุดในเรนเดอร์เดียว
     // แคชผลลัพธ์ไว้ตามค่า raw string ล่าสุด กันพาร์สซ้ำถ้าเนื้อหายังไม่เปลี่ยน
-    const raw = (() => { try { return localStorage.getItem('wtn-stories'); } catch (e) { return null; } })();
+    // ⚡ ในรอบเรนเดอร์อ่านสตริง (2–3 MB) ครั้งเดียว — getter นี้ถูกเรียกหลายร้อยครั้งต่อหนึ่งตัวอักษร (tripPhaseInfo ฯลฯ)
+    //   ยังคืน "สำเนาชั้นบน" ทุกครั้งเหมือนเดิม
+    const raw = this._rvMemo('storiesRaw', () => { try { return localStorage.getItem('wtn-stories'); } catch (e) { return null; } });
     let a;
     if (this._storiesRawCache === raw && this._storiesParsedCache) {
       a = this._storiesParsedCache;
@@ -7271,6 +7273,16 @@ class Component extends DCLogic {
   // ---------- Stories = travel journals with chapters (ตอน) ----------
   // เติมค่าเริ่มต้นแบบ copy-on-write — ห้ามแก้ตัวเดิม เพราะ s อาจเป็นอ็อบเจกต์ในแคช (ตัวเทียบของ _stampChanged)
   normStory(s) {
+    // ⚡ ในรอบเรนเดอร์เดียว เรื่องเดียวกันถูก normStory หลายพันครั้ง — จำผลต่ออ็อบเจกต์ (นอกรอบ = คำนวณสดเหมือนเดิม)
+    const m = this._rvm;
+    if (!m || !s || typeof s !== 'object') return this._normStory(s);
+    const g = this._lsGen();
+    if (!m.ns || m.nsG !== g) { m.ns = new WeakMap(); m.nsG = g; }
+    let r = m.ns.get(s);
+    if (r === undefined) { r = this._normStory(s); m.ns.set(s, r); }
+    return r;
+  }
+  _normStory(s) {
     if (!s) return s;
     const d = {};
     if (!Array.isArray(s.chapters)) {
@@ -14716,7 +14728,8 @@ class Component extends DCLogic {
     if (this._geo || this._geoLoading) return;
     this._geoLoading = true;
     // แผนที่เป็นข้อมูลสาธารณะ สร้างใหม่ได้ — ห้ามอยู่ใน namespace wtn- ที่ถูกซิงก์/สำรอง
-    try { localStorage.removeItem('wtn-geo-v1'); localStorage.removeItem('wtn-geo-v2'); localStorage.removeItem('vela-geo-cache-v2'); } catch (e) {}
+    // ทำครั้งเดียวพอ — ถ้าโหลดแผนที่ไม่ได้ (ออฟไลน์) ฟังก์ชันนี้ถูกเรียกทุกรอบเรนเดอร์ = ลบซ้ำทุกตัวอักษรที่พิมพ์
+    if (!this._geoClean) { this._geoClean = 1; try { localStorage.removeItem('wtn-geo-v1'); localStorage.removeItem('wtn-geo-v2'); localStorage.removeItem('vela-geo-cache-v2'); } catch (e) {} }
     try { const c = JSON.parse(localStorage.getItem('vela-geo-cache-v3')); if (c && c.length) { this._geo = c; this._geoLoading = false; return; } } catch (e) {}
     fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json')
       .then(r => r.json())
@@ -14739,7 +14752,9 @@ class Component extends DCLogic {
       window.__wtnLsGenOn = 1; window.__wtnLsGen = 0;
       try {
         const P = Storage.prototype, bump = () => { window.__wtnLsGen++; };
-        ['setItem', 'removeItem', 'clear'].forEach(f => { const o = P[f]; P[f] = function () { bump(); return o.apply(this, arguments); }; });
+        ['setItem', 'removeItem', 'clear'].forEach(f => { const o = P[f]; P[f] = function (k) {
+          if (!(f === 'removeItem' && P.getItem.call(this, k) === null)) bump();   // ลบคีย์ที่ไม่มีอยู่ = ไม่ได้เปลี่ยนอะไร
+          return o.apply(this, arguments); }; });
         window.addEventListener('storage', bump);   // อีกแท็บเขียน
       } catch (e) {}
     }
@@ -15041,7 +15056,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.11.21a',
+      appVersion: '2026.11.21b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
