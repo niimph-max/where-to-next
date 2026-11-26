@@ -1296,7 +1296,7 @@
               <button onClick="{{ copyEditPlan }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.18);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">คัดลอก</button>
               <button onClick="{{ saveEditPlanNote }}" style="flex:2;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">เก็บเป็นโน้ตในทริป</button>
             </div>
-            <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:10px">ไม่ลงแผนรายวัน · เก็บไว้ใน "ตั๋ว & เอกสาร" ของทริปนี้ เปิดดูตอนตัดคลิปบนคอมได้</div>
+            <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:10px">"เกร็ดสถานที่" AI เสริมให้เอง อาจคลาดเคลื่อน ตรวจก่อนใช้ · ไม่ลงแผนรายวัน เก็บไว้ใน "ตั๋ว & เอกสาร" ของทริปนี้</div>
           </sc-if>
         </div>
       </sc-if>
@@ -5856,8 +5856,10 @@ class Component extends DCLogic {
       'ทริป ' + (ti.title || '') + ' · ' + dayLabel + (d.city && d.city !== 'ยังไม่มีชื่อวัน' ? ' — ' + d.city : '') + '\n' +
       'นี่คือโมเมนต์ที่เจ้าของบันทึกไว้ระหว่างวัน (เรียงตามเวลา คือสิ่งที่เกิดขึ้นจริง):\n' + body +
       '\n\nเจ้าของถ่ายคลิปไว้แล้วตลอดวัน กำลังจะนั่งตัดต่อ ช่วยร่าง "โครงคลิป" ของวันนี้ 4–8 ฉาก มีฉากเปิดและฉากปิด' +
-      '\nกติกา: ใช้เฉพาะเรื่องที่อยู่ในโมเมนต์เท่านั้น ห้ามแต่งเหตุการณ์ สถานที่ อาหาร หรือความรู้สึกที่ไม่ได้เขียนไว้ · จัดลำดับให้เล่าเรื่องสนุกได้ จะรวมโมเมนต์ใกล้กันเป็นฉากเดียวก็ได้' +
-      '\nตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น รูปแบบ: {"title":"ชื่อคลิปสั้นๆ","hook":"ประโยคเปิดคลิป 1 ประโยค","scenes":[{"time":"HH:MM ของโมเมนต์ที่ใช้ หรือ \'\'","title":"ชื่อฉาก","vo":["บทพากย์"],"footage":["ฟุตเทจที่ควรหามาใส่"],"text":"ข้อความบนจอ หรือ \'\'"}],"ending":"ประโยคปิดคลิป"}' +
+      '\nกติกา: บทพากย์ (vo) ใช้เฉพาะเรื่องที่อยู่ในโมเมนต์เท่านั้น ห้ามแต่งเหตุการณ์ สถานที่ อาหาร หรือความรู้สึกที่ไม่ได้เขียนไว้ · จัดลำดับให้เล่าเรื่องสนุกได้ จะรวมโมเมนต์ใกล้กันเป็นฉากเดียวก็ได้' +
+      '\nเกร็ดสถานที่ (facts) แยกจากบทพากย์: ถ้าฉากนั้นไปสถานที่ที่มีประวัติ ตำนาน สถาปัตยกรรม หรือเรื่องน่าสนใจ ให้เสริม 1–3 ข้อ แม้เจ้าของไม่ได้บันทึกไว้ · เขียนเป็นประโยคพากย์ที่หยิบไปพูดได้เลย ลงท้าย "ค่ะ" · ใส่ปี/ตัวเลขเฉพาะที่มั่นใจ' +
+      '\nfacts ต้องเป็นข้อเท็จจริงของสถานที่เท่านั้น ห้ามเล่าว่าเจ้าของทำ/เห็น/รู้สึกอะไร · ไม่แน่ใจให้ไม่ใส่ · สถานที่ทั่วไป (ร้านอาหาร ซอย ที่พัก) ที่ไม่มีเรื่องเด่นให้เป็น []' +
+      '\nตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น รูปแบบ: {"title":"ชื่อคลิปสั้นๆ","hook":"ประโยคเปิดคลิป 1 ประโยค","scenes":[{"time":"HH:MM ของโมเมนต์ที่ใช้ หรือ \'\'","title":"ชื่อฉาก","vo":["บทพากย์"],"facts":["เกร็ดสถานที่"],"footage":["ฟุตเทจที่ควรหามาใส่"],"text":"ข้อความบนจอ หรือ \'\'"}],"ending":"ประโยคปิดคลิป"}' +
       '\nบทพากย์ (vo) เป็นเสียงเล่าย้อนหลังแบบเป็นกันเอง ใช้คำลงท้าย "ค่ะ" (ห้ามใช้ "ครับ") ฉากละไม่เกิน 3 ประโยค · footage บอกว่าควรหาช็อตแบบไหนจากที่ถ่ายมา ฉากละ 2–4 ข้อ สั้นๆ' +
       '\ntext ใส่เฉพาะเมื่อช่วยจริง เช่น ชื่อสถานที่ ราคา เวลา ถ้าไม่มีให้เป็น \'\'';
     this.setState({ editBusy: true, editErr: '', editPlan: null, editDay: i });
@@ -5872,7 +5874,8 @@ class Component extends DCLogic {
   }
   _editSceneNote(sc) {
     const sec = (h, a) => { const xs = (Array.isArray(a) ? a : [a]).map(x => String(x || '').trim()).filter(Boolean); return xs.length ? h + ':\n' + xs.map(x => '- ' + x).join('\n') : ''; };
-    return [sec('บทพากย์', sc.vo), sec('ฟุตเทจ', sc.footage), sec('ข้อความบนจอ', sc.text)].filter(Boolean).join('\n');
+    // เกร็ดสถานที่ = AI เสริมเอง (ไม่ได้มาจากโมเมนต์) — ป้ายหัวข้อต้องบอกชัด ให้เจ้าของตรวจ/ตัดเอง (เจ้าของขอ 26 พ.ย. 69)
+    return [sec('บทพากย์', sc.vo), sec('เกร็ดสถานที่ (AI เสริม · ตรวจก่อนใช้)', sc.facts), sec('ฟุตเทจ', sc.footage), sec('ข้อความบนจอ', sc.text)].filter(Boolean).join('\n');
   }
   _editPlanText(p) {
     if (!p) return '';
@@ -15154,7 +15157,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.11.26a',
+      appVersion: '2026.11.26b',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
