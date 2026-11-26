@@ -1270,6 +1270,34 @@
             </div>
             <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:10px">แต่ละฉากจะเป็นกิจกรรมประเภท "ถ่ายคลิป" แก้หรือลบทีละฉากได้ตามปกติ</div>
           </sc-if>
+          <!-- ตัดต่อ: AI ร่างโครงคลิปจากโมเมนต์ (พรีเมียม) -->
+          <div style="height:1px;background:rgba(43,36,32,.1);margin:22px 0 18px"></div>
+          <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:4px">ตัดต่อคลิปวันนี้</div>
+          <div style="font:500 14.5px/1.5 'Anuphan';color:#8a7d6f;margin-bottom:12px">สำหรับตอนนั่งตัดคลิป — AI อ่านโมเมนต์ที่บันทึกไว้ใน "{{ aiDayLabel }}" ({{ editMomentCount }} โมเมนต์) แล้วเรียงเป็นฉาก พร้อมบทพากย์และฟุตเทจที่ควรหามาใส่ · ใช้ได้แม้ไม่มีแผน</div>
+          <button onClick="{{ genEditScript }}" style="width:100%;border:none;background:#2b241f;color:#fff;font:600 16px 'Anuphan';padding:14px;border-radius:13px;cursor:pointer;margin-bottom:14px">{{ editBtnLabel }}</button>
+          <sc-if value="{{ editBusy }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:26px;font:500 15px 'Anuphan';color:#a1927c">✂️ AI กำลังเรียงฉากจากโมเมนต์…</div></sc-if>
+          <sc-if value="{{ editErr }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border:1px solid rgba(192,86,58,.25);border-radius:14px;padding:13px 15px;font:500 14.5px/1.5 'Anuphan';color:#b3402a;margin-bottom:12px">{{ editErr }}</div></sc-if>
+          <sc-if value="{{ hasEditPlan }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ editTrunc }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(192,86,58,.1);border-radius:12px;padding:10px 13px;font:500 14px/1.5 'Anuphan';color:#b3402a;margin-bottom:10px">⚠ AI ตอบไม่จบ โครงอาจขาดฉากท้ายๆ — กดร่างใหม่ได้</div></sc-if>
+            <div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:15px;padding:13px 14px;margin-bottom:10px;user-select:text;-webkit-user-select:text">
+              <div style="font:600 13px 'Anuphan';color:#c05f39;margin-bottom:2px">จากโมเมนต์ {{ editFromN }} รายการ</div>
+              <div style="font:600 17px 'Anuphan';color:#2b241f">{{ editTitle }}</div>
+              <sc-if value="{{ editHasHook }}" hint-placeholder-val="{{ false }}"><div style="font:500 14.5px/1.55 'Anuphan';color:#6f6558;margin-top:6px"><b style="color:#413931">เปิดคลิป:</b> {{ editHook }}</div></sc-if>
+            </div>
+            <sc-for list="{{ editScenes }}" as="es" hint-placeholder-count="0">
+              <div style="background:#fffaf0;border:1px solid rgba(43,36,32,.08);border-radius:15px;padding:13px 14px;margin-bottom:10px;user-select:text;-webkit-user-select:text">
+                <div style="display:flex;gap:8px;align-items:baseline"><span style="font:600 13px 'Anuphan';color:#c05f39;flex:none">ฉาก {{ es.n }}</span><span style="font:600 16px 'Anuphan';color:#2b241f">{{ es.title }}</span><span style="font:500 13px 'Anuphan';color:#a99e8e;margin-left:auto;flex:none">{{ es.time }}</span></div>
+                <div style="font:500 14.5px/1.55 'Anuphan';color:#6f6558;margin-top:3px"><sc-for list="{{ es.blocks }}" as="nb" hint-placeholder-count="0"><div style="{{ nb.style }}"><sc-if value="{{ nb.bullet }}" hint-placeholder-val="{{ false }}"><span style="flex:none;color:#c05f39;font-weight:700">•</span></sc-if><span style="flex:1;min-width:0;text-wrap:pretty">{{ nb.text }}</span></div></sc-for></div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ editHasEnding }}" hint-placeholder-val="{{ false }}"><div style="background:#fbf3e6;border:1px solid rgba(192,95,57,.18);border-radius:15px;padding:12px 14px;margin-bottom:10px;font:500 14.5px/1.55 'Anuphan';color:#6f6558;user-select:text;-webkit-user-select:text"><b style="color:#413931">ปิดคลิป:</b> {{ editEnding }}</div></sc-if>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              <button onClick="{{ dropEditPlan }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.18);background:#fff;color:#5c5347;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">ทิ้ง</button>
+              <button onClick="{{ copyEditPlan }}" style="flex:1;min-height:48px;border:1px solid rgba(43,36,32,.18);background:#fff;color:#2b241f;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">คัดลอก</button>
+              <button onClick="{{ saveEditPlanNote }}" style="flex:2;min-height:48px;border:none;background:#c05f39;color:#fff;font:600 15px 'Anuphan';border-radius:13px;cursor:pointer">เก็บเป็นโน้ตในทริป</button>
+            </div>
+            <div style="font:500 13px/1.5 'Anuphan';color:#a99e8e;text-align:center;margin-top:10px">ไม่ลงแผนรายวัน · เก็บไว้ใน "ตั๋ว & เอกสาร" ของทริปนี้ เปิดดูตอนตัดคลิปบนคอมได้</div>
+          </sc-if>
         </div>
       </sc-if>
 
@@ -5796,6 +5824,76 @@ class Component extends DCLogic {
       if (!sc.length) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ ลองกดใหม่อีกครั้ง');
       this.setState({ clipBusy: false, clipScenes: sc, clipTrunc: !!this._lastTruncated });
     } catch (e) { this.setState({ clipBusy: false, clipErr: String(e.message || e) }); }
+  }
+  // ---------- ตัดต่อ: AI ร่างโครงคลิปจากโมเมนต์ (พรีเมียม · 26 พ.ย. 2569) ----------
+  // เจ้าของ: "บางกรณีโปรแกรมเปลี่ยน หรือเที่ยวแบบไม่มีโปรแกรม แต่เราจะบันทึกโมเมนต์ไว้" → ใช้ตอนนั่งตัดคลิป (เลือกเอง)
+  // อ่าน "สิ่งที่เกิดขึ้นจริง" (โมเมนต์ของวันนั้น) ไม่ใช่แผน · ผลลัพธ์ = ลำดับฉาก + บทพากย์ + ฟุตเทจที่ควรหามาใส่
+  // ⚠ ไม่ใส่ลงแผนรายวัน — แผนคือของก่อนเที่ยว · ทางเก็บ = คัดลอก หรือเก็บเป็นโน้ตใน "ตั๋ว & เอกสาร" (ไม่มีคีย์ใหม่)
+  // ⚠ สั่ง AI ห้ามแต่งเรื่องที่ไม่มีในโมเมนต์ — บทพากย์เป็นเสียงของเจ้าของ ถ้าแต่งเพิ่มคือพูดเรื่องที่ไม่ได้เกิด
+  editMomentsOf(i) {
+    const tid = this.state.trip, list = ((this.checkins || {})[tid + ':' + i] || []).filter(Boolean);
+    const ms = this.moments, byId = {};
+    ms.forEach(m => { if (m && m.id) byId[m.id] = m; });
+    return list.slice().sort((a, b) => (a.at || 0) - (b.at || 0)).map(c => {
+      const m = (c.mid && byId[c.mid]) || {};
+      return { t: c.t || (c.at ? this._dtf(this.LC, { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(c.at)) : ''),
+        name: String(c.name || '').trim(), place: String(m.place || c.place || '').trim(),
+        note: String(c.note || '').trim(), photos: (c.photos || []).length };
+    }).filter(x => x.name || x.note || x.place);
+  }
+  async genEditScript() {
+    const i = this.state.day, d = this.days[i] || {}, ms = this.editMomentsOf(i);
+    const dayLabel = d.tag || ('วันที่ ' + (i + 1));
+    // ไม่มีโมเมนต์ = ไม่ยิง AI (ไม่เสียเครดิตเปล่า)
+    if (!ms.length) { this.setState({ editErr: dayLabel + ' ยังไม่มีโมเมนต์ — บันทึกโมเมนต์ก่อน แล้วค่อยกดร่างโครงตัดต่อ', editPlan: null }); return; }
+    // ai-complete ตัดขาเข้าที่ 30,000 ตัวอักษรแบบเงียบ — คุมงบข้อความโมเมนต์ไว้ก่อน (เจ้าของเขียนยาวตอนแก้ทีหลัง)
+    let cap = 900, body = '';
+    const fmt = c => '- ' + [c.t, c.name, c.place && c.place !== c.name ? '@ ' + c.place : '', c.photos ? '(รูป ' + c.photos + ' ใบ)' : ''].filter(Boolean).join(' · ') +
+      (c.note ? '\n  ' + c.note.replace(/\s*\n\s*/g, ' / ').slice(0, cap) : '');
+    for (; cap >= 150; cap = Math.floor(cap * 0.7)) { body = ms.slice(0, 40).map(fmt).join('\n'); if (body.length <= 20000) break; }
+    const ti = this.tripInfo;
+    const prompt = 'คุณคือผู้ช่วยตัดต่อคลิปท่องเที่ยว (vlog) ของแอป "Vela"\n' +
+      'ทริป ' + (ti.title || '') + ' · ' + dayLabel + (d.city && d.city !== 'ยังไม่มีชื่อวัน' ? ' — ' + d.city : '') + '\n' +
+      'นี่คือโมเมนต์ที่เจ้าของบันทึกไว้ระหว่างวัน (เรียงตามเวลา คือสิ่งที่เกิดขึ้นจริง):\n' + body +
+      '\n\nเจ้าของถ่ายคลิปไว้แล้วตลอดวัน กำลังจะนั่งตัดต่อ ช่วยร่าง "โครงคลิป" ของวันนี้ 4–8 ฉาก มีฉากเปิดและฉากปิด' +
+      '\nกติกา: ใช้เฉพาะเรื่องที่อยู่ในโมเมนต์เท่านั้น ห้ามแต่งเหตุการณ์ สถานที่ อาหาร หรือความรู้สึกที่ไม่ได้เขียนไว้ · จัดลำดับให้เล่าเรื่องสนุกได้ จะรวมโมเมนต์ใกล้กันเป็นฉากเดียวก็ได้' +
+      '\nตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น รูปแบบ: {"title":"ชื่อคลิปสั้นๆ","hook":"ประโยคเปิดคลิป 1 ประโยค","scenes":[{"time":"HH:MM ของโมเมนต์ที่ใช้ หรือ \'\'","title":"ชื่อฉาก","vo":["บทพากย์"],"footage":["ฟุตเทจที่ควรหามาใส่"],"text":"ข้อความบนจอ หรือ \'\'"}],"ending":"ประโยคปิดคลิป"}' +
+      '\nบทพากย์ (vo) เป็นเสียงเล่าย้อนหลังแบบเป็นกันเอง ใช้คำลงท้าย "ค่ะ" (ห้ามใช้ "ครับ") ฉากละไม่เกิน 3 ประโยค · footage บอกว่าควรหาช็อตแบบไหนจากที่ถ่ายมา ฉากละ 2–4 ข้อ สั้นๆ' +
+      '\ntext ใส่เฉพาะเมื่อช่วยจริง เช่น ชื่อสถานที่ ราคา เวลา ถ้าไม่มีให้เป็น \'\'';
+    this.setState({ editBusy: true, editErr: '', editPlan: null, editDay: i });
+    try {
+      const text = await this.askLLM(prompt);
+      const j = this._impJSON(text);
+      const sc = (j && Array.isArray(j.scenes)) ? j.scenes.filter(x => x && String(x.title || '').trim()).slice(0, 12) : [];
+      if (!sc.length) throw new Error('AI ตอบกลับมาไม่ครบหรือไม่ใช่รูปแบบที่อ่านได้ ลองกดใหม่อีกครั้ง');
+      this.setState({ editBusy: false, editPlan: { title: String(j.title || '').trim(), hook: String(j.hook || '').trim(), ending: String(j.ending || '').trim(), scenes: sc, n: ms.length },
+        editTrunc: !!this._lastTruncated });
+    } catch (e) { this.setState({ editBusy: false, editErr: String(e.message || e) }); }
+  }
+  _editSceneNote(sc) {
+    const sec = (h, a) => { const xs = (Array.isArray(a) ? a : [a]).map(x => String(x || '').trim()).filter(Boolean); return xs.length ? h + ':\n' + xs.map(x => '- ' + x).join('\n') : ''; };
+    return [sec('บทพากย์', sc.vo), sec('ฟุตเทจ', sc.footage), sec('ข้อความบนจอ', sc.text)].filter(Boolean).join('\n');
+  }
+  _editPlanText(p) {
+    if (!p) return '';
+    const out = [];
+    if (p.title) out.push('ชื่อคลิป: ' + p.title);
+    if (p.hook) out.push('เปิดคลิป: ' + p.hook);
+    (p.scenes || []).forEach((sc, k) => {
+      out.push('', 'ฉาก ' + (k + 1) + ' · ' + String(sc.title || '').trim() + (String(sc.time || '').trim() ? ' (' + String(sc.time).trim() + ')' : ''));
+      out.push(this._editSceneNote(sc));
+    });
+    if (p.ending) out.push('', 'ปิดคลิป: ' + p.ending);
+    return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+  saveEditPlanNote() {
+    const p = this.state.editPlan, i = this.state.editDay;
+    const text = this._editPlanText(p); if (!text || !this.isPremium) return;
+    const d = this.days[i] || {}, name = 'โครงตัดต่อ · ' + (d.tag || ('วันที่ ' + ((i || 0) + 1)));
+    const list = this.docs.slice();
+    list.push({ id: 'note' + Date.now(), name, sub: '', kind: 'note', text });
+    this.saveDocs(list);
+    this.showToast('✓ เก็บ "' + name + '" ไว้ใน "ตั๋ว & เอกสาร" แล้ว');
   }
   _clipNote(sc) {
     const sec = (h, a) => { const xs = (Array.isArray(a) ? a : []).map(x => String(x || '').trim()).filter(Boolean); return xs.length ? h + ':\n' + xs.map(x => '- ' + x).join('\n') : ''; };
@@ -15056,7 +15154,7 @@ class Component extends DCLogic {
       a2hsInstall: () => this.a2hsInstall(),
       a2hsLater: () => this.a2hsClose(false),
       a2hsDismiss: () => this.a2hsClose(true),
-      appVersion: '2026.11.21b',
+      appVersion: '2026.11.26a',
       kbDoneShow: !!this.state.kbUp && !this.isAndroidApp,
       kbDone: () => {
         try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {}
@@ -16296,6 +16394,22 @@ class Component extends DCLogic {
       clipScenes: (this.state.clipScenes || []).map(x => ({ time: String(x.time || '').trim(), title: String(x.title || '').trim(), blocks: this.noteBlocks(this._clipNote(x)) })),
       addClipScenes: () => this.addClipScenes(),
       dropClipScenes: () => this.setState({ clipScenes: null }),
+      editMomentCount: (() => { try { return this.editMomentsOf(active).length; } catch (e) { return 0; } })(),
+      genEditScript: () => { if (this.aiGate()) this.genEditScript(); },
+      editBtnLabel: this.aiAvailable() ? '✂️ ร่างโครงตัดต่อจากโมเมนต์' : '✂️ ร่างโครงตัดต่อจากโมเมนต์ (พรีเมียม)',
+      editBusy: !!this.state.editBusy, editErr: this.state.editErr || '',
+      hasEditPlan: !!(this.state.editPlan && (this.state.editPlan.scenes || []).length),
+      editTrunc: !!(this.state.editPlan && this.state.editTrunc),
+      editTitle: (this.state.editPlan && this.state.editPlan.title) || '',
+      editHook: (this.state.editPlan && this.state.editPlan.hook) || '',
+      editEnding: (this.state.editPlan && this.state.editPlan.ending) || '',
+      editHasHook: !!(this.state.editPlan && this.state.editPlan.hook),
+      editHasEnding: !!(this.state.editPlan && this.state.editPlan.ending),
+      editFromN: (this.state.editPlan && this.state.editPlan.n) || 0,
+      editScenes: ((this.state.editPlan && this.state.editPlan.scenes) || []).map((x, k) => ({ n: k + 1, time: String(x.time || '').trim(), title: String(x.title || '').trim(), blocks: this.noteBlocks(this._editSceneNote(x)) })),
+      copyEditPlan: () => { const t = this._editPlanText(this.state.editPlan); if (t && this.copyText(t)) this.showToast('✓ คัดลอกโครงตัดต่อแล้ว'); },
+      saveEditPlanNote: () => this.saveEditPlanNote(),
+      dropEditPlan: () => this.setState({ editPlan: null, editErr: '' }),
       aiPlanBtnLabel: this.aiAvailable() ? 'ให้ AI ร่างวันนี้' : '✦ ให้ AI ช่วยจัดวันนี้ (พรีเมียม)',
       aiPlanBusy: !!this.state.aiPlanBusy, aiPlanErr: this.state.aiPlanErr || '',
       aiPlanText: this.state.aiPlanText || '', hasAiPlan: !!this.state.aiPlanText,
