@@ -1252,7 +1252,7 @@
           <!-- ถ่ายคลิป: AI ร่างสคริปต์ทั้งวัน (พรีเมียม) -->
           <div style="height:1px;background:rgba(43,36,32,.1);margin:22px 0 18px"></div>
           <!-- คำสั่งเพิ่มเติมถึง AI — ใช้ร่วมกันทั้งสองปุ่มด้านล่าง -->
-          <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:4px">สั่ง AI เพิ่มเติม <span style="font:500 13px 'Anuphan';color:#a99e8e">(ไม่บังคับ · ใช้กับทั้งสองปุ่มด้านล่าง)</span></div>
+          <div style="font:600 15px 'Anuphan';color:#2b241f;margin-bottom:4px">สั่ง AI เพิ่มเติม · {{ aiDayLabel }} <span style="font:500 13px 'Anuphan';color:#a99e8e">(ไม่บังคับ · ใช้กับทั้งสองปุ่มด้านล่าง · จำแยกรายวัน)</span></div>
           <div style="display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 10px"><sc-for list="{{ clipExtraChips }}" as="xc" hint-placeholder-count="6"><button onClick="{{ xc.on }}" style="{{ xc.style }}">{{ xc.label }}</button></sc-for></div>
           <textarea value="{{ clipExtra }}" onInput="{{ setClipExtra }}" rows="3" placeholder="เช่น อยากได้โทนตลก · เน้นอาหาร · ใส่ประวัติปราสาทให้มากหน่อย" style="width:100%;box-sizing:border-box;border:1px solid rgba(43,36,32,.14);background:#fff;border-radius:12px;padding:10px 12px;font:500 15px/1.6 'Anuphan';color:#2f2a24;outline:none;resize:vertical;margin-bottom:18px"></textarea>
           <div style="font:600 17px 'Anuphan';color:#2b241f;margin-bottom:4px">ถ่ายคลิปวันนี้</div>
@@ -5815,6 +5815,7 @@ class Component extends DCLogic {
   // ชิปลัด = แค่เติม/ลบบรรทัดในช่องข้อความ (เห็นชัดว่าจะส่งอะไรไป แก้ต่อเองได้)
   // จำไว้ในเครื่องด้วยคีย์ vela-* (ไม่ขึ้นต้น wtn- โดยตั้งใจ — ไม่ต้องซิงก์ ไม่ต้องสำรอง)
   // ⚠ คำขอนี้ "ห้ามชนะ" กติกาเดิม — โครงตัดต่อ: บทพากย์ยังห้ามแต่ง ข้อมูลที่ AI เติมต้องไปอยู่ในเกร็ด
+  // (จำแยกรายวัน — ดู _clipExtraKey)
   CLIP_EXTRA_CHIPS = [
     ['โทนสนุก', 'โทนสนุก เป็นกันเอง มีมุกเล็กๆ'],
     ['โทนอบอุ่น', 'โทนอบอุ่น ละมุน ชวนคิดถึง'],
@@ -5823,14 +5824,21 @@ class Component extends DCLogic {
     ['ข้อมูลท่องเที่ยว', 'ใส่ข้อมูลท่องเที่ยวที่เป็นประโยชน์ เช่น ค่าเข้า เวลาเปิด วิธีเดินทาง'],
     ['คลิปสั้น', 'คลิปสั้นสำหรับ Reels/TikTok ไม่เกิน 60 วินาที ฉากน้อย ประโยคสั้น'],
   ];
+  // จำแยก "ต่อวัน" ของแต่ละทริป — เจ้าของ: "คลิปนี้อาจอยากเน้นอะไรเป็นพิเศษ"
+  //   ถ้าจำค่าเดียวทุกวัน คำสั่งของวันก่อน (เช่น เน้นอาหาร) จะติดไปคลิปวันอื่นแบบไม่รู้ตัว
+  _clipExtraKey() { return this.state.trip + ':' + this.state.day; }
+  _clipExtraMap() { try { const m = JSON.parse(localStorage.getItem('vela-clip-extra') || '{}'); return m && typeof m === 'object' && !Array.isArray(m) ? m : {}; } catch (e) { return {}; } }
   get clipExtra() {
-    if (this.state.clipExtra != null) return this.state.clipExtra;
-    try { return localStorage.getItem('vela-clip-extra') || ''; } catch (e) { return ''; }
+    const k = this._clipExtraKey(), st = this.state.clipExtraMap;
+    if (st && k in st) return st[k];
+    return String(this._clipExtraMap()[k] || '');
   }
   setClipExtra(v) {
     v = String(v || '').slice(0, 600);
-    this.setState({ clipExtra: v });
-    try { if (v.trim()) localStorage.setItem('vela-clip-extra', v); else localStorage.removeItem('vela-clip-extra'); } catch (e) {}
+    const k = this._clipExtraKey(), m = this._clipExtraMap();
+    if (v.trim()) m[k] = v; else delete m[k];
+    this.setState(s0 => ({ clipExtraMap: { ...(s0.clipExtraMap || {}), [k]: v } }));
+    try { if (Object.keys(m).length) localStorage.setItem('vela-clip-extra', JSON.stringify(m)); else localStorage.removeItem('vela-clip-extra'); } catch (e) {}
   }
   toggleClipExtraChip(line) {
     const lines = this.clipExtra.split(/\n/).map(x => x.trim()).filter(Boolean);
